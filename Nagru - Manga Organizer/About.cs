@@ -30,7 +30,7 @@ namespace Nagru___Manga_Organizer
             "You should have received a copy of the GNU General Public License along\n" +
             "with this program; If not, see http://www.gnu.org/licenses/gpl.html \n\n\n" +
             "For a copy of the source code, visit:\n" +
-            "https://dl.dropbox.com/u/103899726/MangaOrganizer.7z";
+            "https://github.com/Nagru/Manga-Organizer";
         }
     }
 }

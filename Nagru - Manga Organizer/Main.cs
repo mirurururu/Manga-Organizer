@@ -768,7 +768,7 @@ namespace Nagru___Manga_Organizer
         #region Menu_RichText
         private void MnRTx_Undo_Click(object sender, EventArgs e)
         {
-            if (TabControl.SelectedIndex == 2) frTxBx_Desc.Undo();
+            if (TabControl.SelectedIndex == 2) frTxBx_Notes.Undo();
             else frTxBx_Desc.Undo();
         }
 

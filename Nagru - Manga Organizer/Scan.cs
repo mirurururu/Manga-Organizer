@@ -133,7 +133,7 @@ namespace Nagru___Manga_Organizer
             else LV_Found.Items.Add(lvi);
         }
 
-        /* Finsih sorting display */
+        /* Finish sorting display */
         private void SetFoundItems()
         {
             Cursor = Cursors.Default;
@@ -176,6 +176,7 @@ namespace Nagru___Manga_Organizer
 
             LV_Found.Select();
             Cursor = Cursors.Default;
+            Text = "Found " + LV_Found.Items.Count + " possible entries";
         }
 
         /* Sort entries based on clicked column */
