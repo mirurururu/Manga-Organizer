@@ -51,3 +51,6 @@ H:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\ob
 H:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Debug\Nagru___Manga_Organizer.Properties.Resources.resources
 H:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Debug\GenerateResource.read.1.tlog
 H:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Debug\GenerateResource.write.1.tlog
+C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\bin\Debug\Nagru - Manga Organizer.exe.config
+C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\obj\x86\Debug\Nagru - Manga Organizer.exe
+C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\obj\x86\Debug\Nagru - Manga Organizer.pdb

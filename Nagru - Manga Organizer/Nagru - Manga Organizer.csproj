@@ -73,6 +73,12 @@
     <Compile Include="Classes.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Fullscreen.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Fullscreen.Designer.cs">
+      <DependentUpon>Fullscreen.cs</DependentUpon>
+    </Compile>
     <Compile Include="Main.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -89,6 +95,9 @@
     </Compile>
     <EmbeddedResource Include="About.resx">
       <DependentUpon>About.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Fullscreen.resx">
+      <DependentUpon>Fullscreen.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Main.resx">
       <DependentUpon>Main.cs</DependentUpon>

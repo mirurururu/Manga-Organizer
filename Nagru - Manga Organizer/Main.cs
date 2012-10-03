@@ -250,8 +250,7 @@ namespace Nagru___Manga_Organizer
         private void LV_Entries_SelectedIndexChanged(object sender, EventArgs e)
         {
             //prevent off-selection processing
-            if (LV_Entries.FocusedItem == null)
-            { Reset(); return; }
+            if (LV_Entries.FocusedItem == null) { Reset(); return; }
 
             //grab index of selected item
             int iOldIndx = indx;
@@ -280,8 +279,7 @@ namespace Nagru___Manga_Organizer
             MnTS_Edit.Visible = false;
 
             //Get image
-            System.Threading.ThreadPool.
-                QueueUserWorkItem(GetImage, TxBx_Loc.Text);
+            System.Threading.ThreadPool.QueueUserWorkItem(GetImage);
         }
 
         /* Sort entries based on clicked column   */
@@ -344,8 +342,7 @@ namespace Nagru___Manga_Organizer
                 TxBx_Loc.Text = fbd.SelectedPath;
 
                 //Get image
-                System.Threading.ThreadPool.
-                    QueueUserWorkItem(GetImage, TxBx_Loc.Text);
+                System.Threading.ThreadPool.QueueUserWorkItem(GetImage);
             }
             fbd.Dispose();
         }
@@ -353,6 +350,29 @@ namespace Nagru___Manga_Organizer
         /* Open URL in new Browser instance/tab if clicked   */
         private void frTxBx_Desc_LinkClicked(object sender, LinkClickedEventArgs e)
         { System.Diagnostics.Process.Start(e.LinkText); }
+
+        /* Alternative to MnTS_Open */
+        private void PicBx_Cover_Click(object sender, EventArgs e)
+        {
+            if (TxBx_Loc.Text == null || ExtDirectory.Restricted(TxBx_Loc.Text))
+                return;
+
+            Fullscreen fmFull = new Fullscreen();
+            fmFull.sPath = TxBx_Loc.Text;
+            fmFull.ShowDialog();
+            fmFull.Dispose();
+        }
+
+        /* Dynamically update PicBx when user manually alters path */
+        private void TxBx_Loc_TextChanged(object sender, EventArgs e)
+        {
+            MnTS_Edit.Visible = true;
+
+            if (!Directory.Exists(TxBx_Loc.Text))
+            { SetPicBxNull(); return; }
+
+            System.Threading.ThreadPool.QueueUserWorkItem(GetImage);
+        }
 
         /* Only enable edit when changes have been made */
         #region EnableEdit
@@ -482,7 +502,10 @@ namespace Nagru___Manga_Organizer
 
         /* Open folder or first image of current   */
         private void MnTS_Open_Click(object sender, EventArgs e)
-        { OpenFile(); }
+        {
+            if (PicBx_Cover.Image != null)
+                OpenFile();
+        }
 
         /* Name: MnTS_Save_Click
            Desc: Saves current database contents   */
@@ -905,8 +928,7 @@ namespace Nagru___Manga_Organizer
                 TxBx_Loc.Text = sPath;
 
                 //Get image
-                System.Threading.ThreadPool.
-                    QueueUserWorkItem(GetImage, TxBx_Loc.Text);
+                System.Threading.ThreadPool.QueueUserWorkItem(GetImage);
             }
             else //if (sender == TxBx_Artist/Title/Loc)
             {
