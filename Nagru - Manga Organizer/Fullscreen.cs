@@ -34,6 +34,8 @@ namespace Nagru___Manga_Organizer
             //get files
             lFiles = ExtDirectory.GetFiles(sPath, "*.jpg|*.png|*.bmp|*.jpeg",
                 SearchOption.TopDirectoryOnly);
+
+            lFiles.Sort(new TrueCompare());
             SetImage();
         }
 
@@ -68,7 +70,7 @@ namespace Nagru___Manga_Organizer
         {
             if (iPage < 0) iPage = lFiles.Count - 1;
             else if (iPage >= lFiles.Count) iPage = 0;
-
+            
             fs = new FileStream(lFiles[iPage], FileMode.Open, FileAccess.Read);
             PicBx_Entry.Image = Image.FromStream(fs);
             fs.Close();

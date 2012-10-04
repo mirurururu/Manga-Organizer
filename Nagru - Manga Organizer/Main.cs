@@ -315,7 +315,7 @@ namespace Nagru___Manga_Organizer
         { OpenFile(); }
 
         /* Updates LV to only display favourited items */
-        private void ChBx_Fav_CheckedChanged(object sender, EventArgs e)
+        private void ChkBx_ShowFav_CheckedChanged(object sender, EventArgs e)
         { UpdateLV(); }
         #endregion
 
@@ -742,7 +742,6 @@ namespace Nagru___Manga_Organizer
 
                     if (!bContains)
                     {
-                        Text = LV_Entries.Items[x].ToString();
                         LV_Entries.Items.RemoveAt(x--);
                         break;
                     }
@@ -763,7 +762,7 @@ namespace Nagru___Manga_Organizer
             //refresh LV_Entries
             for (int i = 0; i < lData.Count; i++)
             {
-                if (ChBx_Fav.Checked && !lData[i].bFav) continue;
+                if (ChkBx_ShowFav.Checked && !lData[i].bFav) continue;
 
                 ListViewItem lvi = new ListViewItem(lData[i].sArtist);
                 lvi.SubItems.Add(lData[i].sTitle);
