@@ -839,27 +839,28 @@ namespace Nagru___Manga_Organizer
         #region Menu_Text
         private void MnTx_Undo_Click(object sender, EventArgs e)
         {
-            TextBox txbx = Mn_TxBx.SourceControl as TextBox;
-            txbx.Undo();
+            if (!(ActiveControl is TextBox)) return;
+            (ActiveControl as TextBox).Undo();
         }
 
         private void MnTx_Cut_Click(object sender, EventArgs e)
         {
             MnTx_Undo.Enabled = true;
-            TextBox txbx = Mn_TxBx.SourceControl as TextBox;
-            txbx.Paste();
+            if (!(ActiveControl is TextBox)) return;
+            (ActiveControl as TextBox).Cut();
         }
 
         private void MnTx_Copy_Click(object sender, EventArgs e)
         {
-            TextBox txbx = Mn_TxBx.SourceControl as TextBox;
-            txbx.Copy();
+            if (!(ActiveControl is TextBox)) return;
+            (ActiveControl as TextBox).Copy();
         }
 
         private void MnTx_Paste_Click(object sender, EventArgs e)
         {
             MnTx_Undo.Enabled = true;
-            TextBox txbx = Mn_TxBx.SourceControl as TextBox;
+            if (!(ActiveControl is TextBox)) return;
+            TextBox txbx = ActiveControl as TextBox;
 
             if (txbx == TxBx_Artist && TxBx_Artist.Text == string.Empty
                 && TxBx_Title.Text == string.Empty)
@@ -879,8 +880,8 @@ namespace Nagru___Manga_Organizer
 
         private void MnTx_SelAll_Click(object sender, EventArgs e)
         {
-            TextBox txbx = Mn_TxBx.SourceControl as TextBox;
-            txbx.SelectAll();
+            if (!(ActiveControl is TextBox)) return;
+            (ActiveControl as TextBox).SelectAll();
         }
         #endregion
 
