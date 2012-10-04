@@ -316,7 +316,11 @@ namespace Nagru___Manga_Organizer
 
         /* Updates LV to only display favourited items */
         private void ChkBx_ShowFav_CheckedChanged(object sender, EventArgs e)
-        { UpdateLV(); }
+        {
+
+            if (ChkBx_ShowFav.Checked) OnlyFavs();
+            else UpdateLV();
+        }
         #endregion
 
         #region Tab_View
@@ -649,6 +653,16 @@ namespace Nagru___Manga_Organizer
         }
         #endregion
 
+        /* Remove non-fav'ed entries */
+        private void OnlyFavs()
+        {
+            LV_Entries.BeginUpdate();
+            for (int x = 0; x < LV_Entries.Items.Count; x++)
+                if (LV_Entries.Items[x].BackColor != System.Drawing.Color.LightYellow)
+                    LV_Entries.Items.RemoveAt(x--);
+            LV_Entries.EndUpdate();
+        }
+
         /* Open folder or first image of current entry   */
         private void OpenFile()
         {
@@ -724,7 +738,7 @@ namespace Nagru___Manga_Organizer
 
             List<string> lTags = new List<string>();
             foreach (string s in TxBx_Search.Text.Split(',')) lTags.Add(s.Trim());
-            if (LV_Entries.Items.Count != lData.Count) UpdateLV();
+            //if (LV_Entries.Items.Count != lData.Count) UpdateLV();
 
             //remove non-matching entries from LV_Entries
             LV_Entries.BeginUpdate();
@@ -762,8 +776,6 @@ namespace Nagru___Manga_Organizer
             //refresh LV_Entries
             for (int i = 0; i < lData.Count; i++)
             {
-                if (ChkBx_ShowFav.Checked && !lData[i].bFav) continue;
-
                 ListViewItem lvi = new ListViewItem(lData[i].sArtist);
                 lvi.SubItems.Add(lData[i].sTitle);
                 lvi.SubItems.Add(lData[i].iPages.ToString());
@@ -783,6 +795,7 @@ namespace Nagru___Manga_Organizer
             Cursor = Cursors.Default;
 
             //prevent loss of search parameters
+            if (ChkBx_ShowFav.Checked) OnlyFavs();
             if (TxBx_Search.Text != string.Empty) Search();
         }
         #endregion
@@ -944,8 +957,9 @@ namespace Nagru___Manga_Organizer
         /* Inserts delay before Search() to account for Human input speed */
         private void Pause_Tick(object sender, EventArgs e)
         {
-            Search();
             Delay.Stop();
+            UpdateLV();
+            Search();
         }
         #endregion
     }
