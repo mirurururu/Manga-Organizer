@@ -18,5 +18,6 @@ Notes:
 - searches are inclusive, with terms seperated by a comma
 - drag formatted title into Artist textbox, and it should automatically split it into Artist & Title for you
 - browse images with your default image viewer (menu item: Open) or with the built in one (click on the cover image)
+- the latter browser displays two images simultaneously and should be traversed from right to left
 - to un-ignore an item in the scan operation, select it and press the ignore button again
 - if you set the root folder (Menu -> Change Root) to the root of your manga folder, the folderbrowserdialog will try to auto-find the corect folder path when new items are added.
