@@ -361,10 +361,10 @@ namespace Nagru___Manga_Organizer
             if (TxBx_Loc.Text == null || ExtDirectory.Restricted(TxBx_Loc.Text))
                 return;
 
-            Fullscreen fmFull = new Fullscreen();
-            fmFull.sPath = TxBx_Loc.Text;
-            fmFull.ShowDialog();
-            fmFull.Dispose();
+            Browse fmBrowse = new Browse();
+            fmBrowse.sPath = TxBx_Loc.Text;
+            fmBrowse.ShowDialog();
+            fmBrowse.Dispose();
         }
 
         /* Dynamically update PicBx when user manually alters path */
@@ -566,7 +566,7 @@ namespace Nagru___Manga_Organizer
         /* Opens current entry location   */
         private void MnTS_OpenEntryFolder_Click(object sender, EventArgs e)
         {
-            if (TxBx_Loc.Text != string.Empty && !ExtDirectory.Restricted(TxBx_Loc.Text))
+            if (TxBx_Loc.Text != string.Empty || !ExtDirectory.Restricted(TxBx_Loc.Text))
                 System.Diagnostics.Process.Start(TxBx_Loc.Text);
         }
 
@@ -661,6 +661,8 @@ namespace Nagru___Manga_Organizer
                 if (LV_Entries.Items[x].BackColor != System.Drawing.Color.LightYellow)
                     LV_Entries.Items.RemoveAt(x--);
             LV_Entries.EndUpdate();
+
+            Text = "Returned: " + LV_Entries.Items.Count + " entries";
         }
 
         /* Open folder or first image of current entry   */
