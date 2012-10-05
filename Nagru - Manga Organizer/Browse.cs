@@ -48,7 +48,7 @@ namespace Nagru___Manga_Organizer
             {
                 case Keys.Right:
                 case Keys.Up:
-                    iPage -= 2;
+                    iPage -= 3;
                     SetImage();
                     break;
                 case Keys.Left:
@@ -72,12 +72,15 @@ namespace Nagru___Manga_Organizer
             if (iPage < 0) iPage = lFiles.Count - 2;
             else if (iPage >= lFiles.Count) iPage = 0;
 
-            Image imgOne = Image.FromStream(new FileStream(lFiles[iPage], FileMode.Open, FileAccess.Read));
+            Image imgOne = Image.FromStream(new FileStream(lFiles[iPage++], FileMode.Open, FileAccess.Read));
 
             if (imgOne.Width < imgOne.Height)
             {
                 picBx_Right.Image = imgOne;
-                Image imgTwo = Image.FromStream(new FileStream(lFiles[++iPage], FileMode.Open, FileAccess.Read));
+
+                if (iPage < 0) iPage = lFiles.Count - 1;
+                else if (iPage >= lFiles.Count) iPage = 1;
+                Image imgTwo = Image.FromStream(new FileStream(lFiles[iPage], FileMode.Open, FileAccess.Read));
 
                 if (imgTwo.Width < imgTwo.Height)
                     picBx_Left.Image = imgTwo;
