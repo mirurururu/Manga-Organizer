@@ -263,7 +263,7 @@ namespace Nagru___Manga_Organizer
             if (indx == iOldIndx) return;
 
             //write item's metadata to Tb_View
-            TabControl.SuspendLayout();
+            this.SuspendLayout();
             TxBx_Title.Text = lData[indx].sTitle;
             TxBx_Artist.Text = lData[indx].sArtist;
             TxBx_Loc.Text = lData[indx].sLoc;
@@ -273,7 +273,7 @@ namespace Nagru___Manga_Organizer
             ChkBx_Fav.Checked = lData[indx].bFav;
             Nud_Pages.Value = lData[indx].iPages;
             TxBx_Tags.Text = lData[indx].sTags;
-            TabControl.ResumeLayout();
+            this.ResumeLayout();
 
             MnTS_New.Visible = false;
             MnTS_Edit.Visible = false;
@@ -740,7 +740,6 @@ namespace Nagru___Manga_Organizer
 
             List<string> lTags = new List<string>();
             foreach (string s in TxBx_Search.Text.Split(',')) lTags.Add(s.Trim());
-            //if (LV_Entries.Items.Count != lData.Count) UpdateLV();
 
             //remove non-matching entries from LV_Entries
             LV_Entries.BeginUpdate();

@@ -65,13 +65,14 @@ namespace Nagru___Manga_Organizer
             }
         }
 
-        /* Replace current page */
+        /* Replace current page(s) */
         private void SetImage()
         {
+            this.SuspendLayout();
+
             Reset();
             if (iPage < 0) iPage = lFiles.Count - 2;
             else if (iPage >= lFiles.Count) iPage = 0;
-
             Image imgOne = Image.FromStream(new FileStream(lFiles[iPage++], FileMode.Open, FileAccess.Read));
 
             if (imgOne.Width < imgOne.Height)
@@ -90,6 +91,8 @@ namespace Nagru___Manga_Organizer
                 picBx_Left.Width = Screen.PrimaryScreen.Bounds.Width;
                 picBx_Left.Image = imgOne;
             }
+
+            this.ResumeLayout();
         }
 
         /* Clear picBxs before populating them again */
