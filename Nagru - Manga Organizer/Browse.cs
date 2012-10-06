@@ -10,7 +10,8 @@ namespace Nagru___Manga_Organizer
     {
         public string sPath { get; set; }
         List<string> lFiles = new List<string>(25);
-        int iPage = 0;
+        int iWidth = Screen.PrimaryScreen.Bounds.Width / 2;
+        int iPage = -1;
 
         /* Initialize form */
         public Browse()
@@ -19,6 +20,8 @@ namespace Nagru___Manga_Organizer
         /* Set form to fullscreen and grab files */
         private void Browse_Load(object sender, EventArgs e)
         {
+            Cursor.Hide();
+
             //set fullscreen
             TopMost = true;
             Location = new Point(0, 0);
@@ -27,7 +30,6 @@ namespace Nagru___Manga_Organizer
             WindowState = FormWindowState.Maximized;
 
             //set picBx positions
-            int iWidth = Screen.PrimaryScreen.Bounds.Width / 2;
             picBx_Left.Location = new Point(0, 0);
             picBx_Left.Width = iWidth;
             picBx_Right.Location = new Point(iWidth, 0);
@@ -38,23 +40,22 @@ namespace Nagru___Manga_Organizer
                 SearchOption.TopDirectoryOnly);
 
             lFiles.Sort(new TrueCompare());
-            SetImage();
+            GoLeft();
         }
 
         /* Navigate files or close form */
         private void Browse_KeyDown(object sender, KeyEventArgs e)
         {
+            this.SuspendLayout();
             switch (e.KeyCode)
             {
                 case Keys.Right:
                 case Keys.Up:
-                    iPage -= 3;
-                    SetImage();
+                    GoRight();
                     break;
                 case Keys.Left:
                 case Keys.Down:
-                    iPage++;
-                    SetImage();
+                    GoLeft();
                     break;
                 case Keys.Escape:
                 case Keys.F11:
@@ -63,36 +64,74 @@ namespace Nagru___Manga_Organizer
                     Close();
                     break;
             }
+            this.ResumeLayout();
         }
 
-        /* Replace current page(s) */
-        private void SetImage()
+        /* Traverse images leftwards */
+        private void GoLeft()
         {
-            this.SuspendLayout();
-
             Reset();
-            if (iPage < 0) iPage = lFiles.Count - 2;
-            else if (iPage >= lFiles.Count) iPage = 0;
-            Image imgOne = Image.FromStream(new FileStream(lFiles[iPage++], FileMode.Open, FileAccess.Read));
 
-            if (imgOne.Width < imgOne.Height)
+            if (++iPage >= lFiles.Count) iPage = 0;
+            Image imgR = Image.FromStream(new FileStream(lFiles[iPage],
+                FileMode.Open, FileAccess.Read));
+            if (++iPage >= lFiles.Count) iPage = 0;
+            Image imgL = Image.FromStream(new FileStream(lFiles[iPage],
+                FileMode.Open, FileAccess.Read));
+
+            bool bWideR = (imgR.Height < imgR.Width);
+            bool bWideL = (imgL.Height < imgL.Width);
+
+            if (!bWideL && !bWideR)
             {
-                picBx_Right.Image = imgOne;
-
-                if (iPage < 0) iPage = lFiles.Count - 1;
-                else if (iPage >= lFiles.Count) iPage = 1;
-                Image imgTwo = Image.FromStream(new FileStream(lFiles[iPage], FileMode.Open, FileAccess.Read));
-
-                if (imgTwo.Width < imgTwo.Height)
-                    picBx_Left.Image = imgTwo;
+                picBx_Left.Image = imgL;
+                picBx_Right.Image = imgR;
+            }
+            else if (bWideL && bWideR || bWideR)
+            {
+                picBx_Left.Image = imgR;
+                picBx_Left.Width =
+                    Screen.PrimaryScreen.Bounds.Width;
+                iPage--;
             }
             else
             {
-                picBx_Left.Width = Screen.PrimaryScreen.Bounds.Width;
-                picBx_Left.Image = imgOne;
+                picBx_Right.Image = imgR;
+                iPage--;
             }
+        }
 
-            this.ResumeLayout();
+        /* Traverse images rightward */
+        private void GoRight()
+        {
+            if (picBx_Left.Width == iWidth) iPage--;
+            Reset();
+
+            if (--iPage < 0) iPage = lFiles.Count - 1;
+            Image imgL = Image.FromStream(new FileStream(lFiles[iPage],
+                FileMode.Open, FileAccess.Read));
+            if (iPage - 1 < 0) iPage = lFiles.Count;
+            Image imgR = Image.FromStream(new FileStream(lFiles[iPage - 1],
+                FileMode.Open, FileAccess.Read));
+
+            bool bWideR = (imgR.Height < imgR.Width);
+            bool bWideL = (imgL.Height < imgL.Width);
+
+            if (!bWideL && !bWideR)
+            {
+                picBx_Left.Image = imgL;
+                picBx_Right.Image = imgR;
+            }
+            else if (bWideL && bWideR || bWideL)
+            {
+                picBx_Left.Image = imgL;
+                picBx_Left.Width =
+                    Screen.PrimaryScreen.Bounds.Width;
+            }
+            else
+            {
+                picBx_Left.Image = imgL;
+            }
         }
 
         /* Clear picBxs before populating them again */
@@ -108,13 +147,16 @@ namespace Nagru___Manga_Organizer
                 picBx_Right.Image.Dispose();
                 picBx_Right.Image = null;
             }
-
-            if (picBx_Left.Width == Screen.PrimaryScreen.Bounds.Width)
-                picBx_Left.Width = Screen.PrimaryScreen.Bounds.Width / 2;
+            if (picBx_Left.Width != iWidth)
+                picBx_Left.Width = iWidth;
         }
 
         /* Alternative closing method */
         private void UserClick(object sender, MouseEventArgs e)
-        {Close();}
+        { Close(); }
+
+        /* Re-enable cursor when finished browsing */
+        private void Browse_FormClosing(object sender, FormClosingEventArgs e)
+        { Cursor.Show(); }
     }
 }
