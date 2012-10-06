@@ -128,6 +128,7 @@ namespace Nagru___Manga_Organizer
             LV_Entries.ListViewItemSorter = lvSortObj;
             frTxBx_Notes.Text = Properties.Settings.Default.Notes;
             Nud_Pages.ContextMenuStrip = new ContextMenuStrip();
+            LV_Entries_Resize(sender, e);
 
             //set up frTxBx's to allow dragdrop
             frTxBx_Notes.AllowDrop = true;
@@ -593,14 +594,15 @@ namespace Nagru___Manga_Organizer
         private void AddEntries()
         {
             //update LV_Entries & maintain scroll position
-            int iPos = 0;
+            int iPos = -1;
             if (LV_Entries.Items.Count > 0)
                 iPos = LV_Entries.TopItem.Index;
             UpdateLV();
             bSavList = false;
 
-            for (int i = 0; i < 3; i++)
-                LV_Entries.TopItem = LV_Entries.Items[iPos];
+            if (iPos > -1)
+                for (int i = 0; i < 3; i++)
+                    LV_Entries.TopItem = LV_Entries.Items[iPos];
         }
 
         /* Get first image in target folder */

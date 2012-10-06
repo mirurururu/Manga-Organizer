@@ -237,8 +237,9 @@ namespace Nagru___Manga_Organizer
                         new Search(LV_Found.SelectedItems[i].SubItems[0].Text
                         + LV_Found.SelectedItems[i].SubItems[1].Text).Match)]);
                 }
+                delNewEntry.Invoke();
             }
-            else if (LV_Found.Items.Count == 0 && MessageBox.Show("Are you sure you wish to add all found entries?",
+            else if (LV_Found.Items.Count > 0 && MessageBox.Show("Are you sure you wish to add all found entries?",
                 "Manga Organizer", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 for (int i = 0; i < LV_Found.Items.Count; i++)
@@ -247,9 +248,9 @@ namespace Nagru___Manga_Organizer
                         new Search(LV_Found.Items[i].SubItems[0].Text
                         + LV_Found.Items[i].SubItems[1].Text).Match)]);
                 }
+                delNewEntry.Invoke();
             }
 
-            delNewEntry.Invoke();
             this.Close();
         }
 

@@ -11,6 +11,7 @@ namespace Nagru___Manga_Organizer
         public string sPath { get; set; }
         List<string> lFiles = new List<string>(25);
         int iWidth = Screen.PrimaryScreen.Bounds.Width / 2;
+        Image imgR = null, imgL = null;
         int iPage = -1;
 
         /* Initialize form */
@@ -57,10 +58,7 @@ namespace Nagru___Manga_Organizer
                 case Keys.Down:
                     GoLeft();
                     break;
-                case Keys.Escape:
-                case Keys.F11:
-                case Keys.RWin:
-                case Keys.LWin:
+                default:
                     Close();
                     break;
             }
@@ -73,10 +71,10 @@ namespace Nagru___Manga_Organizer
             Reset();
 
             if (++iPage >= lFiles.Count) iPage = 0;
-            Image imgR = Image.FromStream(new FileStream(lFiles[iPage],
+            imgR = Image.FromStream(new FileStream(lFiles[iPage],
                 FileMode.Open, FileAccess.Read));
             if (++iPage >= lFiles.Count) iPage = 0;
-            Image imgL = Image.FromStream(new FileStream(lFiles[iPage],
+            imgL = Image.FromStream(new FileStream(lFiles[iPage],
                 FileMode.Open, FileAccess.Read));
 
             bool bWideR = (imgR.Height < imgR.Width);
@@ -108,10 +106,10 @@ namespace Nagru___Manga_Organizer
             Reset();
 
             if (--iPage < 0) iPage = lFiles.Count - 1;
-            Image imgL = Image.FromStream(new FileStream(lFiles[iPage],
+            imgL = Image.FromStream(new FileStream(lFiles[iPage],
                 FileMode.Open, FileAccess.Read));
             if (iPage - 1 < 0) iPage = lFiles.Count;
-            Image imgR = Image.FromStream(new FileStream(lFiles[iPage - 1],
+            imgR = Image.FromStream(new FileStream(lFiles[iPage - 1],
                 FileMode.Open, FileAccess.Read));
 
             bool bWideR = (imgR.Height < imgR.Width);
@@ -128,25 +126,14 @@ namespace Nagru___Manga_Organizer
                 picBx_Left.Width =
                     Screen.PrimaryScreen.Bounds.Width;
             }
-            else
-            {
-                picBx_Left.Image = imgL;
-            }
+            else picBx_Left.Image = imgL;
         }
 
         /* Clear picBxs before populating them again */
         private void Reset()
         {
-            if (picBx_Left.Image != null)
-            {
-                picBx_Left.Image.Dispose();
-                picBx_Left.Image = null;
-            }
-            if (picBx_Right.Image != null)
-            {
-                picBx_Right.Image.Dispose();
-                picBx_Right.Image = null;
-            }
+            if (imgL != null) imgL.Dispose();
+            if (imgR != null) imgR.Dispose();
             if (picBx_Left.Width != iWidth)
                 picBx_Left.Width = iWidth;
         }
