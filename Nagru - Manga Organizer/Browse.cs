@@ -114,26 +114,22 @@ namespace Nagru___Manga_Organizer
 
             bool bWideR = (imgR.Height < imgR.Width);
             bool bWideL = (imgL.Height < imgL.Width);
+            picBx_Left.Image = imgL;
 
             if (!bWideL && !bWideR)
-            {
-                picBx_Left.Image = imgL;
                 picBx_Right.Image = imgR;
-            }
             else if (bWideL && bWideR || bWideL)
-            {
-                picBx_Left.Image = imgL;
                 picBx_Left.Width =
                     Screen.PrimaryScreen.Bounds.Width;
-            }
-            else picBx_Left.Image = imgL;
         }
 
         /* Clear picBxs before populating them again */
         private void Reset()
         {
-            if (imgL != null) imgL.Dispose();
-            if (imgR != null) imgR.Dispose();
+            if (picBx_Left.Image != null)
+                picBx_Left.Image.Dispose();
+            if (picBx_Right.Image != null)
+                picBx_Right.Image.Dispose();
             if (picBx_Left.Width != iWidth)
                 picBx_Left.Width = iWidth;
         }

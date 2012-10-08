@@ -475,14 +475,16 @@ namespace Nagru___Manga_Organizer
             //prevent user trying to delete locked folder
             if (ExtDirectory.Restricted(lData[indx].sLoc))
                 dResult = DialogResult.No;
-
-            //warn user before deleting large directory
-            int iNumDir = Directory.GetDirectories(lData[indx].sLoc).Length;
-            if (dResult == DialogResult.Yes && iNumDir > 0)
+            else
             {
-                dResult = MessageBox.Show("This directory contains " + iNumDir + " subfolder(s),\n" +
-                    "are you sure you wish to delete them?", "Manga Organizer",
-                MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+                //warn user before deleting large directory
+                int iNumDir = Directory.GetDirectories(lData[indx].sLoc).Length;
+                if (dResult == DialogResult.Yes && iNumDir > 0)
+                {
+                    dResult = MessageBox.Show("This directory contains " + iNumDir + " subfolder(s),\n" +
+                        "are you sure you wish to delete them?", "Manga Organizer",
+                    MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+                }
             }
 
             //proceed
