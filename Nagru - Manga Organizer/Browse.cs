@@ -58,6 +58,15 @@ namespace Nagru___Manga_Organizer
                 case Keys.Down:
                     GoLeft();
                     break;
+                case Keys.PrintScreen:
+                case Keys.MediaNextTrack:
+                case Keys.MediaPreviousTrack:
+                case Keys.MediaPlayPause:
+                case Keys.MediaStop:
+                case Keys.VolumeUp:
+                case Keys.VolumeDown:
+                case Keys.VolumeMute:
+                    break;
                 default:
                     Close();
                     break;
