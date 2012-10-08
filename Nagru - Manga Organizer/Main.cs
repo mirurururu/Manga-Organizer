@@ -382,13 +382,13 @@ namespace Nagru___Manga_Organizer
         /* Only enable edit when changes have been made */
         #region EnableEdit
         private void EntryAlt_Text(object sender, EventArgs e)
-        { MnTS_Edit.Visible = true; }
+        { if (indx != -1) MnTS_Edit.Visible = true; }
 
         private void EntryAlt_DtNum(object sender, EventArgs e)
-        { MnTS_Edit.Visible = true; }
+        { if (indx != -1) MnTS_Edit.Visible = true; }
 
         private void ChkBx_Fav_CheckStateChanged(object sender, EventArgs e)
-        { MnTS_Edit.Visible = true; }
+        { if (indx != -1) MnTS_Edit.Visible = true; }
         #endregion
         #endregion
 
@@ -708,6 +708,8 @@ namespace Nagru___Manga_Organizer
             MnTS_Del.Visible = false;
             MnTS_Edit.Visible = false;
             MnTS_Open.Visible = false;
+
+            if (!Text.EndsWith("entries")) Reset();
         }
 
         /* Saves current database & Note contents   */
