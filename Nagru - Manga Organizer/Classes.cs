@@ -115,7 +115,7 @@ namespace Nagru___Manga_Organizer
         { sTitle = Title; }
     }
 
-    /* Compare ListViewItems (accounts for numbers)
+    /* Compare strings accurately (accounts for numbers)
        Author: Samuel Allen (2012)                         */
     public class TrueCompare : IComparer<string>
     {
@@ -279,8 +279,8 @@ namespace Nagru___Manga_Organizer
     public static class ExtDirectory
     {
         public static List<string> GetFiles(string SourceFolder,
-            string Filter = "*.jpg|*.png|*.bmp|*.jpeg",
-            SearchOption SearchOption = SearchOption.AllDirectories)
+            SearchOption SearchOption = SearchOption.AllDirectories,
+            string Filter = "*.jpg|*.png|*.bmp|*.jpeg")
         {
             List<string> lFiles = new List<string>();
             string[] sFilters = Filter.Split('|');
@@ -323,7 +323,7 @@ namespace Nagru___Manga_Organizer
         {
             try
             {
-                string[] asDirs = Directory.GetDirectories(Path, "*", SearchOption.AllDirectories);
+                string[] asDirs = Directory.GetDirectories(Path, "*", SearchOption.TopDirectoryOnly);
                 FileIOPermission fp;
 
                 for (int i = 0; i < asDirs.Length; i++)

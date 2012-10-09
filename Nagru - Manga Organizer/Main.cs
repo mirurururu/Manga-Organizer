@@ -24,7 +24,7 @@ namespace Nagru___Manga_Organizer
         bool bSavList = true, bSavText = true;
         short indx = -1;
 
-        /* Holds metadata about manga in library    */
+        /* Holds metadata about manga in library */
         [Serializable]
         public struct stEntry : ISerializable
         {
@@ -373,10 +373,8 @@ namespace Nagru___Manga_Organizer
         {
             if (indx != -1) MnTS_Edit.Visible = true;
 
-            if (!Directory.Exists(TxBx_Loc.Text))
-            { SetPicBxNull(); return; }
-
-            System.Threading.ThreadPool.QueueUserWorkItem(GetImage);
+            if (!Directory.Exists(TxBx_Loc.Text)) SetPicBxNull();
+            else System.Threading.ThreadPool.QueueUserWorkItem(GetImage);
         }
 
         /* Only enable edit when changes have been made */
@@ -433,11 +431,11 @@ namespace Nagru___Manga_Organizer
             }
 
             stEntry en = new stEntry(TxBx_Title.Text, TxBx_Artist.Text, TxBx_Loc.Text, frTxBx_Desc.Text,
-                TxBx_Tags.Text, CmBx_Type.Text, Dt_Date.Value, Nud_Pages.Value, ChkBx_Fav.Checked);
+                TxBx_Tags.Text, CmBx_Type.Text, Dt_Date.Value.Date, Nud_Pages.Value, ChkBx_Fav.Checked);
 
             if (!lData.Contains(en))
             {
-                if (MessageBox.Show("Are you sure you wish to add \"" + en.GetName + "\"?",
+                if (MessageBox.Show("Are you sure you wish to add:\n\"" + en.GetName + "\"?",
                     "Manga Organizer", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     lData.Add(en);
@@ -617,11 +615,14 @@ namespace Nagru___Manga_Organizer
                 return;
 
             //Get cover image
-            List<string> lFiles = ExtDirectory.GetFiles(@TxBx_Loc.Text);
+            List<string> lFiles = ExtDirectory.GetFiles(@TxBx_Loc.Text, 
+                SearchOption.TopDirectoryOnly);
             if (lFiles.Count > 0)
             {
-                FileStream fs = new FileStream(lFiles[0], FileMode.Open, FileAccess.Read);
-                Invoke(new DelVoidImage(SetPicBxImage), System.Drawing.Image.FromStream(fs));
+                FileStream fs = new FileStream(lFiles[0], 
+                    FileMode.Open, FileAccess.Read);
+                Invoke(new DelVoidImage(SetPicBxImage), 
+                    System.Drawing.Image.FromStream(fs));
                 fs.Close();
                 fs.Dispose();
             }

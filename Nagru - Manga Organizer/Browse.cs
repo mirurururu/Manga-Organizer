@@ -38,7 +38,7 @@ namespace Nagru___Manga_Organizer
             picBx_Right.Width = iWidth;
 
             //get files
-            lFiles = ExtDirectory.GetFiles(sPath, "*.jpg|*.png|*.bmp|*.jpeg",
+            lFiles = ExtDirectory.GetFiles(sPath,
                 SearchOption.TopDirectoryOnly);
 
             lFiles.Sort(new TrueCompare());
@@ -89,12 +89,10 @@ namespace Nagru___Manga_Organizer
 
             bWideR = (imgR.Height < imgR.Width);
             bWideL = (imgL.Height < imgL.Width);
+            picBx_Right.Image = imgR;
 
             if (!bWideL && !bWideR)
-            {
                 picBx_Left.Image = imgL;
-                picBx_Right.Image = imgR;
-            }
             else if (bWideL && bWideR || bWideR)
             {
                 picBx_Left.Image = imgR;
@@ -102,11 +100,7 @@ namespace Nagru___Manga_Organizer
                     Screen.PrimaryScreen.Bounds.Width;
                 iPage--;
             }
-            else
-            {
-                picBx_Right.Image = imgR;
-                iPage--;
-            }
+            else iPage--;
         }
 
         /* Traverse images rightward */
@@ -140,8 +134,7 @@ namespace Nagru___Manga_Organizer
                 picBx_Left.Image.Dispose();
             if (picBx_Right.Image != null)
                 picBx_Right.Image.Dispose();
-            if (picBx_Left.Width != iWidth)
-                picBx_Left.Width = iWidth;
+            picBx_Left.Width = iWidth;
         }
 
         /* Alternative closing method */
