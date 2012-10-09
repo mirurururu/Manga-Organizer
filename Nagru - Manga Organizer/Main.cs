@@ -371,7 +371,7 @@ namespace Nagru___Manga_Organizer
         /* Dynamically update PicBx when user manually alters path */
         private void TxBx_Loc_TextChanged(object sender, EventArgs e)
         {
-            MnTS_Edit.Visible = true;
+            if (indx != -1) MnTS_Edit.Visible = true;
 
             if (!Directory.Exists(TxBx_Loc.Text))
             { SetPicBxNull(); return; }
@@ -755,10 +755,14 @@ namespace Nagru___Manga_Organizer
                     bool bContains = false;
 
                     //search by type, tags, title, and artist
-                    if (LV_Entries.Items[x].SubItems[3].Text.Contains(lTags[y], StringComparison.OrdinalIgnoreCase) ||
-                        LV_Entries.Items[x].SubItems[1].Text.Contains(lTags[y], StringComparison.OrdinalIgnoreCase) ||
-                        LV_Entries.Items[x].SubItems[0].Text.Contains(lTags[y], StringComparison.OrdinalIgnoreCase) ||
-                        LV_Entries.Items[x].SubItems[4].Text.Contains(lTags[y], StringComparison.OrdinalIgnoreCase))
+                    if (LV_Entries.Items[x].SubItems[3].Text.Contains(lTags[y],
+                        StringComparison.OrdinalIgnoreCase) ||
+                        LV_Entries.Items[x].SubItems[1].Text.Contains(lTags[y],
+                        StringComparison.OrdinalIgnoreCase) ||
+                        LV_Entries.Items[x].SubItems[0].Text.Contains(lTags[y],
+                        StringComparison.OrdinalIgnoreCase) ||
+                        LV_Entries.Items[x].SubItems[4].Text.Contains(lTags[y],
+                        StringComparison.OrdinalIgnoreCase))
                         bContains = true;
 
                     if (!bContains)

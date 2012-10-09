@@ -12,6 +12,7 @@ namespace Nagru___Manga_Organizer
         List<string> lFiles = new List<string>(25);
         int iWidth = Screen.PrimaryScreen.Bounds.Width / 2;
         Image imgR = null, imgL = null;
+        bool bWideL, bWideR;
         int iPage = -1;
 
         /* Initialize form */
@@ -86,8 +87,8 @@ namespace Nagru___Manga_Organizer
             imgL = Image.FromStream(new FileStream(lFiles[iPage],
                 FileMode.Open, FileAccess.Read));
 
-            bool bWideR = (imgR.Height < imgR.Width);
-            bool bWideL = (imgL.Height < imgL.Width);
+            bWideR = (imgR.Height < imgR.Width);
+            bWideL = (imgL.Height < imgL.Width);
 
             if (!bWideL && !bWideR)
             {
@@ -121,8 +122,8 @@ namespace Nagru___Manga_Organizer
             imgR = Image.FromStream(new FileStream(lFiles[iPage - 1],
                 FileMode.Open, FileAccess.Read));
 
-            bool bWideR = (imgR.Height < imgR.Width);
-            bool bWideL = (imgL.Height < imgL.Width);
+            bWideR = (imgR.Height < imgR.Width);
+            bWideL = (imgL.Height < imgL.Width);
             picBx_Left.Image = imgL;
 
             if (!bWideL && !bWideR)
