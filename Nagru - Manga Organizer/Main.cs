@@ -726,6 +726,7 @@ namespace Nagru___Manga_Organizer
 
             if (!bSavList)
             {
+                if (File.Exists(sPath)) File.Delete(sPath);
                 FileSerializer.Serialize(sPath, lData);
                 bSavList = true;
             }
