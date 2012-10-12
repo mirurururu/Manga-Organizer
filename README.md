@@ -15,6 +15,7 @@ http://imageshack.us/a/img696/4306/92024725.jpg
 
 
 Notes:
+- No install required
 - searches are inclusive, with terms seperated by a comma
 - drag a formatted name into the Artist textbox, and it should automatically split it into Artist & Title for you
 - browse images with your default image viewer (menu item: Open) or with the built in one (click on the cover image)

@@ -48,9 +48,7 @@ namespace Nagru___Manga_Organizer
         /* Navigate files or close form */
         private void Browse_KeyDown(object sender, KeyEventArgs e)
         {
-            picBx_Left.SuspendLayout();
-            picBx_Right.SuspendLayout();
-
+            this.SuspendLayout();
             switch (e.KeyCode)
             {
                 case Keys.Right:
@@ -70,16 +68,15 @@ namespace Nagru___Manga_Organizer
                 case Keys.VolumeDown:
                 case Keys.VolumeMute:
                     break;
-                default: Close();
+                default:
+                    Close();
                     break;
             }
-
-            picBx_Right.ResumeLayout();
-            picBx_Left.ResumeLayout();
+            this.ResumeLayout();
         }
 
         /* Traverse images leftwards */
-        void GoLeft()
+        private void GoLeft()
         {
             Reset();
 
@@ -107,7 +104,7 @@ namespace Nagru___Manga_Organizer
         }
 
         /* Traverse images rightward */
-        void GoRight()
+        private void GoRight()
         {
             if (iPage != 0 && picBx_Left.Width == iWidth) iPage--;
             Reset();
@@ -132,7 +129,7 @@ namespace Nagru___Manga_Organizer
         }
 
         /* Clear picBxs before populating them again */
-        void Reset()
+        private void Reset()
         {
             if (picBx_Left.Image != null)
                 picBx_Left.Image.Dispose();
@@ -149,9 +146,6 @@ namespace Nagru___Manga_Organizer
 
         /* Re-enable cursor when finished browsing */
         private void Browse_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            Reset();
-            Cursor.Show();
-        }
+        { Cursor.Show(); }
     }
 }

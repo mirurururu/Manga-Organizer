@@ -78,18 +78,9 @@
     <Compile Include="Browse.Designer.cs">
       <DependentUpon>Browse.cs</DependentUpon>
     </Compile>
-    <Compile Include="Classes\ExtDirectory.cs" />
-    <Compile Include="Classes\ExtString.cs" />
-    <Compile Include="Classes\FileSerializer.cs" />
-    <Compile Include="Classes\FixedRichTextBox.cs">
+    <Compile Include="Classes.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Classes\ListViewNF.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Classes\LVsorter.cs" />
-    <Compile Include="Classes\Search.cs" />
-    <Compile Include="Classes\TrueCompare.cs" />
     <Compile Include="Main.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -162,7 +153,6 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -17,7 +17,7 @@ namespace Nagru___Manga_Organizer
         public DelVoidVoid delNewEntry;
         public DelVoidVoid delDone;
 
-        LVsorter lvSortObj = new LVsorter();
+        LVSorter lvSortObj = new LVSorter();
         List<Main.stEntry> lFound = new List<Main.stEntry>();
         List<Main.stEntry> lCurr = new List<Main.stEntry>();
         List<string> lIgnored = new List<string>();
