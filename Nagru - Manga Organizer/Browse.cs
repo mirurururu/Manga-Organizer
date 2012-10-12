@@ -106,7 +106,7 @@ namespace Nagru___Manga_Organizer
         /* Traverse images rightward */
         private void GoRight()
         {
-            if (picBx_Left.Width == iWidth) iPage--;
+            if (iPage != 0 && picBx_Left.Width == iWidth) iPage--;
             Reset();
 
             if (--iPage < 0) iPage = lFiles.Count - 1;
@@ -122,9 +122,10 @@ namespace Nagru___Manga_Organizer
 
             if (!bWideL && !bWideR)
                 picBx_Right.Image = imgR;
-            else if (bWideL && bWideR || bWideL)
+            else if (bWideL)
                 picBx_Left.Width =
                     Screen.PrimaryScreen.Bounds.Width;
+            else iPage++;
         }
 
         /* Clear picBxs before populating them again */
@@ -135,6 +136,8 @@ namespace Nagru___Manga_Organizer
             if (picBx_Right.Image != null)
                 picBx_Right.Image.Dispose();
             picBx_Left.Width = iWidth;
+            picBx_Left.Image = null;
+            picBx_Right.Image = null;
         }
 
         /* Alternative closing method */
