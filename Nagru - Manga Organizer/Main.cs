@@ -141,7 +141,7 @@ namespace Nagru___Manga_Organizer
             frTxBx_Notes.Text = Properties.Settings.Default.Notes;
             Nud_Pages.ContextMenuStrip = new ContextMenuStrip();
             LV_Entries_Resize(sender, e);
-
+            
             //set up frTxBx's to allow dragdrop
             frTxBx_Notes.AllowDrop = true;
             frTxBx_Desc.AllowDrop = true;
@@ -426,6 +426,227 @@ namespace Nagru___Manga_Organizer
         #endregion
         #endregion
 
+        #region Tab_Notes
+        /* Prevent loss of changes in note text   */
+        private void frTxBx_Notes_TextChanged(object sender, EventArgs e)
+        { if (bSavText) bSavText = false; }
+
+        /* Open URL in new Browser instance/tab if clicked   */
+        private void frTxBx_Notes_LinkClicked(object sender, LinkClickedEventArgs e)
+        { System.Diagnostics.Process.Start(e.LinkText); }
+        #endregion
+
+        #region CustomMethods
+        /* Add entries passed from fmScan to database */
+        void AddEntries()
+        {
+            //update LV_Entries & maintain scroll position
+            int iPos = -1;
+            if (LV_Entries.Items.Count > 0)
+                iPos = LV_Entries.TopItem.Index;
+            UpdateLV();
+            bSavList = false;
+
+            if (iPos > -1)
+                for (int i = 0; i < 3; i++)
+                    LV_Entries.TopItem = LV_Entries.Items[iPos];
+        }
+
+        /* Get first image in target folder */
+        void GetImage(Object obj)
+        {
+            BeginInvoke(new DelVoidVoid(SetPicBxNull));
+
+            //Prevent operation on non-existent folder
+            if (ExtDirectory.Restricted(TxBx_Loc.Text))
+                return;
+
+            //Get cover image
+            List<string> lFiles = ExtDirectory.GetFiles(@TxBx_Loc.Text,
+                SearchOption.TopDirectoryOnly);
+            if (lFiles.Count > 0)
+            {
+                FileStream fs = new FileStream(lFiles[0],
+                    FileMode.Open, FileAccess.Read);
+                Invoke(new DelVoidImage(SetPicBxImage),
+                    System.Drawing.Image.FromStream(fs));
+                fs.Close();
+                fs.Dispose();
+            }
+
+            BeginInvoke(new DelVoidInt(SetNudCount), lFiles.Count);
+        }
+
+        #region SetImageCalls
+        /* Set Nud_Pages to value passed from GetImage */
+        void SetNudCount(int iNum)
+        {
+            Nud_Pages.Value = iNum;
+
+            //set display to end of line
+            TxBx_Loc.SelectionStart = TxBx_Loc.Text.Length;
+        }
+
+        /* Set cover to image passed from GetImage */
+        void SetPicBxImage(Object obj)
+        {
+            MnTS_Open.Visible = true;
+            PicBx_Cover.Image = (System.Drawing.Image)obj;
+        }
+
+        /* Release old image resource */
+        void SetPicBxNull()
+        {
+            if (PicBx_Cover.Image != null)
+            {
+                PicBx_Cover.Image.Dispose();
+                PicBx_Cover.Image = null;
+            }
+        }
+        #endregion
+
+        /* Remove non-fav'ed entries */
+        void OnlyFavs()
+        {
+            LV_Entries.BeginUpdate();
+            for (int x = 0; x < LV_Entries.Items.Count; x++)
+                if (LV_Entries.Items[x].BackColor != System.Drawing.Color.LightYellow)
+                    LV_Entries.Items.RemoveAt(x--);
+            LV_Entries.EndUpdate();
+
+            Text = "Returned: " + LV_Entries.Items.Count + " entries";
+        }
+
+        /* Open folder or first image of current entry   */
+        void OpenFile()
+        {
+            if (TxBx_Loc.Text == string.Empty || ExtDirectory.Restricted(TxBx_Loc.Text))
+                return;
+
+            List<string> lFiles = ExtDirectory.GetFiles(@TxBx_Loc.Text);
+            if (lFiles.Count > 0) System.Diagnostics.Process.Start(lFiles[0]);
+            else System.Diagnostics.Process.Start(@TxBx_Loc.Text);
+            lFiles.Clear();
+        }
+
+        /* Set properties back to default   */
+        void Reset()
+        {
+            //Tb_Browse
+            LV_Entries.FocusedItem = null;
+            LV_Entries.SelectedItems.Clear();
+            indx = -1;
+
+            //variables & Form
+            Text = "Manga Organizer: " + lData.Count + " entries";
+
+            //Tb_View
+            TxBx_Loc.Clear();
+            TxBx_Tags.Clear();
+            TxBx_Title.Clear();
+            TxBx_Artist.Clear();
+            CmBx_Type.Text = "";
+            Nud_Pages.Value = 0;
+            frTxBx_Desc.Clear();
+            PicBx_Cover.Image = null;
+            ChkBx_Fav.Checked = false;
+            Dt_Date.Value = DateTime.Now;
+
+            //Mn_EntryOps
+            MnTS_New.Visible = true;
+            MnTS_Del.Visible = false;
+            MnTS_Edit.Visible = false;
+            MnTS_Open.Visible = false;
+        }
+
+        /* Saves current database & Note contents   */
+        void SaveData()
+        {
+            Cursor = Cursors.WaitCursor;
+
+            //grab filepath
+            string sPath = Properties.Settings.Default.SavLoc;
+            if (sPath != string.Empty && !ExtDirectory.Restricted(sPath))
+                sPath += "\\MangaDatabase.bin";
+            else sPath = Environment.CurrentDirectory + "\\MangaDatabase.bin";
+
+            if (!bSavList)
+            {
+                if (File.Exists(sPath)) File.Delete(sPath);
+                FileSerializer.Serialize(sPath, lData);
+                bSavList = true;
+            }
+
+            if (!bSavText)
+            {
+                Properties.Settings.Default.Notes = frTxBx_Notes.Text;
+                Properties.Settings.Default.Save();
+                bSavText = true;
+            }
+
+            Cursor = Cursors.Default;
+        }
+
+        /* Search database entries   */
+        void Search()
+        {
+            Cursor = Cursors.WaitCursor;
+
+            List<string> lTags = new List<string>();
+            foreach (string s in TxBx_Search.Text.Split(',')) lTags.Add(s.Trim());
+
+            //remove non-matching entries from LV_Entries
+            LV_Entries.BeginUpdate();
+            for (int x = 0; x < LV_Entries.Items.Count; x++)
+                for (int y = 0; y < lTags.Count; y++)
+                {
+                    //search by tags, title, artist, and type
+                    if (ExtString.Contains(LV_Entries.Items[x].SubItems[3].Text, lTags[y]) ||
+                        ExtString.Contains(LV_Entries.Items[x].SubItems[1].Text, lTags[y]) ||
+                        ExtString.Contains(LV_Entries.Items[x].SubItems[0].Text, lTags[y]) ||
+                        ExtString.Contains(LV_Entries.Items[x].SubItems[4].Text, lTags[y])) { }
+                    else { LV_Entries.Items.RemoveAt(x--); break; }
+                }
+            LV_Entries.EndUpdate();
+
+            Text = "Returned: " + LV_Entries.Items.Count + " entries";
+            Cursor = Cursors.Default;
+        }
+
+        /* Refresh displayed entries in ListView   */
+        void UpdateLV()
+        {
+            Cursor = Cursors.WaitCursor;
+            Text = "Manga Organizer: " + lData.Count + " entries";
+            List<ListViewItem> lItems = new List<ListViewItem>(LV_Entries.Items.Count + 1);
+
+            //refresh LV_Entries
+            for (int i = 0; i < lData.Count; i++)
+            {
+                ListViewItem lvi = new ListViewItem(lData[i].sArtist);
+                lvi.SubItems.Add(lData[i].sTitle);
+                lvi.SubItems.Add(lData[i].iPages.ToString());
+                lvi.SubItems.Add(lData[i].sTags);
+                lvi.SubItems.Add(lData[i].sType);
+                if (lData[i].bFav) lvi.BackColor = System.Drawing.Color.LightYellow;
+                lItems.Add(lvi);
+            }
+
+            //Update listview display
+            LV_Entries.BeginUpdate();
+            LV_Entries.Items.Clear();
+            LV_Entries.Items.AddRange(lItems.ToArray());
+            lItems.Clear();
+            LV_Entries.Sort();
+            LV_Entries.EndUpdate();
+            Cursor = Cursors.Default;
+
+            //prevent loss of search parameters
+            if (ChkBx_ShowFav.Checked) OnlyFavs();
+            if (TxBx_Search.Text != string.Empty) Search();
+        }
+        #endregion
+
         #region Menu_EntryOps
         /* Copies formatted title to clipboard   */
         private void MnTS_CopyTitle_Click(object sender, EventArgs e)
@@ -616,229 +837,6 @@ namespace Nagru___Manga_Organizer
         }
         #endregion
 
-        #region Tab_Notes
-        /* Prevent loss of changes in note text   */
-        private void frTxBx_Notes_TextChanged(object sender, EventArgs e)
-        { if (bSavText) bSavText = false; }
-
-        /* Open URL in new Browser instance/tab if clicked   */
-        private void frTxBx_Notes_LinkClicked(object sender, LinkClickedEventArgs e)
-        { System.Diagnostics.Process.Start(e.LinkText); }
-        #endregion
-
-        #region CustomMethods
-        /* Add entries passed from fmScan to database */
-        void AddEntries()
-        {
-            //update LV_Entries & maintain scroll position
-            int iPos = -1;
-            if (LV_Entries.Items.Count > 0)
-                iPos = LV_Entries.TopItem.Index;
-            UpdateLV();
-            bSavList = false;
-
-            if (iPos > -1)
-                for (int i = 0; i < 3; i++)
-                    LV_Entries.TopItem = LV_Entries.Items[iPos];
-        }
-
-        /* Get first image in target folder */
-        void GetImage(Object obj)
-        {
-            BeginInvoke(new DelVoidVoid(SetPicBxNull));
-
-            //Prevent operation on non-existent folder
-            if (ExtDirectory.Restricted(TxBx_Loc.Text))
-                return;
-
-            //Get cover image
-            List<string> lFiles = ExtDirectory.GetFiles(@TxBx_Loc.Text,
-                SearchOption.TopDirectoryOnly);
-            if (lFiles.Count > 0)
-            {
-                FileStream fs = new FileStream(lFiles[0],
-                    FileMode.Open, FileAccess.Read);
-                Invoke(new DelVoidImage(SetPicBxImage),
-                    System.Drawing.Image.FromStream(fs));
-                fs.Close();
-                fs.Dispose();
-            }
-
-            BeginInvoke(new DelVoidInt(SetNudCount), lFiles.Count);
-        }
-
-        #region SetImageCalls
-        /* Set Nud_Pages to value passed from GetImage */
-        void SetNudCount(int iNum)
-        {
-            Nud_Pages.Value = iNum;
-
-            //set display to end of line
-            TxBx_Loc.SelectionStart = TxBx_Loc.Text.Length;
-        }
-
-        /* Set cover to image passed from GetImage */
-        void SetPicBxImage(Object obj)
-        {
-            MnTS_Open.Visible = true;
-            PicBx_Cover.Image = (System.Drawing.Image)obj;
-        }
-
-        /* Release old image resource */
-        void SetPicBxNull()
-        {
-            if (PicBx_Cover.Image != null)
-            {
-                PicBx_Cover.Image.Dispose();
-                PicBx_Cover.Image = null;
-            }
-        }
-        #endregion
-
-        /* Remove non-fav'ed entries */
-        void OnlyFavs()
-        {
-            LV_Entries.BeginUpdate();
-            for (int x = 0; x < LV_Entries.Items.Count; x++)
-                if (LV_Entries.Items[x].BackColor != System.Drawing.Color.LightYellow)
-                    LV_Entries.Items.RemoveAt(x--);
-            LV_Entries.EndUpdate();
-
-            Text = "Returned: " + LV_Entries.Items.Count + " entries";
-        }
-
-        /* Open folder or first image of current entry   */
-        void OpenFile()
-        {
-            if (TxBx_Loc.Text == string.Empty || ExtDirectory.Restricted(TxBx_Loc.Text))
-                return;
-
-            List<string> lFiles = ExtDirectory.GetFiles(@TxBx_Loc.Text);
-            if (lFiles.Count > 0) System.Diagnostics.Process.Start(lFiles[0]);
-            else System.Diagnostics.Process.Start(@TxBx_Loc.Text);
-            lFiles.Clear();
-        }
-
-        /* Set properties back to default   */
-        void Reset()
-        {
-            //Tb_Browse
-            LV_Entries.FocusedItem = null;
-            LV_Entries.SelectedItems.Clear();
-            indx = -1;
-
-            //variables & Form
-            Text = "Manga Organizer: " + lData.Count + " entries";
-
-            //Tb_View
-            TxBx_Loc.Clear();
-            TxBx_Tags.Clear();
-            TxBx_Title.Clear();
-            TxBx_Artist.Clear();
-            CmBx_Type.Text = "";
-            Nud_Pages.Value = 0;
-            frTxBx_Desc.Clear();
-            PicBx_Cover.Image = null;
-            ChkBx_Fav.Checked = false;
-            Dt_Date.Value = DateTime.Now;
-
-            //Mn_EntryOps
-            MnTS_New.Visible = true;
-            MnTS_Del.Visible = false;
-            MnTS_Edit.Visible = false;
-            MnTS_Open.Visible = false;
-
-            if (!Text.EndsWith("entries")) Reset();
-        }
-
-        /* Saves current database & Note contents   */
-        void SaveData()
-        {
-            Cursor = Cursors.WaitCursor;
-
-            //grab filepath
-            string sPath = Properties.Settings.Default.SavLoc;
-            if (sPath != string.Empty && !ExtDirectory.Restricted(sPath))
-                sPath += "\\MangaDatabase.bin";
-            else sPath = Environment.CurrentDirectory + "\\MangaDatabase.bin";
-
-            if (!bSavList)
-            {
-                if (File.Exists(sPath)) File.Delete(sPath);
-                FileSerializer.Serialize(sPath, lData);
-                bSavList = true;
-            }
-
-            if (!bSavText)
-            {
-                Properties.Settings.Default.Notes = frTxBx_Notes.Text;
-                Properties.Settings.Default.Save();
-                bSavText = true;
-            }
-
-            Cursor = Cursors.Default;
-        }
-
-        /* Search database entries   */
-        void Search()
-        {
-            Cursor = Cursors.WaitCursor;
-
-            List<string> lTags = new List<string>();
-            foreach (string s in TxBx_Search.Text.Split(',')) lTags.Add(s.Trim());
-
-            //remove non-matching entries from LV_Entries
-            LV_Entries.BeginUpdate();
-            for (int x = 0; x < LV_Entries.Items.Count; x++)
-                for (int y = 0; y < lTags.Count; y++)
-                {
-                    //search by tags, title, artist, and type
-                    if (ExtString.Contains(LV_Entries.Items[x].SubItems[3].Text, lTags[y]) ||
-                        ExtString.Contains(LV_Entries.Items[x].SubItems[1].Text, lTags[y]) ||
-                        ExtString.Contains(LV_Entries.Items[x].SubItems[0].Text, lTags[y]) ||
-                        ExtString.Contains(LV_Entries.Items[x].SubItems[4].Text, lTags[y])) { }
-                    else { LV_Entries.Items.RemoveAt(x--); break; }
-                }
-            LV_Entries.EndUpdate();
-
-            Text = "Returned: " + LV_Entries.Items.Count + " entries";
-            Cursor = Cursors.Default;
-        }
-
-        /* Refresh displayed entries in ListView   */
-        void UpdateLV()
-        {
-            Cursor = Cursors.WaitCursor;
-            Text = "Manga Organizer: " + lData.Count + " entries";
-            List<ListViewItem> lItems = new List<ListViewItem>(LV_Entries.Items.Count + 1);
-
-            //refresh LV_Entries
-            for (int i = 0; i < lData.Count; i++)
-            {
-                ListViewItem lvi = new ListViewItem(lData[i].sArtist);
-                lvi.SubItems.Add(lData[i].sTitle);
-                lvi.SubItems.Add(lData[i].iPages.ToString());
-                lvi.SubItems.Add(lData[i].sTags);
-                lvi.SubItems.Add(lData[i].sType);
-                if (lData[i].bFav) lvi.BackColor = System.Drawing.Color.LightYellow;
-                lItems.Add(lvi);
-            }
-
-            //Update listview display
-            LV_Entries.BeginUpdate();
-            LV_Entries.Items.Clear();
-            LV_Entries.Items.AddRange(lItems.ToArray());
-            lItems.Clear();
-            LV_Entries.Sort();
-            LV_Entries.EndUpdate();
-            Cursor = Cursors.Default;
-
-            //prevent loss of search parameters
-            if (ChkBx_ShowFav.Checked) OnlyFavs();
-            if (TxBx_Search.Text != string.Empty) Search();
-        }
-        #endregion
-
         #region Menu_RichText
         private void MnRTx_Undo_Click(object sender, EventArgs e)
         {
@@ -997,7 +995,7 @@ namespace Nagru___Manga_Organizer
 
         #region Timer
         /* Inserts delay before Search() to account for Human input speed */
-        private void Pause_Tick(object sender, EventArgs e)
+        private void Delay_Tick(object sender, EventArgs e)
         {
             Delay.Stop();
             UpdateLV();
