@@ -135,35 +135,37 @@ namespace Nagru___Manga_Organizer
         /* Load database   */
         private void Main_Load(object sender, EventArgs e)
         {
+            //handles data returned from GetIndex()
             delPassSum = SetData;
-            LV_Entries.Select();
-            LV_Entries.ListViewItemSorter = lvSortObj;
-            frTxBx_Notes.Text = Properties.Settings.Default.Notes;
+
+            //disable ContextMenu in Nud_Pages
             Nud_Pages.ContextMenuStrip = new ContextMenuStrip();
+
+            //ensure listview has focus & is properly sized/sorted
+            LV_Entries.ListViewItemSorter = lvSortObj;
             LV_Entries_Resize(sender, e);
-            
-            //set up frTxBx's to allow dragdrop
+            LV_Entries.Select();
+
+            //set frTxBx's to allow dragdrop & initialize Notes
             frTxBx_Notes.AllowDrop = true;
             frTxBx_Desc.AllowDrop = true;
             frTxBx_Notes.DragDrop += new DragEventHandler(DragDropTxBx);
             frTxBx_Desc.DragDrop += new DragEventHandler(DragDropTxBx);
-
-            //prevents visible form re-draw when user first uses TxBx_Search
-            Btn_Clear.Visible = true;
-            Btn_Clear.Visible = false;
+            frTxBx_Notes.Text = Properties.Settings.Default.Notes;
 
             //grab filepath
-            string sPath = Properties.Settings.Default.SavLoc;
-            if (sPath != string.Empty) sPath += "\\MangaDatabase.bin";
-            else sPath = Environment.CurrentDirectory + "\\MangaDatabase.bin";
-            if (!File.Exists(sPath)) //if none exists, exit
-            { return; }
+            string sPath = Properties.Settings.Default.SavLoc != string.Empty ?
+                Properties.Settings.Default.SavLoc : Environment.CurrentDirectory;
+            sPath += "\\MangaDatabase.bin";
 
             //load database
-            Cursor = Cursors.WaitCursor;
-            lData = FileSerializer.Deserialize<List<stEntry>>(sPath);
-            Cursor = Cursors.Default;
-            UpdateLV();
+            if (File.Exists(sPath))
+            {
+                Cursor = Cursors.WaitCursor;
+                lData = FileSerializer.Deserialize<List<stEntry>>(sPath);
+                Cursor = Cursors.Default;
+                UpdateLV();
+            }
         }
 
         /* Prevent Form close if unsaved data present   */
@@ -192,8 +194,9 @@ namespace Nagru___Manga_Organizer
             {
                 case 0:
                     //Return LV focus and update Form title
-                    Text = (TxBx_Search.Text == string.Empty ? "Manga Organizer: "
-                        + lData.Count : "Returned: " + LV_Entries.Items.Count) + " entries";
+                    if (indx == -1)
+                        Text = (TxBx_Search.Text == string.Empty ? "Manga Organizer: "
+                            + lData.Count : "Returned: " + LV_Entries.Items.Count) + " entries";
                     this.AcceptButton = Btn_Clear;
                     LV_Entries.Focus();
                     break;
@@ -270,47 +273,6 @@ namespace Nagru___Manga_Organizer
             thWork.IsBackground = true;
             thWork.Start(LV_Entries.FocusedItem);
         }
-
-        #region SelectItem
-        /* Find list index of currently selected item */
-        void GetIndex(Object obj)
-        {
-            ListViewItem lvi = (ListViewItem)obj;
-
-            //grab index of selected item
-            this.BeginInvoke(delPassSum, lData.FindIndex(new Search(
-                lvi.SubItems[0].Text + lvi.SubItems[1].Text).Match));
-        }
-
-        /* Update controls in 'View' tab */
-        void SetData(int iNewIndx)
-        {
-            if ((indx = (short)iNewIndx) == -1)
-            { Reset(); return; }
-
-            //write item's metadata to Tb_View
-            Text = "Selected: " + lData[indx].GetName;
-            this.SuspendLayout();
-            TxBx_Title.Text = lData[indx].sTitle;
-            TxBx_Artist.Text = lData[indx].sArtist;
-            TxBx_Loc.Text = lData[indx].sLoc;
-            frTxBx_Desc.Text = lData[indx].sDesc;
-            CmBx_Type.Text = lData[indx].sType;
-            Dt_Date.Value = lData[indx].dtDate;
-            ChkBx_Fav.Checked = lData[indx].bFav;
-            Nud_Pages.Value = lData[indx].iPages;
-            TxBx_Tags.Text = lData[indx].sTags;
-            this.ResumeLayout();
-
-            MnTS_New.Visible = false;
-            MnTS_Edit.Visible = false;
-
-            //Get image
-            thWork = new System.Threading.Thread(GetImage);
-            thWork.IsBackground = true;
-            thWork.Start();
-        }
-        #endregion
 
         /* Sort entries based on clicked column   */
         private void LV_Entries_ColumnClick(object sender, ColumnClickEventArgs e)
@@ -505,6 +467,16 @@ namespace Nagru___Manga_Organizer
         }
         #endregion
 
+        /* Find list index of currently selected item */
+        void GetIndex(Object obj)
+        {
+            ListViewItem lvi = (ListViewItem)obj;
+
+            //grab index of selected item
+            this.BeginInvoke(delPassSum, lData.FindIndex(new Search(
+                lvi.SubItems[0].Text + lvi.SubItems[1].Text).Match));
+        }
+
         /* Remove non-fav'ed entries */
         void OnlyFavs()
         {
@@ -545,7 +517,7 @@ namespace Nagru___Manga_Organizer
             TxBx_Tags.Clear();
             TxBx_Title.Clear();
             TxBx_Artist.Clear();
-            CmBx_Type.Text = "";
+            CmBx_Type.Text = "Manga";
             Nud_Pages.Value = 0;
             frTxBx_Desc.Clear();
             PicBx_Cover.Image = null;
@@ -585,6 +557,35 @@ namespace Nagru___Manga_Organizer
             }
 
             Cursor = Cursors.Default;
+        }
+
+        /* Update controls in 'View' tab */
+        void SetData(int iNewIndx)
+        {
+            if ((indx = (short)iNewIndx) == -1)
+            { Reset(); return; }
+
+            //write item's metadata to Tb_View
+            Text = "Selected: " + lData[indx].GetName;
+            this.SuspendLayout();
+            TxBx_Title.Text = lData[indx].sTitle;
+            TxBx_Artist.Text = lData[indx].sArtist;
+            TxBx_Loc.Text = lData[indx].sLoc;
+            frTxBx_Desc.Text = lData[indx].sDesc;
+            CmBx_Type.Text = lData[indx].sType;
+            Dt_Date.Value = lData[indx].dtDate;
+            ChkBx_Fav.Checked = lData[indx].bFav;
+            Nud_Pages.Value = lData[indx].iPages;
+            TxBx_Tags.Text = lData[indx].sTags;
+            this.ResumeLayout();
+
+            MnTS_New.Visible = false;
+            MnTS_Edit.Visible = false;
+
+            //Get image
+            thWork = new System.Threading.Thread(GetImage);
+            thWork.IsBackground = true;
+            thWork.Start();
         }
 
         /* Search database entries   */

@@ -66,7 +66,7 @@
             this.Btn_Scan.Name = "Btn_Scan";
             this.Btn_Scan.Size = new System.Drawing.Size(48, 21);
             this.Btn_Scan.TabIndex = 24;
-            this.Btn_Scan.Text = "Scan";
+            this.Btn_Scan.Text = "Start";
             this.Btn_Scan.UseVisualStyleBackColor = true;
             this.Btn_Scan.Click += new System.EventHandler(this.Btn_Scan_Click);
             // 

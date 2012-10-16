@@ -93,7 +93,8 @@ namespace Nagru___Manga_Organizer
                 for (int i = 0; i < asDirs.Length; i++)
                 {
                     //Get formatted directory name
-                    string[] sTitle = Path.GetFileName(asDirs[i]).Split(new string[] { "[", "]" }, StringSplitOptions.RemoveEmptyEntries);
+                    string[] sTitle = Path.GetFileName(asDirs[i]).Split(
+                        new string[] { "[", "]" }, StringSplitOptions.RemoveEmptyEntries);
 
                     //add item
                     Main.stEntry en;
