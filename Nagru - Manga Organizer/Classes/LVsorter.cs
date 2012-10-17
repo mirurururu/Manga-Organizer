@@ -22,12 +22,16 @@ namespace Nagru___Manga_Organizer
         /* Swaps current direction of column sorting   */
         public void SwapOrder()
         {
-            if (OrdOfSort == SortOrder.Ascending) OrdOfSort = SortOrder.Descending;
+            if (OrdOfSort == SortOrder.Ascending) 
+                OrdOfSort = SortOrder.Descending;
             else OrdOfSort = SortOrder.Ascending;
         }
 
-        /* Compare ListViewItems (accounts for numbers)
-           Author: Samuel Allen (2012)                         */
+        /* Set new column to sort  */
+        public void NewColumn(int Column, SortOrder Order)
+        { ColToSort = Column; OrdOfSort = Order; }
+
+        /* Compare ListViewItems (accounts for numbers)  */
         public int Compare(object x, object y)
         {
             if (x == null || y == null) return 0;

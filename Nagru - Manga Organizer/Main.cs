@@ -21,9 +21,8 @@ namespace Nagru___Manga_Organizer
         delegate void DelVoidImage(System.Drawing.Image img);
         DelVoidInt delPassSum = null;
 
-        Thread thWork;
         LVsorter lvSortObj = new LVsorter();
-        List<stEntry> lData = new List<stEntry>();
+        List<stEntry> lData = new List<stEntry>(100);
         bool bSavList = true, bSavText = true;
         short indx = -1;
 
@@ -147,8 +146,7 @@ namespace Nagru___Manga_Organizer
             LV_Entries.Select();
 
             //set frTxBx's to allow dragdrop & initialize Notes
-            frTxBx_Notes.AllowDrop = true;
-            frTxBx_Desc.AllowDrop = true;
+            frTxBx_Notes.AllowDrop = true; frTxBx_Desc.AllowDrop = true;
             frTxBx_Notes.DragDrop += new DragEventHandler(DragDropTxBx);
             frTxBx_Desc.DragDrop += new DragEventHandler(DragDropTxBx);
             frTxBx_Notes.Text = Properties.Settings.Default.Notes;
@@ -164,7 +162,9 @@ namespace Nagru___Manga_Organizer
                 Cursor = Cursors.WaitCursor;
                 lData = FileSerializer.Deserialize<List<stEntry>>(sPath);
                 Cursor = Cursors.Default;
-                UpdateLV();
+
+                if (lData != null) UpdateLV();
+                else lData = new List<stEntry>(0);
             }
         }
 
@@ -201,15 +201,15 @@ namespace Nagru___Manga_Organizer
                     LV_Entries.Focus();
                     break;
                 case 1:
-                    if (indx > -1)
+                    if (indx != -1)
                     {
-                        this.AcceptButton = null;
-
                         //Update Form title
-                        Text = "Selected: " + lData[indx].GetName;
+                        if (!Text.StartsWith("S"))
+                            Text = "Selected: " + lData[indx].GetName;
                         MnTS_Del.Visible = true;
                         MnTS_Open.Visible = true;
                     }
+                    this.AcceptButton = null;
                     break;
                 default:
                     this.AcceptButton = null;
@@ -269,7 +269,7 @@ namespace Nagru___Manga_Organizer
             if (LV_Entries.FocusedItem == null || LV_Entries.SelectedItems.Count == 0)
             { Reset(); return; }
 
-            thWork = new System.Threading.Thread(GetIndex);
+            Thread thWork = new System.Threading.Thread(GetIndex);
             thWork.IsBackground = true;
             thWork.Start(LV_Entries.FocusedItem);
         }
@@ -281,10 +281,7 @@ namespace Nagru___Manga_Organizer
             if (e.Column == 3) return;
 
             if (e.Column != lvSortObj.ColToSort)
-            {
-                lvSortObj.ColToSort = e.Column;
-                lvSortObj.OrdOfSort = SortOrder.Ascending;
-            }
+                lvSortObj.NewColumn(e.Column, SortOrder.Ascending);
             else lvSortObj.SwapOrder(); //reverse sort order
 
             LV_Entries.Sort();
@@ -321,24 +318,25 @@ namespace Nagru___Manga_Organizer
         {
             FolderBrowserDialog fbd = new FolderBrowserDialog();
             fbd.RootFolder = Environment.SpecialFolder.MyComputer;
-            fbd.Description = "Select the location of the current entry.";
+            fbd.Description = "Select the location of the current entry:";
 
             //Try to auto-magically grab folder path
-            string sPath = Properties.Settings.Default.DefLoc;
-            if (TxBx_Loc.Text == string.Empty && Directory.Exists(string.Format("{0}\\[{1}] {2}",
-                Properties.Settings.Default.DefLoc, TxBx_Artist.Text, TxBx_Title.Text)))
-                sPath = string.Format("{0}\\[{1}] {2}", Properties.Settings.Default.DefLoc,
-                    TxBx_Artist.Text, TxBx_Title.Text);
+            string sPath = string.Format("{0}\\[{1}] {2}",
+                Properties.Settings.Default.DefLoc,
+                TxBx_Artist.Text, TxBx_Title.Text);
+            if (Directory.Exists(sPath)) { }
             else if (Directory.Exists(TxBx_Loc.Text)) sPath = TxBx_Loc.Text;
+            else sPath = Properties.Settings.Default.DefLoc;
             fbd.SelectedPath = sPath;
 
             //Set folder path, and grab cover & page count from it
-            if (fbd.ShowDialog() == DialogResult.OK && !ExtDirectory.Restricted(fbd.SelectedPath))
+            if (fbd.ShowDialog() == DialogResult.OK &&
+                !ExtDirectory.Restricted(fbd.SelectedPath))
             {
                 TxBx_Loc.Text = fbd.SelectedPath;
 
                 //Get image
-                thWork = new System.Threading.Thread(GetImage);
+                Thread thWork = new System.Threading.Thread(GetImage);
                 thWork.IsBackground = true;
                 thWork.Start();
             }
@@ -369,7 +367,7 @@ namespace Nagru___Manga_Organizer
             if (!Directory.Exists(TxBx_Loc.Text)) SetPicBxNull();
             else
             {
-                thWork = new System.Threading.Thread(GetImage);
+                Thread thWork = new System.Threading.Thread(GetImage);
                 thWork.IsBackground = true;
                 thWork.Start();
             }
@@ -409,9 +407,14 @@ namespace Nagru___Manga_Organizer
             UpdateLV();
             bSavList = false;
 
-            if (iPos > -1)
-                for (int i = 0; i < 3; i++)
-                    LV_Entries.TopItem = LV_Entries.Items[iPos];
+            /* Compensate for broken scroll-to function
+             * by running it multiple times (3 is sweet-spot) */
+            if (iPos > -1/* && LV_Entries.Items.Count > iPos*/)
+            {
+                LV_Entries.TopItem = LV_Entries.Items[iPos];
+                LV_Entries.TopItem = LV_Entries.Items[iPos];
+                LV_Entries.TopItem = LV_Entries.Items[iPos];
+            }
         }
 
         /* Get first image in target folder */
@@ -583,7 +586,7 @@ namespace Nagru___Manga_Organizer
             MnTS_Edit.Visible = false;
 
             //Get image
-            thWork = new System.Threading.Thread(GetImage);
+            Thread thWork = new System.Threading.Thread(GetImage);
             thWork.IsBackground = true;
             thWork.Start();
         }
@@ -729,17 +732,20 @@ namespace Nagru___Manga_Organizer
                 MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
 
             //prevent user trying to delete locked folder
-            if (ExtDirectory.Restricted(lData[indx].sLoc))
-                dResult = DialogResult.No;
-            else
+            if (dResult == DialogResult.Yes)
             {
-                //warn user before deleting large directory
-                int iNumDir = Directory.GetDirectories(lData[indx].sLoc).Length;
-                if (dResult == DialogResult.Yes && iNumDir > 0)
+                if (ExtDirectory.Restricted(lData[indx].sLoc))
+                    dResult = DialogResult.No;
+                else
                 {
-                    dResult = MessageBox.Show("This directory contains " + iNumDir + " subfolder(s),\n" +
-                        "are you sure you wish to delete them?", "Manga Organizer",
-                    MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+                    //warn user before deleting large directory
+                    int iNumDir = Directory.GetDirectories(lData[indx].sLoc).Length;
+                    if (dResult == DialogResult.Yes && iNumDir > 0)
+                    {
+                        dResult = MessageBox.Show("This directory contains " + iNumDir + " subfolder(s),\n" +
+                            "are you sure you wish to delete them?", "Manga Organizer",
+                        MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+                    }
                 }
             }
 
@@ -749,16 +755,15 @@ namespace Nagru___Manga_Organizer
                 //delete folder
                 if (dResult == DialogResult.Yes)
                 {
-                    thWork = new System.Threading.Thread(Delete);
+                    Thread thWork = new System.Threading.Thread(Delete);
                     thWork.IsBackground = true;
                     thWork.Start(lData[indx].sLoc);
                 }
 
                 //remove from database
-                LV_Entries.Items.Remove(LV_Entries.FocusedItem);
                 lData.RemoveAt(indx);
+                LV_Entries.Items.Remove(LV_Entries.FocusedItem);
                 bSavList = false;
-                Reset();
             }
         }
         private void Delete(object obj)
@@ -766,10 +771,7 @@ namespace Nagru___Manga_Organizer
 
         /* Open folder or first image of current   */
         private void MnTS_Open_Click(object sender, EventArgs e)
-        {
-            if (PicBx_Cover.Image != null)
-                OpenFile();
-        }
+        { if (PicBx_Cover.Image != null) OpenFile(); }
 
         /* Name: MnTS_Save_Click
            Desc: Saves current database contents   */
@@ -779,10 +781,8 @@ namespace Nagru___Manga_Organizer
         /* Opens database location   */
         private void MnTS_OpenDataFolder_Click(object sender, EventArgs e)
         {
-            string sPath;
-            if (Properties.Settings.Default.SavLoc != string.Empty)
-                sPath = Properties.Settings.Default.SavLoc;
-            else sPath = Environment.CurrentDirectory;
+            string sPath = Properties.Settings.Default.SavLoc != string.Empty ?
+                sPath = Properties.Settings.Default.SavLoc : Environment.CurrentDirectory;
 
             System.Diagnostics.Process.Start(sPath);
         }
@@ -792,10 +792,8 @@ namespace Nagru___Manga_Organizer
         {
             FolderBrowserDialog fbd = new FolderBrowserDialog();
 
-            string sPath;
-            if (Properties.Settings.Default.SavLoc != string.Empty)
-                sPath = Properties.Settings.Default.SavLoc;
-            else sPath = Environment.CurrentDirectory;
+            string sPath = Properties.Settings.Default.SavLoc != string.Empty ?
+                sPath = Properties.Settings.Default.SavLoc : Environment.CurrentDirectory;
             fbd.SelectedPath = sPath;
 
             if (fbd.ShowDialog() == DialogResult.OK && !ExtDirectory.Restricted(fbd.SelectedPath))
@@ -979,7 +977,7 @@ namespace Nagru___Manga_Organizer
                 TxBx_Loc.Text = sPath;
 
                 //Get image
-                thWork = new System.Threading.Thread(GetImage);
+                Thread thWork = new System.Threading.Thread(GetImage);
                 thWork.IsBackground = true;
                 thWork.Start();
             }
@@ -1000,7 +998,6 @@ namespace Nagru___Manga_Organizer
         {
             Delay.Stop();
             UpdateLV();
-            Search();
         }
         #endregion
     }

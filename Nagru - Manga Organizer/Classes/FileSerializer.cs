@@ -36,10 +36,12 @@ namespace Nagru___Manga_Organizer
                 BinaryFormatter bFormatter = new BinaryFormatter();
                 obj = (T)bFormatter.Deserialize(stream);
             }
-            catch (Exception ex)
+            catch
             {
-                Console.WriteLine("The application failed to retrieve the inventory:\n"
-                    + ex.Message);
+                System.Windows.Forms.MessageBox.Show(
+                    "The database was invalid.", "Manga Organizer", 
+                    System.Windows.Forms.MessageBoxButtons.OK, 
+                    System.Windows.Forms.MessageBoxIcon.Error);
             }
             finally { if (stream != null)stream.Close(); }
 
