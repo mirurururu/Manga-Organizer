@@ -152,6 +152,7 @@ namespace Nagru___Manga_Organizer
         {
             Reset();
             Cursor.Show();
+            GC.Collect(2);
         }
     }
 }

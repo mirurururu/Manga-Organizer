@@ -18,11 +18,12 @@ namespace Nagru___Manga_Organizer
     {
         delegate void DelVoidVoid();
         delegate void DelVoidInt(int iNum);
-        delegate void DelVoidImage(System.Drawing.Image img);
+        delegate void DelVoidString(string sLoc);
         DelVoidInt delPassSum = null;
 
+        Thread thWork;
         LVsorter lvSortObj = new LVsorter();
-        List<stEntry> lData = new List<stEntry>(100);
+        List<stEntry> lData = new List<stEntry>(500);
         bool bSavList = true, bSavText = true;
         short indx = -1;
 
@@ -160,7 +161,7 @@ namespace Nagru___Manga_Organizer
             if (File.Exists(sPath))
             {
                 Cursor = Cursors.WaitCursor;
-                lData = FileSerializer.Deserialize<List<stEntry>>(sPath);
+                lData.AddRange(FileSerializer.Deserialize<List<stEntry>>(sPath));
                 Cursor = Cursors.Default;
 
                 if (lData != null) UpdateLV();
@@ -269,7 +270,7 @@ namespace Nagru___Manga_Organizer
             if (LV_Entries.FocusedItem == null || LV_Entries.SelectedItems.Count == 0)
             { Reset(); return; }
 
-            Thread thWork = new System.Threading.Thread(GetIndex);
+            thWork = new System.Threading.Thread(GetIndex);
             thWork.IsBackground = true;
             thWork.Start(LV_Entries.FocusedItem);
         }
@@ -336,7 +337,7 @@ namespace Nagru___Manga_Organizer
                 TxBx_Loc.Text = fbd.SelectedPath;
 
                 //Get image
-                Thread thWork = new System.Threading.Thread(GetImage);
+                thWork = new System.Threading.Thread(GetImage);
                 thWork.IsBackground = true;
                 thWork.Start();
             }
@@ -367,7 +368,7 @@ namespace Nagru___Manga_Organizer
             if (!Directory.Exists(TxBx_Loc.Text)) SetPicBxNull();
             else
             {
-                Thread thWork = new System.Threading.Thread(GetImage);
+                thWork = new System.Threading.Thread(GetImage);
                 thWork.IsBackground = true;
                 thWork.Start();
             }
@@ -430,16 +431,10 @@ namespace Nagru___Manga_Organizer
             List<string> lFiles = ExtDirectory.GetFiles(@TxBx_Loc.Text,
                 SearchOption.TopDirectoryOnly);
             if (lFiles.Count > 0)
-            {
-                FileStream fs = new FileStream(lFiles[0],
-                    FileMode.Open, FileAccess.Read);
-                Invoke(new DelVoidImage(SetPicBxImage),
-                    System.Drawing.Image.FromStream(fs));
-                fs.Close();
-                fs.Dispose();
-            }
+                Invoke(new DelVoidString(SetPicBxImage), lFiles[0]);
 
             BeginInvoke(new DelVoidInt(SetNudCount), lFiles.Count);
+            lFiles = null;
         }
 
         #region SetImageCalls
@@ -456,7 +451,11 @@ namespace Nagru___Manga_Organizer
         void SetPicBxImage(Object obj)
         {
             MnTS_Open.Visible = true;
-            PicBx_Cover.Image = (System.Drawing.Image)obj;
+            FileStream fs = new FileStream(obj as string, 
+                FileMode.Open, FileAccess.Read);
+            PicBx_Cover.Image = System.Drawing.Image.FromStream(fs);
+            fs.Close();
+            fs.Dispose();
         }
 
         /* Release old image resource */
@@ -467,6 +466,9 @@ namespace Nagru___Manga_Organizer
                 PicBx_Cover.Image.Dispose();
                 PicBx_Cover.Image = null;
             }
+
+            //force garbage collection
+            GC.Collect(2);
         }
         #endregion
 
@@ -524,9 +526,9 @@ namespace Nagru___Manga_Organizer
             CmBx_Type.Text = "Manga";
             Nud_Pages.Value = 0;
             frTxBx_Desc.Clear();
-            PicBx_Cover.Image = null;
             ChkBx_Fav.Checked = false;
             Dt_Date.Value = DateTime.Now;
+            SetPicBxNull();
 
             //Mn_EntryOps
             MnTS_New.Visible = true;
@@ -587,7 +589,7 @@ namespace Nagru___Manga_Organizer
             MnTS_Edit.Visible = false;
 
             //Get image
-            Thread thWork = new System.Threading.Thread(GetImage);
+            thWork = new System.Threading.Thread(GetImage);
             thWork.IsBackground = true;
             thWork.Start();
         }
@@ -756,7 +758,7 @@ namespace Nagru___Manga_Organizer
                 //delete folder
                 if (dResult == DialogResult.Yes)
                 {
-                    Thread thWork = new System.Threading.Thread(Delete);
+                    thWork = new System.Threading.Thread(Delete);
                     thWork.IsBackground = true;
                     thWork.Start(lData[indx].sLoc);
                 }
@@ -978,7 +980,7 @@ namespace Nagru___Manga_Organizer
                 TxBx_Loc.Text = sPath;
 
                 //Get image
-                Thread thWork = new System.Threading.Thread(GetImage);
+                thWork = new System.Threading.Thread(GetImage);
                 thWork.IsBackground = true;
                 thWork.Start();
             }
