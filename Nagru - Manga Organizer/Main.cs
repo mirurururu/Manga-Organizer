@@ -507,13 +507,14 @@ namespace Nagru___Manga_Organizer
         /* Set properties back to default   */
         void Reset()
         {
+            //reset Form title
+            Text = (TxBx_Search.Text == string.Empty ? "Manga Organizer: "
+                + lData.Count : "Returned: " + LV_Entries.Items.Count) + " entries";
+
             //Tb_Browse
             LV_Entries.FocusedItem = null;
             LV_Entries.SelectedItems.Clear();
             indx = -1;
-
-            //variables & Form
-            Text = "Manga Organizer: " + lData.Count + " entries";
 
             //Tb_View
             TxBx_Loc.Clear();
