@@ -16,8 +16,9 @@ For an example of it running see: https://imageshack.us/a/img18/4306/92024725.jp
 
 
 Notes:
-- No install required
+- no install required
 - searches are inclusive, with terms seperated by a comma
+- copy & pasted tags from EH will automatically re-format themselves
 - drag or paste a formatted name into the Artist textbox, and it should automatically split it into Artist & Title for you
 - browse images with your default image viewer (menu item: Open) or with the built in one (click on the cover image)
 - the latter browser displays two images simultaneously and should be traversed from right to left
