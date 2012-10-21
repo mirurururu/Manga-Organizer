@@ -222,7 +222,7 @@ namespace Nagru___Manga_Organizer
         #region Tab_Browse
         /* Deselect current listview item  */
         private void ClearSelection(object sender, EventArgs e)
-        { Reset(); }
+        { if (indx != -1) Reset(); }
 
         /* Starts scan of default directory */
         private void Btn_Scan_Click(object sender, EventArgs e)
@@ -258,9 +258,9 @@ namespace Nagru___Manga_Organizer
         /* Clear searchbar  */
         private void Btn_Clear_Click(object sender, EventArgs e)
         {
-            Reset();
             LV_Entries.Focus();
             TxBx_Search.Clear();
+            UpdateLV();
         }
 
         /* Display current entry to 'view' tab   */
@@ -451,7 +451,7 @@ namespace Nagru___Manga_Organizer
         void SetPicBxImage(Object obj)
         {
             MnTS_Open.Visible = true;
-            FileStream fs = new FileStream(obj as string, 
+            FileStream fs = new FileStream(obj as string,
                 FileMode.Open, FileAccess.Read);
             PicBx_Cover.Image = System.Drawing.Image.FromStream(fs);
             fs.Close();
@@ -905,7 +905,7 @@ namespace Nagru___Manga_Organizer
                 && TxBx_Title.Text == string.Empty)
             {
                 txbx.Paste();
-                string[] sName = (TxBx_Artist.Text).Split(
+                string[] sName = TxBx_Artist.Text.Split(
                     new string[] { "[", "]" }, StringSplitOptions.None);
 
                 if (sName.Length == 3)
@@ -913,6 +913,22 @@ namespace Nagru___Manga_Organizer
                     TxBx_Artist.Text = sName[1].Trim();
                     TxBx_Title.Text = sName[2].Trim();
                 }
+            }
+            else if (txbx == TxBx_Tags)
+            {
+                if (!Clipboard.GetText().Contains("\n"))
+                { txbx.Paste(); return; }
+
+                string[] sTags = Clipboard.GetText().Split(new char[] { '(', '\n' });
+
+                for (int i = 0; i < sTags.Length; i++)
+                    if (!sTags[i].EndsWith("\r") && !sTags[i].EndsWith(")"))
+                    {
+                        TxBx_Tags.Text += sTags[i].TrimEnd();
+
+                        if (i != sTags.Length - 2)
+                            TxBx_Tags.Text += ", ";
+                    }
             }
             else txbx.Paste();
         }
@@ -984,7 +1000,23 @@ namespace Nagru___Manga_Organizer
                 thWork.IsBackground = true;
                 thWork.Start();
             }
-            else //if (sender == TxBx_Artist/Title/Loc)
+            else if (sender == TxBx_Tags)
+            {
+                if (!sAdd.Contains("\n"))
+                { TxBx_Tags.Text += sAdd; return; }
+
+                string[] sTags = sAdd.Split(new char[] { '(', '\n' });
+
+                for (int i = 0; i < sTags.Length; i++)
+                    if (!sTags[i].EndsWith("\r") && !sTags[i].EndsWith(")"))
+                    {
+                        TxBx_Tags.Text += sTags[i].TrimEnd();
+
+                        if (i != sTags.Length - 2)
+                            TxBx_Tags.Text += ", ";
+                    }
+            }
+            else //if (sender == Title/Loc)
             {
                 TextBox TxBx = (TextBox)sender;
 
