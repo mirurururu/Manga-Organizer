@@ -16,6 +16,8 @@ namespace Nagru___Manga_Organizer
             List<string> lFiles = new List<string>();
             string[] sFilters = Filter.Split('|');
 
+            if (!Directory.Exists(SourceFolder)) return lFiles;
+
             //for each filter find matching file names
             for (int i = 0; i < sFilters.Length; i++)
                 lFiles.AddRange(System.IO.Directory.GetFiles(SourceFolder,

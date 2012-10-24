@@ -18,8 +18,7 @@ namespace Nagru___Manga_Organizer
     {
         delegate void DelVoidVoid();
         delegate void DelVoidInt(int iNum);
-        delegate void DelVoidString(string sLoc);
-        DelVoidInt delPassSum = null;
+        delegate void DelVoidString(string sMsg);
 
         Thread thWork;
         LVsorter lvSortObj = new LVsorter();
@@ -36,16 +35,6 @@ namespace Nagru___Manga_Organizer
             public DateTime dtDate;
             public ushort iPages;
             public bool bFav;
-
-            public string GetName //Returns formatted title of Entry
-            {
-                get
-                {
-                    if (sArtist != string.Empty)
-                        return string.Format("[{0}] {1}", sArtist, sTitle);
-                    else return sTitle;
-                }
-            }
 
             /* Initialize manga entry */
             public stEntry(string Title, string Artist, string Location, string Description,
@@ -73,6 +62,14 @@ namespace Nagru___Manga_Organizer
                     if (i != 0) sTags += ", ";
                     sTags += lCheck[i];
                 }
+            }
+
+            //Returns formatted title of Entry
+            public override string ToString()
+            {
+                if (sArtist != string.Empty)
+                    return string.Format("[{0}] {1}", sArtist, sTitle);
+                else return sTitle;
             }
 
             /* Override equals to compare entry titles */
@@ -129,15 +126,34 @@ namespace Nagru___Manga_Organizer
 
         #region FormMethods
         /* Load 'Main' Form   */
-        public Main()
-        { InitializeComponent(); }
+        public Main(string[] sFile)
+        {
+            InitializeComponent();
+
+            //if database opened with "Open with..."
+            if (sFile.Length > 0 && File.Exists(sFile[0]))
+                if (Path.GetFileName(sFile[0]) == "MangaDatabase.bin")
+                {
+                    Cursor = Cursors.WaitCursor;
+                    lData.AddRange(FileSerializer.Deserialize<List<stEntry>>(sFile[0]));
+                    Cursor = Cursors.Default;
+
+                    if (lData != null) UpdateLV();
+                    else lData = new List<stEntry>(0);
+
+                    if (Properties.Settings.Default.SavLoc != sFile[0])
+                    {
+                        Properties.Settings.Default.SavLoc = sFile[0];
+                        Properties.Settings.Default.Save();
+
+                        Text = "Default database location changed to \"" + sFile + "\"";
+                    }
+                }
+        }
 
         /* Load database   */
         private void Main_Load(object sender, EventArgs e)
         {
-            //handles data returned from GetIndex()
-            delPassSum = SetData;
-
             //disable ContextMenu in Nud_Pages
             Nud_Pages.ContextMenuStrip = new ContextMenuStrip();
 
@@ -145,6 +161,11 @@ namespace Nagru___Manga_Organizer
             LV_Entries.ListViewItemSorter = lvSortObj;
             LV_Entries_Resize(sender, e);
             LV_Entries.Select();
+
+            //Allow folder to be added by dragging it into LV_Entries
+            LV_Entries.AllowDrop = true;
+            LV_Entries.DragDrop += new DragEventHandler(LV_Entries_DragDrop);
+            LV_Entries.DragEnter += new DragEventHandler(LV_Entries_DragEnter);
 
             //set frTxBx's to allow dragdrop & initialize Notes
             frTxBx_Notes.AllowDrop = true; frTxBx_Desc.AllowDrop = true;
@@ -158,7 +179,7 @@ namespace Nagru___Manga_Organizer
             sPath += "\\MangaDatabase.bin";
 
             //load database
-            if (File.Exists(sPath))
+            if (lData.Count == 0 && File.Exists(sPath))
             {
                 Cursor = Cursors.WaitCursor;
                 lData.AddRange(FileSerializer.Deserialize<List<stEntry>>(sPath));
@@ -206,7 +227,7 @@ namespace Nagru___Manga_Organizer
                     {
                         //Update Form title
                         if (!Text.StartsWith("S"))
-                            Text = "Selected: " + lData[indx].GetName;
+                            Text = "Selected: " + lData[indx].ToString();
                         MnTS_Del.Visible = true;
                         MnTS_Open.Visible = true;
                     }
@@ -478,7 +499,7 @@ namespace Nagru___Manga_Organizer
             ListViewItem lvi = (ListViewItem)obj;
 
             //grab index of selected item
-            this.BeginInvoke(delPassSum, lData.FindIndex(new Search(
+            this.BeginInvoke(new DelVoidInt(SetData), lData.FindIndex(new Search(
                 lvi.SubItems[0].Text + lvi.SubItems[1].Text).Match));
         }
 
@@ -541,6 +562,7 @@ namespace Nagru___Manga_Organizer
         void SaveData()
         {
             Cursor = Cursors.WaitCursor;
+            Text = "Saving...";
 
             //grab filepath
             string sPath = Properties.Settings.Default.SavLoc;
@@ -562,6 +584,7 @@ namespace Nagru___Manga_Organizer
                 bSavText = true;
             }
 
+            Text = "Saved";
             Cursor = Cursors.Default;
         }
 
@@ -572,7 +595,7 @@ namespace Nagru___Manga_Organizer
             { Reset(); return; }
 
             //write item's metadata to Tb_View
-            Text = "Selected: " + lData[indx].GetName;
+            Text = "Selected: " + lData[indx].ToString();
             this.SuspendLayout();
             TxBx_Title.Text = lData[indx].sTitle;
             TxBx_Artist.Text = lData[indx].sArtist;
@@ -699,7 +722,7 @@ namespace Nagru___Manga_Organizer
 
             if (!lData.Contains(en))
             {
-                if (MessageBox.Show("Are you sure you wish to add:\n\"" + en.GetName + "\"?",
+                if (MessageBox.Show("Are you sure you wish to add:\n\"" + en + "\"?",
                     "Manga Organizer", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     lData.Add(en);
@@ -723,7 +746,7 @@ namespace Nagru___Manga_Organizer
             //update LV_Entries & maintain scroll position
             AddEntries();
             MnTS_Edit.Visible = false;
-            Text = "Edited entry: " + lData[indx].GetName;
+            Text = "Edited entry: " + lData[indx].ToString();
         }
 
         /* Deletes current selection from database   */
@@ -731,7 +754,7 @@ namespace Nagru___Manga_Organizer
         {
             //ensure deletion is intentional
             DialogResult dResult = MessageBox.Show("Do you want to delete \"" +
-                lData[indx].GetName + "\"s folder as well?", "Manga Organizer",
+                lData[indx] + "\"s folder as well?", "Manga Organizer",
                 MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
 
             //prevent user trying to delete locked folder
@@ -1023,6 +1046,63 @@ namespace Nagru___Manga_Organizer
                 iNewStart = TxBx.SelectionStart + sAdd.Length;
                 TxBx.Text = TxBx.Text.Insert(TxBx.SelectionStart, sAdd);
                 TxBx.SelectionStart = iNewStart;
+            }
+        }
+
+        /* Allow dropping of folders into LV_Entries */
+        private void LV_Entries_DragEnter(object sender, DragEventArgs e)
+        {
+            string sFile = ((string[])e.Data.GetData(DataFormats.FileDrop, false))[0];
+            FileAttributes fa = File.GetAttributes(sFile);
+
+            if (fa == FileAttributes.Directory)
+                e.Effect = DragDropEffects.Copy;
+            else e.Effect = DragDropEffects.None;
+        }
+
+        /* Adds folder to database when dragged over LV_Entries */
+        private void LV_Entries_DragDrop(object sender, DragEventArgs e)
+        {
+            string sFile = ((string[])e.Data.GetData(DataFormats.FileDrop, false))[0];
+
+            if (!ExtDirectory.Restricted(sFile))
+            {
+                //Get formatted directory name
+                string[] sTitle = Path.GetFileName(sFile).Split(
+                    new string[] { "[", "]" }, StringSplitOptions.RemoveEmptyEntries);
+
+                //add item
+                Main.stEntry en;
+                if (sTitle.Length == 2)
+                    en = new Main.stEntry(sTitle[1].TrimStart(), sTitle[0], sFile, "", "", "",
+                        DateTime.Now, ExtDirectory.GetFiles(sFile).Count, false);
+                else
+                    en = new Main.stEntry(sTitle[0].TrimStart(), "", sFile, "", "", "",
+                        DateTime.Now, ExtDirectory.GetFiles(sFile).Count, false);
+
+                if (!lData.Contains(en))
+                {
+                    lData.Add(en);
+                    AddEntries();
+
+                    int iPos = 0;
+                    for (int i = 0; i < LV_Entries.Items.Count; i++)
+                        if (LV_Entries.Items[i].SubItems[1].Text == en.sTitle)
+                        {
+                            LV_Entries.FocusedItem = LV_Entries.Items[i];
+                            LV_Entries.Items[i].Selected = true;
+                            iPos = i;
+                            break;
+                        }
+                    LV_Entries.Select();
+                    bSavList = false;
+
+                    /* Compensate for broken scroll-to function
+                     * by running it multiple times (3 is sweet-spot) */
+                    LV_Entries.TopItem = LV_Entries.Items[iPos];
+                    LV_Entries.TopItem = LV_Entries.Items[iPos];
+                    LV_Entries.TopItem = LV_Entries.Items[iPos];
+                }
             }
         }
         #endregion
