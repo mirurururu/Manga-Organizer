@@ -472,25 +472,12 @@ namespace Nagru___Manga_Organizer
         void SetPicBxImage(Object obj)
         {
             MnTS_Open.Visible = true;
-            FileStream fs = new FileStream(obj as string,
-                FileMode.Open, FileAccess.Read);
-            PicBx_Cover.Image = System.Drawing.Image.FromStream(fs);
-            fs.Close();
-            fs.Dispose();
+            PicBx_Cover.ImageLocation = obj as string;
         }
 
         /* Release old image resource */
         void SetPicBxNull()
-        {
-            if (PicBx_Cover.Image != null)
-            {
-                PicBx_Cover.Image.Dispose();
-                PicBx_Cover.Image = null;
-            }
-
-            //force garbage collection
-            GC.Collect(2);
-        }
+        { PicBx_Cover.ImageLocation = null; }
         #endregion
 
         /* Find list index of currently selected item */

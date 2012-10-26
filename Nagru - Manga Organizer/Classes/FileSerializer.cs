@@ -9,9 +9,9 @@ namespace Nagru___Manga_Organizer
     public static class FileSerializer
     {
         //serialize passed object
-        public static void Serialize(string sFilepath, object Obj)
+        public static void Serialize(string sFilepath, object obj)
         {
-            if (Obj == null)
+            if (obj == null)
                 throw new ArgumentNullException("Object cannot be null");
 
             Stream stream = null;
@@ -19,7 +19,7 @@ namespace Nagru___Manga_Organizer
             {
                 stream = File.Open(sFilepath, FileMode.Create);
                 BinaryFormatter bFormatter = new BinaryFormatter();
-                bFormatter.Serialize(stream, Obj);
+                bFormatter.Serialize(stream, obj);
             }
             finally { if (stream != null) stream.Close(); }
         }
@@ -43,7 +43,7 @@ namespace Nagru___Manga_Organizer
                     System.Windows.Forms.MessageBoxButtons.OK, 
                     System.Windows.Forms.MessageBoxIcon.Error);
             }
-            finally { if (stream != null)stream.Close(); }
+            finally { if (stream != null) stream.Close(); }
 
             return obj;
         }
