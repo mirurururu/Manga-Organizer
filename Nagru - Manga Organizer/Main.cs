@@ -463,7 +463,7 @@ namespace Nagru___Manga_Organizer
         void SetNudCount(int iNum)
         {
             Nud_Pages.Value = iNum;
-
+             
             //set display to end of line
             TxBx_Loc.SelectionStart = TxBx_Loc.Text.Length;
         }
@@ -472,12 +472,25 @@ namespace Nagru___Manga_Organizer
         void SetPicBxImage(Object obj)
         {
             MnTS_Open.Visible = true;
-            PicBx_Cover.ImageLocation = obj as string;
+            FileStream fs = new FileStream(obj as string,
+                FileMode.Open, FileAccess.Read);
+            PicBx_Cover.Image = System.Drawing.Image.FromStream(fs);
+            fs.Close();
+            fs.Dispose();
         }
 
         /* Release old image resource */
         void SetPicBxNull()
-        { PicBx_Cover.ImageLocation = null; }
+        {
+            if (PicBx_Cover.Image != null)
+            {
+                PicBx_Cover.Image.Dispose();
+                PicBx_Cover.Image = null;
+            }
+
+            //force garbage collection
+            GC.Collect(2);
+        }
         #endregion
 
         /* Find list index of currently selected item */

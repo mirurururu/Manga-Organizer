@@ -50,8 +50,10 @@ namespace Nagru___Manga_Organizer
 
                 if (char.IsDigit(acSpaceX[0]) && char.IsDigit(acSpaceY[0]))
                 {
-                    int iNumChunkX = int.Parse(sCmpX), iNumChunkY = int.Parse(sCmpY);
-                    result = iNumChunkX.CompareTo(iNumChunkY);
+                    int iNumChunkX = 0, iNumChunkY = 0;
+                    if(int.TryParse(sCmpX, out iNumChunkX) && int.TryParse(sCmpY, out iNumChunkY))
+                        result = iNumChunkX.CompareTo(iNumChunkY);
+                    else result = sCmpX.CompareTo(sCmpY);
                 }
                 else result = sCmpX.CompareTo(sCmpY);
 

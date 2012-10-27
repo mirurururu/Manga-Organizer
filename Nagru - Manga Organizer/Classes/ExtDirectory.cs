@@ -11,7 +11,7 @@ namespace Nagru___Manga_Organizer
     {
         public static List<string> GetFiles(string SourceFolder,
             SearchOption SearchOption = SearchOption.AllDirectories,
-            string Filter = "*.jpg|*.png|*.bmp|*.jpeg")
+            string Filter = "*.jpg|*.png|*.bmp|*.jpeg|*.gif")
         {
             List<string> lFiles = new List<string>();
             string[] sFilters = Filter.Split('|');
@@ -23,7 +23,7 @@ namespace Nagru___Manga_Organizer
                 lFiles.AddRange(System.IO.Directory.GetFiles(SourceFolder,
                     sFilters[i], SearchOption));
 
-            lFiles.Sort();
+            lFiles.Sort(new TrueCompare());
             return lFiles;
         }
 
