@@ -11,7 +11,7 @@ namespace Nagru___Manga_Organizer
     {
         public static List<string> GetFiles(string SourceFolder,
             SearchOption SearchOption = SearchOption.AllDirectories,
-            string Filter = "*.jpg|*.png|*.bmp|*.jpeg|*.gif")
+            string Filter = "*.jpg|*.png|*.bmp|*.jpeg")
         {
             List<string> lFiles = new List<string>();
             string[] sFilters = Filter.Split('|');
