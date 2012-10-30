@@ -7,7 +7,7 @@ Basically, given folder titles of "[Artist] Title" (E-Hentai's format), it can a
 
 If this sounds useful to you, give it a shot: <a href="https://github.com/downloads/Nagru/Manga-Organizer/Manga%20Organizer.exe">Download</a>
 
-For an example of it running see: <a href="https://github.com/Nagru/Manga-Organizer/blob/master/preview.jpg?raw=true">Preview</a>
+For an example of it running see: <a href="https://github.com/Nagru/Manga-Organizer/blob/master/preview.jpg?raw=true" target="_blank">Preview</a>
 
 (You'll need the .NET library to run it, but if you're running Vista/7 it should've come bundled with it. Otherwise, download <a href="https://www.microsoft.com/en-us/download/details.aspx?id=17851">.Net</a> for Windows or <a href="http://www.go-mono.com/mono-downloads/download.html">Mono</a> for Linux/OSX.)
 
