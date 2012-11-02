@@ -16,5 +16,11 @@ namespace Nagru___Manga_Organizer
 
             return false;
         }
+
+        public static string[] Split(string sRaw, string sFilter, 
+            StringSplitOptions SplitOption = StringSplitOptions.RemoveEmptyEntries)
+        {
+            return sRaw.Split(new string[] { sFilter }, SplitOption);
+        }
     }
 }

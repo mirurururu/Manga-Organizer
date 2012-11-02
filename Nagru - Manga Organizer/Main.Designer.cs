@@ -33,14 +33,16 @@
             this.TabControl = new System.Windows.Forms.TabControl();
             this.Tb_Browse = new System.Windows.Forms.TabPage();
             this.ChkBx_ShowFav = new System.Windows.Forms.CheckBox();
+            this.LV_Entries = new Nagru___Manga_Organizer.ListViewNF();
+            this.ColArtist = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ColTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ColPages = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ColTags = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ColType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Btn_Scan = new System.Windows.Forms.Button();
             this.Btn_Clear = new System.Windows.Forms.Button();
             this.Lbl_Search = new System.Windows.Forms.Label();
             this.TxBx_Search = new System.Windows.Forms.TextBox();
-            this.Tb_View = new System.Windows.Forms.TabPage();
-            this.Btn_Loc = new System.Windows.Forms.Button();
-            this.ChkBx_Fav = new System.Windows.Forms.CheckBox();
-            this.TxBx_Loc = new System.Windows.Forms.TextBox();
             this.Mn_TxBx = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.MnTx_Undo = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
@@ -49,6 +51,10 @@
             this.MnTx_Paste = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.MnTx_SelAll = new System.Windows.Forms.ToolStripMenuItem();
+            this.Tb_View = new System.Windows.Forms.TabPage();
+            this.Btn_Loc = new System.Windows.Forms.Button();
+            this.ChkBx_Fav = new System.Windows.Forms.CheckBox();
+            this.TxBx_Loc = new System.Windows.Forms.TextBox();
             this.Lbl_Desc = new System.Windows.Forms.Label();
             this.CmBx_Type = new System.Windows.Forms.ComboBox();
             this.Dt_Date = new System.Windows.Forms.DateTimePicker();
@@ -73,6 +79,7 @@
             this.MnTS_DefLoc = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTS_CopyTitle = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.MnTS_GET = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTS_About = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTS_SecretSort = new System.Windows.Forms.ToolStripSeparator();
             this.MnTS_New = new System.Windows.Forms.ToolStripMenuItem();
@@ -80,6 +87,7 @@
             this.MnTS_Open = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTS_Del = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTS_Clear = new System.Windows.Forms.ToolStripMenuItem();
+            this.frTxBx_Desc = new Nagru___Manga_Organizer.FixedRichTextBox();
             this.Mn_rTxBx = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.MnRTx_Undo = new System.Windows.Forms.ToolStripMenuItem();
             this.tsSeperate = new System.Windows.Forms.ToolStripSeparator();
@@ -89,19 +97,12 @@
             this.tsSeperate2 = new System.Windows.Forms.ToolStripSeparator();
             this.MnRTx_SelectAll = new System.Windows.Forms.ToolStripMenuItem();
             this.Tb_Notes = new System.Windows.Forms.TabPage();
-            this.Delay = new System.Windows.Forms.Timer(this.components);
-            this.LV_Entries = new Nagru___Manga_Organizer.ListViewNF();
-            this.ColArtist = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ColTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ColPages = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ColTags = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ColType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.frTxBx_Desc = new Nagru___Manga_Organizer.FixedRichTextBox();
             this.frTxBx_Notes = new Nagru___Manga_Organizer.FixedRichTextBox();
+            this.Delay = new System.Windows.Forms.Timer(this.components);
             this.TabControl.SuspendLayout();
             this.Tb_Browse.SuspendLayout();
-            this.Tb_View.SuspendLayout();
             this.Mn_TxBx.SuspendLayout();
+            this.Tb_View.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Nud_Pages)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PicBx_Cover)).BeginInit();
             this.Mn_EntryOps.SuspendLayout();
@@ -154,6 +155,57 @@
             this.ChkBx_ShowFav.UseVisualStyleBackColor = true;
             this.ChkBx_ShowFav.CheckedChanged += new System.EventHandler(this.ChkBx_ShowFav_CheckedChanged);
             // 
+            // LV_Entries
+            // 
+            this.LV_Entries.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.LV_Entries.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.ColArtist,
+            this.ColTitle,
+            this.ColPages,
+            this.ColTags,
+            this.ColType});
+            this.LV_Entries.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LV_Entries.FullRowSelect = true;
+            this.LV_Entries.HideSelection = false;
+            this.LV_Entries.Location = new System.Drawing.Point(0, 30);
+            this.LV_Entries.MultiSelect = false;
+            this.LV_Entries.Name = "LV_Entries";
+            this.LV_Entries.Size = new System.Drawing.Size(926, 519);
+            this.LV_Entries.TabIndex = 0;
+            this.LV_Entries.UseCompatibleStateImageBehavior = false;
+            this.LV_Entries.View = System.Windows.Forms.View.Details;
+            this.LV_Entries.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.LV_Entries_ColumnClick);
+            this.LV_Entries.SelectedIndexChanged += new System.EventHandler(this.LV_Entries_SelectedIndexChanged);
+            this.LV_Entries.DoubleClick += new System.EventHandler(this.LV_Entries_DoubleClick);
+            this.LV_Entries.Resize += new System.EventHandler(this.LV_Entries_Resize);
+            // 
+            // ColArtist
+            // 
+            this.ColArtist.Text = "Artist";
+            this.ColArtist.Width = 202;
+            // 
+            // ColTitle
+            // 
+            this.ColTitle.Text = "Title";
+            this.ColTitle.Width = 321;
+            // 
+            // ColPages
+            // 
+            this.ColPages.Text = "Pages";
+            this.ColPages.Width = 46;
+            // 
+            // ColTags
+            // 
+            this.ColTags.Text = "Tags";
+            this.ColTags.Width = 261;
+            // 
+            // ColType
+            // 
+            this.ColType.Text = "Type";
+            this.ColType.Width = 72;
+            // 
             // Btn_Scan
             // 
             this.Btn_Scan.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -195,77 +247,13 @@
             // 
             this.TxBx_Search.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.TxBx_Search.ContextMenuStrip = this.Mn_TxBx;
             this.TxBx_Search.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.TxBx_Search.Location = new System.Drawing.Point(59, 6);
             this.TxBx_Search.Name = "TxBx_Search";
             this.TxBx_Search.Size = new System.Drawing.Size(731, 21);
             this.TxBx_Search.TabIndex = 1;
             this.TxBx_Search.TextChanged += new System.EventHandler(this.TxBx_Search_TextChanged);
-            // 
-            // Tb_View
-            // 
-            this.Tb_View.BackColor = System.Drawing.Color.Transparent;
-            this.Tb_View.Controls.Add(this.Btn_Loc);
-            this.Tb_View.Controls.Add(this.ChkBx_Fav);
-            this.Tb_View.Controls.Add(this.TxBx_Loc);
-            this.Tb_View.Controls.Add(this.Lbl_Desc);
-            this.Tb_View.Controls.Add(this.CmBx_Type);
-            this.Tb_View.Controls.Add(this.Dt_Date);
-            this.Tb_View.Controls.Add(this.Nud_Pages);
-            this.Tb_View.Controls.Add(this.TxBx_Tags);
-            this.Tb_View.Controls.Add(this.TxBx_Artist);
-            this.Tb_View.Controls.Add(this.Lbl_Pages);
-            this.Tb_View.Controls.Add(this.Lbl_Date);
-            this.Tb_View.Controls.Add(this.Lbl_Type);
-            this.Tb_View.Controls.Add(this.Lbl_Tags);
-            this.Tb_View.Controls.Add(this.Lbl_Artist);
-            this.Tb_View.Controls.Add(this.Lbl_Title);
-            this.Tb_View.Controls.Add(this.TxBx_Title);
-            this.Tb_View.Controls.Add(this.PicBx_Cover);
-            this.Tb_View.Controls.Add(this.Mn_EntryOps);
-            this.Tb_View.Controls.Add(this.frTxBx_Desc);
-            this.Tb_View.Location = new System.Drawing.Point(4, 22);
-            this.Tb_View.Name = "Tb_View";
-            this.Tb_View.Padding = new System.Windows.Forms.Padding(3);
-            this.Tb_View.Size = new System.Drawing.Size(929, 549);
-            this.Tb_View.TabIndex = 1;
-            this.Tb_View.Text = "View";
-            // 
-            // Btn_Loc
-            // 
-            this.Btn_Loc.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.Btn_Loc.Location = new System.Drawing.Point(11, 146);
-            this.Btn_Loc.Name = "Btn_Loc";
-            this.Btn_Loc.Size = new System.Drawing.Size(35, 21);
-            this.Btn_Loc.TabIndex = 23;
-            this.Btn_Loc.Text = "Loc";
-            this.Btn_Loc.UseVisualStyleBackColor = true;
-            this.Btn_Loc.Click += new System.EventHandler(this.Btn_Loc_Click);
-            // 
-            // ChkBx_Fav
-            // 
-            this.ChkBx_Fav.AutoSize = true;
-            this.ChkBx_Fav.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ChkBx_Fav.Location = new System.Drawing.Point(448, 181);
-            this.ChkBx_Fav.Name = "ChkBx_Fav";
-            this.ChkBx_Fav.Size = new System.Drawing.Size(44, 19);
-            this.ChkBx_Fav.TabIndex = 20;
-            this.ChkBx_Fav.Text = "Fav";
-            this.ChkBx_Fav.UseVisualStyleBackColor = true;
-            this.ChkBx_Fav.CheckStateChanged += new System.EventHandler(this.ChkBx_Fav_CheckStateChanged);
-            // 
-            // TxBx_Loc
-            // 
-            this.TxBx_Loc.AllowDrop = true;
-            this.TxBx_Loc.ContextMenuStrip = this.Mn_TxBx;
-            this.TxBx_Loc.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.TxBx_Loc.Location = new System.Drawing.Point(52, 146);
-            this.TxBx_Loc.Name = "TxBx_Loc";
-            this.TxBx_Loc.Size = new System.Drawing.Size(440, 21);
-            this.TxBx_Loc.TabIndex = 3;
-            this.TxBx_Loc.TextChanged += new System.EventHandler(this.TxBx_Loc_TextChanged);
-            this.TxBx_Loc.DragDrop += new System.Windows.Forms.DragEventHandler(this.DragDropTxBx);
-            this.TxBx_Loc.DragEnter += new System.Windows.Forms.DragEventHandler(this.DragEnterTxBx);
             // 
             // Mn_TxBx
             // 
@@ -335,6 +323,71 @@
             this.MnTx_SelAll.Size = new System.Drawing.Size(115, 22);
             this.MnTx_SelAll.Text = "Select All";
             this.MnTx_SelAll.Click += new System.EventHandler(this.MnTx_SelAll_Click);
+            // 
+            // Tb_View
+            // 
+            this.Tb_View.BackColor = System.Drawing.Color.Transparent;
+            this.Tb_View.Controls.Add(this.Btn_Loc);
+            this.Tb_View.Controls.Add(this.ChkBx_Fav);
+            this.Tb_View.Controls.Add(this.TxBx_Loc);
+            this.Tb_View.Controls.Add(this.Lbl_Desc);
+            this.Tb_View.Controls.Add(this.CmBx_Type);
+            this.Tb_View.Controls.Add(this.Dt_Date);
+            this.Tb_View.Controls.Add(this.Nud_Pages);
+            this.Tb_View.Controls.Add(this.TxBx_Tags);
+            this.Tb_View.Controls.Add(this.TxBx_Artist);
+            this.Tb_View.Controls.Add(this.Lbl_Pages);
+            this.Tb_View.Controls.Add(this.Lbl_Date);
+            this.Tb_View.Controls.Add(this.Lbl_Type);
+            this.Tb_View.Controls.Add(this.Lbl_Tags);
+            this.Tb_View.Controls.Add(this.Lbl_Artist);
+            this.Tb_View.Controls.Add(this.Lbl_Title);
+            this.Tb_View.Controls.Add(this.TxBx_Title);
+            this.Tb_View.Controls.Add(this.PicBx_Cover);
+            this.Tb_View.Controls.Add(this.Mn_EntryOps);
+            this.Tb_View.Controls.Add(this.frTxBx_Desc);
+            this.Tb_View.Location = new System.Drawing.Point(4, 22);
+            this.Tb_View.Name = "Tb_View";
+            this.Tb_View.Padding = new System.Windows.Forms.Padding(3);
+            this.Tb_View.Size = new System.Drawing.Size(929, 549);
+            this.Tb_View.TabIndex = 1;
+            this.Tb_View.Text = "View";
+            // 
+            // Btn_Loc
+            // 
+            this.Btn_Loc.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.Btn_Loc.Location = new System.Drawing.Point(11, 146);
+            this.Btn_Loc.Name = "Btn_Loc";
+            this.Btn_Loc.Size = new System.Drawing.Size(35, 21);
+            this.Btn_Loc.TabIndex = 23;
+            this.Btn_Loc.Text = "Loc";
+            this.Btn_Loc.UseVisualStyleBackColor = true;
+            this.Btn_Loc.Click += new System.EventHandler(this.Btn_Loc_Click);
+            // 
+            // ChkBx_Fav
+            // 
+            this.ChkBx_Fav.AutoSize = true;
+            this.ChkBx_Fav.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ChkBx_Fav.Location = new System.Drawing.Point(448, 181);
+            this.ChkBx_Fav.Name = "ChkBx_Fav";
+            this.ChkBx_Fav.Size = new System.Drawing.Size(44, 19);
+            this.ChkBx_Fav.TabIndex = 20;
+            this.ChkBx_Fav.Text = "Fav";
+            this.ChkBx_Fav.UseVisualStyleBackColor = true;
+            this.ChkBx_Fav.CheckStateChanged += new System.EventHandler(this.ChkBx_Fav_CheckStateChanged);
+            // 
+            // TxBx_Loc
+            // 
+            this.TxBx_Loc.AllowDrop = true;
+            this.TxBx_Loc.ContextMenuStrip = this.Mn_TxBx;
+            this.TxBx_Loc.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.TxBx_Loc.Location = new System.Drawing.Point(52, 146);
+            this.TxBx_Loc.Name = "TxBx_Loc";
+            this.TxBx_Loc.Size = new System.Drawing.Size(440, 21);
+            this.TxBx_Loc.TabIndex = 3;
+            this.TxBx_Loc.TextChanged += new System.EventHandler(this.TxBx_Loc_TextChanged);
+            this.TxBx_Loc.DragDrop += new System.Windows.Forms.DragEventHandler(this.DragDropTxBx);
+            this.TxBx_Loc.DragEnter += new System.Windows.Forms.DragEventHandler(this.DragEnterTxBx);
             // 
             // Lbl_Desc
             // 
@@ -547,6 +600,7 @@
             this.MnTS_DefLoc,
             this.MnTS_CopyTitle,
             this.toolStripSeparator4,
+            this.MnTS_GET,
             this.MnTS_About});
             this.MnTS_Menu.Name = "MnTS_Menu";
             this.MnTS_Menu.Size = new System.Drawing.Size(50, 23);
@@ -606,6 +660,15 @@
             this.toolStripSeparator4.Name = "toolStripSeparator4";
             this.toolStripSeparator4.Size = new System.Drawing.Size(188, 6);
             // 
+            // MnTS_GET
+            // 
+            this.MnTS_GET.Name = "MnTS_GET";
+            this.MnTS_GET.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
+            this.MnTS_GET.ShowShortcutKeys = false;
+            this.MnTS_GET.Size = new System.Drawing.Size(191, 22);
+            this.MnTS_GET.Text = "GET from URL";
+            this.MnTS_GET.Click += new System.EventHandler(this.MnTS_GET_Click);
+            // 
             // MnTS_About
             // 
             this.MnTS_About.Name = "MnTS_About";
@@ -663,6 +726,20 @@
             this.MnTS_Clear.Size = new System.Drawing.Size(46, 23);
             this.MnTS_Clear.Text = "Clear";
             this.MnTS_Clear.Click += new System.EventHandler(this.MnTS_Clear_Click);
+            // 
+            // frTxBx_Desc
+            // 
+            this.frTxBx_Desc.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.frTxBx_Desc.ContextMenuStrip = this.Mn_rTxBx;
+            this.frTxBx_Desc.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.frTxBx_Desc.Location = new System.Drawing.Point(8, 278);
+            this.frTxBx_Desc.Name = "frTxBx_Desc";
+            this.frTxBx_Desc.Size = new System.Drawing.Size(484, 264);
+            this.frTxBx_Desc.TabIndex = 22;
+            this.frTxBx_Desc.Text = "";
+            this.frTxBx_Desc.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.frTxBx_Desc_LinkClicked);
+            this.frTxBx_Desc.TextChanged += new System.EventHandler(this.EntryAlt_Text);
             // 
             // Mn_rTxBx
             // 
@@ -743,76 +820,6 @@
             this.Tb_Notes.Text = "Notes";
             this.Tb_Notes.UseVisualStyleBackColor = true;
             // 
-            // Delay
-            // 
-            this.Delay.Interval = 300;
-            this.Delay.Tick += new System.EventHandler(this.Delay_Tick);
-            // 
-            // LV_Entries
-            // 
-            this.LV_Entries.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.LV_Entries.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.ColArtist,
-            this.ColTitle,
-            this.ColPages,
-            this.ColTags,
-            this.ColType});
-            this.LV_Entries.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LV_Entries.FullRowSelect = true;
-            this.LV_Entries.HideSelection = false;
-            this.LV_Entries.Location = new System.Drawing.Point(0, 30);
-            this.LV_Entries.MultiSelect = false;
-            this.LV_Entries.Name = "LV_Entries";
-            this.LV_Entries.Size = new System.Drawing.Size(926, 519);
-            this.LV_Entries.TabIndex = 0;
-            this.LV_Entries.UseCompatibleStateImageBehavior = false;
-            this.LV_Entries.View = System.Windows.Forms.View.Details;
-            this.LV_Entries.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.LV_Entries_ColumnClick);
-            this.LV_Entries.SelectedIndexChanged += new System.EventHandler(this.LV_Entries_SelectedIndexChanged);
-            this.LV_Entries.DoubleClick += new System.EventHandler(this.LV_Entries_DoubleClick);
-            this.LV_Entries.Resize += new System.EventHandler(this.LV_Entries_Resize);
-            // 
-            // ColArtist
-            // 
-            this.ColArtist.Text = "Artist";
-            this.ColArtist.Width = 202;
-            // 
-            // ColTitle
-            // 
-            this.ColTitle.Text = "Title";
-            this.ColTitle.Width = 321;
-            // 
-            // ColPages
-            // 
-            this.ColPages.Text = "Pages";
-            this.ColPages.Width = 46;
-            // 
-            // ColTags
-            // 
-            this.ColTags.Text = "Tags";
-            this.ColTags.Width = 261;
-            // 
-            // ColType
-            // 
-            this.ColType.Text = "Type";
-            this.ColType.Width = 72;
-            // 
-            // frTxBx_Desc
-            // 
-            this.frTxBx_Desc.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.frTxBx_Desc.ContextMenuStrip = this.Mn_rTxBx;
-            this.frTxBx_Desc.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.frTxBx_Desc.Location = new System.Drawing.Point(8, 278);
-            this.frTxBx_Desc.Name = "frTxBx_Desc";
-            this.frTxBx_Desc.Size = new System.Drawing.Size(484, 264);
-            this.frTxBx_Desc.TabIndex = 22;
-            this.frTxBx_Desc.Text = "";
-            this.frTxBx_Desc.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.frTxBx_Desc_LinkClicked);
-            this.frTxBx_Desc.TextChanged += new System.EventHandler(this.EntryAlt_Text);
-            // 
             // frTxBx_Notes
             // 
             this.frTxBx_Notes.AcceptsTab = true;
@@ -830,6 +837,11 @@
             this.frTxBx_Notes.Text = "";
             this.frTxBx_Notes.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.frTxBx_Notes_LinkClicked);
             this.frTxBx_Notes.TextChanged += new System.EventHandler(this.frTxBx_Notes_TextChanged);
+            // 
+            // Delay
+            // 
+            this.Delay.Interval = 300;
+            this.Delay.Tick += new System.EventHandler(this.Delay_Tick);
             // 
             // Main
             // 
@@ -849,9 +861,9 @@
             this.TabControl.ResumeLayout(false);
             this.Tb_Browse.ResumeLayout(false);
             this.Tb_Browse.PerformLayout();
+            this.Mn_TxBx.ResumeLayout(false);
             this.Tb_View.ResumeLayout(false);
             this.Tb_View.PerformLayout();
-            this.Mn_TxBx.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.Nud_Pages)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.PicBx_Cover)).EndInit();
             this.Mn_EntryOps.ResumeLayout(false);
@@ -920,7 +932,6 @@
         private System.Windows.Forms.ColumnHeader ColPages;
         private System.Windows.Forms.ColumnHeader ColTags;
         private System.Windows.Forms.ColumnHeader ColType;
-        private System.Windows.Forms.ContextMenuStrip Mn_TxBx;
         private System.Windows.Forms.ToolStripMenuItem MnTx_Undo;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem MnTx_Cut;
@@ -932,6 +943,8 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripMenuItem MnTS_About;
         private System.Windows.Forms.CheckBox ChkBx_ShowFav;
+        private System.Windows.Forms.ToolStripMenuItem MnTS_GET;
+        private System.Windows.Forms.ContextMenuStrip Mn_TxBx;
     }
 }
 

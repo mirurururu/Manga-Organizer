@@ -64,12 +64,17 @@ namespace Nagru___Manga_Organizer
             {
                 TxBx_Loc.Text = fbd.SelectedPath;
                 TxBx_Loc.SelectionStart = TxBx_Loc.Text.Length;
+                TryScan();
             }
             fbd.Dispose();
         }
 
-        /* Start directory scan in new thread */
+        /* Start scan manually */
         private void Btn_Scan_Click(object sender, EventArgs e)
+        { TryScan(); }
+
+        /* Start directory scan in new thread */
+        private void TryScan()
         {
             if (!ExtDirectory.Restricted(TxBx_Loc.Text))
             {
@@ -288,35 +293,45 @@ namespace Nagru___Manga_Organizer
             }
 
             if (ChkBx_All.Checked)
-            {
                 for (int i = 0; i < LV_Found.SelectedItems.Count; i++)
                 {
                     string sItem = LV_Found.SelectedItems[i].SubItems[0].Text +
                             LV_Found.SelectedItems[i].SubItems[1].Text;
 
                     if (lIgnored.Contains(sItem))
-                    {
                         for (int x = 0; x < lIgnored.Count; x++)
+                        {
                             if (lIgnored[x] == sItem)
                             {
                                 lIgnored.RemoveAt(x);
                                 break;
                             }
-                    }
+                        }
                     else lIgnored.Add(sItem);
                 }
-            }
-            else
-            {
-                for (int i = 0; i < LV_Found.SelectedItems.Count; i++)
-                {
+            else for (int i = 0; i < LV_Found.SelectedItems.Count; i++)
                     lIgnored.Add(LV_Found.SelectedItems[i].SubItems[0].Text +
                             LV_Found.SelectedItems[i].SubItems[1].Text);
-                }
-            }
 
             UpdateLV();
         }
+        #endregion
+
+        #region Menu_Text
+        private void MnTx_Undo_Click(object sender, EventArgs e)
+        { if (TxBx_Loc.CanUndo) TxBx_Loc.Undo(); }
+
+        private void MnTx_Cut_Click(object sender, EventArgs e)
+        { TxBx_Loc.Cut(); }
+
+        private void MnTx_Copy_Click(object sender, EventArgs e)
+        { TxBx_Loc.Copy(); }
+
+        private void MnTx_Paste_Click(object sender, EventArgs e)
+        { TxBx_Loc.Paste(); }
+
+        private void MnTx_SelAll_Click(object sender, EventArgs e)
+        { TxBx_Loc.SelectAll(); }
         #endregion
     }
 }

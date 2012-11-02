@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.Btn_Add = new System.Windows.Forms.Button();
             this.TxBx_Loc = new System.Windows.Forms.TextBox();
             this.Btn_Scan = new System.Windows.Forms.Button();
@@ -37,6 +38,15 @@
             this.ColArtist = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ColTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ColPages = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.Mn_TxBx = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.MnTx_Undo = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.MnTx_Cut = new System.Windows.Forms.ToolStripMenuItem();
+            this.MnTx_Copy = new System.Windows.Forms.ToolStripMenuItem();
+            this.MnTx_Paste = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.MnTx_SelAll = new System.Windows.Forms.ToolStripMenuItem();
+            this.Mn_TxBx.SuspendLayout();
             this.SuspendLayout();
             // 
             // Btn_Add
@@ -54,6 +64,7 @@
             // 
             this.TxBx_Loc.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.TxBx_Loc.ContextMenuStrip = this.Mn_TxBx;
             this.TxBx_Loc.Location = new System.Drawing.Point(66, 10);
             this.TxBx_Loc.Name = "TxBx_Loc";
             this.TxBx_Loc.Size = new System.Drawing.Size(427, 20);
@@ -131,6 +142,75 @@
             this.ColPages.Text = "Pages";
             this.ColPages.Width = 67;
             // 
+            // Mn_TxBx
+            // 
+            this.Mn_TxBx.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MnTx_Undo,
+            this.toolStripSeparator2,
+            this.MnTx_Cut,
+            this.MnTx_Copy,
+            this.MnTx_Paste,
+            this.toolStripSeparator3,
+            this.MnTx_SelAll});
+            this.Mn_TxBx.Name = "Mn_Context";
+            this.Mn_TxBx.Size = new System.Drawing.Size(116, 126);
+            // 
+            // MnTx_Undo
+            // 
+            this.MnTx_Undo.Enabled = false;
+            this.MnTx_Undo.Name = "MnTx_Undo";
+            this.MnTx_Undo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
+            this.MnTx_Undo.ShowShortcutKeys = false;
+            this.MnTx_Undo.Size = new System.Drawing.Size(152, 22);
+            this.MnTx_Undo.Text = "Undo";
+            this.MnTx_Undo.Click += new System.EventHandler(this.MnTx_Undo_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(149, 6);
+            // 
+            // MnTx_Cut
+            // 
+            this.MnTx_Cut.Name = "MnTx_Cut";
+            this.MnTx_Cut.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
+            this.MnTx_Cut.ShowShortcutKeys = false;
+            this.MnTx_Cut.Size = new System.Drawing.Size(152, 22);
+            this.MnTx_Cut.Text = "Cut";
+            this.MnTx_Cut.Click += new System.EventHandler(this.MnTx_Cut_Click);
+            // 
+            // MnTx_Copy
+            // 
+            this.MnTx_Copy.Name = "MnTx_Copy";
+            this.MnTx_Copy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
+            this.MnTx_Copy.ShowShortcutKeys = false;
+            this.MnTx_Copy.Size = new System.Drawing.Size(152, 22);
+            this.MnTx_Copy.Text = "Copy";
+            this.MnTx_Copy.Click += new System.EventHandler(this.MnTx_Copy_Click);
+            // 
+            // MnTx_Paste
+            // 
+            this.MnTx_Paste.Name = "MnTx_Paste";
+            this.MnTx_Paste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
+            this.MnTx_Paste.ShowShortcutKeys = false;
+            this.MnTx_Paste.Size = new System.Drawing.Size(152, 22);
+            this.MnTx_Paste.Text = "Paste";
+            this.MnTx_Paste.Click += new System.EventHandler(this.MnTx_Paste_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(149, 6);
+            // 
+            // MnTx_SelAll
+            // 
+            this.MnTx_SelAll.Name = "MnTx_SelAll";
+            this.MnTx_SelAll.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
+            this.MnTx_SelAll.ShowShortcutKeys = false;
+            this.MnTx_SelAll.Size = new System.Drawing.Size(152, 22);
+            this.MnTx_SelAll.Text = "Select All";
+            this.MnTx_SelAll.Click += new System.EventHandler(this.MnTx_SelAll_Click);
+            // 
             // Scan
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -148,6 +228,7 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Scan_FormClosing);
             this.Load += new System.EventHandler(this.Scan_Load);
             this.Click += new System.EventHandler(this.Scan_Click);
+            this.Mn_TxBx.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -164,5 +245,13 @@
         private System.Windows.Forms.Button Btn_Scan;
         private System.Windows.Forms.Button Btn_Ignore;
         private System.Windows.Forms.CheckBox ChkBx_All;
+        private System.Windows.Forms.ContextMenuStrip Mn_TxBx;
+        private System.Windows.Forms.ToolStripMenuItem MnTx_Undo;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem MnTx_Cut;
+        private System.Windows.Forms.ToolStripMenuItem MnTx_Copy;
+        private System.Windows.Forms.ToolStripMenuItem MnTx_Paste;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripMenuItem MnTx_SelAll;
     }
 }
