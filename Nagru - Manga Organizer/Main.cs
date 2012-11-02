@@ -150,6 +150,20 @@ namespace Nagru___Manga_Organizer
                         Text = "Default database location changed to \"" + sFile + "\"";
                     }
                 }
+
+            //manually handle AssemblyResolve event
+            AppDomain.CurrentDomain.AssemblyResolve +=
+                new ResolveEventHandler(CurrentDomain_AssemblyResolve);
+        }
+
+        /* Load non-MS library (HtmlAgilityPack) 
+           Author: Calle Mellergardh (March 1, 2010) */
+        System.Reflection.Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            AppDomain domain = (AppDomain)sender;
+            if (args.Name.Contains("HtmlAgilityPack"))
+                return domain.Load(Nagru___Manga_Organizer.Properties.Resources.HtmlAgilityPack);
+            return null;
         }
 
         /* Load database   */
@@ -652,7 +666,7 @@ namespace Nagru___Manga_Organizer
             {
                 int iPos = sRaw.IndexOf(')') + 2;
 
-                if(sRaw.Length - 1 >= iPos)
+                if (sRaw.Length - 1 >= iPos)
                     sRaw = sRaw.Remove(0, iPos);
             }
             string[] sName = sRaw.Split(new char[] { '[', ']' },

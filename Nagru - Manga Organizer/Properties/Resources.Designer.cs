@@ -59,5 +59,12 @@ namespace Nagru___Manga_Organizer.Properties {
                 resourceCulture = value;
             }
         }
+        
+        internal static byte[] HtmlAgilityPack {
+            get {
+                object obj = ResourceManager.GetObject("HtmlAgilityPack", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }

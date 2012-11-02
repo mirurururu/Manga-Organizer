@@ -76,7 +76,6 @@
             // 
             // MnTx_Undo
             // 
-            this.MnTx_Undo.Enabled = false;
             this.MnTx_Undo.Name = "MnTx_Undo";
             this.MnTx_Undo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
             this.MnTx_Undo.ShowShortcutKeys = false;
