@@ -17,6 +17,7 @@ For an example of it running see: <a href="https://github.com/Nagru/Manga-Organi
 
 Notes:
 - no install required
+- entry data can be automatically loaded from a g.e-hentai gallery url (exhentai links aren't supported yet)
 - searches are inclusive, with terms seperated by a comma
 - copy & pasted tags from EH will automatically re-format themselves
 - drag or paste a formatted name into the Artist textbox, and it should automatically split it into Artist & Title for you
