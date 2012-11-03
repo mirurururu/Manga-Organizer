@@ -25,7 +25,7 @@ namespace Nagru___Manga_Organizer
         LVsorter lvSortObj = new LVsorter();
         List<stEntry> lData = new List<stEntry>(500);
         bool bSavList = true, bSavText = true;
-        short indx = -1;
+        int indx = -1, iPage = -1;
 
         /* Holds metadata about manga in library */
         [Serializable]
@@ -130,7 +130,7 @@ namespace Nagru___Manga_Organizer
         public Main(string[] sFile)
         {
             InitializeComponent();
-            
+
             //if database opened with "Open with..."
             if (sFile.Length > 0 && File.Exists(sFile[0]))
                 if (Path.GetFileName(sFile[0]) == "MangaDatabase.bin")
@@ -387,12 +387,14 @@ namespace Nagru___Manga_Organizer
         /* Alternative to MnTS_Open */
         private void PicBx_Cover_Click(object sender, EventArgs e)
         {
-            if (TxBx_Loc.Text == null || ExtDirectory.Restricted(TxBx_Loc.Text))
-                return;
+            if (PicBx_Cover.Image == null) return;
 
             Browse fmBrowse = new Browse();
             fmBrowse.sPath = TxBx_Loc.Text;
+            fmBrowse.iPage = iPage;
+
             fmBrowse.ShowDialog();
+            iPage = fmBrowse.iPage;
             fmBrowse.Dispose();
         }
 
@@ -404,6 +406,7 @@ namespace Nagru___Manga_Organizer
             if (!Directory.Exists(TxBx_Loc.Text)) SetPicBxNull();
             else
             {
+                iPage = -1;
                 thWork = new System.Threading.Thread(GetImage);
                 thWork.IsBackground = true;
                 thWork.Start();
@@ -552,6 +555,7 @@ namespace Nagru___Manga_Organizer
             //Tb_Browse
             LV_Entries.FocusedItem = null;
             LV_Entries.SelectedItems.Clear();
+            iPage = -1;
             indx = -1;
 
             //Tb_View
@@ -943,6 +947,10 @@ namespace Nagru___Manga_Organizer
             }
             fmGet.Dispose();
         }
+
+        /* Secondary way to close program */
+        private void MnTs_Quit_Click(object sender, EventArgs e)
+        { this.Close(); }
         #endregion
 
         #region Menu_RichText

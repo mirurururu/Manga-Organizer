@@ -8,12 +8,13 @@ namespace Nagru___Manga_Organizer
 {
     public partial class Browse : Form
     {
+        public int iPage { get; set; }
         public string sPath { get; set; }
+
         List<string> lFiles = new List<string>(25);
         int iWidth = Screen.PrimaryScreen.Bounds.Width / 2;
         Image imgR = null, imgL = null;
         bool bWideL, bWideR;
-        int iPage = -1;
 
         /* Initialize form */
         public Browse()
@@ -39,7 +40,13 @@ namespace Nagru___Manga_Organizer
             //get files
             lFiles = ExtDirectory.GetFiles(sPath,
                 SearchOption.TopDirectoryOnly);
-            GoLeft();
+
+            if (iPage == -1) GoLeft();
+            else
+            {
+                iPage++;
+                GoRight();
+            }
         }
 
         /* Navigate files or close form */
@@ -47,13 +54,29 @@ namespace Nagru___Manga_Organizer
         {
             switch (e.KeyCode)
             {
+                case Keys.Left:
+                    GoLeft();
+                    break;
                 case Keys.Right:
-                case Keys.Up:
                     GoRight();
                     break;
-                case Keys.Left:
-                case Keys.Down:
+                case Keys.Up:
+                    if ((iPage += 7) > lFiles.Count)
+                        iPage = iPage - lFiles.Count;
                     GoLeft();
+                    break;
+                case Keys.Down:
+                    if ((iPage -= 7) < 0)
+                        iPage = lFiles.Count + iPage;
+                    GoRight();
+                    break;
+                case Keys.Home:
+                    iPage = -1;
+                    GoLeft();
+                    break;
+                case Keys.End:
+                    iPage = lFiles.Count + 1;
+                    GoRight();
                     break;
                 case Keys.PrintScreen:
                 case Keys.MediaNextTrack:

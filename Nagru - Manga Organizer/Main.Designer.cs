@@ -99,6 +99,7 @@
             this.Tb_Notes = new System.Windows.Forms.TabPage();
             this.frTxBx_Notes = new Nagru___Manga_Organizer.FixedRichTextBox();
             this.Delay = new System.Windows.Forms.Timer(this.components);
+            this.MnTs_Quit = new System.Windows.Forms.ToolStripMenuItem();
             this.TabControl.SuspendLayout();
             this.Tb_Browse.SuspendLayout();
             this.Mn_TxBx.SuspendLayout();
@@ -585,7 +586,7 @@
             this.MnTS_Clear});
             this.Mn_EntryOps.Location = new System.Drawing.Point(3, 3);
             this.Mn_EntryOps.Name = "Mn_EntryOps";
-            this.Mn_EntryOps.Size = new System.Drawing.Size(153, 27);
+            this.Mn_EntryOps.Size = new System.Drawing.Size(384, 27);
             this.Mn_EntryOps.TabIndex = 21;
             this.Mn_EntryOps.Text = "menuStrip1";
             // 
@@ -601,7 +602,8 @@
             this.MnTS_CopyTitle,
             this.toolStripSeparator4,
             this.MnTS_GET,
-            this.MnTS_About});
+            this.MnTS_About,
+            this.MnTs_Quit});
             this.MnTS_Menu.Name = "MnTS_Menu";
             this.MnTS_Menu.Size = new System.Drawing.Size(50, 23);
             this.MnTS_Menu.Text = "Menu";
@@ -843,6 +845,15 @@
             this.Delay.Interval = 300;
             this.Delay.Tick += new System.EventHandler(this.Delay_Tick);
             // 
+            // MnTs_Quit
+            // 
+            this.MnTs_Quit.Name = "MnTs_Quit";
+            this.MnTs_Quit.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
+            this.MnTs_Quit.ShowShortcutKeys = false;
+            this.MnTs_Quit.Size = new System.Drawing.Size(191, 22);
+            this.MnTs_Quit.Text = "Quit";
+            this.MnTs_Quit.Click += new System.EventHandler(this.MnTs_Quit_Click);
+            // 
             // Main
             // 
             this.AcceptButton = this.Btn_Clear;
@@ -945,6 +956,7 @@
         private System.Windows.Forms.CheckBox ChkBx_ShowFav;
         private System.Windows.Forms.ToolStripMenuItem MnTS_GET;
         private System.Windows.Forms.ContextMenuStrip Mn_TxBx;
+        private System.Windows.Forms.ToolStripMenuItem MnTs_Quit;
     }
 }
 
