@@ -130,7 +130,7 @@ namespace Nagru___Manga_Organizer
         public Main(string[] sFile)
         {
             InitializeComponent();
-
+            
             //if database opened with "Open with..."
             if (sFile.Length > 0 && File.Exists(sFile[0]))
                 if (Path.GetFileName(sFile[0]) == "MangaDatabase.bin")
@@ -937,7 +937,7 @@ namespace Nagru___Manga_Organizer
                     for (int i = 1; i < sSplit.Length; i++)
                         TxBx_Tags.Text += ExtString.Split(sSplit[i], "</a>")[0].Trim() + ", ";
                 }
-                else MessageBox.Show("URL was invalid. Please make sure it comes from an g.e-hentai gallery page.",
+                else MessageBox.Show("URL was invalid. Please make sure it comes from a g.e-hentai gallery page.",
                     Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 this.Cursor = Cursors.Default;
             }

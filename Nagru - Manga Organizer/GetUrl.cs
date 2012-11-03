@@ -28,7 +28,7 @@ namespace Nagru___Manga_Organizer
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }
-            else MessageBox.Show("URL was invalid. Please make sure it comes from an g.e-hentai gallery page.",
+            else MessageBox.Show("URL was invalid. Please make sure it comes from a g.e-hentai gallery page.",
                     Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
