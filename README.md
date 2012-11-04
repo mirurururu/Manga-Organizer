@@ -17,10 +17,10 @@ For an example of it running see: <a href="https://github.com/Nagru/Manga-Organi
 
 Notes:
 - no install required
-- entry data can be automatically loaded from a g.e-hentai gallery url (exhentai links aren't supported yet)
 - searches are inclusive, with terms seperated by a comma
-- copy & pasted tags from EH will automatically re-format themselves
-- drag or paste a formatted name into the Artist textbox, and it should automatically split it into Artist & Title for you
+- entry data can be automatically loaded from a g.e-hentai gallery url
+  (if you give it an exhentai link, it'll try to load its g.e equivalent automatically)
+- 'auto-magic' also applies to copy/pasted tags, full titles, and folders dropped onto the listview
 - browse images with your default image viewer (menu item: Open) or with the built in one (click on the cover image)
 - the latter browser displays two images simultaneously and should be traversed from right to left
 - to un-ignore an item in the scan operation, select it and press the ignore button again
