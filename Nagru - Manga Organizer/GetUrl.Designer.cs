@@ -45,6 +45,7 @@
             // 
             // TxBx_Url
             // 
+            this.TxBx_Url.ContextMenuStrip = this.Mn_TxBx;
             this.TxBx_Url.Location = new System.Drawing.Point(12, 33);
             this.TxBx_Url.Name = "TxBx_Url";
             this.TxBx_Url.Size = new System.Drawing.Size(288, 20);
@@ -72,28 +73,28 @@
             this.toolStripSeparator3,
             this.MnTx_SelAll});
             this.Mn_TxBx.Name = "Mn_Context";
-            this.Mn_TxBx.Size = new System.Drawing.Size(153, 148);
+            this.Mn_TxBx.Size = new System.Drawing.Size(116, 126);
             // 
             // MnTx_Undo
             // 
             this.MnTx_Undo.Name = "MnTx_Undo";
             this.MnTx_Undo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
             this.MnTx_Undo.ShowShortcutKeys = false;
-            this.MnTx_Undo.Size = new System.Drawing.Size(152, 22);
+            this.MnTx_Undo.Size = new System.Drawing.Size(115, 22);
             this.MnTx_Undo.Text = "Undo";
             this.MnTx_Undo.Click += new System.EventHandler(this.MnTx_Undo_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(112, 6);
             // 
             // MnTx_Cut
             // 
             this.MnTx_Cut.Name = "MnTx_Cut";
             this.MnTx_Cut.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
             this.MnTx_Cut.ShowShortcutKeys = false;
-            this.MnTx_Cut.Size = new System.Drawing.Size(152, 22);
+            this.MnTx_Cut.Size = new System.Drawing.Size(115, 22);
             this.MnTx_Cut.Text = "Cut";
             this.MnTx_Cut.Click += new System.EventHandler(this.MnTx_Cut_Click);
             // 
@@ -102,7 +103,7 @@
             this.MnTx_Copy.Name = "MnTx_Copy";
             this.MnTx_Copy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
             this.MnTx_Copy.ShowShortcutKeys = false;
-            this.MnTx_Copy.Size = new System.Drawing.Size(152, 22);
+            this.MnTx_Copy.Size = new System.Drawing.Size(115, 22);
             this.MnTx_Copy.Text = "Copy";
             this.MnTx_Copy.Click += new System.EventHandler(this.MnTx_Copy_Click);
             // 
@@ -111,21 +112,21 @@
             this.MnTx_Paste.Name = "MnTx_Paste";
             this.MnTx_Paste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
             this.MnTx_Paste.ShowShortcutKeys = false;
-            this.MnTx_Paste.Size = new System.Drawing.Size(152, 22);
+            this.MnTx_Paste.Size = new System.Drawing.Size(115, 22);
             this.MnTx_Paste.Text = "Paste";
             this.MnTx_Paste.Click += new System.EventHandler(this.MnTx_Paste_Click);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(112, 6);
             // 
             // MnTx_SelAll
             // 
             this.MnTx_SelAll.Name = "MnTx_SelAll";
             this.MnTx_SelAll.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
             this.MnTx_SelAll.ShowShortcutKeys = false;
-            this.MnTx_SelAll.Size = new System.Drawing.Size(152, 22);
+            this.MnTx_SelAll.Size = new System.Drawing.Size(115, 22);
             this.MnTx_SelAll.Text = "Select All";
             this.MnTx_SelAll.Click += new System.EventHandler(this.MnTx_SelAll_Click);
             // 

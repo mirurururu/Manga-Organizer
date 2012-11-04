@@ -920,29 +920,32 @@ namespace Nagru___Manga_Organizer
             if (fmGet.DialogResult == DialogResult.OK)
             {
                 this.Cursor = Cursors.WaitCursor;
+                Text = "Downloading page...";
+
                 HtmlWeb htmlWeb = new HtmlWeb();
                 HtmlAgilityPack.HtmlDocument htmlDoc = htmlWeb.Load(fmGet.Url);
-
+                
                 //ensure page exists
                 if (htmlWeb.StatusCode == System.Net.HttpStatusCode.OK)
                 {
                     //grab artist & title
-                    SplitTitle(htmlDoc.GetElementbyId("gn").InnerText);
+                    SplitTitle(htmlDoc.GetElementbyId("gn").InnerText.Replace("&#039;", "'"));
 
                     //split 'gdd' table down into usable elements
-                    string sRaw = htmlDoc.GetElementbyId("gdd").InnerHtml;
-                    string[] sSplit = ExtString.Split(sRaw, "\"gdt2\">");
+                    string[] sSplit = ExtString.Split(htmlDoc.GetElementbyId("gdd").InnerHtml, "\"gdt2\">");
                     Dt_Date.Value = Convert.ToDateTime(ExtString.Split(sSplit[1], "</td>")[0]);
                     Nud_Pages.Value = Convert.ToInt32(ExtString.Split(sSplit[2], "@")[0]);
 
                     //split taglist down into usable elements
-                    sRaw = htmlDoc.GetElementbyId("taglist").InnerHtml;
-                    sSplit = ExtString.Split(sRaw, "this)\">");
+                    sSplit = ExtString.Split(htmlDoc.GetElementbyId(
+                        "taglist").InnerHtml, "this)\">");
                     for (int i = 1; i < sSplit.Length; i++)
-                        TxBx_Tags.Text += ExtString.Split(sSplit[i], "</a>")[0].Trim() + ", ";
+                        TxBx_Tags.Text += ExtString.Split(sSplit[i], "</a>")[0] + ", ";
                 }
                 else MessageBox.Show("URL was invalid. Please make sure it comes from a g.e-hentai gallery page.",
                     Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                
+                Text = "Finished";
                 this.Cursor = Cursors.Default;
             }
             fmGet.Dispose();

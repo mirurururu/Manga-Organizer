@@ -20,10 +20,17 @@ namespace Nagru___Manga_Organizer
 
         private void Btn_Get_Click(object sender, EventArgs e)
         {
+            if (TxBx_Url.Text == string.Empty) return;
+            string sUrl = TxBx_Url.Text;
+
+            if (!sUrl.StartsWith("http://"))
+                sUrl = sUrl.Insert(0, "http://");
+            if (sUrl.StartsWith("http://ex"))
+                sUrl = sUrl.Replace("http://ex", "http://g.e-");
+
             //ensure user only enters proper values
-            if (TxBx_Url.Text != string.Empty && 
-                Uri.TryCreate(TxBx_Url.Text, UriKind.Absolute, out uri) &&
-                Url.StartsWith(@"http://g.e-hentai.org/g/"))
+            if (sUrl.StartsWith("http://g.e-hentai.org/g/") &&
+                Uri.TryCreate(sUrl, UriKind.Absolute, out uri))
             {
                 this.DialogResult = DialogResult.OK;
                 this.Close();
@@ -34,7 +41,7 @@ namespace Nagru___Manga_Organizer
 
         #region Menu_Text
         private void MnTx_Undo_Click(object sender, EventArgs e)
-        { if(TxBx_Url.CanUndo) TxBx_Url.Undo(); }
+        { if (TxBx_Url.CanUndo) TxBx_Url.Undo(); }
 
         private void MnTx_Cut_Click(object sender, EventArgs e)
         { TxBx_Url.Cut(); }
