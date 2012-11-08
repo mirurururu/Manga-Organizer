@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Nagru___Manga_Organizer
@@ -20,9 +14,11 @@ namespace Nagru___Manga_Organizer
 
         private void Btn_Get_Click(object sender, EventArgs e)
         {
-            if (TxBx_Url.Text == string.Empty) return;
-            string sUrl = TxBx_Url.Text;
+            if (TxBx_Url.Text == string.Empty ||
+                TxBx_Url.Text == "Input EH gallery page URL...") 
+                return;
 
+            string sUrl = TxBx_Url.Text;
             if (!sUrl.StartsWith("http://"))
                 sUrl = sUrl.Insert(0, "http://");
             if (sUrl.StartsWith("http://ex"))
@@ -35,8 +31,15 @@ namespace Nagru___Manga_Organizer
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }
-            else MessageBox.Show("URL was invalid. Please make sure it comes from a g.e-hentai gallery page.",
+            else MessageBox.Show("URL was invalid. Please make sure it comes from an EH gallery page.",
                     Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        /* remove initial message on focus */
+        private void TxBx_Url_Click(object sender, EventArgs e)
+        {
+            if (TxBx_Url.Text == "Input EH gallery page URL...")
+                TxBx_Url.Clear();
         }
 
         #region Menu_Text

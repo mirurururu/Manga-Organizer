@@ -38,15 +38,11 @@ namespace Nagru___Manga_Organizer
             picBx_Right.Width = iWidth;
 
             //get files
-            lFiles = ExtDirectory.GetFiles(sPath,
-                SearchOption.TopDirectoryOnly);
+            lFiles.AddRange(ExtDirectory.GetFiles(sPath,
+                SearchOption.TopDirectoryOnly));
 
             if (iPage == -1) GoLeft();
-            else
-            {
-                iPage++;
-                GoRight();
-            }
+            else GoRight();
         }
 
         /* Navigate files or close form */
@@ -92,50 +88,59 @@ namespace Nagru___Manga_Organizer
             }
         }
 
-        /* Traverse images leftwards */
+        /* Go to next page */
         void GoLeft()
         {
             Reset();
 
             if (++iPage >= lFiles.Count) iPage = 0;
-            imgR = Image.FromStream(new FileStream(lFiles[iPage],
-                FileMode.Open, FileAccess.Read));
+            using (FileStream fs = new FileStream(
+                lFiles[iPage], FileMode.Open, FileAccess.Read))
+                imgR = Image.FromStream(fs);
             if (++iPage >= lFiles.Count) iPage = 0;
-            imgL = Image.FromStream(new FileStream(lFiles[iPage],
-                FileMode.Open, FileAccess.Read));
+            using (FileStream fs = new FileStream(
+                lFiles[iPage], FileMode.Open, FileAccess.Read))
+                imgL = Image.FromStream(fs);
 
-            bWideR = (imgR.Height < imgR.Width);
-            bWideL = (imgL.Height < imgL.Width);
-            picBx_Right.Image = imgR;
+            bWideR = imgR.Height < imgR.Width;
+            bWideL = imgL.Height < imgL.Width;
 
             if (!bWideL && !bWideR)
+            {
+                picBx_Right.Image = imgR;
                 picBx_Left.Image = imgL;
-            else if (bWideL && bWideR || bWideR)
+            }
+            else if (bWideR || bWideL && bWideR)
             {
                 picBx_Left.Image = imgR;
                 picBx_Left.Width =
                     Screen.PrimaryScreen.Bounds.Width;
                 iPage--;
             }
-            else iPage--;
+            else
+            {
+                picBx_Right.Image = imgR;
+                iPage--;
+            }
         }
 
-        /* Traverse images rightward */
+        /* Go to previous page */
         void GoRight()
         {
             if (iPage != 0 && picBx_Left.Width == iWidth) iPage--;
             Reset();
 
             if (--iPage < 0) iPage = lFiles.Count - 1;
-            imgL = Image.FromStream(new FileStream(lFiles[iPage],
-                FileMode.Open, FileAccess.Read));
+            using (FileStream fs = new FileStream(
+                lFiles[iPage], FileMode.Open, FileAccess.Read))
+                picBx_Left.Image = imgL = Image.FromStream(fs);
             if (iPage - 1 < 0) iPage = lFiles.Count;
-            imgR = Image.FromStream(new FileStream(lFiles[iPage - 1],
-                FileMode.Open, FileAccess.Read));
+            using (FileStream fs = new FileStream(
+                lFiles[iPage - 1], FileMode.Open, FileAccess.Read))
+                imgR = Image.FromStream(fs);
 
-            bWideR = (imgR.Height < imgR.Width);
-            bWideL = (imgL.Height < imgL.Width);
-            picBx_Left.Image = imgL;
+            bWideR = imgR.Height < imgR.Width;
+            bWideL = imgL.Height < imgL.Width;
 
             if (!bWideL && !bWideR)
                 picBx_Right.Image = imgR;
@@ -145,13 +150,6 @@ namespace Nagru___Manga_Organizer
             else iPage++;
         }
 
-        /* Returns compared proportions of image */
-        bool IsLandscape(string path)
-        {
-            using (Bitmap b = new Bitmap(path))
-            { return b.Width > b.Height; }
-        }
-
         /* Clear picBxs before populating them again */
         void Reset()
         {
@@ -159,7 +157,8 @@ namespace Nagru___Manga_Organizer
                 picBx_Left.Image.Dispose();
             if (picBx_Right.Image != null)
                 picBx_Right.Image.Dispose();
-            picBx_Left.Width = iWidth;
+            if (picBx_Left.Width != iWidth)
+                picBx_Left.Width = iWidth;
             picBx_Left.Image = null;
             picBx_Right.Image = null;
         }

@@ -71,16 +71,18 @@
             this.PicBx_Cover = new System.Windows.Forms.PictureBox();
             this.Mn_EntryOps = new System.Windows.Forms.MenuStrip();
             this.MnTS_Menu = new System.Windows.Forms.ToolStripMenuItem();
-            this.MnTS_SavLoc = new System.Windows.Forms.ToolStripMenuItem();
-            this.MnTS_OpenDataFolder = new System.Windows.Forms.ToolStripMenuItem();
-            this.MnTS_Save = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.MnTS_CopyTitle = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTS_OpenEntryFolder = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTS_DefLoc = new System.Windows.Forms.ToolStripMenuItem();
-            this.MnTS_CopyTitle = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+            this.MnTS_Save = new System.Windows.Forms.ToolStripMenuItem();
+            this.MnTS_OpenDataFolder = new System.Windows.Forms.ToolStripMenuItem();
+            this.MnTS_SavLoc = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.MnTS_GET = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.MnTS_About = new System.Windows.Forms.ToolStripMenuItem();
+            this.MnTs_Quit = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTS_SecretSort = new System.Windows.Forms.ToolStripSeparator();
             this.MnTS_New = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTS_Edit = new System.Windows.Forms.ToolStripMenuItem();
@@ -99,7 +101,6 @@
             this.Tb_Notes = new System.Windows.Forms.TabPage();
             this.frTxBx_Notes = new Nagru___Manga_Organizer.FixedRichTextBox();
             this.Delay = new System.Windows.Forms.Timer(this.components);
-            this.MnTs_Quit = new System.Windows.Forms.ToolStripMenuItem();
             this.TabControl.SuspendLayout();
             this.Tb_Browse.SuspendLayout();
             this.Mn_TxBx.SuspendLayout();
@@ -113,16 +114,16 @@
             // 
             // TabControl
             // 
-            this.TabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.TabControl.Controls.Add(this.Tb_Browse);
             this.TabControl.Controls.Add(this.Tb_View);
             this.TabControl.Controls.Add(this.Tb_Notes);
-            this.TabControl.Location = new System.Drawing.Point(0, 1);
+            this.TabControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.TabControl.HotTrack = true;
+            this.TabControl.Location = new System.Drawing.Point(0, 0);
             this.TabControl.Name = "TabControl";
             this.TabControl.SelectedIndex = 0;
-            this.TabControl.Size = new System.Drawing.Size(937, 575);
+            this.TabControl.Size = new System.Drawing.Size(934, 575);
+            this.TabControl.SizeMode = System.Windows.Forms.TabSizeMode.FillToRight;
             this.TabControl.TabIndex = 0;
             this.TabControl.SelectedIndexChanged += new System.EventHandler(this.TabControl_SelectedIndexChanged);
             // 
@@ -137,7 +138,7 @@
             this.Tb_Browse.Location = new System.Drawing.Point(4, 22);
             this.Tb_Browse.Name = "Tb_Browse";
             this.Tb_Browse.Padding = new System.Windows.Forms.Padding(3);
-            this.Tb_Browse.Size = new System.Drawing.Size(929, 549);
+            this.Tb_Browse.Size = new System.Drawing.Size(926, 549);
             this.Tb_Browse.TabIndex = 0;
             this.Tb_Browse.Text = "Browse";
             this.Tb_Browse.UseVisualStyleBackColor = true;
@@ -147,7 +148,7 @@
             // 
             this.ChkBx_ShowFav.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.ChkBx_ShowFav.AutoSize = true;
-            this.ChkBx_ShowFav.Location = new System.Drawing.Point(796, 8);
+            this.ChkBx_ShowFav.Location = new System.Drawing.Point(793, 8);
             this.ChkBx_ShowFav.Name = "ChkBx_ShowFav";
             this.ChkBx_ShowFav.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.ChkBx_ShowFav.Size = new System.Drawing.Size(75, 17);
@@ -158,9 +159,6 @@
             // 
             // LV_Entries
             // 
-            this.LV_Entries.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.LV_Entries.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.ColArtist,
             this.ColTitle,
@@ -169,11 +167,12 @@
             this.ColType});
             this.LV_Entries.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LV_Entries.FullRowSelect = true;
+            this.LV_Entries.GridLines = true;
             this.LV_Entries.HideSelection = false;
-            this.LV_Entries.Location = new System.Drawing.Point(0, 30);
+            this.LV_Entries.Location = new System.Drawing.Point(0, 32);
             this.LV_Entries.MultiSelect = false;
             this.LV_Entries.Name = "LV_Entries";
-            this.LV_Entries.Size = new System.Drawing.Size(926, 519);
+            this.LV_Entries.Size = new System.Drawing.Size(923, 517);
             this.LV_Entries.TabIndex = 0;
             this.LV_Entries.UseCompatibleStateImageBehavior = false;
             this.LV_Entries.View = System.Windows.Forms.View.Details;
@@ -210,7 +209,7 @@
             // Btn_Scan
             // 
             this.Btn_Scan.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.Btn_Scan.Location = new System.Drawing.Point(877, 5);
+            this.Btn_Scan.Location = new System.Drawing.Point(874, 5);
             this.Btn_Scan.Name = "Btn_Scan";
             this.Btn_Scan.Size = new System.Drawing.Size(44, 21);
             this.Btn_Scan.TabIndex = 5;
@@ -224,7 +223,7 @@
             this.Btn_Clear.BackColor = System.Drawing.Color.Red;
             this.Btn_Clear.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.Btn_Clear.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Btn_Clear.Location = new System.Drawing.Point(760, 6);
+            this.Btn_Clear.Location = new System.Drawing.Point(757, 6);
             this.Btn_Clear.Name = "Btn_Clear";
             this.Btn_Clear.Size = new System.Drawing.Size(30, 20);
             this.Btn_Clear.TabIndex = 4;
@@ -252,7 +251,7 @@
             this.TxBx_Search.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.TxBx_Search.Location = new System.Drawing.Point(59, 6);
             this.TxBx_Search.Name = "TxBx_Search";
-            this.TxBx_Search.Size = new System.Drawing.Size(731, 21);
+            this.TxBx_Search.Size = new System.Drawing.Size(728, 21);
             this.TxBx_Search.TabIndex = 1;
             this.TxBx_Search.TextChanged += new System.EventHandler(this.TxBx_Search_TextChanged);
             // 
@@ -271,7 +270,6 @@
             // 
             // MnTx_Undo
             // 
-            this.MnTx_Undo.Enabled = false;
             this.MnTx_Undo.Name = "MnTx_Undo";
             this.MnTx_Undo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
             this.MnTx_Undo.ShowShortcutKeys = false;
@@ -350,7 +348,7 @@
             this.Tb_View.Location = new System.Drawing.Point(4, 22);
             this.Tb_View.Name = "Tb_View";
             this.Tb_View.Padding = new System.Windows.Forms.Padding(3);
-            this.Tb_View.Size = new System.Drawing.Size(929, 549);
+            this.Tb_View.Size = new System.Drawing.Size(926, 549);
             this.Tb_View.TabIndex = 1;
             this.Tb_View.Text = "View";
             // 
@@ -455,6 +453,7 @@
             this.Nud_Pages.Name = "Nud_Pages";
             this.Nud_Pages.Size = new System.Drawing.Size(91, 21);
             this.Nud_Pages.TabIndex = 6;
+            this.Nud_Pages.ThousandsSeparator = true;
             this.Nud_Pages.ValueChanged += new System.EventHandler(this.EntryAlt_DtNum);
             // 
             // TxBx_Tags
@@ -574,6 +573,7 @@
             // 
             // Mn_EntryOps
             // 
+            this.Mn_EntryOps.AllowMerge = false;
             this.Mn_EntryOps.BackColor = System.Drawing.Color.Transparent;
             this.Mn_EntryOps.Dock = System.Windows.Forms.DockStyle.None;
             this.Mn_EntryOps.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -584,57 +584,38 @@
             this.MnTS_Open,
             this.MnTS_Del,
             this.MnTS_Clear});
+            this.Mn_EntryOps.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
             this.Mn_EntryOps.Location = new System.Drawing.Point(3, 3);
             this.Mn_EntryOps.Name = "Mn_EntryOps";
-            this.Mn_EntryOps.Size = new System.Drawing.Size(384, 27);
+            this.Mn_EntryOps.Size = new System.Drawing.Size(153, 27);
             this.Mn_EntryOps.TabIndex = 21;
-            this.Mn_EntryOps.Text = "menuStrip1";
+            this.Mn_EntryOps.Text = "menuStrip";
             // 
             // MnTS_Menu
             // 
             this.MnTS_Menu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.MnTS_SavLoc,
-            this.MnTS_OpenDataFolder,
-            this.MnTS_Save,
-            this.toolStripSeparator1,
+            this.MnTS_CopyTitle,
             this.MnTS_OpenEntryFolder,
             this.MnTS_DefLoc,
-            this.MnTS_CopyTitle,
-            this.toolStripSeparator4,
+            this.toolStripSeparator5,
+            this.MnTS_Save,
+            this.MnTS_OpenDataFolder,
+            this.MnTS_SavLoc,
+            this.toolStripSeparator1,
             this.MnTS_GET,
+            this.toolStripSeparator4,
             this.MnTS_About,
             this.MnTs_Quit});
             this.MnTS_Menu.Name = "MnTS_Menu";
             this.MnTS_Menu.Size = new System.Drawing.Size(50, 23);
             this.MnTS_Menu.Text = "Menu";
             // 
-            // MnTS_SavLoc
+            // MnTS_CopyTitle
             // 
-            this.MnTS_SavLoc.Name = "MnTS_SavLoc";
-            this.MnTS_SavLoc.Size = new System.Drawing.Size(191, 22);
-            this.MnTS_SavLoc.Text = "Change Save Location";
-            this.MnTS_SavLoc.Click += new System.EventHandler(this.MnTS_SavLoc_Click);
-            // 
-            // MnTS_OpenDataFolder
-            // 
-            this.MnTS_OpenDataFolder.Name = "MnTS_OpenDataFolder";
-            this.MnTS_OpenDataFolder.Size = new System.Drawing.Size(191, 22);
-            this.MnTS_OpenDataFolder.Text = "Open Database Folder";
-            this.MnTS_OpenDataFolder.Click += new System.EventHandler(this.MnTS_OpenDataFolder_Click);
-            // 
-            // MnTS_Save
-            // 
-            this.MnTS_Save.Name = "MnTS_Save";
-            this.MnTS_Save.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.MnTS_Save.ShowShortcutKeys = false;
-            this.MnTS_Save.Size = new System.Drawing.Size(191, 22);
-            this.MnTS_Save.Text = "Save Database";
-            this.MnTS_Save.Click += new System.EventHandler(this.MnTS_Save_Click);
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(188, 6);
+            this.MnTS_CopyTitle.Name = "MnTS_CopyTitle";
+            this.MnTS_CopyTitle.Size = new System.Drawing.Size(191, 22);
+            this.MnTS_CopyTitle.Text = "Copy Formatted Title";
+            this.MnTS_CopyTitle.Click += new System.EventHandler(this.MnTS_CopyTitle_Click);
             // 
             // MnTS_OpenEntryFolder
             // 
@@ -650,17 +631,38 @@
             this.MnTS_DefLoc.Text = "Change Root Folder";
             this.MnTS_DefLoc.Click += new System.EventHandler(this.MnTS_DefLoc_Click);
             // 
-            // MnTS_CopyTitle
+            // toolStripSeparator5
             // 
-            this.MnTS_CopyTitle.Name = "MnTS_CopyTitle";
-            this.MnTS_CopyTitle.Size = new System.Drawing.Size(191, 22);
-            this.MnTS_CopyTitle.Text = "Copy Formatted Title";
-            this.MnTS_CopyTitle.Click += new System.EventHandler(this.MnTS_CopyTitle_Click);
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(188, 6);
             // 
-            // toolStripSeparator4
+            // MnTS_Save
             // 
-            this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(188, 6);
+            this.MnTS_Save.Name = "MnTS_Save";
+            this.MnTS_Save.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.MnTS_Save.ShowShortcutKeys = false;
+            this.MnTS_Save.Size = new System.Drawing.Size(191, 22);
+            this.MnTS_Save.Text = "Save Database";
+            this.MnTS_Save.Click += new System.EventHandler(this.MnTS_Save_Click);
+            // 
+            // MnTS_OpenDataFolder
+            // 
+            this.MnTS_OpenDataFolder.Name = "MnTS_OpenDataFolder";
+            this.MnTS_OpenDataFolder.Size = new System.Drawing.Size(191, 22);
+            this.MnTS_OpenDataFolder.Text = "Open Database Folder";
+            this.MnTS_OpenDataFolder.Click += new System.EventHandler(this.MnTS_OpenDataFolder_Click);
+            // 
+            // MnTS_SavLoc
+            // 
+            this.MnTS_SavLoc.Name = "MnTS_SavLoc";
+            this.MnTS_SavLoc.Size = new System.Drawing.Size(191, 22);
+            this.MnTS_SavLoc.Text = "Change Save Location";
+            this.MnTS_SavLoc.Click += new System.EventHandler(this.MnTS_SavLoc_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(188, 6);
             // 
             // MnTS_GET
             // 
@@ -671,12 +673,26 @@
             this.MnTS_GET.Text = "GET from URL";
             this.MnTS_GET.Click += new System.EventHandler(this.MnTS_GET_Click);
             // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(188, 6);
+            // 
             // MnTS_About
             // 
             this.MnTS_About.Name = "MnTS_About";
             this.MnTS_About.Size = new System.Drawing.Size(191, 22);
             this.MnTS_About.Text = "About";
             this.MnTS_About.Click += new System.EventHandler(this.MnTS_About_Click);
+            // 
+            // MnTs_Quit
+            // 
+            this.MnTs_Quit.Name = "MnTs_Quit";
+            this.MnTs_Quit.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
+            this.MnTs_Quit.ShowShortcutKeys = false;
+            this.MnTs_Quit.Size = new System.Drawing.Size(191, 22);
+            this.MnTs_Quit.Text = "Quit";
+            this.MnTs_Quit.Click += new System.EventHandler(this.MnTs_Quit_Click);
             // 
             // MnTS_SecretSort
             // 
@@ -758,7 +774,6 @@
             // 
             // MnRTx_Undo
             // 
-            this.MnRTx_Undo.Enabled = false;
             this.MnRTx_Undo.Name = "MnRTx_Undo";
             this.MnRTx_Undo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
             this.MnRTx_Undo.ShowShortcutKeys = false;
@@ -817,7 +832,7 @@
             this.Tb_Notes.Controls.Add(this.frTxBx_Notes);
             this.Tb_Notes.Location = new System.Drawing.Point(4, 22);
             this.Tb_Notes.Name = "Tb_Notes";
-            this.Tb_Notes.Size = new System.Drawing.Size(929, 549);
+            this.Tb_Notes.Size = new System.Drawing.Size(926, 549);
             this.Tb_Notes.TabIndex = 2;
             this.Tb_Notes.Text = "Notes";
             this.Tb_Notes.UseVisualStyleBackColor = true;
@@ -825,16 +840,14 @@
             // frTxBx_Notes
             // 
             this.frTxBx_Notes.AcceptsTab = true;
-            this.frTxBx_Notes.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.frTxBx_Notes.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(39)))), ((int)(((byte)(40)))), ((int)(((byte)(34)))));
             this.frTxBx_Notes.ContextMenuStrip = this.Mn_rTxBx;
+            this.frTxBx_Notes.Dock = System.Windows.Forms.DockStyle.Fill;
             this.frTxBx_Notes.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.frTxBx_Notes.ForeColor = System.Drawing.SystemColors.Window;
-            this.frTxBx_Notes.Location = new System.Drawing.Point(3, 3);
+            this.frTxBx_Notes.Location = new System.Drawing.Point(0, 0);
             this.frTxBx_Notes.Name = "frTxBx_Notes";
-            this.frTxBx_Notes.Size = new System.Drawing.Size(923, 543);
+            this.frTxBx_Notes.Size = new System.Drawing.Size(926, 549);
             this.frTxBx_Notes.TabIndex = 1;
             this.frTxBx_Notes.Text = "";
             this.frTxBx_Notes.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.frTxBx_Notes_LinkClicked);
@@ -844,15 +857,6 @@
             // 
             this.Delay.Interval = 300;
             this.Delay.Tick += new System.EventHandler(this.Delay_Tick);
-            // 
-            // MnTs_Quit
-            // 
-            this.MnTs_Quit.Name = "MnTs_Quit";
-            this.MnTs_Quit.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-            this.MnTs_Quit.ShowShortcutKeys = false;
-            this.MnTs_Quit.Size = new System.Drawing.Size(191, 22);
-            this.MnTs_Quit.Text = "Quit";
-            this.MnTs_Quit.Click += new System.EventHandler(this.MnTs_Quit_Click);
             // 
             // Main
             // 
@@ -957,6 +961,7 @@
         private System.Windows.Forms.ToolStripMenuItem MnTS_GET;
         private System.Windows.Forms.ContextMenuStrip Mn_TxBx;
         private System.Windows.Forms.ToolStripMenuItem MnTs_Quit;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
     }
 }
 

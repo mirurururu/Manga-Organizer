@@ -36,8 +36,8 @@
             // 
             // picBx_Right
             // 
-            this.picBx_Right.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.picBx_Right.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.picBx_Right.BackColor = System.Drawing.Color.DarkGray;
             this.picBx_Right.Location = new System.Drawing.Point(250, 0);
             this.picBx_Right.Name = "picBx_Right";
@@ -49,9 +49,9 @@
             // 
             // picBx_Left
             // 
-            this.picBx_Left.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.picBx_Left.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.picBx_Left.BackColor = System.Drawing.Color.DarkGray;
             this.picBx_Left.Location = new System.Drawing.Point(0, 0);
             this.picBx_Left.Name = "picBx_Left";
@@ -73,6 +73,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "Browse";
+            this.ShowInTaskbar = false;
             this.Text = "Browse";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Browse_FormClosing);
             this.Load += new System.EventHandler(this.Browse_Load);

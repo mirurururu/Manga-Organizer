@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Nagru___Manga_Organizer
@@ -16,7 +10,7 @@ namespace Nagru___Manga_Organizer
             InitializeComponent();
 
             Lbl_License.Text = "This program provides tagging, searching and other basic management for a\n" +
-            "folder directory. It is intended as a companion to the E-Hentai website, and\n" +
+            "folder directory. It is intended as a companion to the EH website, and\n" +
             "optimally functions with directory names formatted as \"[Artist] Title\".\n" +
             "Copyright (C) 2012  Nagru\n\n\n" +
             "This program is free software; you can redistribute it and/or modify it\n" +

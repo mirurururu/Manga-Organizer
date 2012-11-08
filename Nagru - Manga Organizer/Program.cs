@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Forms;
+using System.Threading;
 
 namespace Nagru___Manga_Organizer
 {
@@ -15,11 +14,11 @@ namespace Nagru___Manga_Organizer
 
             /* Checks for already running instance of program
                Author: K. Scott Allen (August 20, 2004) */
-            using (System.Threading.Mutex mutex = 
-                new System.Threading.Mutex(false, @"Global\" + Application.ProductName))
+            using (Mutex mutex = new Mutex(false, @"Global\" + Application.ProductName))
             {
                 if (!mutex.WaitOne(0, false)) {
-                    MessageBox.Show("Instance already running");
+                    MessageBox.Show("Instance already running", Application.ProductName, 
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 

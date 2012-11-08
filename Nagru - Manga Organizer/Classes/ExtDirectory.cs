@@ -9,14 +9,13 @@ namespace Nagru___Manga_Organizer
        Author: Bean Software (2002-2008)                            */
     public static class ExtDirectory
     {
-        public static List<string> GetFiles(string SourceFolder,
+        public static string[] GetFiles(string SourceFolder,
             SearchOption SearchOption = SearchOption.AllDirectories,
-            string Filter = "*.jpg|*.png|*.bmp|*.jpeg")
+            string Filter = "*.jpg|*.png|*.jpeg")
         {
+            if (!Directory.Exists(SourceFolder)) return new string[0];
             List<string> lFiles = new List<string>();
             string[] sFilters = Filter.Split('|');
-
-            if (!Directory.Exists(SourceFolder)) return lFiles;
 
             //for each filter find matching file names
             for (int i = 0; i < sFilters.Length; i++)
@@ -24,7 +23,7 @@ namespace Nagru___Manga_Organizer
                     sFilters[i], SearchOption));
 
             lFiles.Sort(new TrueCompare());
-            return lFiles;
+            return lFiles.ToArray();
         }
 
         /* Delete passed directory, including all files/subfolders 

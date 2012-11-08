@@ -105,10 +105,10 @@ namespace Nagru___Manga_Organizer
                     Main.stEntry en;
                     if (sTitle.Length == 2)
                         en = new Main.stEntry(sTitle[1].TrimStart(), sTitle[0], asDirs[i], "", "", "",
-                            DateTime.Now, ExtDirectory.GetFiles(asDirs[i]).Count, false);
+                            DateTime.Now, ExtDirectory.GetFiles(asDirs[i]).Length, false);
                     else
                         en = new Main.stEntry(sTitle[0].TrimStart(), "", asDirs[i], "", "", "",
-                            DateTime.Now, ExtDirectory.GetFiles(asDirs[i]).Count, false);
+                            DateTime.Now, ExtDirectory.GetFiles(asDirs[i]).Length, false);
 
                     if (!lFound.Contains(en) && !lCurr.Contains(en))
                     {

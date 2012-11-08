@@ -6,12 +6,12 @@
 
 using System;
 using System.IO;
+using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
-using HtmlAgilityPack;
 
 namespace Nagru___Manga_Organizer
 {
@@ -158,11 +158,12 @@ namespace Nagru___Manga_Organizer
 
         /* Load non-MS library (HtmlAgilityPack) 
            Author: Calle Mellergardh (March 1, 2010) */
-        System.Reflection.Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        System.Reflection.Assembly CurrentDomain_AssemblyResolve(
+            object sender, ResolveEventArgs args)
         {
-            AppDomain domain = (AppDomain)sender;
             if (args.Name.Contains("HtmlAgilityPack"))
-                return domain.Load(Nagru___Manga_Organizer.Properties.Resources.HtmlAgilityPack);
+                return (sender as AppDomain).Load(Nagru___Manga_Organizer.
+                    Properties.Resources.HtmlAgilityPack);
             return null;
         }
 
@@ -394,8 +395,9 @@ namespace Nagru___Manga_Organizer
             fmBrowse.iPage = iPage;
 
             fmBrowse.ShowDialog();
-            iPage = fmBrowse.iPage;
+            iPage = fmBrowse.iPage + 1;
             fmBrowse.Dispose();
+            GC.Collect();
         }
 
         /* Dynamically update PicBx when user manually alters path */
@@ -449,7 +451,7 @@ namespace Nagru___Manga_Organizer
 
             /* Compensate for broken scroll-to function
              * by running it multiple times (3 is sweet-spot) */
-            if (iPos > -1/* && LV_Entries.Items.Count > iPos*/)
+            if (iPos > -1)
             {
                 LV_Entries.TopItem = LV_Entries.Items[iPos];
                 LV_Entries.TopItem = LV_Entries.Items[iPos];
@@ -467,13 +469,11 @@ namespace Nagru___Manga_Organizer
                 return;
 
             //Get cover image
-            List<string> lFiles = ExtDirectory.GetFiles(@TxBx_Loc.Text,
-                SearchOption.TopDirectoryOnly);
-            if (lFiles.Count > 0)
-                Invoke(new DelVoidString(SetPicBxImage), lFiles[0]);
-
-            BeginInvoke(new DelVoidInt(SetNudCount), lFiles.Count);
-            lFiles = null;
+            string[] sFiles = ExtDirectory.GetFiles(
+                @TxBx_Loc.Text, SearchOption.TopDirectoryOnly);
+            if (sFiles.Length > 0)
+                BeginInvoke(new DelVoidString(SetPicBxImage), sFiles[0]);
+            BeginInvoke(new DelVoidInt(SetNudCount), sFiles.Length);
         }
 
         #region SetImageCalls
@@ -490,24 +490,22 @@ namespace Nagru___Manga_Organizer
         void SetPicBxImage(Object obj)
         {
             MnTS_Open.Visible = true;
-            FileStream fs = new FileStream(obj as string,
-                FileMode.Open, FileAccess.Read);
-            PicBx_Cover.Image = System.Drawing.Image.FromStream(fs);
-            fs.Close();
-            fs.Dispose();
+
+            using (var bmpTemp = new Bitmap(obj as string))
+            {
+                PicBx_Cover.Image = new Bitmap(bmpTemp);
+            }
         }
 
         /* Release old image resource */
         void SetPicBxNull()
         {
-            if (PicBx_Cover.Image != null)
-            {
-                PicBx_Cover.Image.Dispose();
-                PicBx_Cover.Image = null;
-            }
+            if (PicBx_Cover.Image == null) return;
+            PicBx_Cover.Image.Dispose();
+            PicBx_Cover.Image = null;
 
             //force garbage collection
-            GC.Collect(2);
+            GC.Collect();
         }
         #endregion
 
@@ -526,7 +524,7 @@ namespace Nagru___Manga_Organizer
         {
             LV_Entries.BeginUpdate();
             for (int x = 0; x < LV_Entries.Items.Count; x++)
-                if (LV_Entries.Items[x].BackColor != System.Drawing.Color.LightYellow)
+                if (LV_Entries.Items[x].BackColor != Color.LightYellow)
                     LV_Entries.Items.RemoveAt(x--);
             LV_Entries.EndUpdate();
 
@@ -539,10 +537,9 @@ namespace Nagru___Manga_Organizer
             if (TxBx_Loc.Text == string.Empty || ExtDirectory.Restricted(TxBx_Loc.Text))
                 return;
 
-            List<string> lFiles = ExtDirectory.GetFiles(@TxBx_Loc.Text);
-            if (lFiles.Count > 0) System.Diagnostics.Process.Start(lFiles[0]);
+            string[] sFiles = ExtDirectory.GetFiles(@TxBx_Loc.Text);
+            if (sFiles.Length > 0) System.Diagnostics.Process.Start(sFiles[0]);
             else System.Diagnostics.Process.Start(@TxBx_Loc.Text);
-            lFiles.Clear();
         }
 
         /* Set properties back to default   */
@@ -629,11 +626,6 @@ namespace Nagru___Manga_Organizer
 
             MnTS_New.Visible = false;
             MnTS_Edit.Visible = false;
-
-            //Get image
-            thWork = new System.Threading.Thread(GetImage);
-            thWork.IsBackground = true;
-            thWork.Start();
         }
 
         /* Search database entries   */
@@ -708,7 +700,7 @@ namespace Nagru___Manga_Organizer
                 lvi.SubItems.Add(lData[i].iPages.ToString());
                 lvi.SubItems.Add(lData[i].sTags);
                 lvi.SubItems.Add(lData[i].sType);
-                if (lData[i].bFav) lvi.BackColor = System.Drawing.Color.LightYellow;
+                if (lData[i].bFav) lvi.BackColor = Color.LightYellow;
                 lItems.Add(lvi);
             }
 
@@ -922,29 +914,37 @@ namespace Nagru___Manga_Organizer
                 this.Cursor = Cursors.WaitCursor;
                 Text = "Downloading page...";
 
-                HtmlWeb htmlWeb = new HtmlWeb();
+                HtmlAgilityPack.HtmlWeb htmlWeb = new HtmlAgilityPack.HtmlWeb();
                 HtmlAgilityPack.HtmlDocument htmlDoc = htmlWeb.Load(fmGet.Url);
-                
+
                 //ensure page exists
                 if (htmlWeb.StatusCode == System.Net.HttpStatusCode.OK)
                 {
                     //grab artist & title
-                    SplitTitle(htmlDoc.GetElementbyId("gn").InnerText.Replace("&#039;", "'"));
+                    try
+                    {
+                        SplitTitle(htmlDoc.GetElementbyId("gn").InnerText.Replace("&#039;", "'"));
 
-                    //split 'gdd' table down into usable elements
-                    string[] sSplit = ExtString.Split(htmlDoc.GetElementbyId("gdd").InnerHtml, "\"gdt2\">");
-                    Dt_Date.Value = Convert.ToDateTime(ExtString.Split(sSplit[1], "</td>")[0]);
-                    Nud_Pages.Value = Convert.ToInt32(ExtString.Split(sSplit[2], "@")[0]);
+                        //split 'gdd' table down into usable elements
+                        string[] sSplit = ExtString.Split(htmlDoc.GetElementbyId("gdd").InnerHtml, "\"gdt2\">");
+                        Dt_Date.Value = Convert.ToDateTime(ExtString.Split(sSplit[1], "</td>")[0]);
+                        Nud_Pages.Value = Convert.ToInt32(ExtString.Split(sSplit[2], "@")[0]);
 
-                    //split taglist down into usable elements
-                    sSplit = ExtString.Split(htmlDoc.GetElementbyId(
-                        "taglist").InnerHtml, "this)\">");
-                    for (int i = 1; i < sSplit.Length; i++)
-                        TxBx_Tags.Text += ExtString.Split(sSplit[i], "</a>")[0] + ", ";
+                        //split taglist down into usable elements
+                        sSplit = ExtString.Split(htmlDoc.GetElementbyId(
+                            "taglist").InnerHtml, "this)\">");
+                        for (int i = 1; i < sSplit.Length; i++)
+                            TxBx_Tags.Text += ExtString.Split(sSplit[i], "</a>")[0] + ", ";
+                    }
+                    catch (Exception)
+                    {
+                        MessageBox.Show("This gallery is pining for the fjords\n(Sorry, no EX support yet).",
+                            Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
-                else MessageBox.Show("URL was invalid. Please make sure it comes from a g.e-hentai gallery page.",
+                else MessageBox.Show("URL was invalid. Please make sure it comes from an EH gallery page.",
                     Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                
+
                 Text = "Finished";
                 this.Cursor = Cursors.Default;
             }
@@ -966,7 +966,6 @@ namespace Nagru___Manga_Organizer
         private void MnRTx_Cut_Click(object sender, EventArgs e)
         {
             bSavText = false;
-            MnRTx_Undo.Enabled = true;
             if (TabControl.SelectedIndex == 2) frTxBx_Notes.Cut();
             else frTxBx_Desc.Cut();
         }
@@ -980,7 +979,6 @@ namespace Nagru___Manga_Organizer
         private void MnRTx_Paste_Click(object sender, EventArgs e)
         {
             bSavText = false;
-            MnRTx_Undo.Enabled = true;
             if (TabControl.SelectedIndex == 2) frTxBx_Notes.Paste();
             else frTxBx_Desc.Paste();
         }
@@ -1139,13 +1137,13 @@ namespace Nagru___Manga_Organizer
                     new string[] { "[", "]" }, StringSplitOptions.RemoveEmptyEntries);
 
                 //add item
-                Main.stEntry en;
+                Main.stEntry en; 
                 if (sTitle.Length == 2)
                     en = new Main.stEntry(sTitle[1].TrimStart(), sTitle[0], sFile, "", "", "",
-                        DateTime.Now, ExtDirectory.GetFiles(sFile).Count, false);
+                        DateTime.Now, ExtDirectory.GetFiles(sFile).Length, false);
                 else
                     en = new Main.stEntry(sTitle[0].TrimStart(), "", sFile, "", "", "",
-                        DateTime.Now, ExtDirectory.GetFiles(sFile).Count, false);
+                        DateTime.Now, ExtDirectory.GetFiles(sFile).Length, false);
 
                 if (!lData.Contains(en))
                 {
