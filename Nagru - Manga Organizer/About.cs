@@ -8,8 +8,7 @@ namespace Nagru___Manga_Organizer
         public About()
         {
             InitializeComponent();
-            this.TopMost = true;
-            Lbl_License.Text = "This program provides tagging, searching and other basic management for a\n" +
+            Lbl_P1.Text = "This program provides tagging, searching and other basic management for a\n" +
             "folder directory. It is intended as a companion to the EH website, and\n" +
             "optimally functions with directory names formatted as \"[Artist] Title\".\n" +
             "Copyright (C) 2012  Nagru\n\n\n" +
@@ -20,11 +19,20 @@ namespace Nagru___Manga_Organizer
             "This program is distributed in the hope that it will be useful, but WITHOUT\n" +
             "ANY WARRANTY; without even the implied warranty of\n" +
             "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n" +
-            "See the GNU General Public License for more details.\n\n" +
-            "You should have received a copy of the GNU General Public License along\n" +
-            "with this program; If not, see http://www.gnu.org/licenses/gpl.html \n\n\n" +
-            "For a copy of the source code, visit:\n" +
-            "http://nagru.github.com/Manga-Organizer/";
+            "See the GNU General Public License for more details:";
+            Lbl_P2.Text = "For a copy of the source code, visit:";
+        }
+
+        private void LnkLbl_Gpl_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            LnkLbl_Gpl.LinkVisited = true;
+            System.Diagnostics.Process.Start("http://www.gnu.org/licenses/gpl.html"); 
+        }
+
+        private void LnkLbl_Git_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            LnkLbl_Git.LinkVisited = true;
+            System.Diagnostics.Process.Start("http://nagru.github.com/Manga-Organizer"); 
         }
     }
 }
