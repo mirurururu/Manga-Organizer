@@ -148,17 +148,20 @@
             // 
             this.ChkBx_ShowFav.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.ChkBx_ShowFav.AutoSize = true;
-            this.ChkBx_ShowFav.Location = new System.Drawing.Point(793, 8);
+            this.ChkBx_ShowFav.Location = new System.Drawing.Point(795, 8);
             this.ChkBx_ShowFav.Name = "ChkBx_ShowFav";
             this.ChkBx_ShowFav.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.ChkBx_ShowFav.Size = new System.Drawing.Size(75, 17);
+            this.ChkBx_ShowFav.Size = new System.Drawing.Size(73, 17);
             this.ChkBx_ShowFav.TabIndex = 6;
-            this.ChkBx_ShowFav.Text = "Fav\'s Only";
+            this.ChkBx_ShowFav.Text = "Favs Only";
             this.ChkBx_ShowFav.UseVisualStyleBackColor = true;
             this.ChkBx_ShowFav.CheckedChanged += new System.EventHandler(this.ChkBx_ShowFav_CheckedChanged);
             // 
             // LV_Entries
             // 
+            this.LV_Entries.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.LV_Entries.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.ColArtist,
             this.ColTitle,
@@ -370,7 +373,7 @@
             this.ChkBx_Fav.Location = new System.Drawing.Point(448, 181);
             this.ChkBx_Fav.Name = "ChkBx_Fav";
             this.ChkBx_Fav.Size = new System.Drawing.Size(44, 19);
-            this.ChkBx_Fav.TabIndex = 20;
+            this.ChkBx_Fav.TabIndex = 6;
             this.ChkBx_Fav.Text = "Fav";
             this.ChkBx_Fav.UseVisualStyleBackColor = true;
             this.ChkBx_Fav.CheckStateChanged += new System.EventHandler(this.ChkBx_Fav_CheckStateChanged);
@@ -424,7 +427,7 @@
             this.CmBx_Type.Location = new System.Drawing.Point(52, 216);
             this.CmBx_Type.Name = "CmBx_Type";
             this.CmBx_Type.Size = new System.Drawing.Size(142, 21);
-            this.CmBx_Type.TabIndex = 5;
+            this.CmBx_Type.TabIndex = 7;
             this.CmBx_Type.Text = "Manga";
             this.CmBx_Type.TextChanged += new System.EventHandler(this.EntryAlt_Text);
             // 
@@ -452,7 +455,7 @@
             0});
             this.Nud_Pages.Name = "Nud_Pages";
             this.Nud_Pages.Size = new System.Drawing.Size(91, 21);
-            this.Nud_Pages.TabIndex = 6;
+            this.Nud_Pages.TabIndex = 5;
             this.Nud_Pages.ThousandsSeparator = true;
             this.Nud_Pages.ValueChanged += new System.EventHandler(this.EntryAlt_DtNum);
             // 
@@ -487,7 +490,7 @@
             // 
             this.Lbl_Pages.AutoSize = true;
             this.Lbl_Pages.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Lbl_Pages.Location = new System.Drawing.Point(290, 182);
+            this.Lbl_Pages.Location = new System.Drawing.Point(290, 184);
             this.Lbl_Pages.Name = "Lbl_Pages";
             this.Lbl_Pages.Size = new System.Drawing.Size(41, 15);
             this.Lbl_Pages.TabIndex = 7;
@@ -754,7 +757,7 @@
             this.frTxBx_Desc.Location = new System.Drawing.Point(8, 278);
             this.frTxBx_Desc.Name = "frTxBx_Desc";
             this.frTxBx_Desc.Size = new System.Drawing.Size(484, 264);
-            this.frTxBx_Desc.TabIndex = 22;
+            this.frTxBx_Desc.TabIndex = 8;
             this.frTxBx_Desc.Text = "";
             this.frTxBx_Desc.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.frTxBx_Desc_LinkClicked);
             this.frTxBx_Desc.TextChanged += new System.EventHandler(this.EntryAlt_Text);

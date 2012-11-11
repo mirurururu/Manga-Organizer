@@ -184,6 +184,7 @@
             this.ColPages});
             this.LV_Found.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LV_Found.FullRowSelect = true;
+            this.LV_Found.GridLines = true;
             this.LV_Found.HideSelection = false;
             this.LV_Found.Location = new System.Drawing.Point(12, 36);
             this.LV_Found.Name = "LV_Found";
@@ -212,6 +213,7 @@
             // 
             // Scan
             // 
+            this.AcceptButton = this.Btn_Scan;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(741, 343);

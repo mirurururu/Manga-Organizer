@@ -344,9 +344,9 @@ namespace Nagru___Manga_Organizer
         /* Updates LV to only display favourited items */
         private void ChkBx_ShowFav_CheckedChanged(object sender, EventArgs e)
         {
-
             if (ChkBx_ShowFav.Checked) OnlyFavs();
             else UpdateLV();
+            LV_Entries.Select();
         }
         #endregion
 
@@ -696,11 +696,11 @@ namespace Nagru___Manga_Organizer
             for (int i = 0; i < lData.Count; i++)
             {
                 ListViewItem lvi = new ListViewItem(lData[i].sArtist);
+                if (lData[i].bFav) lvi.BackColor = Color.LightYellow;
                 lvi.SubItems.Add(lData[i].sTitle);
                 lvi.SubItems.Add(lData[i].iPages.ToString());
                 lvi.SubItems.Add(lData[i].sTags);
                 lvi.SubItems.Add(lData[i].sType);
-                if (lData[i].bFav) lvi.BackColor = Color.LightYellow;
                 lItems.Add(lvi);
             }
 
@@ -714,7 +714,7 @@ namespace Nagru___Manga_Organizer
             Cursor = Cursors.Default;
 
             //prevent loss of search parameters
-            if (ChkBx_ShowFav.Checked) OnlyFavs();
+            if (ChkBx_Fav.Checked) OnlyFavs();
             if (TxBx_Search.Text != string.Empty) Search();
         }
         #endregion
@@ -1137,7 +1137,7 @@ namespace Nagru___Manga_Organizer
                     new string[] { "[", "]" }, StringSplitOptions.RemoveEmptyEntries);
 
                 //add item
-                Main.stEntry en; 
+                Main.stEntry en;
                 if (sTitle.Length == 2)
                     en = new Main.stEntry(sTitle[1].TrimStart(), sTitle[0], sFile, "", "", "",
                         DateTime.Now, ExtDirectory.GetFiles(sFile).Length, false);
