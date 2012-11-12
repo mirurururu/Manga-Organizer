@@ -934,7 +934,10 @@ namespace Nagru___Manga_Organizer
                         sSplit = ExtString.Split(htmlDoc.GetElementbyId(
                             "taglist").InnerHtml, "this)\">");
                         for (int i = 1; i < sSplit.Length; i++)
-                            TxBx_Tags.Text += ExtString.Split(sSplit[i], "</a>")[0] + ", ";
+                        {
+                            TxBx_Tags.Text += ExtString.Split(sSplit[i], "</a>")[0].Trim();
+                            if (i < sSplit.Length - 1) TxBx_Tags.Text += ", ";
+                        }
                     }
                     catch (Exception)
                     {

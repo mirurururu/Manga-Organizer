@@ -54,7 +54,7 @@
             this.LnkLbl_Gpl.TabStop = true;
             this.LnkLbl_Gpl.Text = "http://www.gnu.org/licenses/gpl.html";
             this.LnkLbl_Gpl.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.LnkLbl_Gpl.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LnkLbl_Gpl_LinkClicked);
+            this.LnkLbl_Gpl.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkClicked);
             // 
             // Lbl_P2
             // 
@@ -76,7 +76,7 @@
             this.LnkLbl_Git.TabStop = true;
             this.LnkLbl_Git.Text = "http://nagru.github.com/Manga-Organizer";
             this.LnkLbl_Git.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.LnkLbl_Git.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LnkLbl_Git_LinkClicked);
+            this.LnkLbl_Git.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkClicked);
             // 
             // About
             // 
@@ -91,7 +91,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "About";
-            this.Text = "About (v. 11-11-2012)";
+            this.Text = "About <Error>";
             this.ResumeLayout(false);
 
         }

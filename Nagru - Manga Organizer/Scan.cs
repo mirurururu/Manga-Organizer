@@ -9,13 +9,13 @@ namespace Nagru___Manga_Organizer
 {
     public partial class Scan : Form
     {
-        public List<Main.stEntry> CurrentItems
-        { set { lCurr = value; } }
-
         private delegate void DelVoidEntry(Main.stEntry en);
         public delegate void DelVoidVoid();
         public DelVoidVoid delNewEntry;
         public DelVoidVoid delDone;
+
+        public List<Main.stEntry> CurrentItems
+        { set { lCurr = value; } }
 
         LVsorter lvSortObj = new LVsorter();
         List<Main.stEntry> lFound = new List<Main.stEntry>();
@@ -81,7 +81,7 @@ namespace Nagru___Manga_Organizer
                 lFound.Clear();
                 LV_Found.Items.Clear();
                 Cursor = Cursors.WaitCursor;
-                System.Threading.ThreadPool.QueueUserWorkItem(ScanDir, lCurr);
+                System.Threading.ThreadPool.QueueUserWorkItem(ScanDir);
             }
             else MessageBox.Show("Cannot read from the selected folder path.",
                 "Scan", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -90,28 +90,36 @@ namespace Nagru___Manga_Organizer
         /* Scan default directory for entries */
         private void ScanDir(Object obj)
         {
-            List<Main.stEntry> lCurrent = obj as List<Main.stEntry>;
             string[] asDirs = Directory.GetDirectories(
                 TxBx_Loc.Text, "*", SearchOption.TopDirectoryOnly);
 
             if (asDirs.Length > 0)
                 for (int i = 0; i < asDirs.Length; i++)
                 {
-                    //Get formatted directory name
-                    string[] sTitle = Path.GetFileName(asDirs[i]).Split(
-                        new string[] { "[", "]" }, StringSplitOptions.RemoveEmptyEntries);
+                    //check if filepath already in database
+                    bool bExists = false;
+                    for (int x = 0; x < lCurr.Count; x++)
+                        if (asDirs[i].Equals(lCurr[x].sLoc, 
+                            StringComparison.OrdinalIgnoreCase))
+                        {
+                            bExists = true;
+                            break;
+                        }
 
-                    //add item
-                    Main.stEntry en;
-                    if (sTitle.Length == 2)
-                        en = new Main.stEntry(sTitle[1].TrimStart(), sTitle[0], asDirs[i], "", "", "",
-                            DateTime.Now, ExtDirectory.GetFiles(asDirs[i]).Length, false);
-                    else
-                        en = new Main.stEntry(sTitle[0].TrimStart(), "", asDirs[i], "", "", "",
-                            DateTime.Now, ExtDirectory.GetFiles(asDirs[i]).Length, false);
-
-                    if (!lFound.Contains(en) && !lCurr.Contains(en))
+                    //if not, add to potential 'found' items
+                    if (!bExists)
                     {
+                        string[] sTitle = Path.GetFileName(asDirs[i]).Split(
+                            new string[] { "[", "]" }, StringSplitOptions.RemoveEmptyEntries);
+
+                        Main.stEntry en;
+                        if (sTitle.Length == 2)
+                            en = new Main.stEntry(sTitle[1].TrimStart(), sTitle[0], asDirs[i], "", "", "",
+                                DateTime.Now, ExtDirectory.GetFiles(asDirs[i]).Length, false);
+                        else
+                            en = new Main.stEntry(sTitle[0].TrimStart(), "", asDirs[i], "", "", "",
+                                DateTime.Now, ExtDirectory.GetFiles(asDirs[i]).Length, false);
+
                         lFound.Add(en);
                         BeginInvoke(new DelVoidEntry(AddItem), en);
                     }
