@@ -632,7 +632,6 @@ namespace Nagru___Manga_Organizer
         void Search()
         {
             Cursor = Cursors.WaitCursor;
-
             List<string> lTags = new List<string>();
             foreach (string s in TxBx_Search.Text.Split(',')) lTags.Add(s.Trim());
 
@@ -714,7 +713,7 @@ namespace Nagru___Manga_Organizer
             Cursor = Cursors.Default;
 
             //prevent loss of search parameters
-            if (ChkBx_Fav.Checked) OnlyFavs();
+            if (ChkBx_ShowFav.Checked) OnlyFavs();
             if (TxBx_Search.Text != string.Empty) Search();
         }
         #endregion
