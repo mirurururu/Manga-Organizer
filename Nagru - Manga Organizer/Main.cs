@@ -254,6 +254,13 @@ namespace Nagru___Manga_Organizer
                     break;
             }
         }
+
+        /* Inserts delay before Search() to account for Human input speed */
+        private void Delay_Tick(object sender, EventArgs e)
+        {
+            Delay.Stop();
+            UpdateLV();
+        }
         #endregion
 
         #region Tab_Browse
@@ -442,21 +449,27 @@ namespace Nagru___Manga_Organizer
         /* Add entries passed from fmScan to database */
         void AddEntries()
         {
-            //update LV_Entries & maintain scroll position
-            int iPos = -1;
-            if (LV_Entries.Items.Count > 0)
-                iPos = LV_Entries.TopItem.Index;
+            //update LV_Entries & maintain selection
             UpdateLV();
             bSavList = false;
+            if (indx == -1) return;
+
+            int iPos = 0;
+            for (int i = 0; i < LV_Entries.Items.Count; i++)
+                if (LV_Entries.Items[i].SubItems[1].Text == lData[indx].sTitle)
+                {
+                    LV_Entries.FocusedItem = LV_Entries.Items[i];
+                    LV_Entries.Items[i].Selected = true;
+                    iPos = i;
+                    break;
+                }
+            LV_Entries.Select();
 
             /* Compensate for broken scroll-to function
              * by running it multiple times (3 is sweet-spot) */
-            if (iPos > -1)
-            {
-                LV_Entries.TopItem = LV_Entries.Items[iPos];
-                LV_Entries.TopItem = LV_Entries.Items[iPos];
-                LV_Entries.TopItem = LV_Entries.Items[iPos];
-            }
+            LV_Entries.TopItem = LV_Entries.Items[iPos];
+            LV_Entries.TopItem = LV_Entries.Items[iPos];
+            LV_Entries.TopItem = LV_Entries.Items[iPos];
         }
 
         /* Get first image in target folder */
@@ -787,7 +800,7 @@ namespace Nagru___Manga_Organizer
                 TxBx_Loc.Text, frTxBx_Desc.Text, TxBx_Tags.Text, CmBx_Type.Text,
                 Dt_Date.Value, Nud_Pages.Value, ChkBx_Fav.Checked);
 
-            //update LV_Entries & maintain scroll position
+            //update LV_Entries & maintain selection
             AddEntries();
             MnTS_Edit.Visible = false;
             Text = "Edited entry: " + lData[indx].ToString();
@@ -1052,10 +1065,7 @@ namespace Nagru___Manga_Organizer
         #region DragDropEvents
         /* Try to break dragged text down into Artist & Title */
         private void TxBx_Artist_DragDrop(object sender, DragEventArgs e)
-        {
-            if (e.Data.GetDataPresent(DataFormats.Text))
-                SplitTitle((string)e.Data.GetData(DataFormats.Text));
-        }
+        { SplitTitle((string)e.Data.GetData(DataFormats.Text)); }
 
         /* Show proper cursor when text is dragged over TxBx */
         private void DragEnterTxBx(object sender, DragEventArgs e)
@@ -1082,8 +1092,7 @@ namespace Nagru___Manga_Organizer
             }
             else if (sender == TxBx_Loc)
             {
-                string sPath = sAdd;
-                TxBx_Loc.Text = sPath;
+                TxBx_Loc.Text = sAdd;
 
                 //Get image
                 thWork = new System.Threading.Thread(GetImage);
@@ -1106,7 +1115,7 @@ namespace Nagru___Manga_Organizer
                             TxBx_Tags.Text += ", ";
                     }
             }
-            else //if (sender == Title/Loc)
+            else /* if (sender == TxBx_Title) */
             {
                 TextBox TxBx = (TextBox)sender;
 
@@ -1150,36 +1159,10 @@ namespace Nagru___Manga_Organizer
                 if (!lData.Contains(en))
                 {
                     lData.Add(en);
+                    indx = lData.Count - 1;
                     AddEntries();
-
-                    int iPos = 0;
-                    for (int i = 0; i < LV_Entries.Items.Count; i++)
-                        if (LV_Entries.Items[i].SubItems[1].Text == en.sTitle)
-                        {
-                            LV_Entries.FocusedItem = LV_Entries.Items[i];
-                            LV_Entries.Items[i].Selected = true;
-                            iPos = i;
-                            break;
-                        }
-                    LV_Entries.Select();
-                    bSavList = false;
-
-                    /* Compensate for broken scroll-to function
-                     * by running it multiple times (3 is sweet-spot) */
-                    LV_Entries.TopItem = LV_Entries.Items[iPos];
-                    LV_Entries.TopItem = LV_Entries.Items[iPos];
-                    LV_Entries.TopItem = LV_Entries.Items[iPos];
                 }
             }
-        }
-        #endregion
-
-        #region Timer
-        /* Inserts delay before Search() to account for Human input speed */
-        private void Delay_Tick(object sender, EventArgs e)
-        {
-            Delay.Stop();
-            UpdateLV();
         }
         #endregion
     }

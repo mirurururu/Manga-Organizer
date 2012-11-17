@@ -11,7 +11,8 @@
     <RootNamespace>Nagru___Manga_Organizer</RootNamespace>
     <AssemblyName>Nagru - Manga Organizer</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
@@ -38,6 +39,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -49,12 +51,14 @@
     <WarningLevel>4</WarningLevel>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
     <DebugSymbols>true</DebugSymbols>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>SadPanda.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="HtmlAgilityPack">
+    <Reference Include="HtmlAgilityPack, Version=1.4.6.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <SpecificVersion>True</SpecificVersion>
       <HintPath>.\HtmlAgilityPack.dll</HintPath>
     </Reference>
     <Reference Include="System" />

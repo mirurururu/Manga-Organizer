@@ -27,7 +27,6 @@ namespace Nagru___Manga_Organizer
 
             //set fullscreen
             TopMost = true;
-            Location = new Point(0, 0);
             Bounds = Screen.PrimaryScreen.Bounds;
             FormBorderStyle = FormBorderStyle.None;
             WindowState = FormWindowState.Maximized;
@@ -97,6 +96,7 @@ namespace Nagru___Manga_Organizer
             using (FileStream fs = new FileStream(
                 lFiles[iPage], FileMode.Open, FileAccess.Read))
                 imgR = Image.FromStream(fs);
+                picBx_Right.Image = imgR;
             if (++iPage >= lFiles.Count) iPage = 0;
             using (FileStream fs = new FileStream(
                 lFiles[iPage], FileMode.Open, FileAccess.Read))
@@ -106,22 +106,15 @@ namespace Nagru___Manga_Organizer
             bWideL = imgL.Height < imgL.Width;
 
             if (!bWideL && !bWideR)
-            {
-                picBx_Right.Image = imgR;
                 picBx_Left.Image = imgL;
-            }
-            else if (bWideR || bWideL && bWideR)
+            else if (bWideR)
             {
                 picBx_Left.Image = imgR;
                 picBx_Left.Width =
                     Screen.PrimaryScreen.Bounds.Width;
                 iPage--;
             }
-            else
-            {
-                picBx_Right.Image = imgR;
-                iPage--;
-            }
+            else iPage--;
         }
 
         /* Go to previous page */
