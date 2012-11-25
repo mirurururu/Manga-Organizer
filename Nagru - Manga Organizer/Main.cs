@@ -57,7 +57,7 @@ namespace Nagru___Manga_Organizer
                     if (s != string.Empty && !lCheck.Contains(s.Trim()))
                         lCheck.Add(s.Trim());
 
-                lCheck.Sort();
+                lCheck.Sort(new TrueCompare());
                 for (int i = 0; i < lCheck.Count; i++)
                 {
                     if (i != 0) sTags += ", ";
@@ -422,6 +422,28 @@ namespace Nagru___Manga_Organizer
             }
         }
 
+        /* Select next item in listview */
+        private void Btn_GoDn_Click(object sender, EventArgs e)
+        {
+            if (LV_Entries.SelectedItems.Count == 0) return;
+            int iPos = LV_Entries.SelectedItems[0].Index;
+
+            if (++iPos >= LV_Entries.Items.Count) iPos = 0;
+            LV_Entries.FocusedItem = LV_Entries.Items[iPos];
+            LV_Entries.Items[iPos].Selected = true;
+        }
+
+        /* Select previous item in listview */
+        private void Btn_GoUp_Click(object sender, EventArgs e)
+        {
+            if (LV_Entries.SelectedItems.Count == 0) return;
+            int iPos = LV_Entries.SelectedItems[0].Index;
+
+            if (--iPos < 0) iPos = LV_Entries.Items.Count - 1;
+            LV_Entries.FocusedItem = LV_Entries.Items[iPos];
+            LV_Entries.Items[iPos].Selected = true;
+        }
+
         /* Only enable edit when changes have been made */
         #region EnableEdit
         private void EntryAlt_Text(object sender, EventArgs e)
@@ -535,11 +557,33 @@ namespace Nagru___Manga_Organizer
         /* Remove non-fav'ed entries */
         void OnlyFavs()
         {
+            Cursor = Cursors.WaitCursor;
+            List<ListViewItem> lItems = new List<ListViewItem>(LV_Entries.Items.Count + 1);
+
+            //refresh LV_Entries
+            for (int i = 0; i < lData.Count; i++)
+            {
+                if (!lData[i].bFav) continue;
+                ListViewItem lvi = new ListViewItem(lData[i].sArtist);
+                lvi.BackColor = Color.LightYellow;
+                lvi.SubItems.Add(lData[i].sTitle);
+                lvi.SubItems.Add(lData[i].iPages.ToString());
+                lvi.SubItems.Add(lData[i].sTags);
+                lvi.SubItems.Add(lData[i].sType);
+                lItems.Add(lvi);
+            }
+
+            //Update listview display
             LV_Entries.BeginUpdate();
-            for (int x = 0; x < LV_Entries.Items.Count; x++)
-                if (LV_Entries.Items[x].BackColor != Color.LightYellow)
-                    LV_Entries.Items.RemoveAt(x--);
+            LV_Entries.Items.Clear();
+            LV_Entries.Items.AddRange(lItems.ToArray());
+            lItems.Clear();
+            LV_Entries.Sort();
             LV_Entries.EndUpdate();
+            Cursor = Cursors.Default;
+
+            //prevent loss of search parameters
+            if (TxBx_Search.Text != string.Empty) Search();
 
             Text = "Returned: " + LV_Entries.Items.Count + " entries";
         }
