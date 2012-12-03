@@ -4,6 +4,8 @@
  * Desc: Handles organization of manga library
  */
 
+//add File LV on ctrl+F to Browse
+
 using System;
 using System.IO;
 using System.Drawing;
@@ -362,7 +364,7 @@ namespace Nagru___Manga_Organizer
         private void Btn_Loc_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog fbd = new FolderBrowserDialog();
-            fbd.RootFolder = Environment.SpecialFolder.MyComputer;
+            fbd.RootFolder = Environment.SpecialFolder.Desktop;
             fbd.Description = "Select the location of the current entry:";
 
             //Try to auto-magically grab folder path
@@ -412,14 +414,13 @@ namespace Nagru___Manga_Organizer
         {
             if (indx != -1) MnTS_Edit.Visible = true;
 
-            if (!Directory.Exists(TxBx_Loc.Text)) SetPicBxNull();
-            else
-            {
+            if (Directory.Exists(TxBx_Loc.Text)) {
                 iPage = -1;
-                thWork = new System.Threading.Thread(GetImage);
+                thWork = new Thread(GetImage);
                 thWork.IsBackground = true;
                 thWork.Start();
             }
+            else SetPicBxNull();
         }
 
         /* Select next item in listview */
@@ -771,7 +772,7 @@ namespace Nagru___Manga_Organizer
 
             //prevent loss of search parameters
             if (ChkBx_ShowFav.Checked) OnlyFavs();
-            if (TxBx_Search.Text != string.Empty) Search();
+            else if (TxBx_Search.Text != string.Empty) Search();
         }
         #endregion
 

@@ -26,7 +26,6 @@ namespace Nagru___Manga_Organizer
             Cursor.Hide();
 
             //set fullscreen
-            TopMost = true;
             Bounds = Screen.PrimaryScreen.Bounds;
             FormBorderStyle = FormBorderStyle.None;
             WindowState = FormWindowState.Maximized;

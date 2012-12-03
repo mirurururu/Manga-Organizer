@@ -8,7 +8,7 @@ namespace Nagru___Manga_Organizer
         public About()
         {
             InitializeComponent();
-            Text = "About (v. 11-25-2012)";
+            Text = "About (v. 12-03-2012)";
 
             Lbl_P1.Text = "This program provides tagging, searching and other basic management for a\n" +
             "folder directory. It is intended as a companion to the EH website, and\n" +

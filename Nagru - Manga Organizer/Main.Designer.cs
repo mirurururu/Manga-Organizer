@@ -33,6 +33,12 @@
             this.TabControl = new System.Windows.Forms.TabControl();
             this.Tb_Browse = new System.Windows.Forms.TabPage();
             this.ChkBx_ShowFav = new System.Windows.Forms.CheckBox();
+            this.LV_Entries = new Nagru___Manga_Organizer.ListViewNF();
+            this.ColArtist = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ColTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ColPages = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ColTags = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ColType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Btn_Scan = new System.Windows.Forms.Button();
             this.Btn_Clear = new System.Windows.Forms.Button();
             this.Lbl_Search = new System.Windows.Forms.Label();
@@ -46,6 +52,8 @@
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.MnTx_SelAll = new System.Windows.Forms.ToolStripMenuItem();
             this.Tb_View = new System.Windows.Forms.TabPage();
+            this.Btn_GoUp = new System.Windows.Forms.Button();
+            this.Btn_GoDn = new System.Windows.Forms.Button();
             this.Btn_Loc = new System.Windows.Forms.Button();
             this.ChkBx_Fav = new System.Windows.Forms.CheckBox();
             this.TxBx_Loc = new System.Windows.Forms.TextBox();
@@ -83,6 +91,7 @@
             this.MnTS_Open = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTS_Del = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTS_Clear = new System.Windows.Forms.ToolStripMenuItem();
+            this.frTxBx_Desc = new Nagru___Manga_Organizer.FixedRichTextBox();
             this.Mn_rTxBx = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.MnRTx_Undo = new System.Windows.Forms.ToolStripMenuItem();
             this.tsSeperate = new System.Windows.Forms.ToolStripSeparator();
@@ -92,17 +101,8 @@
             this.tsSeperate2 = new System.Windows.Forms.ToolStripSeparator();
             this.MnRTx_SelectAll = new System.Windows.Forms.ToolStripMenuItem();
             this.Tb_Notes = new System.Windows.Forms.TabPage();
-            this.Delay = new System.Windows.Forms.Timer(this.components);
-            this.Btn_GoDn = new System.Windows.Forms.Button();
-            this.Btn_GoUp = new System.Windows.Forms.Button();
-            this.LV_Entries = new Nagru___Manga_Organizer.ListViewNF();
-            this.ColArtist = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ColTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ColPages = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ColTags = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ColType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.frTxBx_Desc = new Nagru___Manga_Organizer.FixedRichTextBox();
             this.frTxBx_Notes = new Nagru___Manga_Organizer.FixedRichTextBox();
+            this.Delay = new System.Windows.Forms.Timer(this.components);
             this.TabControl.SuspendLayout();
             this.Tb_Browse.SuspendLayout();
             this.Mn_TxBx.SuspendLayout();
@@ -159,6 +159,58 @@
             this.ChkBx_ShowFav.UseVisualStyleBackColor = true;
             this.ChkBx_ShowFav.CheckedChanged += new System.EventHandler(this.ChkBx_ShowFav_CheckedChanged);
             // 
+            // LV_Entries
+            // 
+            this.LV_Entries.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.LV_Entries.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.ColArtist,
+            this.ColTitle,
+            this.ColPages,
+            this.ColTags,
+            this.ColType});
+            this.LV_Entries.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LV_Entries.FullRowSelect = true;
+            this.LV_Entries.GridLines = true;
+            this.LV_Entries.HideSelection = false;
+            this.LV_Entries.Location = new System.Drawing.Point(0, 32);
+            this.LV_Entries.MultiSelect = false;
+            this.LV_Entries.Name = "LV_Entries";
+            this.LV_Entries.Size = new System.Drawing.Size(923, 517);
+            this.LV_Entries.TabIndex = 0;
+            this.LV_Entries.UseCompatibleStateImageBehavior = false;
+            this.LV_Entries.View = System.Windows.Forms.View.Details;
+            this.LV_Entries.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.LV_Entries_ColumnClick);
+            this.LV_Entries.SelectedIndexChanged += new System.EventHandler(this.LV_Entries_SelectedIndexChanged);
+            this.LV_Entries.DoubleClick += new System.EventHandler(this.LV_Entries_DoubleClick);
+            this.LV_Entries.Resize += new System.EventHandler(this.LV_Entries_Resize);
+            // 
+            // ColArtist
+            // 
+            this.ColArtist.Text = "Artist";
+            this.ColArtist.Width = 202;
+            // 
+            // ColTitle
+            // 
+            this.ColTitle.Text = "Title";
+            this.ColTitle.Width = 321;
+            // 
+            // ColPages
+            // 
+            this.ColPages.Text = "Pages";
+            this.ColPages.Width = 46;
+            // 
+            // ColTags
+            // 
+            this.ColTags.Text = "Tags";
+            this.ColTags.Width = 261;
+            // 
+            // ColType
+            // 
+            this.ColType.Text = "Type";
+            this.ColType.Width = 72;
+            // 
             // Btn_Scan
             // 
             this.Btn_Scan.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -198,8 +250,8 @@
             // 
             // TxBx_Search
             // 
-            this.TxBx_Search.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.TxBx_Search.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.TxBx_Search.ContextMenuStrip = this.Mn_TxBx;
             this.TxBx_Search.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.TxBx_Search.Location = new System.Drawing.Point(59, 6);
@@ -306,6 +358,32 @@
             this.Tb_View.Size = new System.Drawing.Size(926, 549);
             this.Tb_View.TabIndex = 1;
             this.Tb_View.Text = "View";
+            // 
+            // Btn_GoUp
+            // 
+            this.Btn_GoUp.FlatAppearance.BorderSize = 0;
+            this.Btn_GoUp.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.Btn_GoUp.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Btn_GoUp.Location = new System.Drawing.Point(469, 9);
+            this.Btn_GoUp.Name = "Btn_GoUp";
+            this.Btn_GoUp.Size = new System.Drawing.Size(23, 23);
+            this.Btn_GoUp.TabIndex = 25;
+            this.Btn_GoUp.Text = "▲";
+            this.Btn_GoUp.UseVisualStyleBackColor = true;
+            this.Btn_GoUp.Click += new System.EventHandler(this.Btn_GoUp_Click);
+            // 
+            // Btn_GoDn
+            // 
+            this.Btn_GoDn.FlatAppearance.BorderSize = 0;
+            this.Btn_GoDn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.Btn_GoDn.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Btn_GoDn.Location = new System.Drawing.Point(440, 9);
+            this.Btn_GoDn.Name = "Btn_GoDn";
+            this.Btn_GoDn.Size = new System.Drawing.Size(23, 23);
+            this.Btn_GoDn.TabIndex = 24;
+            this.Btn_GoDn.Text = "▼";
+            this.Btn_GoDn.UseVisualStyleBackColor = true;
+            this.Btn_GoDn.Click += new System.EventHandler(this.Btn_GoDn_Click);
             // 
             // Btn_Loc
             // 
@@ -514,9 +592,9 @@
             // 
             // PicBx_Cover
             // 
-            this.PicBx_Cover.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.PicBx_Cover.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.PicBx_Cover.BackColor = System.Drawing.Color.DarkGray;
             this.PicBx_Cover.Location = new System.Drawing.Point(498, 9);
             this.PicBx_Cover.Name = "PicBx_Cover";
@@ -700,6 +778,20 @@
             this.MnTS_Clear.Text = "Clear";
             this.MnTS_Clear.Click += new System.EventHandler(this.MnTS_Clear_Click);
             // 
+            // frTxBx_Desc
+            // 
+            this.frTxBx_Desc.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)));
+            this.frTxBx_Desc.ContextMenuStrip = this.Mn_rTxBx;
+            this.frTxBx_Desc.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.frTxBx_Desc.Location = new System.Drawing.Point(8, 278);
+            this.frTxBx_Desc.Name = "frTxBx_Desc";
+            this.frTxBx_Desc.Size = new System.Drawing.Size(484, 264);
+            this.frTxBx_Desc.TabIndex = 8;
+            this.frTxBx_Desc.Text = "";
+            this.frTxBx_Desc.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.frTxBx_Desc_LinkClicked);
+            this.frTxBx_Desc.TextChanged += new System.EventHandler(this.EntryAlt_Text);
+            // 
             // Mn_rTxBx
             // 
             this.Mn_rTxBx.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -778,101 +870,6 @@
             this.Tb_Notes.Text = "Notes";
             this.Tb_Notes.UseVisualStyleBackColor = true;
             // 
-            // Delay
-            // 
-            this.Delay.Interval = 300;
-            this.Delay.Tick += new System.EventHandler(this.Delay_Tick);
-            // 
-            // Btn_GoDn
-            // 
-            this.Btn_GoDn.FlatAppearance.BorderSize = 0;
-            this.Btn_GoDn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.Btn_GoDn.Location = new System.Drawing.Point(440, 9);
-            this.Btn_GoDn.Name = "Btn_GoDn";
-            this.Btn_GoDn.Size = new System.Drawing.Size(23, 23);
-            this.Btn_GoDn.TabIndex = 24;
-            this.Btn_GoDn.Text = "▼";
-            this.Btn_GoDn.UseVisualStyleBackColor = true;
-            this.Btn_GoDn.Click += new System.EventHandler(this.Btn_GoDn_Click);
-            // 
-            // Btn_GoUp
-            // 
-            this.Btn_GoUp.FlatAppearance.BorderSize = 0;
-            this.Btn_GoUp.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.Btn_GoUp.Location = new System.Drawing.Point(469, 9);
-            this.Btn_GoUp.Name = "Btn_GoUp";
-            this.Btn_GoUp.Size = new System.Drawing.Size(23, 23);
-            this.Btn_GoUp.TabIndex = 25;
-            this.Btn_GoUp.Text = "▲";
-            this.Btn_GoUp.UseVisualStyleBackColor = true;
-            this.Btn_GoUp.Click += new System.EventHandler(this.Btn_GoUp_Click);
-            // 
-            // LV_Entries
-            // 
-            this.LV_Entries.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.LV_Entries.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.ColArtist,
-            this.ColTitle,
-            this.ColPages,
-            this.ColTags,
-            this.ColType});
-            this.LV_Entries.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LV_Entries.FullRowSelect = true;
-            this.LV_Entries.GridLines = true;
-            this.LV_Entries.HideSelection = false;
-            this.LV_Entries.Location = new System.Drawing.Point(0, 32);
-            this.LV_Entries.MultiSelect = false;
-            this.LV_Entries.Name = "LV_Entries";
-            this.LV_Entries.Size = new System.Drawing.Size(923, 517);
-            this.LV_Entries.TabIndex = 0;
-            this.LV_Entries.UseCompatibleStateImageBehavior = false;
-            this.LV_Entries.View = System.Windows.Forms.View.Details;
-            this.LV_Entries.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.LV_Entries_ColumnClick);
-            this.LV_Entries.SelectedIndexChanged += new System.EventHandler(this.LV_Entries_SelectedIndexChanged);
-            this.LV_Entries.DoubleClick += new System.EventHandler(this.LV_Entries_DoubleClick);
-            this.LV_Entries.Resize += new System.EventHandler(this.LV_Entries_Resize);
-            // 
-            // ColArtist
-            // 
-            this.ColArtist.Text = "Artist";
-            this.ColArtist.Width = 202;
-            // 
-            // ColTitle
-            // 
-            this.ColTitle.Text = "Title";
-            this.ColTitle.Width = 321;
-            // 
-            // ColPages
-            // 
-            this.ColPages.Text = "Pages";
-            this.ColPages.Width = 46;
-            // 
-            // ColTags
-            // 
-            this.ColTags.Text = "Tags";
-            this.ColTags.Width = 261;
-            // 
-            // ColType
-            // 
-            this.ColType.Text = "Type";
-            this.ColType.Width = 72;
-            // 
-            // frTxBx_Desc
-            // 
-            this.frTxBx_Desc.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.frTxBx_Desc.ContextMenuStrip = this.Mn_rTxBx;
-            this.frTxBx_Desc.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.frTxBx_Desc.Location = new System.Drawing.Point(8, 278);
-            this.frTxBx_Desc.Name = "frTxBx_Desc";
-            this.frTxBx_Desc.Size = new System.Drawing.Size(484, 264);
-            this.frTxBx_Desc.TabIndex = 8;
-            this.frTxBx_Desc.Text = "";
-            this.frTxBx_Desc.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.frTxBx_Desc_LinkClicked);
-            this.frTxBx_Desc.TextChanged += new System.EventHandler(this.EntryAlt_Text);
-            // 
             // frTxBx_Notes
             // 
             this.frTxBx_Notes.AcceptsTab = true;
@@ -888,6 +885,11 @@
             this.frTxBx_Notes.Text = "";
             this.frTxBx_Notes.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.frTxBx_Notes_LinkClicked);
             this.frTxBx_Notes.TextChanged += new System.EventHandler(this.frTxBx_Notes_TextChanged);
+            // 
+            // Delay
+            // 
+            this.Delay.Interval = 300;
+            this.Delay.Tick += new System.EventHandler(this.Delay_Tick);
             // 
             // Main
             // 
