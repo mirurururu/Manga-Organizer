@@ -52,17 +52,17 @@
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.MnTx_SelAll = new System.Windows.Forms.ToolStripMenuItem();
             this.Tb_View = new System.Windows.Forms.TabPage();
+            this.CmbBx_Artist = new System.Windows.Forms.ComboBox();
             this.Btn_GoUp = new System.Windows.Forms.Button();
             this.Btn_GoDn = new System.Windows.Forms.Button();
             this.Btn_Loc = new System.Windows.Forms.Button();
             this.ChkBx_Fav = new System.Windows.Forms.CheckBox();
             this.TxBx_Loc = new System.Windows.Forms.TextBox();
             this.Lbl_Desc = new System.Windows.Forms.Label();
-            this.CmBx_Type = new System.Windows.Forms.ComboBox();
+            this.CmbBx_Type = new System.Windows.Forms.ComboBox();
             this.Dt_Date = new System.Windows.Forms.DateTimePicker();
             this.Nud_Pages = new System.Windows.Forms.NumericUpDown();
             this.TxBx_Tags = new System.Windows.Forms.TextBox();
-            this.TxBx_Artist = new System.Windows.Forms.TextBox();
             this.Lbl_Pages = new System.Windows.Forms.Label();
             this.Lbl_Date = new System.Windows.Forms.Label();
             this.Lbl_Type = new System.Windows.Forms.Label();
@@ -161,9 +161,9 @@
             // 
             // LV_Entries
             // 
-            this.LV_Entries.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.LV_Entries.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.LV_Entries.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.ColArtist,
             this.ColTitle,
@@ -250,8 +250,8 @@
             // 
             // TxBx_Search
             // 
-            this.TxBx_Search.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.TxBx_Search.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.TxBx_Search.ContextMenuStrip = this.Mn_TxBx;
             this.TxBx_Search.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.TxBx_Search.Location = new System.Drawing.Point(59, 6);
@@ -331,17 +331,17 @@
             // Tb_View
             // 
             this.Tb_View.BackColor = System.Drawing.Color.Transparent;
+            this.Tb_View.Controls.Add(this.CmbBx_Artist);
             this.Tb_View.Controls.Add(this.Btn_GoUp);
             this.Tb_View.Controls.Add(this.Btn_GoDn);
             this.Tb_View.Controls.Add(this.Btn_Loc);
             this.Tb_View.Controls.Add(this.ChkBx_Fav);
             this.Tb_View.Controls.Add(this.TxBx_Loc);
             this.Tb_View.Controls.Add(this.Lbl_Desc);
-            this.Tb_View.Controls.Add(this.CmBx_Type);
+            this.Tb_View.Controls.Add(this.CmbBx_Type);
             this.Tb_View.Controls.Add(this.Dt_Date);
             this.Tb_View.Controls.Add(this.Nud_Pages);
             this.Tb_View.Controls.Add(this.TxBx_Tags);
-            this.Tb_View.Controls.Add(this.TxBx_Artist);
             this.Tb_View.Controls.Add(this.Lbl_Pages);
             this.Tb_View.Controls.Add(this.Lbl_Date);
             this.Tb_View.Controls.Add(this.Lbl_Type);
@@ -358,6 +358,22 @@
             this.Tb_View.Size = new System.Drawing.Size(926, 549);
             this.Tb_View.TabIndex = 1;
             this.Tb_View.Text = "View";
+            // 
+            // CmbBx_Artist
+            // 
+            this.CmbBx_Artist.AllowDrop = true;
+            this.CmbBx_Artist.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this.CmbBx_Artist.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
+            this.CmbBx_Artist.ContextMenuStrip = this.Mn_TxBx;
+            this.CmbBx_Artist.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.CmbBx_Artist.FormattingEnabled = true;
+            this.CmbBx_Artist.Location = new System.Drawing.Point(52, 39);
+            this.CmbBx_Artist.Name = "CmbBx_Artist";
+            this.CmbBx_Artist.Size = new System.Drawing.Size(440, 21);
+            this.CmbBx_Artist.TabIndex = 0;
+            this.CmbBx_Artist.TextChanged += new System.EventHandler(this.EntryAlt_Text);
+            this.CmbBx_Artist.DragDrop += new System.Windows.Forms.DragEventHandler(this.DragDropTxBx);
+            this.CmbBx_Artist.DragEnter += new System.Windows.Forms.DragEventHandler(this.DragEnterTxBx);
             // 
             // Btn_GoUp
             // 
@@ -431,9 +447,9 @@
             this.Lbl_Desc.TabIndex = 14;
             this.Lbl_Desc.Text = "Description:";
             // 
-            // CmBx_Type
+            // CmbBx_Type
             // 
-            this.CmBx_Type.AutoCompleteCustomSource.AddRange(new string[] {
+            this.CmbBx_Type.AutoCompleteCustomSource.AddRange(new string[] {
             "Cosplay",
             "Doujinshi",
             "Ecchi",
@@ -441,12 +457,12 @@
             "Image Set",
             "Manga",
             "Western"});
-            this.CmBx_Type.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
-            this.CmBx_Type.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
-            this.CmBx_Type.ContextMenuStrip = this.Mn_TxBx;
-            this.CmBx_Type.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.CmBx_Type.FormattingEnabled = true;
-            this.CmBx_Type.Items.AddRange(new object[] {
+            this.CmbBx_Type.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
+            this.CmbBx_Type.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
+            this.CmbBx_Type.ContextMenuStrip = this.Mn_TxBx;
+            this.CmbBx_Type.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.CmbBx_Type.FormattingEnabled = true;
+            this.CmbBx_Type.Items.AddRange(new object[] {
             "Cosplay",
             "Doujinshi",
             "Ecchi",
@@ -454,12 +470,12 @@
             "Image Set",
             "Manga",
             "Western"});
-            this.CmBx_Type.Location = new System.Drawing.Point(52, 216);
-            this.CmBx_Type.Name = "CmBx_Type";
-            this.CmBx_Type.Size = new System.Drawing.Size(142, 21);
-            this.CmBx_Type.TabIndex = 7;
-            this.CmBx_Type.Text = "Manga";
-            this.CmBx_Type.TextChanged += new System.EventHandler(this.EntryAlt_Text);
+            this.CmbBx_Type.Location = new System.Drawing.Point(52, 216);
+            this.CmbBx_Type.Name = "CmbBx_Type";
+            this.CmbBx_Type.Size = new System.Drawing.Size(142, 21);
+            this.CmbBx_Type.TabIndex = 7;
+            this.CmbBx_Type.Text = "Manga";
+            this.CmbBx_Type.TextChanged += new System.EventHandler(this.EntryAlt_Text);
             // 
             // Dt_Date
             // 
@@ -502,19 +518,6 @@
             this.TxBx_Tags.TextChanged += new System.EventHandler(this.EntryAlt_Text);
             this.TxBx_Tags.DragDrop += new System.Windows.Forms.DragEventHandler(this.DragDropTxBx);
             this.TxBx_Tags.DragEnter += new System.Windows.Forms.DragEventHandler(this.DragEnterTxBx);
-            // 
-            // TxBx_Artist
-            // 
-            this.TxBx_Artist.AllowDrop = true;
-            this.TxBx_Artist.ContextMenuStrip = this.Mn_TxBx;
-            this.TxBx_Artist.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.TxBx_Artist.Location = new System.Drawing.Point(52, 39);
-            this.TxBx_Artist.Name = "TxBx_Artist";
-            this.TxBx_Artist.Size = new System.Drawing.Size(440, 21);
-            this.TxBx_Artist.TabIndex = 0;
-            this.TxBx_Artist.TextChanged += new System.EventHandler(this.EntryAlt_Text);
-            this.TxBx_Artist.DragDrop += new System.Windows.Forms.DragEventHandler(this.TxBx_Artist_DragDrop);
-            this.TxBx_Artist.DragEnter += new System.Windows.Forms.DragEventHandler(this.DragEnterTxBx);
             // 
             // Lbl_Pages
             // 
@@ -592,9 +595,9 @@
             // 
             // PicBx_Cover
             // 
-            this.PicBx_Cover.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.PicBx_Cover.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.PicBx_Cover.BackColor = System.Drawing.Color.DarkGray;
             this.PicBx_Cover.Location = new System.Drawing.Point(498, 9);
             this.PicBx_Cover.Name = "PicBx_Cover";
@@ -780,8 +783,8 @@
             // 
             // frTxBx_Desc
             // 
-            this.frTxBx_Desc.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)));
+            this.frTxBx_Desc.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.frTxBx_Desc.ContextMenuStrip = this.Mn_rTxBx;
             this.frTxBx_Desc.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.frTxBx_Desc.Location = new System.Drawing.Point(8, 278);
@@ -929,7 +932,6 @@
         private System.Windows.Forms.TabPage Tb_Browse;
         private System.Windows.Forms.TabPage Tb_View;
         private System.Windows.Forms.TextBox TxBx_Tags;
-        private System.Windows.Forms.TextBox TxBx_Artist;
         private System.Windows.Forms.Label Lbl_Pages;
         private System.Windows.Forms.Label Lbl_Date;
         private System.Windows.Forms.Label Lbl_Type;
@@ -941,7 +943,7 @@
         private System.Windows.Forms.Label Lbl_Search;
         private System.Windows.Forms.TextBox TxBx_Search;
         private System.Windows.Forms.Label Lbl_Desc;
-        private System.Windows.Forms.ComboBox CmBx_Type;
+        private System.Windows.Forms.ComboBox CmbBx_Type;
         private System.Windows.Forms.DateTimePicker Dt_Date;
         private System.Windows.Forms.NumericUpDown Nud_Pages;
         private System.Windows.Forms.TextBox TxBx_Loc;
@@ -998,6 +1000,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
         private System.Windows.Forms.Button Btn_GoUp;
         private System.Windows.Forms.Button Btn_GoDn;
+        private System.Windows.Forms.ComboBox CmbBx_Artist;
     }
 }
 

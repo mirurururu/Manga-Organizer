@@ -4,10 +4,9 @@
  * Desc: Handles organization of manga library
  */
 
-//add File LV on ctrl+F to Browse
-
 using System;
 using System.IO;
+using System.Linq;
 using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
@@ -134,24 +133,15 @@ namespace Nagru___Manga_Organizer
             InitializeComponent();
 
             //if database opened with "Open with..."
-            if (sFile.Length > 0 && File.Exists(sFile[0]))
-                if (Path.GetFileName(sFile[0]) == "MangaDatabase.bin")
-                {
-                    Cursor = Cursors.WaitCursor;
-                    lData.AddRange(FileSerializer.Deserialize<List<stEntry>>(sFile[0]));
-                    Cursor = Cursors.Default;
-
-                    if (lData != null) UpdateLV();
-                    else lData = new List<stEntry>(0);
-
-                    if (Properties.Settings.Default.SavLoc != sFile[0])
-                    {
-                        Properties.Settings.Default.SavLoc = sFile[0];
-                        Properties.Settings.Default.Save();
-
-                        Text = "Default database location changed to \"" + sFile + "\"";
-                    }
-                }
+            if (sFile.Length > 0 && File.Exists(sFile[0]) &&
+                Path.GetFileName(sFile[0]) == "MangaDatabase.bin" &&
+                Properties.Settings.Default.SavLoc != sFile[0])
+            {
+                Properties.Settings.Default.SavLoc = sFile[0];
+                Properties.Settings.Default.Save();
+                MessageBox.Show("Default database location changed to \"" + sFile + "\"",
+                    Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
 
             //manually handle AssemblyResolve event
             AppDomain.CurrentDomain.AssemblyResolve +=
@@ -166,7 +156,7 @@ namespace Nagru___Manga_Organizer
             if (args.Name.Contains("HtmlAgilityPack"))
                 return (sender as AppDomain).Load(Nagru___Manga_Organizer.
                     Properties.Resources.HtmlAgilityPack);
-            return null;
+            else return null;
         }
 
         /* Load database   */
@@ -205,6 +195,14 @@ namespace Nagru___Manga_Organizer
 
                 if (lData != null) UpdateLV();
                 else lData = new List<stEntry>(0);
+
+                //populate list of artists
+                List<string> lAuto = new List<string>(lData.Count);
+                for (int i = 0; i < lData.Count; i++) lAuto.Add(lData[i].sArtist);
+                lAuto.Sort(new TrueCompare());
+                string[] sFinal = lAuto.Distinct().ToArray();
+                CmbBx_Artist.AutoCompleteCustomSource.AddRange(sFinal);
+                CmbBx_Artist.Items.AddRange(sFinal);
             }
         }
 
@@ -370,7 +368,7 @@ namespace Nagru___Manga_Organizer
             //Try to auto-magically grab folder path
             string sPath = string.Format("{0}\\[{1}] {2}",
                 Properties.Settings.Default.DefLoc,
-                TxBx_Artist.Text, TxBx_Title.Text);
+                CmbBx_Artist.Text, TxBx_Title.Text);
             if (Directory.Exists(sPath)) { }
             else if (Directory.Exists(TxBx_Loc.Text)) sPath = TxBx_Loc.Text;
             else sPath = Properties.Settings.Default.DefLoc;
@@ -414,7 +412,8 @@ namespace Nagru___Manga_Organizer
         {
             if (indx != -1) MnTS_Edit.Visible = true;
 
-            if (Directory.Exists(TxBx_Loc.Text)) {
+            if (Directory.Exists(TxBx_Loc.Text))
+            {
                 iPage = -1;
                 thWork = new Thread(GetImage);
                 thWork.IsBackground = true;
@@ -617,8 +616,8 @@ namespace Nagru___Manga_Organizer
             TxBx_Loc.Clear();
             TxBx_Tags.Clear();
             TxBx_Title.Clear();
-            TxBx_Artist.Clear();
-            CmBx_Type.Text = "Manga";
+            CmbBx_Artist.Text = "";
+            CmbBx_Type.Text = "Manga";
             Nud_Pages.Value = 0;
             frTxBx_Desc.Clear();
             ChkBx_Fav.Checked = false;
@@ -672,10 +671,10 @@ namespace Nagru___Manga_Organizer
             Text = "Selected: " + lData[indx].ToString();
             this.SuspendLayout();
             TxBx_Title.Text = lData[indx].sTitle;
-            TxBx_Artist.Text = lData[indx].sArtist;
+            CmbBx_Artist.Text = lData[indx].sArtist;
             TxBx_Loc.Text = lData[indx].sLoc;
             frTxBx_Desc.Text = lData[indx].sDesc;
-            CmBx_Type.Text = lData[indx].sType;
+            CmbBx_Type.Text = lData[indx].sType;
             Dt_Date.Value = lData[indx].dtDate;
             ChkBx_Fav.Checked = lData[indx].bFav;
             Nud_Pages.Value = lData[indx].iPages;
@@ -726,19 +725,19 @@ namespace Nagru___Manga_Organizer
                 StringSplitOptions.RemoveEmptyEntries);
 
             //parse it out
-            if (TxBx_Artist.Text == string.Empty &&
+            if (CmbBx_Artist.Text == string.Empty &&
                 TxBx_Title.Text == string.Empty &&
                 sName.Length >= 2)
             {
-                TxBx_Artist.Text = sName[0].Trim();
+                CmbBx_Artist.Text = sName[0].Trim();
                 TxBx_Title.Text = sName[1].Trim();
             }
             else
             {
-                int iNewStart = TxBx_Artist.SelectionStart + sRaw.Length;
-                TxBx_Artist.Text = TxBx_Artist.Text.Insert(
-                    TxBx_Artist.SelectionStart, sRaw);
-                TxBx_Artist.SelectionStart = iNewStart;
+                int iNewStart = CmbBx_Artist.SelectionStart + sRaw.Length;
+                CmbBx_Artist.Text = CmbBx_Artist.Text.Insert(
+                    CmbBx_Artist.SelectionStart, sRaw);
+                CmbBx_Artist.SelectionStart = iNewStart;
             }
         }
 
@@ -780,8 +779,8 @@ namespace Nagru___Manga_Organizer
         /* Copies formatted title to clipboard   */
         private void MnTS_CopyTitle_Click(object sender, EventArgs e)
         {
-            if (TxBx_Title.Text == string.Empty || TxBx_Artist.Text == string.Empty) return;
-            Clipboard.SetText(string.Format("[{0}] {1}", TxBx_Artist.Text, TxBx_Title.Text));
+            if (TxBx_Title.Text == string.Empty || CmbBx_Artist.Text == string.Empty) return;
+            Clipboard.SetText(string.Format("[{0}] {1}", CmbBx_Artist.Text, TxBx_Title.Text));
             Text = "Name copied to clipboard";
         }
 
@@ -817,8 +816,8 @@ namespace Nagru___Manga_Organizer
                 return;
             }
 
-            stEntry en = new stEntry(TxBx_Title.Text, TxBx_Artist.Text,
-                TxBx_Loc.Text, frTxBx_Desc.Text, TxBx_Tags.Text, CmBx_Type.Text,
+            stEntry en = new stEntry(TxBx_Title.Text, CmbBx_Artist.Text,
+                TxBx_Loc.Text, frTxBx_Desc.Text, TxBx_Tags.Text, CmbBx_Type.Text,
                 Dt_Date.Value.Date, Nud_Pages.Value, ChkBx_Fav.Checked);
 
             if (!lData.Contains(en))
@@ -829,6 +828,11 @@ namespace Nagru___Manga_Organizer
                     lData.Add(en);
 
                     //update LV_Entries & maintain scroll position
+                    if (!CmbBx_Artist.Items.Contains(CmbBx_Artist.Text))
+                    {
+                        CmbBx_Artist.AutoCompleteCustomSource.Add(CmbBx_Artist.Text);
+                        CmbBx_Artist.Items.Add(CmbBx_Artist.Text);
+                    }
                     AddEntries();
                     Reset();
                 }
@@ -841,8 +845,8 @@ namespace Nagru___Manga_Organizer
         private void MnTS_Edit_Click(object sender, EventArgs e)
         {
             //Update entry properties
-            lData[indx] = new stEntry(TxBx_Title.Text, TxBx_Artist.Text,
-                TxBx_Loc.Text, frTxBx_Desc.Text, TxBx_Tags.Text, CmBx_Type.Text,
+            lData[indx] = new stEntry(TxBx_Title.Text, CmbBx_Artist.Text,
+                TxBx_Loc.Text, frTxBx_Desc.Text, TxBx_Tags.Text, CmbBx_Type.Text,
                 Dt_Date.Value, Nud_Pages.Value, ChkBx_Fav.Checked);
 
             //update LV_Entries & maintain selection
@@ -1073,31 +1077,37 @@ namespace Nagru___Manga_Organizer
         private void MnTx_Paste_Click(object sender, EventArgs e)
         {
             MnTx_Undo.Enabled = true;
-            if (!(ActiveControl is TextBox)) return;
-            TextBox txbx = ActiveControl as TextBox;
-
-            if (txbx == TxBx_Artist && TxBx_Artist.Text == string.Empty
-                && TxBx_Title.Text == string.Empty)
+            if (ActiveControl is TextBox)
             {
-                SplitTitle(Clipboard.GetText());
+                TextBox txbx = ActiveControl as TextBox;
+
+                if (txbx == TxBx_Tags)
+                {
+                    if (!Clipboard.GetText().Contains("\n"))
+                    { txbx.Paste(); return; }
+
+                    string[] sTags = Clipboard.GetText().Split(new char[] { '(', '\n' });
+
+                    for (int i = 0; i < sTags.Length; i++)
+                        if (!sTags[i].EndsWith("\r") && !sTags[i].EndsWith(")"))
+                        {
+                            TxBx_Tags.Text += sTags[i].TrimEnd();
+
+                            if (i != sTags.Length - 2)
+                                TxBx_Tags.Text += ", ";
+                        }
+                }
+                else txbx.Paste();
             }
-            else if (txbx == TxBx_Tags)
+            else if (ActiveControl is ComboBox)
             {
-                if (!Clipboard.GetText().Contains("\n"))
-                { txbx.Paste(); return; }
-
-                string[] sTags = Clipboard.GetText().Split(new char[] { '(', '\n' });
-
-                for (int i = 0; i < sTags.Length; i++)
-                    if (!sTags[i].EndsWith("\r") && !sTags[i].EndsWith(")"))
-                    {
-                        TxBx_Tags.Text += sTags[i].TrimEnd();
-
-                        if (i != sTags.Length - 2)
-                            TxBx_Tags.Text += ", ";
-                    }
+                if (CmbBx_Artist.Text == string.Empty
+                    && TxBx_Title.Text == string.Empty)
+                {
+                    SplitTitle(Clipboard.GetText());
+                }
+                else CmbBx_Artist.Text = Clipboard.GetText();
             }
-            else txbx.Paste();
         }
 
         private void MnTx_SelAll_Click(object sender, EventArgs e)
@@ -1126,56 +1136,57 @@ namespace Nagru___Manga_Organizer
             string sAdd = (string)e.Data.GetData(DataFormats.Text);
             int iNewStart;
 
-            //Add text at cursor position
-            if (sender == frTxBx_Desc || sender == frTxBx_Notes)
+            switch ((sender as Control).Name)
             {
-                FixedRichTextBox frTxBx = (FixedRichTextBox)sender;
+                case "frTxBx_Desc":
+                case "frTxBx_Notes":
+                    FixedRichTextBox frTxBx = (FixedRichTextBox)sender;
+                    iNewStart = frTxBx.SelectionStart + sAdd.Length;
+                    frTxBx.Text = frTxBx.Text.Insert(frTxBx.SelectionStart, sAdd);
+                    frTxBx.SelectionStart = iNewStart;
+                    break;
+                case "TxBx_Title":
+                    iNewStart = TxBx_Title.SelectionStart + sAdd.Length;
+                    TxBx_Title.Text = TxBx_Title.Text.Insert(
+                        TxBx_Title.SelectionStart, sAdd);
+                    TxBx_Title.SelectionStart = iNewStart;
+                    break;
+                case "TxBx_Loc":
+                    TxBx_Loc.Text = sAdd;
+                    thWork = new System.Threading.Thread(GetImage);
+                    thWork.IsBackground = true;
+                    thWork.Start();
+                    break;
+                case "TxBx_Tags":
+                    if (!sAdd.Contains("\n"))
+                    { TxBx_Tags.Text += sAdd; break; }
 
-                iNewStart = frTxBx.SelectionStart + sAdd.Length;
-                frTxBx.Text = frTxBx.Text.Insert(frTxBx.SelectionStart, sAdd);
-                frTxBx.SelectionStart = iNewStart;
-            }
-            else if (sender == TxBx_Loc)
-            {
-                TxBx_Loc.Text = sAdd;
+                    string[] sTags = sAdd.Split(new char[] { '(', '\n' });
+                    for (int i = 0; i < sTags.Length; i++)
+                        if (!sTags[i].EndsWith("\r") && !sTags[i].EndsWith(")"))
+                        {
+                            TxBx_Tags.Text += sTags[i].TrimEnd();
 
-                //Get image
-                thWork = new System.Threading.Thread(GetImage);
-                thWork.IsBackground = true;
-                thWork.Start();
-            }
-            else if (sender == TxBx_Tags)
-            {
-                if (!sAdd.Contains("\n"))
-                { TxBx_Tags.Text += sAdd; return; }
-
-                string[] sTags = sAdd.Split(new char[] { '(', '\n' });
-
-                for (int i = 0; i < sTags.Length; i++)
-                    if (!sTags[i].EndsWith("\r") && !sTags[i].EndsWith(")"))
-                    {
-                        TxBx_Tags.Text += sTags[i].TrimEnd();
-
-                        if (i != sTags.Length - 2)
-                            TxBx_Tags.Text += ", ";
-                    }
-            }
-            else /* if (sender == TxBx_Title) */
-            {
-                TextBox TxBx = (TextBox)sender;
-
-                iNewStart = TxBx.SelectionStart + sAdd.Length;
-                TxBx.Text = TxBx.Text.Insert(TxBx.SelectionStart, sAdd);
-                TxBx.SelectionStart = iNewStart;
+                            if (i != sTags.Length - 2)
+                                TxBx_Tags.Text += ", ";
+                        }
+                    break;
+                case "CmbBx_Artist":
+                    iNewStart = CmbBx_Artist.SelectionStart + sAdd.Length;
+                    CmbBx_Artist.Text = CmbBx_Artist.Text.Insert(
+                        CmbBx_Artist.SelectionStart, sAdd);
+                    CmbBx_Artist.SelectionStart = iNewStart;
+                    break;
             }
         }
 
         /* Allow dropping of folders into LV_Entries */
         private void LV_Entries_DragEnter(object sender, DragEventArgs e)
         {
-            string sFile = ((string[])e.Data.GetData(DataFormats.FileDrop, false))[0];
-            FileAttributes fa = File.GetAttributes(sFile);
+            string[] sTemp = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+            if (sTemp == null) return;
 
+            FileAttributes fa = File.GetAttributes(sTemp[0]);
             if (fa == FileAttributes.Directory)
                 e.Effect = DragDropEffects.Copy;
             else e.Effect = DragDropEffects.None;

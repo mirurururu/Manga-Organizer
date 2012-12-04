@@ -162,7 +162,6 @@ namespace Nagru___Manga_Organizer
         /* Re-enable cursor when finished browsing */
         private void Browse_FormClosing(object sender, FormClosingEventArgs e)
         {
-            TopMost = false;
             Cursor.Show();
         }
     }

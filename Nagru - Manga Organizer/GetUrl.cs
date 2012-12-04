@@ -10,7 +10,10 @@ namespace Nagru___Manga_Organizer
         { get { return uri.AbsoluteUri; } }
 
         public GetUrl()
-        { InitializeComponent(); }
+        { 
+            InitializeComponent();
+            TxBx_Url.SelectAll();
+        }
 
         private void Btn_Get_Click(object sender, EventArgs e)
         {
