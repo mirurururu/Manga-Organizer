@@ -12,7 +12,6 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Nagru___Manga_Organizer
 {
@@ -52,13 +51,13 @@ namespace Nagru___Manga_Organizer
                 bFav = Fav;
 
                 //Convert tags into string array
-                sTags = "";
+                sTags = string.Empty;
                 List<string> lCheck = new List<string>(20);
                 foreach (string s in Tags.Split(','))
-                    if (s != string.Empty && !lCheck.Contains(s.Trim()))
-                        lCheck.Add(s.Trim());
+                    if (s != string.Empty) lCheck.Add(s.Trim());
 
                 lCheck.Sort(new TrueCompare());
+                lCheck = lCheck.Distinct().ToList<string>();
                 for (int i = 0; i < lCheck.Count; i++)
                 {
                     if (i != 0) sTags += ", ";
@@ -170,15 +169,12 @@ namespace Nagru___Manga_Organizer
             LV_Entries_Resize(sender, e);
             LV_Entries.Select();
 
-            //Allow folder to be added by dragging it into LV_Entries
-            LV_Entries.AllowDrop = true;
-            LV_Entries.DragDrop += new DragEventHandler(LV_Entries_DragDrop);
-            LV_Entries.DragEnter += new DragEventHandler(LV_Entries_DragEnter);
-
             //set frTxBx's to allow dragdrop & initialize Notes
             frTxBx_Notes.AllowDrop = true; frTxBx_Desc.AllowDrop = true;
             frTxBx_Notes.DragDrop += new DragEventHandler(DragDropTxBx);
             frTxBx_Desc.DragDrop += new DragEventHandler(DragDropTxBx);
+            frTxBx_Notes.DragEnter += new DragEventHandler(DragEnter_frTxBx);
+            frTxBx_Desc.DragEnter += new DragEventHandler(DragEnter_frTxBx);
             frTxBx_Notes.Text = Properties.Settings.Default.Notes;
 
             //grab filepath
@@ -402,7 +398,7 @@ namespace Nagru___Manga_Organizer
             fmBrowse.iPage = iPage;
 
             fmBrowse.ShowDialog();
-            iPage = fmBrowse.iPage + 1;
+            iPage = fmBrowse.iPage;
             fmBrowse.Dispose();
             GC.Collect();
         }
@@ -584,14 +580,14 @@ namespace Nagru___Manga_Organizer
 
             //prevent loss of search parameters
             if (TxBx_Search.Text != string.Empty) Search();
-
             Text = "Returned: " + LV_Entries.Items.Count + " entries";
         }
 
         /* Open folder or first image of current entry   */
         void OpenFile()
         {
-            if (TxBx_Loc.Text == string.Empty || ExtDirectory.Restricted(TxBx_Loc.Text))
+            if (TxBx_Loc.Text == string.Empty || 
+                ExtDirectory.Restricted(TxBx_Loc.Text))
                 return;
 
             string[] sFiles = ExtDirectory.GetFiles(@TxBx_Loc.Text);
@@ -690,8 +686,9 @@ namespace Nagru___Manga_Organizer
         {
             Cursor = Cursors.WaitCursor;
             List<string> lTags = new List<string>();
-            foreach (string s in TxBx_Search.Text.Split(',')) lTags.Add(s.Trim());
-
+            foreach (string s in TxBx_Search.Text.Split(',')) 
+                lTags.Add(s.TrimStart());
+            
             //remove non-matching entries from LV_Entries
             LV_Entries.BeginUpdate();
             for (int x = 0; x < LV_Entries.Items.Count; x++)
@@ -1063,9 +1060,9 @@ namespace Nagru___Manga_Organizer
 
         private void MnTx_Cut_Click(object sender, EventArgs e)
         {
-            MnTx_Undo.Enabled = true;
             if (!(ActiveControl is TextBox)) return;
             (ActiveControl as TextBox).Cut();
+            MnTx_Undo.Enabled = true;
         }
 
         private void MnTx_Copy_Click(object sender, EventArgs e)
@@ -1124,6 +1121,14 @@ namespace Nagru___Manga_Organizer
 
         /* Show proper cursor when text is dragged over TxBx */
         private void DragEnterTxBx(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.Text))
+                e.Effect = DragDropEffects.Copy;
+            else e.Effect = DragDropEffects.None;
+        }
+
+        /* Show proper cursor when text is dragged over frTxBx */
+        private void DragEnter_frTxBx(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.Text))
                 e.Effect = DragDropEffects.Copy;

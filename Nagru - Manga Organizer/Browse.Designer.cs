@@ -36,8 +36,8 @@
             // 
             // picBx_Right
             // 
-            this.picBx_Right.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.picBx_Right.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.picBx_Right.BackColor = System.Drawing.Color.DarkGray;
             this.picBx_Right.Location = new System.Drawing.Point(250, 0);
             this.picBx_Right.Name = "picBx_Right";
@@ -45,13 +45,13 @@
             this.picBx_Right.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.picBx_Right.TabIndex = 0;
             this.picBx_Right.TabStop = false;
-            this.picBx_Right.MouseUp += new System.Windows.Forms.MouseEventHandler(this.UserClick);
+            this.picBx_Right.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Browse_MouseUp);
             // 
             // picBx_Left
             // 
-            this.picBx_Left.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.picBx_Left.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.picBx_Left.BackColor = System.Drawing.Color.DarkGray;
             this.picBx_Left.Location = new System.Drawing.Point(0, 0);
             this.picBx_Left.Name = "picBx_Left";
@@ -59,7 +59,7 @@
             this.picBx_Left.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.picBx_Left.TabIndex = 1;
             this.picBx_Left.TabStop = false;
-            this.picBx_Left.MouseUp += new System.Windows.Forms.MouseEventHandler(this.UserClick);
+            this.picBx_Left.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Browse_MouseUp);
             // 
             // Browse
             // 
@@ -78,7 +78,7 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Browse_FormClosing);
             this.Load += new System.EventHandler(this.Browse_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Browse_KeyDown);
-            this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.UserClick);
+            this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Browse_MouseUp);
             ((System.ComponentModel.ISupportInitialize)(this.picBx_Right)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.picBx_Left)).EndInit();
             this.ResumeLayout(false);

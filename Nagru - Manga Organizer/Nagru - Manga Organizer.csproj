@@ -85,6 +85,12 @@
     <Compile Include="Browse.Designer.cs">
       <DependentUpon>Browse.cs</DependentUpon>
     </Compile>
+    <Compile Include="BrowseTo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BrowseTo.Designer.cs">
+      <DependentUpon>BrowseTo.cs</DependentUpon>
+    </Compile>
     <Compile Include="Classes\ExtDirectory.cs" />
     <Compile Include="Classes\ExtString.cs" />
     <Compile Include="Classes\FileSerializer.cs" />
@@ -122,6 +128,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Browse.resx">
       <DependentUpon>Browse.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BrowseTo.resx">
+      <DependentUpon>BrowseTo.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GetUrl.resx">
       <DependentUpon>GetUrl.cs</DependentUpon>

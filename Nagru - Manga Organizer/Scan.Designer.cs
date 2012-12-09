@@ -223,6 +223,7 @@
             this.Controls.Add(this.LV_Found);
             this.Controls.Add(this.TxBx_Loc);
             this.Controls.Add(this.Btn_Add);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.MinimumSize = new System.Drawing.Size(510, 150);
             this.Name = "Scan";
             this.Text = "Scan";

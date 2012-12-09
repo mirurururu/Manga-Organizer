@@ -15,6 +15,7 @@ namespace Nagru___Manga_Organizer
         int iWidth = Screen.PrimaryScreen.Bounds.Width / 2;
         Image imgR = null, imgL = null;
         bool bWideL, bWideR;
+        bool bFocus = true;
 
         /* Initialize form */
         public Browse()
@@ -23,8 +24,9 @@ namespace Nagru___Manga_Organizer
         /* Set form to fullscreen and grab files */
         private void Browse_Load(object sender, EventArgs e)
         {
+            this.LostFocus += new EventHandler(Browse_LostFocus);
             Cursor.Hide();
-
+            
             //set fullscreen
             Bounds = Screen.PrimaryScreen.Bounds;
             FormBorderStyle = FormBorderStyle.None;
@@ -39,8 +41,8 @@ namespace Nagru___Manga_Organizer
             lFiles.AddRange(ExtDirectory.GetFiles(sPath,
                 SearchOption.TopDirectoryOnly));
 
-            if (iPage == -1) GoLeft();
-            else GoRight();
+            if (iPage == -1) Next();
+            else Prev();
         }
 
         /* Navigate files or close form */
@@ -49,28 +51,44 @@ namespace Nagru___Manga_Organizer
             switch (e.KeyCode)
             {
                 case Keys.Left:
-                    GoLeft();
+                    Next();
                     break;
                 case Keys.Right:
-                    GoRight();
+                    Prev();
                     break;
                 case Keys.Up:
                     if ((iPage += 7) > lFiles.Count)
                         iPage = iPage - lFiles.Count;
-                    GoLeft();
+                    Next();
                     break;
                 case Keys.Down:
                     if ((iPage -= 7) < 0)
                         iPage = lFiles.Count + iPage;
-                    GoRight();
+                    Prev();
                     break;
                 case Keys.Home:
                     iPage = -1;
-                    GoLeft();
+                    Next();
                     break;
                 case Keys.End:
                     iPage = lFiles.Count + 1;
-                    GoRight();
+                    Prev();
+                    break;
+                case Keys.F:
+                    Cursor.Show();
+                    BrowseTo fmGoTo = new BrowseTo();
+                    fmGoTo.lFiles = lFiles;
+                    fmGoTo.iPage = iPage;
+
+                    if (fmGoTo.ShowDialog() == DialogResult.OK) 
+                    {
+                        iPage = fmGoTo.iPage;
+                        if (iPage != 0 && picBx_Left.Width == iWidth) iPage++;
+                        Prev();
+                    }
+
+                    fmGoTo.Dispose();
+                    Cursor.Hide();
                     break;
                 case Keys.PrintScreen:
                 case Keys.MediaNextTrack:
@@ -80,6 +98,9 @@ namespace Nagru___Manga_Organizer
                 case Keys.VolumeUp:
                 case Keys.VolumeDown:
                 case Keys.VolumeMute:
+                case Keys.LWin:
+                case Keys.RWin:
+                case Keys.ControlKey:
                     break;
                 default: Close();
                     break;
@@ -87,7 +108,7 @@ namespace Nagru___Manga_Organizer
         }
 
         /* Go to next page */
-        void GoLeft()
+        void Next()
         {
             Reset();
 
@@ -117,12 +138,13 @@ namespace Nagru___Manga_Organizer
         }
 
         /* Go to previous page */
-        void GoRight()
+        void Prev()
         {
             if (iPage != 0 && picBx_Left.Width == iWidth) iPage--;
             Reset();
 
             if (--iPage < 0) iPage = lFiles.Count - 1;
+            else if (iPage >= lFiles.Count) iPage = 0;
             using (FileStream fs = new FileStream(
                 lFiles[iPage], FileMode.Open, FileAccess.Read))
                 picBx_Left.Image = imgL = Image.FromStream(fs);
@@ -155,13 +177,21 @@ namespace Nagru___Manga_Organizer
             picBx_Right.Image = null;
         }
 
-        /* Alternative closing method */
-        private void UserClick(object sender, MouseEventArgs e)
-        { Close(); }
+        /* Prevent form close when user is re-focusing */
+        void Browse_LostFocus(object sender, EventArgs e)
+        { bFocus = false; }
+
+        /* Alternative form closing method  */
+        private void Browse_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (bFocus) this.Close();
+            else bFocus = true;
+        }
 
         /* Re-enable cursor when finished browsing */
         private void Browse_FormClosing(object sender, FormClosingEventArgs e)
         {
+            iPage++;
             Cursor.Show();
         }
     }
