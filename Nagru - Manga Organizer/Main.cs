@@ -173,8 +173,8 @@ namespace Nagru___Manga_Organizer
             frTxBx_Notes.AllowDrop = true; frTxBx_Desc.AllowDrop = true;
             frTxBx_Notes.DragDrop += new DragEventHandler(DragDropTxBx);
             frTxBx_Desc.DragDrop += new DragEventHandler(DragDropTxBx);
-            frTxBx_Notes.DragEnter += new DragEventHandler(DragEnter_frTxBx);
-            frTxBx_Desc.DragEnter += new DragEventHandler(DragEnter_frTxBx);
+            frTxBx_Notes.DragEnter += new DragEventHandler(DragEnterTxBx);
+            frTxBx_Desc.DragEnter += new DragEventHandler(DragEnterTxBx);
             frTxBx_Notes.Text = Properties.Settings.Default.Notes;
 
             //grab filepath
@@ -1121,14 +1121,6 @@ namespace Nagru___Manga_Organizer
 
         /* Show proper cursor when text is dragged over TxBx */
         private void DragEnterTxBx(object sender, DragEventArgs e)
-        {
-            if (e.Data.GetDataPresent(DataFormats.Text))
-                e.Effect = DragDropEffects.Copy;
-            else e.Effect = DragDropEffects.None;
-        }
-
-        /* Show proper cursor when text is dragged over frTxBx */
-        private void DragEnter_frTxBx(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.Text))
                 e.Effect = DragDropEffects.Copy;
