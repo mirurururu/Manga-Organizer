@@ -87,7 +87,6 @@
             // MnTx_Undo
             // 
             this.MnTx_Undo.Name = "MnTx_Undo";
-            this.MnTx_Undo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
             this.MnTx_Undo.ShowShortcutKeys = false;
             this.MnTx_Undo.Size = new System.Drawing.Size(152, 22);
             this.MnTx_Undo.Text = "Undo";
@@ -101,7 +100,6 @@
             // MnTx_Cut
             // 
             this.MnTx_Cut.Name = "MnTx_Cut";
-            this.MnTx_Cut.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
             this.MnTx_Cut.ShowShortcutKeys = false;
             this.MnTx_Cut.Size = new System.Drawing.Size(152, 22);
             this.MnTx_Cut.Text = "Cut";
@@ -110,7 +108,6 @@
             // MnTx_Copy
             // 
             this.MnTx_Copy.Name = "MnTx_Copy";
-            this.MnTx_Copy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
             this.MnTx_Copy.ShowShortcutKeys = false;
             this.MnTx_Copy.Size = new System.Drawing.Size(152, 22);
             this.MnTx_Copy.Text = "Copy";
@@ -119,7 +116,6 @@
             // MnTx_Paste
             // 
             this.MnTx_Paste.Name = "MnTx_Paste";
-            this.MnTx_Paste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
             this.MnTx_Paste.ShowShortcutKeys = false;
             this.MnTx_Paste.Size = new System.Drawing.Size(152, 22);
             this.MnTx_Paste.Text = "Paste";
@@ -133,7 +129,6 @@
             // MnTx_SelAll
             // 
             this.MnTx_SelAll.Name = "MnTx_SelAll";
-            this.MnTx_SelAll.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
             this.MnTx_SelAll.ShowShortcutKeys = false;
             this.MnTx_SelAll.Size = new System.Drawing.Size(152, 22);
             this.MnTx_SelAll.Text = "Select All";

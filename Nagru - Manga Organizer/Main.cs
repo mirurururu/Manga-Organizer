@@ -1054,21 +1054,27 @@ namespace Nagru___Manga_Organizer
         #region Menu_Text
         private void MnTx_Undo_Click(object sender, EventArgs e)
         {
-            if (!(ActiveControl is TextBox)) return;
-            (ActiveControl as TextBox).Undo();
+            if (ActiveControl is TextBox)
+                (ActiveControl as TextBox).Undo();
+            else (ActiveControl as ComboBox).ResetText();
         }
 
         private void MnTx_Cut_Click(object sender, EventArgs e)
         {
-            if (!(ActiveControl is TextBox)) return;
-            (ActiveControl as TextBox).Cut();
-            MnTx_Undo.Enabled = true;
+            if (ActiveControl is TextBox)
+                (ActiveControl as TextBox).Cut();
+            else 
+            {
+                Clipboard.SetText((ActiveControl as ComboBox).SelectedText);
+                (ActiveControl as ComboBox).SelectedText = "";
+            }
         }
 
         private void MnTx_Copy_Click(object sender, EventArgs e)
         {
-            if (!(ActiveControl is TextBox)) return;
-            (ActiveControl as TextBox).Copy();
+            if (ActiveControl is TextBox)
+                (ActiveControl as TextBox).Copy();
+            else Clipboard.SetText((ActiveControl as ComboBox).SelectedText);
         }
 
         private void MnTx_Paste_Click(object sender, EventArgs e)
@@ -1109,8 +1115,9 @@ namespace Nagru___Manga_Organizer
 
         private void MnTx_SelAll_Click(object sender, EventArgs e)
         {
-            if (!(ActiveControl is TextBox)) return;
-            (ActiveControl as TextBox).SelectAll();
+            if (ActiveControl is TextBox)
+                (ActiveControl as TextBox).SelectAll();
+            else (ActiveControl as ComboBox).SelectAll();
         }
         #endregion
 

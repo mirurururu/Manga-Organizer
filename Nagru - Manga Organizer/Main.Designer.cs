@@ -224,7 +224,6 @@
             // MnTx_Undo
             // 
             this.MnTx_Undo.Name = "MnTx_Undo";
-            this.MnTx_Undo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
             this.MnTx_Undo.ShowShortcutKeys = false;
             this.MnTx_Undo.Size = new System.Drawing.Size(115, 22);
             this.MnTx_Undo.Text = "Undo";
@@ -238,7 +237,6 @@
             // MnTx_Cut
             // 
             this.MnTx_Cut.Name = "MnTx_Cut";
-            this.MnTx_Cut.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
             this.MnTx_Cut.ShowShortcutKeys = false;
             this.MnTx_Cut.Size = new System.Drawing.Size(115, 22);
             this.MnTx_Cut.Text = "Cut";
@@ -247,7 +245,6 @@
             // MnTx_Copy
             // 
             this.MnTx_Copy.Name = "MnTx_Copy";
-            this.MnTx_Copy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
             this.MnTx_Copy.ShowShortcutKeys = false;
             this.MnTx_Copy.Size = new System.Drawing.Size(115, 22);
             this.MnTx_Copy.Text = "Copy";
@@ -256,7 +253,6 @@
             // MnTx_Paste
             // 
             this.MnTx_Paste.Name = "MnTx_Paste";
-            this.MnTx_Paste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
             this.MnTx_Paste.ShowShortcutKeys = false;
             this.MnTx_Paste.Size = new System.Drawing.Size(115, 22);
             this.MnTx_Paste.Text = "Paste";
@@ -270,7 +266,6 @@
             // MnTx_SelAll
             // 
             this.MnTx_SelAll.Name = "MnTx_SelAll";
-            this.MnTx_SelAll.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
             this.MnTx_SelAll.ShowShortcutKeys = false;
             this.MnTx_SelAll.Size = new System.Drawing.Size(115, 22);
             this.MnTx_SelAll.Text = "Select All";
@@ -745,7 +740,6 @@
             // MnRTx_Undo
             // 
             this.MnRTx_Undo.Name = "MnRTx_Undo";
-            this.MnRTx_Undo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
             this.MnRTx_Undo.ShowShortcutKeys = false;
             this.MnRTx_Undo.Size = new System.Drawing.Size(115, 22);
             this.MnRTx_Undo.Text = "Undo";
@@ -759,7 +753,6 @@
             // MnRTx_Cut
             // 
             this.MnRTx_Cut.Name = "MnRTx_Cut";
-            this.MnRTx_Cut.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
             this.MnRTx_Cut.ShowShortcutKeys = false;
             this.MnRTx_Cut.Size = new System.Drawing.Size(115, 22);
             this.MnRTx_Cut.Text = "Cut";
@@ -768,7 +761,6 @@
             // MnRTx_Copy
             // 
             this.MnRTx_Copy.Name = "MnRTx_Copy";
-            this.MnRTx_Copy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
             this.MnRTx_Copy.ShowShortcutKeys = false;
             this.MnRTx_Copy.Size = new System.Drawing.Size(115, 22);
             this.MnRTx_Copy.Text = "Copy";
@@ -777,7 +769,6 @@
             // MnRTx_Paste
             // 
             this.MnRTx_Paste.Name = "MnRTx_Paste";
-            this.MnRTx_Paste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
             this.MnRTx_Paste.ShowShortcutKeys = false;
             this.MnRTx_Paste.Size = new System.Drawing.Size(115, 22);
             this.MnRTx_Paste.Text = "Paste";
@@ -791,7 +782,6 @@
             // MnRTx_SelectAll
             // 
             this.MnRTx_SelectAll.Name = "MnRTx_SelectAll";
-            this.MnRTx_SelectAll.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
             this.MnRTx_SelectAll.ShowShortcutKeys = false;
             this.MnRTx_SelectAll.Size = new System.Drawing.Size(115, 22);
             this.MnRTx_SelectAll.Text = "Select All";

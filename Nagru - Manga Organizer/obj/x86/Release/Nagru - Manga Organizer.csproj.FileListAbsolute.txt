@@ -1,76 +1,14 @@
-C:\Users\Nagru\Downloads\Nagru - Manga Organizer\Nagru - Manga Organizer\bin\Release\Nagru - Manga Organizer.exe.config
-C:\Users\Nagru\Downloads\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\Nagru - Manga Organizer.exe
-C:\Users\Nagru\Downloads\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\Nagru - Manga Organizer.pdb
-C:\Users\Nagru\Downloads\Nagru - Manga Organizer\Nagru - Manga Organizer\bin\Release\Nagru - Manga Organizer.exe
-C:\Users\Nagru\Downloads\Nagru - Manga Organizer\Nagru - Manga Organizer\bin\Release\Nagru - Manga Organizer.pdb
-C:\Users\Nagru\Downloads\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\ResolveAssemblyReference.cache
-C:\Users\Nagru\Downloads\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\Nagru___Manga_Organizer.Main.resources
-C:\Users\Nagru\Downloads\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\Nagru___Manga_Organizer.Properties.Resources.resources
-C:\Users\Nagru\Downloads\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\GenerateResource.read.1.tlog
-C:\Users\Nagru\Downloads\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\GenerateResource.write.1.tlog
-F:\Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\bin\Release\Nagru - Manga Organizer.exe.config
-F:\Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\bin\Release\Nagru - Manga Organizer.exe
-F:\Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\bin\Release\Nagru - Manga Organizer.pdb
-F:\Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\ResolveAssemblyReference.cache
-F:\Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\Nagru___Manga_Organizer.Main.resources
-F:\Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\Nagru___Manga_Organizer.Properties.Resources.resources
-F:\Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\GenerateResource.read.1.tlog
-F:\Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\GenerateResource.write.1.tlog
-F:\Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\Nagru - Manga Organizer.exe
-F:\Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\Nagru - Manga Organizer.pdb
-E:\Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\bin\Release\Nagru - Manga Organizer.exe.config
-E:\Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\Nagru - Manga Organizer.exe
-E:\Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\Nagru - Manga Organizer.pdb
-E:\Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\bin\Release\Nagru - Manga Organizer.exe
-E:\Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\bin\Release\Nagru - Manga Organizer.pdb
-E:\Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\ResolveAssemblyReference.cache
-E:\Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\Nagru___Manga_Organizer.Main.resources
-E:\Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\Nagru___Manga_Organizer.Properties.Resources.resources
-E:\Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\GenerateResource.read.1.tlog
-E:\Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\GenerateResource.write.1.tlog
-F:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\bin\Release\Nagru - Manga Organizer.exe.config
-F:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\Nagru - Manga Organizer.exe
-F:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\Nagru - Manga Organizer.pdb
-F:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\bin\Release\Nagru - Manga Organizer.exe
-F:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\bin\Release\Nagru - Manga Organizer.pdb
-F:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\ResolveAssemblyReference.cache
-F:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\Nagru___Manga_Organizer.Main.resources
-F:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\Nagru___Manga_Organizer.Properties.Resources.resources
-F:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\GenerateResource.read.1.tlog
-F:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\GenerateResource.write.1.tlog
-E:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\bin\Release\Nagru - Manga Organizer.exe.config
-E:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\bin\Release\Nagru - Manga Organizer.exe
-E:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\bin\Release\Nagru - Manga Organizer.pdb
-E:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\ResolveAssemblyReference.cache
-E:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\Nagru___Manga_Organizer.Main.resources
-E:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\Nagru___Manga_Organizer.Properties.Resources.resources
-E:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\GenerateResource.read.1.tlog
-E:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\GenerateResource.write.1.tlog
-E:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\Nagru - Manga Organizer.exe
-E:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\Nagru - Manga Organizer.pdb
-G:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\bin\Release\Nagru - Manga Organizer.exe.config
-G:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\Nagru - Manga Organizer.exe
-G:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\Nagru - Manga Organizer.pdb
-H:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\ResolveAssemblyReference.cache
-H:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\Nagru___Manga_Organizer.Main.resources
-H:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\Nagru___Manga_Organizer.Scan.resources
-H:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\GenerateResource.read.1.tlog
-H:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\GenerateResource.write.1.tlog
-E:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\Nagru___Manga_Organizer.Scan.resources
-G:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\bin\Release\Nagru - Manga Organizer.exe
-G:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\bin\Release\Nagru - Manga Organizer.pdb
-G:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\ResolveAssemblyReference.cache
-G:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\Nagru___Manga_Organizer.Main.resources
-G:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\Nagru___Manga_Organizer.Properties.Resources.resources
-G:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\Nagru___Manga_Organizer.Scan.resources
-G:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\GenerateResource.read.1.tlog
-G:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\GenerateResource.write.1.tlog
-E:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\Nagru___Manga_Organizer.About.resources
-H:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\Nagru___Manga_Organizer.About.resources
-H:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\bin\Release\Nagru - Manga Organizer.exe.config
-H:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\bin\Release\Nagru - Manga Organizer.exe
-H:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\bin\Release\Nagru - Manga Organizer.pdb
-H:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\Nagru___Manga_Organizer.Properties.Resources.resources
-H:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\Nagru - Manga Organizer.exe
-H:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\Nagru - Manga Organizer.pdb
-G:\CNT457 - Programming\Nagru\Nagru - Manga Organizer\Nagru - Manga Organizer\obj\x86\Release\Nagru___Manga_Organizer.About.resources
+C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\bin\Release\Nagru - Manga Organizer.exe.config
+C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\bin\Release\Nagru - Manga Organizer.exe
+C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\bin\Release\Nagru - Manga Organizer.pdb
+C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\bin\Release\HtmlAgilityPack.dll
+C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\obj\x86\Release\Nagru___Manga_Organizer.About.resources
+C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\obj\x86\Release\Nagru___Manga_Organizer.Browse.resources
+C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\obj\x86\Release\Nagru___Manga_Organizer.BrowseTo.resources
+C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\obj\x86\Release\Nagru___Manga_Organizer.GetUrl.resources
+C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\obj\x86\Release\Nagru___Manga_Organizer.Main.resources
+C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\obj\x86\Release\Nagru___Manga_Organizer.Properties.Resources.resources
+C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\obj\x86\Release\Nagru___Manga_Organizer.Scan.resources
+C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\obj\x86\Release\Nagru - Manga Organizer.csproj.GenerateResource.Cache
+C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\obj\x86\Release\Nagru - Manga Organizer.exe
+C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\obj\x86\Release\Nagru - Manga Organizer.pdb
