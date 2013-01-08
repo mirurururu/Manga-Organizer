@@ -5,7 +5,7 @@ As a mild digital hoarder, I found trying to keep track of 500+ folders was beco
 
 Basically, given folder names of "[Artist] Title" (E-Hentai's format), it can automatically scan them into a database. After that you can search through the list by artist, title, tags and type. 
 
-If this sounds useful to you, give it a shot: <a href="https://github.com/downloads/Nagru/Manga-Organizer/Manga%20Organizer.exe">Download</a>
+If this sounds useful to you, give it a shot: <a href="http://www.mediafire.com/?qkccfz45rdoqrxb">Download</a>
 
 For an example of it running see: <a href="https://raw.github.com/Nagru/Manga-Organizer/master/Prv_Browse.jpg" target="_blank">Browse</a> - <a href="https://raw.github.com/Nagru/Manga-Organizer/master/Prv_View.jpg" target="_blank">View</a> - <a href="https://raw.github.com/Nagru/Manga-Organizer/master/Prv_Notes.jpg" target="_blank">Notes</a>
 
