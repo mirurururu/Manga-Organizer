@@ -1065,6 +1065,7 @@ namespace Nagru___Manga_Organizer
                 (ActiveControl as TextBox).Cut();
             else 
             {
+                if ((ActiveControl as ComboBox).SelectedText == "") return;
                 Clipboard.SetText((ActiveControl as ComboBox).SelectedText);
                 (ActiveControl as ComboBox).SelectedText = "";
             }

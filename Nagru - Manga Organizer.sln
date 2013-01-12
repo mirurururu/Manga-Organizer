@@ -1,7 +1,7 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nagru - Manga Organizer", "Nagru - Manga Organizer\Nagru - Manga Organizer.csproj", "{786BE671-C8C6-4558-92C4-89EE9A81EF04}"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Manga Organizer", "Nagru - Manga Organizer\Manga Organizer.csproj", "{786BE671-C8C6-4558-92C4-89EE9A81EF04}"
 EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
