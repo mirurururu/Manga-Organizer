@@ -103,6 +103,7 @@
             this.Tb_Notes = new System.Windows.Forms.TabPage();
             this.frTxBx_Notes = new Nagru___Manga_Organizer.FixedRichTextBox();
             this.Delay = new System.Windows.Forms.Timer(this.components);
+            this.MnTS_Stats = new System.Windows.Forms.ToolStripMenuItem();
             this.TabControl.SuspendLayout();
             this.Tb_Browse.SuspendLayout();
             this.Mn_TxBx.SuspendLayout();
@@ -622,7 +623,7 @@
             this.Mn_EntryOps.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
             this.Mn_EntryOps.Location = new System.Drawing.Point(3, 3);
             this.Mn_EntryOps.Name = "Mn_EntryOps";
-            this.Mn_EntryOps.Size = new System.Drawing.Size(153, 27);
+            this.Mn_EntryOps.Size = new System.Drawing.Size(384, 27);
             this.Mn_EntryOps.TabIndex = 21;
             this.Mn_EntryOps.Text = "menuStrip";
             // 
@@ -639,6 +640,7 @@
             this.toolStripSeparator1,
             this.MnTS_GET,
             this.toolStripSeparator4,
+            this.MnTS_Stats,
             this.MnTS_About,
             this.MnTs_Quit});
             this.MnTS_Menu.Name = "MnTS_Menu";
@@ -888,6 +890,13 @@
             this.Delay.Interval = 300;
             this.Delay.Tick += new System.EventHandler(this.Delay_Tick);
             // 
+            // MnTS_Stats
+            // 
+            this.MnTS_Stats.Name = "MnTS_Stats";
+            this.MnTS_Stats.Size = new System.Drawing.Size(191, 22);
+            this.MnTS_Stats.Text = "Show Tag Stats";
+            this.MnTS_Stats.Click += new System.EventHandler(this.MnTS_Stats_Click);
+            // 
             // Main
             // 
             this.AcceptButton = this.Btn_Clear;
@@ -994,6 +1003,7 @@
         private System.Windows.Forms.Button Btn_GoUp;
         private System.Windows.Forms.Button Btn_GoDn;
         private System.Windows.Forms.ComboBox CmbBx_Artist;
+        private System.Windows.Forms.ToolStripMenuItem MnTS_Stats;
     }
 }
 

@@ -964,6 +964,16 @@ namespace Nagru___Manga_Organizer
             fmAbout.ShowDialog();
         }
 
+        /* Display stats on tags */
+        private void MnTS_Stats_Click(object sender, EventArgs e)
+        {
+            Stats fmStats = new Stats(lData);
+            fmStats.ShowDialog();
+
+            if (fmStats.DialogResult == DialogResult.OK)
+                fmStats.Dispose();
+        }
+
         /* Grabs entry data from passed URL */
         private void MnTS_GET_Click(object sender, EventArgs e)
         {

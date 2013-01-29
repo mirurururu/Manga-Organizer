@@ -34,7 +34,7 @@ namespace Nagru___Manga_Organizer
             //grab ignored files
             foreach (string sItem in Properties.Settings.Default.Ignore.Split('|'))
                 if (sItem != string.Empty) lIgnored.Add(sItem);
-
+            
             //bind LV_Found to sorter & set column size
             LV_Found.ListViewItemSorter = lvSortObj;
             LV_Found_Resize(sender, e);

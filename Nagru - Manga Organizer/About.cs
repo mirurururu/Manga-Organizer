@@ -8,7 +8,7 @@ namespace Nagru___Manga_Organizer
         public About()
         {
             InitializeComponent();
-            Text = "About (v. 01-28-2013)";
+            Text = string.Format("About ({0})", Properties.Settings.Default.Version);
 
             Lbl_P1.Text = "This program provides tagging, searching and other basic management for a\n" +
             "folder directory. It is intended as a companion to the EH website, and\n" +
@@ -30,13 +30,45 @@ namespace Nagru___Manga_Organizer
             if (sender == LnkLbl_Git)
             {
                 LnkLbl_Git.LinkVisited = true;
-                System.Diagnostics.Process.Start("http://nagru.github.com/Manga-Organizer"); 
+                System.Diagnostics.Process.Start("http://nagru.github.com/Manga-Organizer");
             }
             else /*if (sender == LnkLbl_Gpl)*/
             {
                 LnkLbl_Gpl.LinkVisited = true;
-                System.Diagnostics.Process.Start("http://www.gnu.org/licenses/gpl.html"); 
+                System.Diagnostics.Process.Start("http://www.gnu.org/licenses/gpl.html");
             }
+        }
+
+        private void CheckLatest()
+        {
+            this.Cursor = Cursors.WaitCursor;
+            Text += " - Checking version...";
+
+            HtmlAgilityPack.HtmlWeb htmlWeb = new HtmlAgilityPack.HtmlWeb();
+            HtmlAgilityPack.HtmlDocument htmlDoc = htmlWeb.Load("http");
+
+            //ensure page exists
+            if (htmlWeb.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                //grab artist & title
+                try
+                {
+                    if (Properties.Settings.Default.Version !=
+                        htmlDoc.DocumentNode.InnerText)
+                    {
+                        //http://nagru.github.com/Manga-Organizer/
+                    }
+                }
+                catch (Exception)
+                {
+                    Text = string.Format("About ({0}) - {1}", Properties.Settings.Default.Version,
+                        "Could not establish connection");
+                }
+            }
+            else Text = string.Format("About ({0}) - {1}", Properties.Settings.Default.Version,
+                "Could not establish connection");
+
+            this.Cursor = Cursors.Default;
         }
     }
 }
