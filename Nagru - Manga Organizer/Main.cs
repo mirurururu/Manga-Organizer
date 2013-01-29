@@ -522,9 +522,17 @@ namespace Nagru___Manga_Organizer
         {
             MnTS_Open.Visible = true;
 
-            using (var bmpTemp = new Bitmap(obj as string))
+            try
             {
-                PicBx_Cover.Image = new Bitmap(bmpTemp);
+                using (var bmpTemp = new Bitmap(obj as string))
+                {
+                    PicBx_Cover.Image = new Bitmap(bmpTemp);
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Error: Image may be corrupt",
+                    Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -586,7 +594,7 @@ namespace Nagru___Manga_Organizer
         /* Open folder or first image of current entry   */
         void OpenFile()
         {
-            if (TxBx_Loc.Text == string.Empty || 
+            if (TxBx_Loc.Text == string.Empty ||
                 ExtDirectory.Restricted(TxBx_Loc.Text))
                 return;
 
@@ -679,6 +687,7 @@ namespace Nagru___Manga_Organizer
 
             MnTS_New.Visible = false;
             MnTS_Edit.Visible = false;
+            MnTS_Del.Visible = true;
         }
 
         /* Search database entries   */
@@ -686,9 +695,9 @@ namespace Nagru___Manga_Organizer
         {
             Cursor = Cursors.WaitCursor;
             List<string> lTags = new List<string>();
-            foreach (string s in TxBx_Search.Text.Split(',')) 
+            foreach (string s in TxBx_Search.Text.Split(','))
                 lTags.Add(s.TrimStart());
-            
+
             //remove non-matching entries from LV_Entries
             LV_Entries.BeginUpdate();
             for (int x = 0; x < LV_Entries.Items.Count; x++)
@@ -711,10 +720,8 @@ namespace Nagru___Manga_Organizer
         void SplitTitle(string sRaw)
         {
             //Get formatted title
-            if (sRaw.StartsWith("("))
-            {
+            if (sRaw.StartsWith("(")) {
                 int iPos = sRaw.IndexOf(')') + 2;
-
                 if (sRaw.Length - 1 >= iPos)
                     sRaw = sRaw.Remove(0, iPos);
             }
@@ -722,15 +729,12 @@ namespace Nagru___Manga_Organizer
                 StringSplitOptions.RemoveEmptyEntries);
 
             //parse it out
-            if (CmbBx_Artist.Text == string.Empty &&
-                TxBx_Title.Text == string.Empty &&
-                sName.Length >= 2)
+            if (CmbBx_Artist.Text == "" && TxBx_Title.Text == "" && sName.Length >= 2)
             {
                 CmbBx_Artist.Text = sName[0].Trim();
                 TxBx_Title.Text = sName[1].Trim();
             }
-            else
-            {
+            else {
                 int iNewStart = CmbBx_Artist.SelectionStart + sRaw.Length;
                 CmbBx_Artist.Text = CmbBx_Artist.Text.Insert(
                     CmbBx_Artist.SelectionStart, sRaw);
@@ -991,8 +995,7 @@ namespace Nagru___Manga_Organizer
                         //split taglist down into usable elements
                         sSplit = ExtString.Split(htmlDoc.GetElementbyId(
                             "taglist").InnerHtml, "this)\">");
-                        for (int i = 1; i < sSplit.Length; i++)
-                        {
+                        for (int i = 1; i < sSplit.Length; i++) {
                             TxBx_Tags.Text += ExtString.Split(sSplit[i], "</a>")[0].Trim();
                             if (i < sSplit.Length - 1) TxBx_Tags.Text += ", ";
                         }
@@ -1063,7 +1066,7 @@ namespace Nagru___Manga_Organizer
         {
             if (ActiveControl is TextBox)
                 (ActiveControl as TextBox).Cut();
-            else 
+            else
             {
                 if ((ActiveControl as ComboBox).SelectedText == "") return;
                 Clipboard.SetText((ActiveControl as ComboBox).SelectedText);
@@ -1123,10 +1126,6 @@ namespace Nagru___Manga_Organizer
         #endregion
 
         #region DragDropEvents
-        /* Try to break dragged text down into Artist & Title */
-        private void TxBx_Artist_DragDrop(object sender, DragEventArgs e)
-        { SplitTitle((string)e.Data.GetData(DataFormats.Text)); }
-
         /* Show proper cursor when text is dragged over TxBx */
         private void DragEnterTxBx(object sender, DragEventArgs e)
         {
@@ -1151,10 +1150,13 @@ namespace Nagru___Manga_Organizer
                     frTxBx.SelectionStart = iNewStart;
                     break;
                 case "TxBx_Title":
-                    iNewStart = TxBx_Title.SelectionStart + sAdd.Length;
-                    TxBx_Title.Text = TxBx_Title.Text.Insert(
-                        TxBx_Title.SelectionStart, sAdd);
-                    TxBx_Title.SelectionStart = iNewStart;
+                    if (sAdd.Contains('[')) SplitTitle(sAdd);
+                    else {
+                        iNewStart = TxBx_Title.SelectionStart + sAdd.Length;
+                        TxBx_Title.Text = TxBx_Title.Text.Insert(
+                            TxBx_Title.SelectionStart, sAdd);
+                        TxBx_Title.SelectionStart = iNewStart;
+                    }
                     break;
                 case "TxBx_Loc":
                     TxBx_Loc.Text = sAdd;
@@ -1177,10 +1179,13 @@ namespace Nagru___Manga_Organizer
                         }
                     break;
                 case "CmbBx_Artist":
-                    iNewStart = CmbBx_Artist.SelectionStart + sAdd.Length;
-                    CmbBx_Artist.Text = CmbBx_Artist.Text.Insert(
-                        CmbBx_Artist.SelectionStart, sAdd);
-                    CmbBx_Artist.SelectionStart = iNewStart;
+                    if (sAdd.Contains('[')) SplitTitle(sAdd);
+                    else {
+                        iNewStart = CmbBx_Artist.SelectionStart + sAdd.Length;
+                        CmbBx_Artist.Text = CmbBx_Artist.Text.Insert(
+                            CmbBx_Artist.SelectionStart, sAdd);
+                        CmbBx_Artist.SelectionStart = iNewStart;
+                    }
                     break;
             }
         }

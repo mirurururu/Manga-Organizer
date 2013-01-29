@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Nagru - Manga Organizer")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Manga Organizer")]
+[assembly: AssemblyDescription("Simple folder tagging")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Nagru - Manga Organizer")]
+[assembly: AssemblyProduct("Manga Organizer")]
 [assembly: AssemblyCopyright("Copyright © 2012 Taylor Napier")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

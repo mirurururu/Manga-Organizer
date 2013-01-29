@@ -10,17 +10,24 @@ namespace Nagru___Manga_Organizer
         { get { return uri.AbsoluteUri; } }
 
         public GetUrl()
-        { 
+        {
             InitializeComponent();
-            TxBx_Url.SelectAll();
+
+            if(Clipboard.GetText().Contains("hentai.org"))
+                TxBx_Url.Text = Clipboard.GetText();
+            else TxBx_Url.SelectAll();
         }
 
         private void Btn_Get_Click(object sender, EventArgs e)
         {
-            if (TxBx_Url.Text == string.Empty ||
-                TxBx_Url.Text == "Input EH gallery page URL...") 
-                return;
+            if (TxBx_Url.Text != string.Empty &&
+                TxBx_Url.Text != "Input EH gallery page URL...") {
+                TestText();
+            }
+        }
 
+        private void TestText()
+        {
             string sUrl = TxBx_Url.Text;
             if (!sUrl.StartsWith("http://"))
                 sUrl = sUrl.Insert(0, "http://");
@@ -29,8 +36,7 @@ namespace Nagru___Manga_Organizer
 
             //ensure user only enters proper values
             if (sUrl.StartsWith("http://g.e-hentai.org/g/") &&
-                Uri.TryCreate(sUrl, UriKind.Absolute, out uri))
-            {
+                Uri.TryCreate(sUrl, UriKind.Absolute, out uri)) {
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }
