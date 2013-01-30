@@ -92,6 +92,7 @@
             this.MinimizeBox = false;
             this.Name = "About";
             this.Text = "About <Error>";
+            this.Shown += new System.EventHandler(this.About_Shown);
             this.ResumeLayout(false);
 
         }

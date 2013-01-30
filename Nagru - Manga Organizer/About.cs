@@ -25,6 +25,9 @@ namespace Nagru___Manga_Organizer
             Lbl_P2.Text = "For updates, or a copy of the source code, visit:";
         }
 
+        private void About_Load(object sender, EventArgs e)
+        { CheckLatest(); }
+
         private void LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             if (sender == LnkLbl_Git)
@@ -45,7 +48,7 @@ namespace Nagru___Manga_Organizer
             Text += " - Checking version...";
 
             HtmlAgilityPack.HtmlWeb htmlWeb = new HtmlAgilityPack.HtmlWeb();
-            HtmlAgilityPack.HtmlDocument htmlDoc = htmlWeb.Load("http");
+            HtmlAgilityPack.HtmlDocument htmlDoc = htmlWeb.Load("http://www.giantbomb.com/");
 
             //ensure page exists
             if (htmlWeb.StatusCode == System.Net.HttpStatusCode.OK)
@@ -69,6 +72,12 @@ namespace Nagru___Manga_Organizer
                 "Could not establish connection");
 
             this.Cursor = Cursors.Default;
+        }
+
+        private void About_Shown(object sender, EventArgs e)
+        {
+            System.Threading.Thread.Sleep(25);
+            CheckLatest();
         }
     }
 }
