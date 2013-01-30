@@ -25,3 +25,4 @@ Notes:
 - the latter browser displays two images simultaneously and should be traversed from right to left (Also, can hit 'f' to bring up a list of pages, then double-click on a page to open it)
 - to un-ignore an item in the scan operation, select it and press the ignore button again
 - if you set the root folder (Menu -> Change Root) to the root of your manga folder, the FolderBrowserDialog will try to auto-find the correct folder path when new items are added.
+- load the 'About' entry to automatically check for an updated version

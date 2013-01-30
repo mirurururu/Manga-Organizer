@@ -1,13 +1,21 @@
 ﻿using System;
+using System.Net;
+using System.IO;
 using System.Windows.Forms;
 
 namespace Nagru___Manga_Organizer
 {
     public partial class About : Form
     {
+        delegate void DelVoidInt(int iResult);
+        DelVoidInt delFini = null;
+
         public About()
+        { InitializeComponent(); }
+
+        private void About_Load(object sender, EventArgs e)
         {
-            InitializeComponent();
+            delFini = Checked;
             Text = string.Format("About ({0})", Properties.Settings.Default.Version);
 
             Lbl_P1.Text = "This program provides tagging, searching and other basic management for a\n" +
@@ -25,8 +33,49 @@ namespace Nagru___Manga_Organizer
             Lbl_P2.Text = "For updates, or a copy of the source code, visit:";
         }
 
-        private void About_Load(object sender, EventArgs e)
-        { CheckLatest(); }
+        private void About_Shown(object sender, EventArgs e)
+        {
+            this.Cursor = Cursors.WaitCursor;
+            Text += " - Checking version...";
+
+            System.Threading.ThreadPool.QueueUserWorkItem(CheckLatest);
+        }
+
+        private void CheckLatest(object Null)
+        {
+            int iEvent = 0;
+
+            HtmlAgilityPack.HtmlWeb htmlWeb = new HtmlAgilityPack.HtmlWeb();
+            HtmlAgilityPack.HtmlDocument htmlDoc = htmlWeb.Load("http://nagru.github.com/Manga-Organizer/");
+
+            //grab version info
+            if (htmlWeb.StatusCode == System.Net.HttpStatusCode.OK) {
+                try {
+                    if (Properties.Settings.Default.Version ==
+                        htmlDoc.DocumentNode.SelectNodes("//*[text()[contains(., 'v. ')]]")[0].InnerText)
+                        iEvent = 1;
+                    else iEvent = 2;
+                }
+                catch { }
+            }
+
+            try { Invoke(delFini, iEvent); } catch { }
+        }
+
+        private void Checked(int iResult)
+        {
+            Text = "About (" + Properties.Settings.Default.Version + ") - ";
+            switch (iResult) {
+                case 0: Text += "Could not establish a connection";
+                    break;
+                case 1: Text += "Latest version";
+                    break;
+                case 2: Text += "New version available";
+                    break;
+            }
+
+            this.Cursor = Cursors.Default;
+        }
 
         private void LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
@@ -40,44 +89,6 @@ namespace Nagru___Manga_Organizer
                 LnkLbl_Gpl.LinkVisited = true;
                 System.Diagnostics.Process.Start("http://www.gnu.org/licenses/gpl.html");
             }
-        }
-
-        private void CheckLatest()
-        {
-            this.Cursor = Cursors.WaitCursor;
-            Text += " - Checking version...";
-
-            HtmlAgilityPack.HtmlWeb htmlWeb = new HtmlAgilityPack.HtmlWeb();
-            HtmlAgilityPack.HtmlDocument htmlDoc = htmlWeb.Load("http://www.giantbomb.com/");
-
-            //ensure page exists
-            if (htmlWeb.StatusCode == System.Net.HttpStatusCode.OK)
-            {
-                //grab artist & title
-                try
-                {
-                    if (Properties.Settings.Default.Version !=
-                        htmlDoc.DocumentNode.InnerText)
-                    {
-                        //http://nagru.github.com/Manga-Organizer/
-                    }
-                }
-                catch (Exception)
-                {
-                    Text = string.Format("About ({0}) - {1}", Properties.Settings.Default.Version,
-                        "Could not establish connection");
-                }
-            }
-            else Text = string.Format("About ({0}) - {1}", Properties.Settings.Default.Version,
-                "Could not establish connection");
-
-            this.Cursor = Cursors.Default;
-        }
-
-        private void About_Shown(object sender, EventArgs e)
-        {
-            System.Threading.Thread.Sleep(25);
-            CheckLatest();
         }
     }
 }

@@ -15,13 +15,14 @@ namespace Nagru___Manga_Organizer
         { 
             InitializeComponent();
             LV_Stats.ListViewItemSorter = lvSortObj;
+            Text = "Stats - " + lPass.Count + " entries";
 
             for (int i = 0; i < lPass.Count; i++)
                 foreach (string svar in lPass[i].sTags.Split(','))
                 {
-                    svar.TrimStart();
-                    if (sdtTags.ContainsKey(svar)) sdtTags[svar]++;
-                    else sdtTags.Add(svar, 1);
+                    string sItem = svar.TrimStart();
+                    if (sdtTags.ContainsKey(sItem)) sdtTags[sItem]++;
+                    else sdtTags.Add(sItem, 1);
                 }
 
             foreach (KeyValuePair<string, int> kvpItem in sdtTags)
