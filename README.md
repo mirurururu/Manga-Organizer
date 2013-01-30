@@ -5,7 +5,7 @@ As a mild hoarder I found that a folder hierarchy simply doesn't cut it when you
 
 Basically it provides semi-automated metadata for your folders, along with the option to use a built-in 2-page image browser. It can automatically scan your current folders into a directory; which will fill out the artist, title, and page count fields. The same can be done by dragging and dropping a folder over the listview. Given a g.e-hentai gallery url it can auto-populate the remaining fields (exc. description). A tab for notes is also included to keep track of your always-full backlog.
 
-If this sounds useful to you, give it a shot: <a href="http://www.mediafire.com/?86l00a6y5s0nh0l">Download</a>
+If this sounds useful to you, give it a shot: <a href="http://www.mediafire.com/?y8o2h5go1j684d4">Download</a>
 
 For examples of it running see: <a href="https://raw.github.com/Nagru/Manga-Organizer/master/Prv_Browse.jpg" target="_blank">Browse</a> - <a href="https://raw.github.com/Nagru/Manga-Organizer/master/Prv_View.jpg" target="_blank">View</a> - <a href="https://raw.github.com/Nagru/Manga-Organizer/master/Prv_Notes.jpg" target="_blank">Notes</a>
 
