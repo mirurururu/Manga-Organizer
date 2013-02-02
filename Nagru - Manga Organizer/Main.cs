@@ -246,6 +246,7 @@ namespace Nagru___Manga_Organizer
                     this.AcceptButton = null;
                     break;
                 default:
+                    frTxBx_Notes.Select();
                     this.AcceptButton = null;
                     break;
             }
@@ -281,6 +282,7 @@ namespace Nagru___Manga_Organizer
         /* Prevent edits of improper entries   */
         private void TxBx_Search_TextChanged(object sender, EventArgs e)
         {
+            Reset();
             Delay.Stop();
 
             if (TxBx_Search.Text == string.Empty)
@@ -349,6 +351,10 @@ namespace Nagru___Manga_Organizer
         {
             if (ChkBx_ShowFav.Checked) OnlyFavs();
             else UpdateLV();
+
+            if (indx != -1 && lData[indx].bFav) ReFocus();
+            else Reset();
+
             LV_Entries.Select();
         }
         #endregion
@@ -362,12 +368,14 @@ namespace Nagru___Manga_Organizer
             fbd.Description = "Select the location of the current entry:";
 
             //Try to auto-magically grab folder path
-            string sPath = string.Format("{0}\\[{1}] {2}",
-                Properties.Settings.Default.DefLoc,
-                CmbBx_Artist.Text, TxBx_Title.Text);
-            if (Directory.Exists(sPath)) { }
-            else if (Directory.Exists(TxBx_Loc.Text)) sPath = TxBx_Loc.Text;
-            else sPath = Properties.Settings.Default.DefLoc;
+            string sPath;
+            if (TxBx_Loc.Text != "" && Directory.Exists(TxBx_Loc.Text)) sPath = TxBx_Loc.Text;
+            else
+            {
+                sPath = string.Format("{0}\\[{1}] {2}", Properties.Settings.Default.DefLoc,
+                    CmbBx_Artist.Text, TxBx_Title.Text);
+                if (!Directory.Exists(sPath)) sPath = Properties.Settings.Default.DefLoc;
+            }
             fbd.SelectedPath = sPath;
 
             //Set folder path, and grab cover & page count from it
@@ -472,22 +480,8 @@ namespace Nagru___Manga_Organizer
             bSavList = false;
             if (indx == -1) return;
 
-            int iPos = 0;
-            for (int i = 0; i < LV_Entries.Items.Count; i++)
-                if (LV_Entries.Items[i].SubItems[1].Text == lData[indx].sTitle)
-                {
-                    LV_Entries.FocusedItem = LV_Entries.Items[i];
-                    LV_Entries.Items[i].Selected = true;
-                    iPos = i;
-                    break;
-                }
+            ReFocus();
             LV_Entries.Select();
-
-            /* Compensate for broken scroll-to function
-             * by running it multiple times (3 is sweet-spot) */
-            LV_Entries.TopItem = LV_Entries.Items[iPos];
-            LV_Entries.TopItem = LV_Entries.Items[iPos];
-            LV_Entries.TopItem = LV_Entries.Items[iPos];
         }
 
         /* Get first image in target folder */
@@ -601,6 +595,28 @@ namespace Nagru___Manga_Organizer
             string[] sFiles = ExtDirectory.GetFiles(@TxBx_Loc.Text);
             if (sFiles.Length > 0) System.Diagnostics.Process.Start(sFiles[0]);
             else System.Diagnostics.Process.Start(@TxBx_Loc.Text);
+        }
+
+        /* Bring focus back to selected entry in LV */
+        private void ReFocus()
+        {
+            if (LV_Entries.Items.Count == 0) return;
+
+            int iPos = 0;
+            for (int i = 0; i < LV_Entries.Items.Count; i++)
+                if (LV_Entries.Items[i].SubItems[1].Text == lData[indx].sTitle)
+                {
+                    LV_Entries.FocusedItem = LV_Entries.Items[i];
+                    LV_Entries.Items[i].Selected = true;
+                    iPos = i;
+                    break;
+                }
+
+            /* Compensate for broken scroll-to function
+             * by running it multiple times (3 is sweet-spot) */
+            LV_Entries.TopItem = LV_Entries.Items[iPos];
+            LV_Entries.TopItem = LV_Entries.Items[iPos];
+            LV_Entries.TopItem = LV_Entries.Items[iPos];
         }
 
         /* Set properties back to default   */
@@ -720,7 +736,8 @@ namespace Nagru___Manga_Organizer
         void SplitTitle(string sRaw)
         {
             //Get formatted title
-            if (sRaw.StartsWith("(")) {
+            if (sRaw.StartsWith("("))
+            {
                 int iPos = sRaw.IndexOf(')') + 2;
                 if (sRaw.Length - 1 >= iPos)
                     sRaw = sRaw.Remove(0, iPos);
@@ -734,7 +751,8 @@ namespace Nagru___Manga_Organizer
                 CmbBx_Artist.Text = sName[0].Trim();
                 TxBx_Title.Text = sName[1].Trim();
             }
-            else {
+            else
+            {
                 int iNewStart = CmbBx_Artist.SelectionStart + sRaw.Length;
                 CmbBx_Artist.Text = CmbBx_Artist.Text.Insert(
                     CmbBx_Artist.SelectionStart, sRaw);
@@ -849,11 +867,48 @@ namespace Nagru___Manga_Organizer
             lData[indx] = new stEntry(TxBx_Title.Text, CmbBx_Artist.Text,
                 TxBx_Loc.Text, frTxBx_Desc.Text, TxBx_Tags.Text, CmbBx_Type.Text,
                 Dt_Date.Value, Nud_Pages.Value, ChkBx_Fav.Checked);
+            Text = "Edited entry: " + lData[indx].ToString();
+            TxBx_Tags.Text = lData[indx].sTags;
 
             //update LV_Entries & maintain selection
-            AddEntries();
+            ListViewItem lvi = LV_Entries.Items[LV_Entries.SelectedItems[0].Index];
+            if (lData[indx].bFav) lvi.BackColor = Color.LightYellow;
+            lvi.SubItems[0].Text = lData[indx].sArtist;
+            lvi.SubItems[1].Text = lData[indx].sTitle;
+            lvi.SubItems[2].Text = lData[indx].iPages.ToString();
+            lvi.SubItems[3].Text = lData[indx].sTags;
+            lvi.SubItems[4].Text = lData[indx].sType;
+            LV_Entries.Sort();
+
+            if (ChkBx_ShowFav.Checked && !lData[indx].bFav)
+            {
+                lvi.Remove();
+                Reset();
+            }
+            else if (TxBx_Search.Text != "")
+            {
+                List<string> lTags = new List<string>();
+                foreach (string s in TxBx_Search.Text.Split(','))
+                    lTags.Add(s.TrimStart());
+
+                for (int i = 0; i < lTags.Count; i++)
+                {
+                    if (ExtString.Contains(lvi.SubItems[3].Text, lTags[i]) ||
+                            ExtString.Contains(lvi.SubItems[1].Text, lTags[i]) ||
+                            ExtString.Contains(lvi.SubItems[0].Text, lTags[i]) ||
+                            ExtString.Contains(lvi.SubItems[4].Text, lTags[i])) { }
+                    else
+                    {
+                        lvi.Remove();
+                        Reset();
+                        break;
+                    }
+                }
+            }
+            else ReFocus();
+
+            bSavList = false;
             MnTS_Edit.Visible = false;
-            Text = "Edited entry: " + lData[indx].ToString();
         }
 
         /* Deletes current selection from database   */
@@ -967,8 +1022,9 @@ namespace Nagru___Manga_Organizer
         /* Display stats on tags */
         private void MnTS_Stats_Click(object sender, EventArgs e)
         {
-            Stats fmStats = new Stats(lData);
-            fmStats.ShowDialog();
+            Stats fmStats = new Stats();
+            fmStats.CurrentItems = lData;
+            fmStats.Show();
 
             if (fmStats.DialogResult == DialogResult.OK)
                 fmStats.Dispose();
@@ -995,7 +1051,11 @@ namespace Nagru___Manga_Organizer
                     //grab artist & title
                     try
                     {
-                        SplitTitle(htmlDoc.GetElementbyId("gn").InnerText.Replace("&#039;", "'"));
+                        SplitTitle(System.Web.HttpUtility.HtmlDecode(htmlDoc.GetElementbyId("gn").InnerText));
+
+                        //get gallery type
+                        string sType = ExtString.Split(htmlDoc.GetElementbyId("gdc").InnerHtml, " alt=")[1].Split('"')[1];
+                        CmbBx_Type.Text = char.ToUpper(sType[0]) + sType.Substring(1);
 
                         //split 'gdd' table down into usable elements
                         string[] sSplit = ExtString.Split(htmlDoc.GetElementbyId("gdd").InnerHtml, "\"gdt2\">");
@@ -1005,7 +1065,8 @@ namespace Nagru___Manga_Organizer
                         //split taglist down into usable elements
                         sSplit = ExtString.Split(htmlDoc.GetElementbyId(
                             "taglist").InnerHtml, "this)\">");
-                        for (int i = 1; i < sSplit.Length; i++) {
+                        for (int i = 1; i < sSplit.Length; i++)
+                        {
                             TxBx_Tags.Text += ExtString.Split(sSplit[i], "</a>")[0].Trim();
                             if (i < sSplit.Length - 1) TxBx_Tags.Text += ", ";
                         }
@@ -1039,8 +1100,11 @@ namespace Nagru___Manga_Organizer
 
         private void MnRTx_Cut_Click(object sender, EventArgs e)
         {
-            bSavText = false;
-            if (TabControl.SelectedIndex == 2) frTxBx_Notes.Cut();
+            if (TabControl.SelectedIndex == 2) 
+            {
+                frTxBx_Notes.Cut();
+                bSavText = false;
+            }
             else frTxBx_Desc.Cut();
         }
 
@@ -1052,9 +1116,24 @@ namespace Nagru___Manga_Organizer
 
         private void MnRTx_Paste_Click(object sender, EventArgs e)
         {
-            bSavText = false;
-            if (TabControl.SelectedIndex == 2) frTxBx_Notes.Paste();
-            else frTxBx_Desc.Paste();
+            int iNewStart;
+            string sAdd = Clipboard.GetText();
+            
+            if (TabControl.SelectedIndex == 2) 
+            {
+                iNewStart = frTxBx_Notes.SelectionStart + sAdd.Length;
+                frTxBx_Notes.Text = frTxBx_Notes.Text.Insert(
+                    frTxBx_Desc.SelectionStart, sAdd);
+                frTxBx_Notes.SelectionStart = iNewStart;
+                bSavText = false;
+            }
+            else 
+            {
+                iNewStart = frTxBx_Desc.SelectionStart + sAdd.Length;
+                frTxBx_Desc.Text = frTxBx_Desc.Text.Insert(
+                    frTxBx_Desc.SelectionStart, sAdd);
+                frTxBx_Desc.SelectionStart = iNewStart;
+            }
         }
 
         private void MnRTx_SelectAll_Click(object sender, EventArgs e)
@@ -1161,7 +1240,8 @@ namespace Nagru___Manga_Organizer
                     break;
                 case "TxBx_Title":
                     if (sAdd.Contains('[')) SplitTitle(sAdd);
-                    else {
+                    else
+                    {
                         iNewStart = TxBx_Title.SelectionStart + sAdd.Length;
                         TxBx_Title.Text = TxBx_Title.Text.Insert(
                             TxBx_Title.SelectionStart, sAdd);
@@ -1190,7 +1270,8 @@ namespace Nagru___Manga_Organizer
                     break;
                 case "CmbBx_Artist":
                     if (sAdd.Contains('[')) SplitTitle(sAdd);
-                    else {
+                    else
+                    {
                         iNewStart = CmbBx_Artist.SelectionStart + sAdd.Length;
                         CmbBx_Artist.Text = CmbBx_Artist.Text.Insert(
                             CmbBx_Artist.SelectionStart, sAdd);

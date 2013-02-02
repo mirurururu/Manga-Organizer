@@ -30,6 +30,7 @@ namespace Nagru___Manga_Organizer
 
             /* Compensate for broken scroll-to function
              * by running it multiple times (3 is sweet-spot) */
+            if (LV_Pages.Items.Count == 0) return;
             LV_Pages.TopItem = LV_Pages.Items[iPage];
             LV_Pages.TopItem = LV_Pages.Items[iPage];
             LV_Pages.TopItem = LV_Pages.Items[iPage];
