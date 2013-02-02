@@ -1124,7 +1124,7 @@ namespace Nagru___Manga_Organizer
             {
                 iNewStart = frTxBx_Notes.SelectionStart + sAdd.Length;
                 frTxBx_Notes.Text = frTxBx_Notes.Text.Insert(
-                    frTxBx_Desc.SelectionStart, sAdd);
+                    frTxBx_Notes.SelectionStart, sAdd);
                 frTxBx_Notes.SelectionStart = iNewStart;
                 bSavText = false;
             }
