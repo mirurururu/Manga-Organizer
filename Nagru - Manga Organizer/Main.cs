@@ -873,6 +873,7 @@ namespace Nagru___Manga_Organizer
             //update LV_Entries & maintain selection
             ListViewItem lvi = LV_Entries.Items[LV_Entries.SelectedItems[0].Index];
             if (lData[indx].bFav) lvi.BackColor = Color.LightYellow;
+            else lvi.BackColor = SystemColors.Window;
             lvi.SubItems[0].Text = lData[indx].sArtist;
             lvi.SubItems[1].Text = lData[indx].sTitle;
             lvi.SubItems[2].Text = lData[indx].iPages.ToString();
