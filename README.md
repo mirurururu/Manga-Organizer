@@ -5,11 +5,11 @@ As a mild hoarder I found that a folder hierarchy simply doesn't cut it when you
 
 Basically it provides semi-automated metadata for your folders, along with the option to use a built-in 2-page image browser. It can automatically scan your current folders into a directory; which will fill out the artist, title, and page count fields. The same can be done by dragging and dropping a folder over the listview. Given a g.e-hentai gallery url it can auto-populate the remaining fields (exc. description). A tab for notes is also included to keep track of your always-full backlog.
 
-If this sounds useful to you, give it a shot: <a href="http://www.mediafire.com/?i8p7s19kht1s33l">Download</a>
+If this sounds useful to you, give it a shot: <a href="http://www.mediafire.com/?2lqp4352wv74nfp">Download</a>
 
 For examples of it running see: <a href="https://raw.github.com/Nagru/Manga-Organizer/master/Prv_Browse.jpg" target="_blank">Browse</a> - <a href="https://raw.github.com/Nagru/Manga-Organizer/master/Prv_View.jpg" target="_blank">View</a> - <a href="https://raw.github.com/Nagru/Manga-Organizer/master/Prv_Notes.jpg" target="_blank">Notes</a>
 
-(You'll need the .NET library to run it, but if you're running Vista/7 it should've come bundled with it. Otherwise, download <a href="https://www.microsoft.com/en-us/download/details.aspx?id=17851">.Net</a> for Windows or <a href="http://www.go-mono.com/mono-downloads/download.html">Mono</a> for Linux/OSX.)
+(You'll need the .NET library to run it, but if you're running Vista/7 it should've come bundled with it. Otherwise, download it from here: <a href="https://www.microsoft.com/en-us/download/details.aspx?id=17851">.NET</a>)
 
 
 ================

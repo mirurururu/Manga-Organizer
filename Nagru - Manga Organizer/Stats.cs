@@ -83,6 +83,7 @@ namespace Nagru___Manga_Organizer
             LV_Stats.Sort();
 
             Text = string.Format("Stats: {0} entries", dCount);
+            LV_Stats.Select();
         }
     }
 }

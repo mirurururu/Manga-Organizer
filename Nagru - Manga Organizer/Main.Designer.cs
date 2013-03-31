@@ -52,6 +52,7 @@
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.MnTx_SelAll = new System.Windows.Forms.ToolStripMenuItem();
             this.Tb_View = new System.Windows.Forms.TabPage();
+            this.ScrTags = new System.Windows.Forms.HScrollBar();
             this.CmbBx_Artist = new System.Windows.Forms.ComboBox();
             this.Btn_GoUp = new System.Windows.Forms.Button();
             this.Btn_GoDn = new System.Windows.Forms.Button();
@@ -83,6 +84,7 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.MnTS_GET = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.MnTS_Stats = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTS_About = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTs_Quit = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTS_SecretSort = new System.Windows.Forms.ToolStripSeparator();
@@ -103,7 +105,6 @@
             this.Tb_Notes = new System.Windows.Forms.TabPage();
             this.frTxBx_Notes = new Nagru___Manga_Organizer.FixedRichTextBox();
             this.Delay = new System.Windows.Forms.Timer(this.components);
-            this.MnTS_Stats = new System.Windows.Forms.ToolStripMenuItem();
             this.TabControl.SuspendLayout();
             this.Tb_Browse.SuspendLayout();
             this.Mn_TxBx.SuspendLayout();
@@ -331,6 +332,7 @@
             // Tb_View
             // 
             this.Tb_View.BackColor = System.Drawing.Color.Transparent;
+            this.Tb_View.Controls.Add(this.ScrTags);
             this.Tb_View.Controls.Add(this.CmbBx_Artist);
             this.Tb_View.Controls.Add(this.Btn_GoUp);
             this.Tb_View.Controls.Add(this.Btn_GoDn);
@@ -358,6 +360,15 @@
             this.Tb_View.Size = new System.Drawing.Size(926, 549);
             this.Tb_View.TabIndex = 1;
             this.Tb_View.Text = "View";
+            // 
+            // ScrTags
+            // 
+            this.ScrTags.Location = new System.Drawing.Point(52, 130);
+            this.ScrTags.Name = "ScrTags";
+            this.ScrTags.Size = new System.Drawing.Size(440, 16);
+            this.ScrTags.TabIndex = 26;
+            this.ScrTags.Visible = false;
+            this.ScrTags.Scroll += new System.Windows.Forms.ScrollEventHandler(this.ScrTags_Scroll);
             // 
             // CmbBx_Artist
             // 
@@ -515,9 +526,11 @@
             this.TxBx_Tags.Name = "TxBx_Tags";
             this.TxBx_Tags.Size = new System.Drawing.Size(440, 21);
             this.TxBx_Tags.TabIndex = 2;
+            this.TxBx_Tags.Click += new System.EventHandler(this.TxBx_Tags_Click);
             this.TxBx_Tags.TextChanged += new System.EventHandler(this.EntryAlt_Text);
             this.TxBx_Tags.DragDrop += new System.Windows.Forms.DragEventHandler(this.DragDropTxBx);
             this.TxBx_Tags.DragEnter += new System.Windows.Forms.DragEventHandler(this.DragEnterTxBx);
+            this.TxBx_Tags.Leave += new System.EventHandler(this.TxBx_Tags_Leave);
             // 
             // Lbl_Pages
             // 
@@ -623,7 +636,7 @@
             this.Mn_EntryOps.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
             this.Mn_EntryOps.Location = new System.Drawing.Point(3, 3);
             this.Mn_EntryOps.Name = "Mn_EntryOps";
-            this.Mn_EntryOps.Size = new System.Drawing.Size(384, 27);
+            this.Mn_EntryOps.Size = new System.Drawing.Size(153, 27);
             this.Mn_EntryOps.TabIndex = 21;
             this.Mn_EntryOps.Text = "menuStrip";
             // 
@@ -714,6 +727,13 @@
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
             this.toolStripSeparator4.Size = new System.Drawing.Size(188, 6);
+            // 
+            // MnTS_Stats
+            // 
+            this.MnTS_Stats.Name = "MnTS_Stats";
+            this.MnTS_Stats.Size = new System.Drawing.Size(191, 22);
+            this.MnTS_Stats.Text = "Show Tag Stats";
+            this.MnTS_Stats.Click += new System.EventHandler(this.MnTS_Stats_Click);
             // 
             // MnTS_About
             // 
@@ -890,13 +910,6 @@
             this.Delay.Interval = 300;
             this.Delay.Tick += new System.EventHandler(this.Delay_Tick);
             // 
-            // MnTS_Stats
-            // 
-            this.MnTS_Stats.Name = "MnTS_Stats";
-            this.MnTS_Stats.Size = new System.Drawing.Size(191, 22);
-            this.MnTS_Stats.Text = "Show Tag Stats";
-            this.MnTS_Stats.Click += new System.EventHandler(this.MnTS_Stats_Click);
-            // 
             // Main
             // 
             this.AcceptButton = this.Btn_Clear;
@@ -1004,6 +1017,7 @@
         private System.Windows.Forms.Button Btn_GoDn;
         private System.Windows.Forms.ComboBox CmbBx_Artist;
         private System.Windows.Forms.ToolStripMenuItem MnTS_Stats;
+        private System.Windows.Forms.HScrollBar ScrTags;
     }
 }
 

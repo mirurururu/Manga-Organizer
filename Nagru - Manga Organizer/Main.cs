@@ -158,7 +158,7 @@ namespace Nagru___Manga_Organizer
             else return null;
         }
 
-        /* Load database   */
+        /* Load database */
         private void Main_Load(object sender, EventArgs e)
         {
             //disable ContextMenu in Nud_Pages
@@ -173,8 +173,8 @@ namespace Nagru___Manga_Organizer
             frTxBx_Notes.AllowDrop = true; frTxBx_Desc.AllowDrop = true;
             frTxBx_Notes.DragDrop += new DragEventHandler(DragDropTxBx);
             frTxBx_Desc.DragDrop += new DragEventHandler(DragDropTxBx);
-            frTxBx_Notes.DragEnter += new DragEventHandler(DragEnterTxBx);
             frTxBx_Desc.DragEnter += new DragEventHandler(DragEnterTxBx);
+            frTxBx_Notes.DragEnter += new DragEventHandler(DragEnterTxBx);
             frTxBx_Notes.Text = Properties.Settings.Default.Notes;
 
             //grab filepath
@@ -401,14 +401,22 @@ namespace Nagru___Manga_Organizer
         {
             if (PicBx_Cover.Image == null) return;
 
-            Browse fmBrowse = new Browse();
-            fmBrowse.sPath = TxBx_Loc.Text;
-            fmBrowse.iPage = iPage;
+            /* Just in case user deletes folder midway */
+            if (Directory.Exists(TxBx_Loc.Text) &&
+                ExtDirectory.GetFiles(@TxBx_Loc.Text,
+                    SearchOption.TopDirectoryOnly).Length > 0)
+            {
+                Browse fmBrowse = new Browse();
+                fmBrowse.sPath = TxBx_Loc.Text;
+                fmBrowse.iPage = iPage;
 
-            fmBrowse.ShowDialog();
-            iPage = fmBrowse.iPage;
-            fmBrowse.Dispose();
-            GC.Collect();
+                fmBrowse.ShowDialog();
+                iPage = fmBrowse.iPage;
+                fmBrowse.Dispose();
+                GC.Collect();
+            }
+            else MessageBox.Show("The folder no longer exists.",
+                Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         /* Dynamically update PicBx when user manually alters path */
@@ -429,10 +437,15 @@ namespace Nagru___Manga_Organizer
         /* Select next item in listview */
         private void Btn_GoDn_Click(object sender, EventArgs e)
         {
-            if (LV_Entries.SelectedItems.Count == 0) return;
-            int iPos = LV_Entries.SelectedItems[0].Index;
+            int iPos = 0;
+            if (LV_Entries.Items.Count == 0)
+                return;
+            else if (LV_Entries.SelectedItems.Count != 0)
+            {
+                iPos = LV_Entries.SelectedItems[0].Index;
+                if (++iPos >= LV_Entries.Items.Count) iPos = 0;
+            }
 
-            if (++iPos >= LV_Entries.Items.Count) iPos = 0;
             LV_Entries.FocusedItem = LV_Entries.Items[iPos];
             LV_Entries.Items[iPos].Selected = true;
         }
@@ -440,13 +453,41 @@ namespace Nagru___Manga_Organizer
         /* Select previous item in listview */
         private void Btn_GoUp_Click(object sender, EventArgs e)
         {
-            if (LV_Entries.SelectedItems.Count == 0) return;
-            int iPos = LV_Entries.SelectedItems[0].Index;
+            int iPos = LV_Entries.Items.Count - 1;
+            if (LV_Entries.Items.Count == 0)
+                return;
+            else if (LV_Entries.SelectedItems.Count != 0)
+            {
+                iPos = LV_Entries.SelectedItems[0].Index;
+                if (--iPos < 0) iPos = LV_Entries.Items.Count - 1;
+            }
 
-            if (--iPos < 0) iPos = LV_Entries.Items.Count - 1;
             LV_Entries.FocusedItem = LV_Entries.Items[iPos];
             LV_Entries.Items[iPos].Selected = true;
         }
+
+        /* Move TxBx_Tags cursor pos. based on ScrTags value */
+        #region ScrollTags
+        private void ScrTags_Scroll(object sender, ScrollEventArgs e)
+        {
+            TxBx_Tags.Select(ScrTags.Value, 0);
+            TxBx_Tags.ScrollToCaret();
+        }
+
+        private void TxBx_Tags_Leave(object sender, EventArgs e)
+        { ScrTags.Visible = false; }
+
+        private void TxBx_Tags_Click(object sender, EventArgs e)
+        {
+            Size s = TextRenderer.MeasureText(TxBx_Tags.Text, TxBx_Tags.Font);
+            if (s.Width > TxBx_Tags.Width)
+            {
+                ScrTags.Value = TxBx_Tags.SelectionStart;
+                ScrTags.Maximum = s.Width / 5;
+                ScrTags.Visible = true;
+            }
+        }
+        #endregion
 
         /* Only enable edit when changes have been made */
         #region EnableEdit
@@ -582,7 +623,6 @@ namespace Nagru___Manga_Organizer
 
             //prevent loss of search parameters
             if (TxBx_Search.Text != string.Empty) Search();
-            Text = "Returned: " + LV_Entries.Items.Count + " entries";
         }
 
         /* Open folder or first image of current entry   */
@@ -598,19 +638,19 @@ namespace Nagru___Manga_Organizer
         }
 
         /* Bring focus back to selected entry in LV */
-        private void ReFocus()
+        private void ReFocus(int iPos = 0)
         {
-            if (LV_Entries.Items.Count == 0) return;
+            if (LV_Entries.Items.Count == 0 || iPos < 0) return;
 
-            int iPos = 0;
-            for (int i = 0; i < LV_Entries.Items.Count; i++)
-                if (LV_Entries.Items[i].SubItems[1].Text == lData[indx].sTitle)
-                {
-                    LV_Entries.FocusedItem = LV_Entries.Items[i];
-                    LV_Entries.Items[i].Selected = true;
-                    iPos = i;
-                    break;
-                }
+            if (indx != -1 && iPos == 0)
+                for (int i = 0; i < LV_Entries.Items.Count; i++)
+                    if (LV_Entries.Items[i].SubItems[1].Text == lData[indx].sTitle)
+                    {
+                        LV_Entries.FocusedItem = LV_Entries.Items[i];
+                        LV_Entries.Items[i].Selected = true;
+                        iPos = i;
+                        break;
+                    }
 
             /* Compensate for broken scroll-to function
              * by running it multiple times (3 is sweet-spot) */
@@ -623,7 +663,7 @@ namespace Nagru___Manga_Organizer
         void Reset()
         {
             //reset Form title
-            Text = (TxBx_Search.Text == string.Empty ? "Manga Organizer: "
+            Text = (TxBx_Search.Text == string.Empty && !ChkBx_ShowFav.Checked ? "Manga Organizer: "
                 + lData.Count : "Returned: " + LV_Entries.Items.Count) + " entries";
 
             //Tb_Browse
@@ -642,6 +682,7 @@ namespace Nagru___Manga_Organizer
             frTxBx_Desc.Clear();
             ChkBx_Fav.Checked = false;
             Dt_Date.Value = DateTime.Now;
+            ScrTags.Visible = false;
             SetPicBxNull();
 
             //Mn_EntryOps
@@ -852,8 +893,11 @@ namespace Nagru___Manga_Organizer
                         CmbBx_Artist.AutoCompleteCustomSource.Add(CmbBx_Artist.Text);
                         CmbBx_Artist.Items.Add(CmbBx_Artist.Text);
                     }
+
+                    int iPos = LV_Entries.TopItem == null ? -1 : LV_Entries.TopItem.Index;
                     AddEntries();
                     Reset();
+                    ReFocus(iPos);
                 }
             }
             else MessageBox.Show("This item already exists in the database.",
@@ -1101,7 +1145,7 @@ namespace Nagru___Manga_Organizer
 
         private void MnRTx_Cut_Click(object sender, EventArgs e)
         {
-            if (TabControl.SelectedIndex == 2) 
+            if (TabControl.SelectedIndex == 2)
             {
                 frTxBx_Notes.Cut();
                 bSavText = false;
@@ -1119,8 +1163,8 @@ namespace Nagru___Manga_Organizer
         {
             int iNewStart;
             string sAdd = Clipboard.GetText();
-            
-            if (TabControl.SelectedIndex == 2) 
+
+            if (TabControl.SelectedIndex == 2)
             {
                 iNewStart = frTxBx_Notes.SelectionStart + sAdd.Length;
                 frTxBx_Notes.Text = frTxBx_Notes.Text.Insert(
@@ -1128,7 +1172,7 @@ namespace Nagru___Manga_Organizer
                 frTxBx_Notes.SelectionStart = iNewStart;
                 bSavText = false;
             }
-            else 
+            else
             {
                 iNewStart = frTxBx_Desc.SelectionStart + sAdd.Length;
                 frTxBx_Desc.Text = frTxBx_Desc.Text.Insert(

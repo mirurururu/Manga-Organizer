@@ -15,7 +15,7 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="Version" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">v. 02-02-2013</Value>
+      <Value Profile="(Default)">v. 03-31-2013</Value>
     </Setting>
   </Settings>
 </SettingsFile>

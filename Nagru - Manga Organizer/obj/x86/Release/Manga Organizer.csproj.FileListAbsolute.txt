@@ -1,8 +1,6 @@
 C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\bin\Release\Nagru - Manga Organizer.exe.config
 C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\bin\Release\Nagru - Manga Organizer.exe
 C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\bin\Release\Nagru - Manga Organizer.pdb
-C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\bin\Release\HtmlAgilityPack.dll
-C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\obj\x86\Release\Manga Organizer.csprojResolveAssemblyReference.cache
 C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\obj\x86\Release\Nagru___Manga_Organizer.About.resources
 C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\obj\x86\Release\Nagru___Manga_Organizer.Browse.resources
 C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\obj\x86\Release\Nagru___Manga_Organizer.BrowseTo.resources
@@ -10,7 +8,7 @@ C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\obj\x86\Relea
 C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\obj\x86\Release\Nagru___Manga_Organizer.Main.resources
 C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\obj\x86\Release\Nagru___Manga_Organizer.Properties.Resources.resources
 C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\obj\x86\Release\Nagru___Manga_Organizer.Scan.resources
+C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\obj\x86\Release\Nagru___Manga_Organizer.Stats.resources
 C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\obj\x86\Release\Manga Organizer.csproj.GenerateResource.Cache
 C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\obj\x86\Release\Nagru - Manga Organizer.exe
 C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\obj\x86\Release\Nagru - Manga Organizer.pdb
-C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\obj\x86\Release\Nagru___Manga_Organizer.Stats.resources
