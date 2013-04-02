@@ -25,7 +25,7 @@ namespace Nagru___Manga_Organizer
         LVsorter lvSortObj = new LVsorter();
         List<stEntry> lData = new List<stEntry>(500);
         bool bSavList = true, bSavText = true;
-        int indx = -1, iPage = -1;
+        short indx = -1, iPage = -1;
 
         /* Holds metadata about manga in library */
         [Serializable]
@@ -406,12 +406,12 @@ namespace Nagru___Manga_Organizer
                 ExtDirectory.GetFiles(@TxBx_Loc.Text,
                     SearchOption.TopDirectoryOnly).Length > 0)
             {
-                Browse fmBrowse = new Browse();
+                Browse_Img fmBrowse = new Browse_Img();
                 fmBrowse.sPath = TxBx_Loc.Text;
                 fmBrowse.iPage = iPage;
 
                 fmBrowse.ShowDialog();
-                iPage = fmBrowse.iPage;
+                iPage = (short)fmBrowse.iPage;
                 fmBrowse.Dispose();
                 GC.Collect();
             }
@@ -482,8 +482,8 @@ namespace Nagru___Manga_Organizer
             Size s = TextRenderer.MeasureText(TxBx_Tags.Text, TxBx_Tags.Font);
             if (s.Width > TxBx_Tags.Width)
             {
-                ScrTags.Value = TxBx_Tags.SelectionStart;
                 ScrTags.Maximum = s.Width / 5;
+                ScrTags.Value = TxBx_Tags.SelectionStart;
                 ScrTags.Visible = true;
             }
         }
@@ -492,7 +492,21 @@ namespace Nagru___Manga_Organizer
         /* Only enable edit when changes have been made */
         #region EnableEdit
         private void EntryAlt_Text(object sender, EventArgs e)
-        { if (indx != -1) MnTS_Edit.Visible = true; }
+        {
+            if (indx != -1) MnTS_Edit.Visible = true;
+
+            if (TxBx_Tags.ContainsFocus)
+            {
+                Size s = TextRenderer.MeasureText(TxBx_Tags.Text, TxBx_Tags.Font);
+                if (s.Width > TxBx_Tags.Width)
+                {
+                    ScrTags.Maximum = s.Width / 5;
+                    ScrTags.Value = TxBx_Tags.SelectionStart;
+                    ScrTags.Visible = true;
+                }
+                else ScrTags.Visible = false;
+            }
+        }
 
         private void EntryAlt_DtNum(object sender, EventArgs e)
         { if (indx != -1) MnTS_Edit.Visible = true; }
@@ -806,7 +820,7 @@ namespace Nagru___Manga_Organizer
         {
             Cursor = Cursors.WaitCursor;
             Text = "Manga Organizer: " + lData.Count + " entries";
-            List<ListViewItem> lItems = new List<ListViewItem>(LV_Entries.Items.Count + 1);
+            ListViewItem[] aItems = new ListViewItem[lData.Count];
 
             //refresh LV_Entries
             for (int i = 0; i < lData.Count; i++)
@@ -817,14 +831,13 @@ namespace Nagru___Manga_Organizer
                 lvi.SubItems.Add(lData[i].iPages.ToString());
                 lvi.SubItems.Add(lData[i].sTags);
                 lvi.SubItems.Add(lData[i].sType);
-                lItems.Add(lvi);
+                aItems[i] = lvi;
             }
 
             //Update listview display
             LV_Entries.BeginUpdate();
             LV_Entries.Items.Clear();
-            LV_Entries.Items.AddRange(lItems.ToArray());
-            lItems.Clear();
+            LV_Entries.Items.AddRange(aItems);
             LV_Entries.Sort();
             LV_Entries.EndUpdate();
             Cursor = Cursors.Default;
@@ -1361,10 +1374,14 @@ namespace Nagru___Manga_Organizer
                 if (!lData.Contains(en))
                 {
                     lData.Add(en);
-                    indx = lData.Count - 1;
+                    indx = (short)(lData.Count - 1);
                     AddEntries();
                 }
+                else MessageBox.Show("This item already exists in the database.",
+                    "Manga Organizer", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            else MessageBox.Show("Access to this folder is restricted.",
+                    "Manga Organizer", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
         #endregion
     }

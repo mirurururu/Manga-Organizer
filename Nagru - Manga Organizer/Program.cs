@@ -12,7 +12,7 @@ namespace Nagru___Manga_Organizer
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            /* Checks for already running instance of program
+            /* Checks for already running instance
                Author: K. Scott Allen (August 20, 2004) */
             using (Mutex mutex = new Mutex(false, @"Global\" + Application.ProductName))
             {

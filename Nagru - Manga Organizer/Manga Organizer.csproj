@@ -81,17 +81,17 @@
     <Compile Include="About.Designer.cs">
       <DependentUpon>About.cs</DependentUpon>
     </Compile>
-    <Compile Include="Browse.cs">
+    <Compile Include="Browse_Img.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Browse.Designer.cs">
-      <DependentUpon>Browse.cs</DependentUpon>
+    <Compile Include="Browse_Img.Designer.cs">
+      <DependentUpon>Browse_Img.cs</DependentUpon>
     </Compile>
-    <Compile Include="BrowseTo.cs">
+    <Compile Include="Browse_Pgs.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="BrowseTo.Designer.cs">
-      <DependentUpon>BrowseTo.cs</DependentUpon>
+    <Compile Include="Browse_Pgs.Designer.cs">
+      <DependentUpon>Browse_Pgs.cs</DependentUpon>
     </Compile>
     <Compile Include="Classes\ExtDirectory.cs" />
     <Compile Include="Classes\ExtString.cs" />
@@ -134,11 +134,11 @@
     <EmbeddedResource Include="About.resx">
       <DependentUpon>About.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Browse.resx">
-      <DependentUpon>Browse.cs</DependentUpon>
+    <EmbeddedResource Include="Browse_Img.resx">
+      <DependentUpon>Browse_Img.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="BrowseTo.resx">
-      <DependentUpon>BrowseTo.cs</DependentUpon>
+      <DependentUpon>Browse_Pgs.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GetUrl.resx">
       <DependentUpon>GetUrl.cs</DependentUpon>
