@@ -478,6 +478,9 @@ namespace Nagru___Manga_Organizer
         { ScrTags.Visible = false; }
 
         private void TxBx_Tags_Click(object sender, EventArgs e)
+        { SetScroll(); }
+
+        private void SetScroll()
         {
             Size s = TextRenderer.MeasureText(TxBx_Tags.Text, TxBx_Tags.Font);
             if (s.Width > TxBx_Tags.Width)
@@ -486,6 +489,7 @@ namespace Nagru___Manga_Organizer
                 ScrTags.Value = TxBx_Tags.SelectionStart;
                 ScrTags.Visible = true;
             }
+            else ScrTags.Visible = false;
         }
         #endregion
 
@@ -495,17 +499,7 @@ namespace Nagru___Manga_Organizer
         {
             if (indx != -1) MnTS_Edit.Visible = true;
 
-            if (TxBx_Tags.ContainsFocus)
-            {
-                Size s = TextRenderer.MeasureText(TxBx_Tags.Text, TxBx_Tags.Font);
-                if (s.Width > TxBx_Tags.Width)
-                {
-                    ScrTags.Maximum = s.Width / 5;
-                    ScrTags.Value = TxBx_Tags.SelectionStart;
-                    ScrTags.Visible = true;
-                }
-                else ScrTags.Visible = false;
-            }
+            if (TxBx_Tags.ContainsFocus) SetScroll();
         }
 
         private void EntryAlt_DtNum(object sender, EventArgs e)
