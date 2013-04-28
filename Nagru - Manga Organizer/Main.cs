@@ -177,6 +177,11 @@ namespace Nagru___Manga_Organizer
             frTxBx_Notes.DragEnter += new DragEventHandler(DragEnterTxBx);
             frTxBx_Notes.Text = Properties.Settings.Default.Notes;
 
+            //Set size & position
+            this.Location = Properties.Settings.Default.Position.Location;
+            this.Width = Properties.Settings.Default.Position.Width;
+            this.Height = Properties.Settings.Default.Position.Height;
+
             //grab filepath
             string sPath = Properties.Settings.Default.SavLoc != string.Empty ?
                 Properties.Settings.Default.SavLoc : Environment.CurrentDirectory;
@@ -219,6 +224,8 @@ namespace Nagru___Manga_Organizer
                         break;
                 }
             }
+            Properties.Settings.Default.Position = new Rectangle(this.Location, this.Size);
+            Properties.Settings.Default.Save();
         }
 
         /* Display image from selected folder   */
@@ -288,11 +295,16 @@ namespace Nagru___Manga_Organizer
             if (TxBx_Search.Text == string.Empty)
             {
                 if (LV_Entries.Items.Count != lData.Count) UpdateLV();
+                TxBx_Search.Width += 30;
                 Btn_Clear.Visible = false;
             }
             else
             {
-                Btn_Clear.Visible = true;
+                if (!Btn_Clear.Visible)
+                {
+                    TxBx_Search.Width -= 30;
+                    Btn_Clear.Visible = true;
+                }
                 Delay.Start();
             }
         }
@@ -300,7 +312,7 @@ namespace Nagru___Manga_Organizer
         /* Clear searchbar  */
         private void Btn_Clear_Click(object sender, EventArgs e)
         {
-            LV_Entries.Focus();
+            TxBx_Search.Focus();
             TxBx_Search.Clear();
             UpdateLV();
         }
@@ -345,6 +357,13 @@ namespace Nagru___Manga_Organizer
         /* Open folder or first image of Entry */
         private void LV_Entries_DoubleClick(object sender, EventArgs e)
         { OpenFile(); }
+
+        /* Give listview priority whenever mouse enters it */
+        private void LV_Entries_MouseEnter(object sender, EventArgs e)
+        {
+            if (!LV_Entries.Focused)
+                LV_Entries.Focus();
+        }
 
         /* Updates LV to only display favourited items */
         private void ChkBx_ShowFav_CheckedChanged(object sender, EventArgs e)
@@ -550,47 +569,6 @@ namespace Nagru___Manga_Organizer
             BeginInvoke(new DelVoidInt(SetNudCount), sFiles.Length);
         }
 
-        #region SetImageCalls
-        /* Set Nud_Pages to value passed from GetImage */
-        void SetNudCount(int iNum)
-        {
-            Nud_Pages.Value = iNum;
-
-            //set display to end of line
-            TxBx_Loc.SelectionStart = TxBx_Loc.Text.Length;
-        }
-
-        /* Set cover to image passed from GetImage */
-        void SetPicBxImage(Object obj)
-        {
-            MnTS_Open.Visible = true;
-
-            try
-            {
-                using (var bmpTemp = new Bitmap(obj as string))
-                {
-                    PicBx_Cover.Image = new Bitmap(bmpTemp);
-                }
-            }
-            catch
-            {
-                MessageBox.Show("Error: Image may be corrupt",
-                    Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        /* Release old image resource */
-        void SetPicBxNull()
-        {
-            if (PicBx_Cover.Image == null) return;
-            PicBx_Cover.Image.Dispose();
-            PicBx_Cover.Image = null;
-
-            //force garbage collection
-            GC.Collect();
-        }
-        #endregion
-
         /* Find list index of currently selected item */
         void GetIndex(Object obj)
         {
@@ -730,6 +708,56 @@ namespace Nagru___Manga_Organizer
             Cursor = Cursors.Default;
         }
 
+        /* Search database entries   */
+        void Search()
+        {
+            Cursor = Cursors.WaitCursor;
+            List<string> lTagsAllow = new List<string>(), lTagsDeny = new List<string>();
+            foreach (string s in TxBx_Search.Text.Split(' '))
+            {
+                if (string.IsNullOrEmpty(s)) continue;
+                if (!s.StartsWith("-")) lTagsAllow.Add(s);
+                else lTagsDeny.Add(s.Substring(1, s.Length - 1));
+            }
+
+            string[] sDoubles = lTagsAllow.Intersect(lTagsDeny).ToArray();
+            if (sDoubles.Length > 0)
+                for (int i = 0; i < sDoubles.Length; i++)
+                {
+                    lTagsAllow.Remove(sDoubles[i]);
+                    lTagsDeny.Remove(sDoubles[i]);
+                }
+
+            bool bBreak = false;
+            LV_Entries.BeginUpdate();
+            for (int x = 0; x < LV_Entries.Items.Count; x++)
+            {
+                for (int y = 0; y < lTagsDeny.Count; y++)
+                {
+                    //search by tags, title, artist, and type
+                    if (ExtString.Contains(LV_Entries.Items[x].SubItems[3].Text, lTagsDeny[y]) ||
+                        ExtString.Contains(LV_Entries.Items[x].SubItems[1].Text, lTagsDeny[y]) ||
+                        ExtString.Contains(LV_Entries.Items[x].SubItems[0].Text, lTagsDeny[y]) ||
+                        ExtString.Contains(LV_Entries.Items[x].SubItems[4].Text, lTagsDeny[y]))
+                    { LV_Entries.Items.RemoveAt(x--); bBreak = true; break; }
+                }
+                if (bBreak) { bBreak = false; continue; }
+                for (int y = 0; y < lTagsAllow.Count; y++)
+                {
+                    //search by tags, title, artist, and type
+                    if (ExtString.Contains(LV_Entries.Items[x].SubItems[3].Text, lTagsAllow[y]) ||
+                        ExtString.Contains(LV_Entries.Items[x].SubItems[1].Text, lTagsAllow[y]) ||
+                        ExtString.Contains(LV_Entries.Items[x].SubItems[0].Text, lTagsAllow[y]) ||
+                        ExtString.Contains(LV_Entries.Items[x].SubItems[4].Text, lTagsAllow[y])) { }
+                    else { LV_Entries.Items.RemoveAt(x--); break; }
+                }
+            }
+            LV_Entries.EndUpdate();
+
+            Text = "Returned: " + LV_Entries.Items.Count + " entries";
+            Cursor = Cursors.Default;
+        }
+
         /* Update controls in 'View' tab */
         void SetData(int iNewIndx)
         {
@@ -755,31 +783,44 @@ namespace Nagru___Manga_Organizer
             MnTS_Del.Visible = true;
         }
 
-        /* Search database entries   */
-        void Search()
+        #region SetImageCalls
+        /* Set Nud_Pages to value passed from GetImage */
+        void SetNudCount(int iNum)
         {
-            Cursor = Cursors.WaitCursor;
-            List<string> lTags = new List<string>();
-            foreach (string s in TxBx_Search.Text.Split(','))
-                lTags.Add(s.TrimStart());
+            Nud_Pages.Value = iNum;
 
-            //remove non-matching entries from LV_Entries
-            LV_Entries.BeginUpdate();
-            for (int x = 0; x < LV_Entries.Items.Count; x++)
-                for (int y = 0; y < lTags.Count; y++)
-                {
-                    //search by tags, title, artist, and type
-                    if (ExtString.Contains(LV_Entries.Items[x].SubItems[3].Text, lTags[y]) ||
-                        ExtString.Contains(LV_Entries.Items[x].SubItems[1].Text, lTags[y]) ||
-                        ExtString.Contains(LV_Entries.Items[x].SubItems[0].Text, lTags[y]) ||
-                        ExtString.Contains(LV_Entries.Items[x].SubItems[4].Text, lTags[y])) { }
-                    else { LV_Entries.Items.RemoveAt(x--); break; }
-                }
-            LV_Entries.EndUpdate();
-
-            Text = "Returned: " + LV_Entries.Items.Count + " entries";
-            Cursor = Cursors.Default;
+            //set display to end of line
+            TxBx_Loc.SelectionStart = TxBx_Loc.Text.Length;
         }
+
+        /* Set cover to image passed from GetImage */
+        void SetPicBxImage(Object obj)
+        {
+            MnTS_Open.Visible = true;
+
+            try
+            {
+                using (var bmpTemp = new Bitmap(obj as string))
+                    PicBx_Cover.Image = new Bitmap(bmpTemp);
+            }
+            catch
+            {
+                MessageBox.Show("Error: Image may be corrupt",
+                    Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /* Release old image resource */
+        void SetPicBxNull()
+        {
+            if (PicBx_Cover.Image == null) return;
+            PicBx_Cover.Image.Dispose();
+            PicBx_Cover.Image = null;
+
+            //force garbage collection
+            GC.Collect();
+        }
+        #endregion
 
         /* Split passed text into Artist & Title */
         void SplitTitle(string sRaw)
@@ -1068,7 +1109,7 @@ namespace Nagru___Manga_Organizer
         private void MnTS_About_Click(object sender, EventArgs e)
         {
             About fmAbout = new About();
-            fmAbout.ShowDialog();
+            fmAbout.Show();
         }
 
         /* Display stats on tags */
@@ -1100,6 +1141,7 @@ namespace Nagru___Manga_Organizer
                 //ensure page exists
                 if (htmlWeb.StatusCode == System.Net.HttpStatusCode.OK)
                 {
+
                     //grab artist & title
                     try
                     {

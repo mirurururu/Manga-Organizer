@@ -77,10 +77,22 @@ namespace Nagru___Manga_Organizer.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("v. 04-01-2013")]
+        [global::System.Configuration.DefaultSettingValueAttribute("v. 04-28-2013")]
         public string Version {
             get {
                 return ((string)(this["Version"]));
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("100, 100, 950, 613")]
+        public global::System.Drawing.Rectangle Position {
+            get {
+                return ((global::System.Drawing.Rectangle)(this["Position"]));
+            }
+            set {
+                this["Position"] = value;
             }
         }
     }
