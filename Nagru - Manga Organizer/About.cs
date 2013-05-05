@@ -7,7 +7,7 @@ namespace Nagru___Manga_Organizer
 {
     public partial class About : Form
     {
-        delegate void DelVoidInt(int iResult);
+        delegate void DelVoidInt(bool? bResult);
         DelVoidInt delFini = null;
 
         public About()
@@ -43,20 +43,21 @@ namespace Nagru___Manga_Organizer
 
         private void CheckLatest(object Null)
         {
-            int iEvent = 0;
+            bool? bRes = null;
 
             try
             {
                 //grab version info
-                HttpWebRequest rq = (HttpWebRequest)HttpWebRequest.Create("http://nagru.github.io/Manga-Organizer/");
+                HttpWebRequest rq = (HttpWebRequest)HttpWebRequest.Create("http://dl.dropboxusercontent.com/u/103899726/Version.txt");
                 rq.UserAgent = "Mozilla/5.0 (Windows; U; MSIE 9.0; WIndows NT 9.0; en-US))";
                 rq.Method = "GET";
+                rq.Timeout = 5000;
                 
                 using (StreamReader sr = new StreamReader(rq.GetResponse().GetResponseStream()))
                 {
                     if (sr.ReadToEnd().Contains(Properties.Settings.Default.Version))
-                        iEvent = 1;
-                    else iEvent = 2;
+                        bRes = false;
+                    else bRes = true;
                 }
             }
             catch
@@ -66,20 +67,20 @@ namespace Nagru___Manga_Organizer
             }
             finally
             {
-                try { Invoke(delFini, iEvent); } catch { }
+                try { Invoke(delFini, bRes); } catch { }
             }
         }
 
-        private void Checked(int iResult)
+        private void Checked(bool? bResult)
         {
             Text = "About (" + Properties.Settings.Default.Version + ") - ";
-            switch (iResult)
+            switch (bResult)
             {
-                case 0: Text += "Could not establish a connection";
+                case null: Text += "Could not establish a connection";
                     break;
-                case 1: Text += "Latest version";
+                case false: Text += "Latest version";
                     break;
-                case 2: Text += "New version available";
+                case true: Text += "New version available";
                     break;
             }
 

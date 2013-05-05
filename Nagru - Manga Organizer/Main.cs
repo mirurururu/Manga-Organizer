@@ -141,6 +141,18 @@ namespace Nagru___Manga_Organizer
                     gidlist = new object[,] { { Convert.ToInt32(asChunk[4]), asChunk[5] } };
                 else gidlist = null;
             }
+
+            //Returns JSON format
+            public override string ToString()
+            {
+                if (gidlist == null) return string.Empty;
+                else
+                {
+                    return string.Format(
+                        "{{\"method\":\"gdata\",\"gidlist\":[[{0},\"{1}\"]]}}", 
+                        gidlist[0,0], gidlist[0,1]);
+                }
+            }
         }
 
         #region FormMethods
@@ -161,20 +173,20 @@ namespace Nagru___Manga_Organizer
             }
 
             //manually handle AssemblyResolve event
-            AppDomain.CurrentDomain.AssemblyResolve +=
-                new ResolveEventHandler(CurrentDomain_AssemblyResolve);
+            //AppDomain.CurrentDomain.AssemblyResolve +=
+            //    new ResolveEventHandler(CurrentDomain_AssemblyResolve);
         }
 
         /* Load non-MS library (HtmlAgilityPack) 
            Author: Calle Mellergardh (March 1, 2010) */
-        System.Reflection.Assembly CurrentDomain_AssemblyResolve(
-            object sender, ResolveEventArgs args)
-        {
-            if (args.Name.Contains("Newtonsoft.Json"))
-                return (sender as AppDomain).Load(Nagru___Manga_Organizer.
-                    Properties.Resources.Newtonsoft_Json);
-            else return null;
-        }
+        //System.Reflection.Assembly CurrentDomain_AssemblyResolve(
+        //    object sender, ResolveEventArgs args)
+        //{
+        //    if (args.Name.Contains("Newtonsoft.Json"))
+        //        return (sender as AppDomain).Load(Nagru___Manga_Organizer.
+        //            Properties.Resources.Newtonsoft_Json);
+        //    else return null;
+        //}
 
         /* Load database */
         private void Main_Load(object sender, EventArgs e)
@@ -1176,7 +1188,6 @@ namespace Nagru___Manga_Organizer
             if (fmGet.DialogResult == DialogResult.OK)
             {
                 string[] asResp;
-                string json = Newtonsoft.Json.JsonConvert.SerializeObject(new stAPI(fmGet.Url));
                 this.Cursor = Cursors.WaitCursor;
                 Text = "Sending request...";
 
@@ -1187,11 +1198,12 @@ namespace Nagru___Manga_Organizer
                     System.Net.HttpWebRequest rq = (System.Net.HttpWebRequest)System.Net.WebRequest.Create("http://g.e-hentai.org/api.php");
                     rq.ContentType = "application/json";
                     rq.Method = "POST";
+                    rq.Timeout = 5000;
                     rq.KeepAlive = false;
 
                     using (Stream s = rq.GetRequestStream())
                     {
-                        byte[] byContent = System.Text.Encoding.ASCII.GetBytes(json);
+                        byte[] byContent = System.Text.Encoding.ASCII.GetBytes(new stAPI(fmGet.Url).ToString());
                         s.Write(byContent, 0, byContent.Length);
                     }
                     using (StreamReader sr = new StreamReader(((System.Net.HttpWebResponse)rq.GetResponse()).GetResponseStream()))
@@ -1204,24 +1216,25 @@ namespace Nagru___Manga_Organizer
 
                     //parse metadata
                     Text = "Parsing metadata...";
-                    SplitTitle(asResp[2].Split(':')[1].Substring(1));
+                    SplitTitle(System.Net.WebUtility.HtmlDecode(asResp[2].Split(':')[1].Substring(1)));
                     CmbBx_Type.Text = asResp[4].Split(':')[1].Substring(1);
                     frTxBx_Notes.Text = asResp[7] + '\n' + asResp[8];
                     DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
                     Dt_Date.Value = dt.AddSeconds((long)Convert.ToDouble(asResp[7].Split(':')[1].Substring(1)));
                     Nud_Pages.Value = Convert.ToInt32(asResp[8].Split(':')[1].Substring(1));
 
-                    TxBx_Tags.Text += asResp[11].Split(':')[1].Substring(2) + ", ";
-                    for (int i = 12; i < asResp.Length; i++)
+                    for (int i = 11; i < asResp.Length; i++)
                     {
-                        if (i == asResp.Length - 1)
+                        if(i == 11)
+                            TxBx_Tags.Text += asResp[i].Split(':')[1].Substring(2) + ", ";
+                        else if (i == asResp.Length - 1)
                             TxBx_Tags.Text += asResp[i].Substring(0, asResp[i].Length - 5);
                         else TxBx_Tags.Text += asResp[i] + ", ";
                     }
                 }
                 catch
                 {
-                    MessageBox.Show("URL was invalid. Please make sure it comes from an EH gallery page.",
+                    MessageBox.Show("URL was invalid or the connection timed out.",
                         Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 finally
