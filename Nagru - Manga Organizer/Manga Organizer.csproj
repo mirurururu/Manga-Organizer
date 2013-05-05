@@ -173,7 +173,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="HtmlAgilityPack.dll" />
     <None Include="Newtonsoft.Json.dll" />
     <Content Include="SadPanda.ico" />
   </ItemGroup>

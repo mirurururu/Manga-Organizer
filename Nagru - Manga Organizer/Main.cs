@@ -998,23 +998,48 @@ namespace Nagru___Manga_Organizer
             }
             else if (TxBx_Search.Text != "")
             {
-                List<string> lTags = new List<string>();
-                foreach (string s in TxBx_Search.Text.Split(','))
-                    lTags.Add(s.TrimStart());
-
-                for (int i = 0; i < lTags.Count; i++)
+                Cursor = Cursors.WaitCursor;
+                List<string> lTagsAllow = new List<string>(), lTagsDeny = new List<string>();
+                foreach (string s in TxBx_Search.Text.Split(' '))
                 {
-                    if (ExtString.Contains(lvi.SubItems[3].Text, lTags[i]) ||
-                            ExtString.Contains(lvi.SubItems[1].Text, lTags[i]) ||
-                            ExtString.Contains(lvi.SubItems[0].Text, lTags[i]) ||
-                            ExtString.Contains(lvi.SubItems[4].Text, lTags[i])) { }
-                    else
+                    if (string.IsNullOrEmpty(s)) continue;
+                    if (!s.StartsWith("-")) lTagsAllow.Add(s);
+                    else lTagsDeny.Add(s.Substring(1, s.Length - 1));
+                }
+
+                string[] sDoubles = lTagsAllow.Intersect(lTagsDeny).ToArray();
+                if (sDoubles.Length > 0)
+                    for (int i = 0; i < sDoubles.Length; i++)
                     {
-                        lvi.Remove();
-                        Reset();
-                        break;
+                        lTagsAllow.Remove(sDoubles[i]);
+                        lTagsDeny.Remove(sDoubles[i]);
+                    }
+
+                bool bBreak = false;
+                for (int y = 0; y < lTagsDeny.Count; y++)
+                {
+                    //search by tags, title, artist, and type
+                    if (ExtString.Contains(lvi.SubItems[3].Text, lTagsDeny[y]) ||
+                        ExtString.Contains(lvi.SubItems[1].Text, lTagsDeny[y]) ||
+                        ExtString.Contains(lvi.SubItems[0].Text, lTagsDeny[y]) ||
+                        ExtString.Contains(lvi.SubItems[4].Text, lTagsDeny[y]))
+                    { lvi.Remove(); Reset(); bBreak = true; break; }
+                }
+                if (!bBreak)
+                {
+                    for (int y = 0; y < lTagsAllow.Count; y++)
+                    {
+                        //search by tags, title, artist, and type
+                        if (ExtString.Contains(lvi.SubItems[3].Text, lTagsAllow[y]) ||
+                            ExtString.Contains(lvi.SubItems[1].Text, lTagsAllow[y]) ||
+                            ExtString.Contains(lvi.SubItems[0].Text, lTagsAllow[y]) ||
+                            ExtString.Contains(lvi.SubItems[4].Text, lTagsAllow[y])) { }
+                        else { lvi.Remove(); Reset(); break; }
                     }
                 }
+
+                Text = "Returned: " + LV_Entries.Items.Count + " entries";
+                Cursor = Cursors.Default;
             }
             else ReFocus();
 

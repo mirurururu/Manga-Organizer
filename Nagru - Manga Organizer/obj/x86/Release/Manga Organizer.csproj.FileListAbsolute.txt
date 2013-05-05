@@ -12,3 +12,4 @@ C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\obj\x86\Relea
 C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\obj\x86\Release\Manga Organizer.csproj.GenerateResource.Cache
 C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\obj\x86\Release\Nagru - Manga Organizer.exe
 C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\obj\x86\Release\Nagru - Manga Organizer.pdb
+C:\Users\Nagru\Other\GitHub\MangaOrganizer\Nagru - Manga Organizer\obj\x86\Release\Manga Organizer.csprojResolveAssemblyReference.cache
