@@ -45,27 +45,36 @@ namespace Nagru___Manga_Organizer
         {
             int iEvent = 0;
 
-            HtmlAgilityPack.HtmlWeb htmlWeb = new HtmlAgilityPack.HtmlWeb();
-            HtmlAgilityPack.HtmlDocument htmlDoc = htmlWeb.Load("http://nagru.github.com/Manga-Organizer/");
-
-            //grab version info
-            if (htmlWeb.StatusCode == System.Net.HttpStatusCode.OK) {
-                try {
-                    if (Properties.Settings.Default.Version ==
-                        htmlDoc.DocumentNode.SelectNodes("//*[text()[contains(., 'v. ')]]")[0].InnerText)
+            try
+            {
+                //grab version info
+                HttpWebRequest rq = (HttpWebRequest)HttpWebRequest.Create("http://nagru.github.io/Manga-Organizer/");
+                rq.UserAgent = "Mozilla/5.0 (Windows; U; MSIE 9.0; WIndows NT 9.0; en-US))";
+                rq.Method = "GET";
+                
+                using (StreamReader sr = new StreamReader(rq.GetResponse().GetResponseStream()))
+                {
+                    if (sr.ReadToEnd().Contains(Properties.Settings.Default.Version))
                         iEvent = 1;
                     else iEvent = 2;
                 }
-                catch { }
             }
-
-            try { Invoke(delFini, iEvent); } catch { }
+            catch
+            {
+                MessageBox.Show("A connection could not be established with GitHub.",
+                        Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                try { Invoke(delFini, iEvent); } catch { }
+            }
         }
 
         private void Checked(int iResult)
         {
             Text = "About (" + Properties.Settings.Default.Version + ") - ";
-            switch (iResult) {
+            switch (iResult)
+            {
                 case 0: Text += "Could not establish a connection";
                     break;
                 case 1: Text += "Latest version";

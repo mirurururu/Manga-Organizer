@@ -63,9 +63,9 @@ namespace Nagru___Manga_Organizer.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] HtmlAgilityPack {
+        internal static byte[] Newtonsoft_Json {
             get {
-                object obj = ResourceManager.GetObject("HtmlAgilityPack", resourceCulture);
+                object obj = ResourceManager.GetObject("Newtonsoft_Json", resourceCulture);
                 return ((byte[])(obj));
             }
         }

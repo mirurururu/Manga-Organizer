@@ -31,11 +31,9 @@ namespace Nagru___Manga_Organizer
             string sUrl = TxBx_Url.Text;
             if (!sUrl.StartsWith("http://"))
                 sUrl = sUrl.Insert(0, "http://");
-            if (sUrl.StartsWith("http://ex"))
-                sUrl = sUrl.Replace("http://ex", "http://g.e-");
 
             //ensure user only enters proper values
-            if (sUrl.StartsWith("http://g.e-hentai.org/g/") &&
+            if ((sUrl.StartsWith("http://g.e-hentai.org/g/") || sUrl.StartsWith("http://exhentai.org/g/")) &&
                 Uri.TryCreate(sUrl, UriKind.Absolute, out uri)) {
                 this.DialogResult = DialogResult.OK;
                 this.Close();

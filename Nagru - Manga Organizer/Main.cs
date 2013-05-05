@@ -125,6 +125,24 @@ namespace Nagru___Manga_Organizer
             }
         }
 
+        /* Used to simulate js Object Literal for JSON */
+        public struct stAPI
+        {
+            public string method;
+            public object[,] gidlist;
+
+            /* Initialize API entry */
+            public stAPI(string sURL)
+            {
+                method = "gdata";
+
+                string[] asChunk = sURL.Split('/');
+                if (asChunk.Length == 7)
+                    gidlist = new object[,] { { Convert.ToInt32(asChunk[4]), asChunk[5] } };
+                else gidlist = null;
+            }
+        }
+
         #region FormMethods
         /* Load 'Main' Form   */
         public Main(string[] sFile)
@@ -152,9 +170,9 @@ namespace Nagru___Manga_Organizer
         System.Reflection.Assembly CurrentDomain_AssemblyResolve(
             object sender, ResolveEventArgs args)
         {
-            if (args.Name.Contains("HtmlAgilityPack"))
+            if (args.Name.Contains("Newtonsoft.Json"))
                 return (sender as AppDomain).Load(Nagru___Manga_Organizer.
-                    Properties.Resources.HtmlAgilityPack);
+                    Properties.Resources.Newtonsoft_Json);
             else return null;
         }
 
@@ -1132,50 +1150,60 @@ namespace Nagru___Manga_Organizer
             //process url
             if (fmGet.DialogResult == DialogResult.OK)
             {
+                string[] asResp;
+                string json = Newtonsoft.Json.JsonConvert.SerializeObject(new stAPI(fmGet.Url));
                 this.Cursor = Cursors.WaitCursor;
-                Text = "Downloading page...";
+                Text = "Sending request...";
 
-                HtmlAgilityPack.HtmlWeb htmlWeb = new HtmlAgilityPack.HtmlWeb();
-                HtmlAgilityPack.HtmlDocument htmlDoc = htmlWeb.Load(fmGet.Url);
-
-                //ensure page exists
-                if (htmlWeb.StatusCode == System.Net.HttpStatusCode.OK)
+                try
                 {
+                    //send formatted request to EH API
+                    System.Net.ServicePointManager.DefaultConnectionLimit = 64;
+                    System.Net.HttpWebRequest rq = (System.Net.HttpWebRequest)System.Net.WebRequest.Create("http://g.e-hentai.org/api.php");
+                    rq.ContentType = "application/json";
+                    rq.Method = "POST";
+                    rq.KeepAlive = false;
 
-                    //grab artist & title
-                    try
+                    using (Stream s = rq.GetRequestStream())
                     {
-                        SplitTitle(System.Web.HttpUtility.HtmlDecode(htmlDoc.GetElementbyId("gn").InnerText));
-
-                        //get gallery type
-                        string sType = ExtString.Split(htmlDoc.GetElementbyId("gdc").InnerHtml, " alt=")[1].Split('"')[1];
-                        CmbBx_Type.Text = char.ToUpper(sType[0]) + sType.Substring(1);
-
-                        //split 'gdd' table down into usable elements
-                        string[] sSplit = ExtString.Split(htmlDoc.GetElementbyId("gdd").InnerHtml, "\"gdt2\">");
-                        Dt_Date.Value = Convert.ToDateTime(ExtString.Split(sSplit[1], "</td>")[0]);
-                        Nud_Pages.Value = Convert.ToInt32(ExtString.Split(sSplit[2], "@")[0]);
-
-                        //split taglist down into usable elements
-                        sSplit = ExtString.Split(htmlDoc.GetElementbyId(
-                            "taglist").InnerHtml, "this)\">");
-                        for (int i = 1; i < sSplit.Length; i++)
-                        {
-                            TxBx_Tags.Text += ExtString.Split(sSplit[i], "</a>")[0].Trim();
-                            if (i < sSplit.Length - 1) TxBx_Tags.Text += ", ";
-                        }
+                        byte[] byContent = System.Text.Encoding.ASCII.GetBytes(json);
+                        s.Write(byContent, 0, byContent.Length);
                     }
-                    catch (Exception)
+                    using (StreamReader sr = new StreamReader(((System.Net.HttpWebResponse)rq.GetResponse()).GetResponseStream()))
                     {
-                        MessageBox.Show("This gallery is pining for the fjords\n(Sorry, no EX support yet).",
-                            Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        //recieve metadata
+                        Text = "Downloading page...";
+                        asResp = sr.ReadToEnd().Split(new string[] { "\",\"" }, StringSplitOptions.RemoveEmptyEntries);
+                        rq.Abort();
+                    }
+
+                    //parse metadata
+                    Text = "Parsing metadata...";
+                    SplitTitle(asResp[2].Split(':')[1].Substring(1));
+                    CmbBx_Type.Text = asResp[4].Split(':')[1].Substring(1);
+                    frTxBx_Notes.Text = asResp[7] + '\n' + asResp[8];
+                    DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+                    Dt_Date.Value = dt.AddSeconds((long)Convert.ToDouble(asResp[7].Split(':')[1].Substring(1)));
+                    Nud_Pages.Value = Convert.ToInt32(asResp[8].Split(':')[1].Substring(1));
+
+                    TxBx_Tags.Text += asResp[11].Split(':')[1].Substring(2) + ", ";
+                    for (int i = 12; i < asResp.Length; i++)
+                    {
+                        if (i == asResp.Length - 1)
+                            TxBx_Tags.Text += asResp[i].Substring(0, asResp[i].Length - 5);
+                        else TxBx_Tags.Text += asResp[i] + ", ";
                     }
                 }
-                else MessageBox.Show("URL was invalid. Please make sure it comes from an EH gallery page.",
-                    Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                Text = "Finished";
-                this.Cursor = Cursors.Default;
+                catch
+                {
+                    MessageBox.Show("URL was invalid. Please make sure it comes from an EH gallery page.",
+                        Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    Text = "Finished";
+                    this.Cursor = Cursors.Default;
+                }
             }
             fmGet.Dispose();
         }
