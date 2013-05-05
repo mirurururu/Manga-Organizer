@@ -3,7 +3,7 @@ Manga-Organizer
 
 As a mild hoarder I found that a folder hierarchy simply doesn't cut it when you have 500+ folders to manage. No tags, stilted search functionality, no automation; it simply becomes a mess to find that specific manga you downloaded a month ago. So I got fed up with it and wrote a simple application to handle all this, and hopefully it's in an acceptable state to be useful to others as well.
 
-Basically it provides semi-automated metadata for your folders, along with the option to use a built-in 2-page image browser. It can automatically scan your current folders into a directory; which will fill out the artist, title, and page count fields. The same can be done by dragging and dropping a folder over the listview. Given a g.e-hentai gallery url it can auto-populate the remaining fields (exc. description). A tab for notes is also included to keep track of your always-full backlog.
+Basically it provides semi-automated metadata for your folders, along with the option to use a built-in 2-page image browser. It can automatically scan your current folders into a directory; which will fill out the artist, title, and page count fields. The same can be done by dragging and dropping a folder over the listview. Given an EH gallery url it can auto-populate the remaining fields (exc. description). A tab for notes is also included to keep track of your always-full backlog.
 
 If this sounds useful to you, give it a shot: <a href="http://www.mediafire.com/?kf2caeecjc08fkl">Download</a>
 
