@@ -5,8 +5,10 @@
 
 #### May 04, 2013
 	- Added support for Sad Panda galleries
+	- Fixed Html char codes not being replaced on import
 	- Fixed Edit() improperly deselecting the current gallery
 	- Removed `HtmlAgilityPack.dll`
+	- Embedded 'Newtonsoft.Json.dll`
 
 #### Apr 28, 2013
 	- Added support to exclude terms during searches
@@ -19,15 +21,20 @@
 
 #### Mar 31, 2013
 	- Added scrollbar when text exceeds TxBx_Tags length
+	- Added error message to rejected folders dropped on listview
+	- Fixed OnlyFav() not updating Form title correctly
 	- Removed test file: `version.txt`
 	- Small bugfixes
 
 #### Feb 02, 2013
+	- Added 'Favs Only' option to tag statistics
+	- Up/Dn buttons now work even when no entry is selected
 	- Tried again to fix c/p font colour issue
 	- Small bugfixes
 
 #### Feb 01, 2013
 	- Tried to fix invisible text bug when copying/pasting in 'Notes' field
+	- Fixed exception when trying to scroll to entry when listview is empty
 	- Fixed titlebar of tag statistics form
 	- Improved Html parsing
 
@@ -36,7 +43,8 @@
 	- Added tag statistics form
 
 #### Jan 28, 2013
-	- Small bugfixes & improvements
+	- GetURL() now automatically checks clipboard for EH gallery
+	- Small fixes to drag-drop EH gallery title
 
 #### Jan 11, 2013
 	- Fixed exception when trying to 'cut' empty text
@@ -50,11 +58,11 @@
 #### Dec 03, 2012
 	- Added Artist auto-complete
 	- Fixed Btn_Loc auto-select code
-	- Fixed mixed font types
+	- Fixed Up/Dn buttons improper font type
 
 #### Nov 25, 2012
 	- Added up/down browsing from View tab
-	- Fixed 'Only Favs' sometimes breaking
+	- Fixed bug in OnlyFavs() by making it additive, rather than subtractive
 
 #### Nov 16, 2012
 	- Retargeted .NET 4.0 (sorry about the hiccup)
@@ -67,12 +75,14 @@
 	- Updated preview images
 
 #### Nov 07, 2012
+	- Fixed GetImage() being called twice on new item selection
 	- Improvements to UI
 	- Small bugfixes
 
 #### Nov 03, 2012
 	- Improved processing of URL input
 	- Imageviewer now saves page position on exit
+	- Imageviewer can now skip to front/back by using Home/End keys
 
 #### Nov 02, 2012
 	- Prevented multiple running instances
@@ -82,6 +92,8 @@
     - Added ability to load entry data from EH gallery URL
 
 #### Oct 26, 2012
+	- Fixed tab switch delay
+	- Fixed crash when sorting .gif files
 	- Revisions to image loading
 	- Assorted bugfixes
 
@@ -133,13 +145,12 @@
 	- Fixed UI layout
 
 #### Oct 03, 2012
+	- Added realtime update of PicBx on manual location edits
     - Bugfix for custom context menu
-    - Bugfix for ShowFavs
-
-#### Oct 03, 2012
-    - Bugfix for ShowFavs & image sorting
+    - Fixed infinite loop in ShowFavs
     - Added optional in-program imageviewer
 
 #### Oct 02, 2012
-    - Initial commit
+    - Initial commit to GitHub
+	- (Project started August 15, 2012)
 
