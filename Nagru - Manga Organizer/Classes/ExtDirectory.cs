@@ -5,10 +5,10 @@ using System.Security.Permissions;
 
 namespace Nagru___Manga_Organizer
 {
-    /* Extends Directory.GetFiles to support multiple filters
-       Author: Bean Software (2002-2008)                            */
     public static class ExtDirectory
     {
+        /* Extends Directory.GetFiles to support multiple filters
+           Author: Bean Software (2002-2008)                            */
         public static string[] GetFiles(string SourceFolder,
             SearchOption SearchOption = SearchOption.AllDirectories,
             string Filter = "*.jpg|*.png|*.jpeg")
@@ -26,31 +26,26 @@ namespace Nagru___Manga_Organizer
             return lFiles.ToArray();
         }
 
-        /* Delete passed directory, including all files/subfolders 
-           Author: Jeremy Edwards (Nov 30, 2008)                */
+        /* Delete passed directory, including all files/subfolders  */
         public static void Delete(Object obj)
         {
             string sPath = obj as string;
 
-            //remove any readonly setting, then delete file
-            string[] asFiles = Directory.GetFiles(sPath);
-            for (int i = 0; i < asFiles.Length; i++)
-            {
-                File.SetAttributes(asFiles[i], FileAttributes.Normal);
-                File.Delete(asFiles[i]);
-            }
+            //delete all sub-files
+            string[] asSub = Directory.GetFiles(sPath);
+            for (int i = 0; i < asSub.Length; i++)
+                File.Delete(asSub[i]);
 
             //delete all subfolders
-            string[] asDirs = Directory.GetDirectories(sPath);
-            for (int i = 0; i < asDirs.Length; i++)
-                Delete(asDirs[i]);
+            asSub = Directory.GetDirectories(sPath);
+            for (int i = 0; i < asSub.Length; i++)
+                Delete(asSub[i]);
 
             //delete current folder
-            Directory.Delete(sPath, false);
+            Directory.Delete(sPath);
         }
 
-        /* Ensure chosen folder is not protected before operating 
-           Author: Me */
+        /* Ensure chosen folder is not protected before operating */
         public static bool Restricted(string Path)
         {
             try

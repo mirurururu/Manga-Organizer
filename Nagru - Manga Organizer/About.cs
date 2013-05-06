@@ -43,7 +43,7 @@ namespace Nagru___Manga_Organizer
 
         private void CheckLatest(object Null)
         {
-            bool? bRes = null;
+            bool? bNew = null;
 
             try
             {
@@ -56,25 +56,26 @@ namespace Nagru___Manga_Organizer
                 using (StreamReader sr = new StreamReader(rq.GetResponse().GetResponseStream()))
                 {
                     if (sr.ReadToEnd().Contains(Properties.Settings.Default.Version))
-                        bRes = false;
-                    else bRes = true;
+                        bNew = false;
+                    else bNew = true;
                 }
+                rq.Abort();
             }
-            catch
+            catch (Exception e)
             {
-                MessageBox.Show("A connection could not be established with GitHub.",
+                MessageBox.Show("A connection could not be established:\n" + e.Message,
                         Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
-                try { Invoke(delFini, bRes); } catch { }
+                try { Invoke(delFini, bNew); } catch { }
             }
         }
 
-        private void Checked(bool? bResult)
+        private void Checked(bool? bNew)
         {
             Text = "About (" + Properties.Settings.Default.Version + ") - ";
-            switch (bResult)
+            switch (bNew)
             {
                 case null: Text += "Could not establish a connection";
                     break;
@@ -92,7 +93,7 @@ namespace Nagru___Manga_Organizer
             if (sender == LnkLbl_Git)
             {
                 LnkLbl_Git.LinkVisited = true;
-                System.Diagnostics.Process.Start("http://nagru.github.com/Manga-Organizer");
+                System.Diagnostics.Process.Start("http://nagru.github.io/Manga-Organizer/");
             }
             else /*if (sender == LnkLbl_Gpl)*/
             {

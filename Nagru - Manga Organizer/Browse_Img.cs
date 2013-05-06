@@ -100,7 +100,6 @@ namespace Nagru___Manga_Organizer
                 case Keys.VolumeMute:
                 case Keys.LWin:
                 case Keys.RWin:
-                case Keys.ControlKey:
                     break;
                 default: Close();
                     break;

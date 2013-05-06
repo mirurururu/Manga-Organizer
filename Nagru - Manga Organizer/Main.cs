@@ -171,22 +171,7 @@ namespace Nagru___Manga_Organizer
                 MessageBox.Show("Default database location changed to \"" + sFile + "\"",
                     Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-
-            //manually handle AssemblyResolve event
-            //AppDomain.CurrentDomain.AssemblyResolve +=
-            //    new ResolveEventHandler(CurrentDomain_AssemblyResolve);
         }
-
-        /* Load non-MS library (HtmlAgilityPack) 
-           Author: Calle Mellergardh (March 1, 2010) */
-        //System.Reflection.Assembly CurrentDomain_AssemblyResolve(
-        //    object sender, ResolveEventArgs args)
-        //{
-        //    if (args.Name.Contains("Newtonsoft.Json"))
-        //        return (sender as AppDomain).Load(Nagru___Manga_Organizer.
-        //            Properties.Resources.Newtonsoft_Json);
-        //    else return null;
-        //}
 
         /* Load database */
         private void Main_Load(object sender, EventArgs e)
