@@ -1,4 +1,4 @@
-#### Date
+#### May 07, 2013
 	- Fully fixed mixed-font bug
 	- Ensure proper listview count in title
 
