@@ -1,3 +1,6 @@
+#### May 06, 2013
+	- Added button for random doujin selection
+	- Fixed display of japanese unicode
 
 #### May 05, 2013
 	- Improved performance of GetFromURL()

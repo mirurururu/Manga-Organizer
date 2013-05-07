@@ -125,36 +125,6 @@ namespace Nagru___Manga_Organizer
             }
         }
 
-        /* Used to simulate js Object Literal for JSON */
-        public struct stAPI
-        {
-            public string method;
-            public object[,] gidlist;
-
-            /* Initialize API entry */
-            public stAPI(string sURL)
-            {
-                method = "gdata";
-
-                string[] asChunk = sURL.Split('/');
-                if (asChunk.Length == 7)
-                    gidlist = new object[,] { { Convert.ToInt32(asChunk[4]), asChunk[5] } };
-                else gidlist = null;
-            }
-
-            //Returns JSON format
-            public override string ToString()
-            {
-                if (gidlist == null) return string.Empty;
-                else
-                {
-                    return string.Format(
-                        "{{\"method\":\"gdata\",\"gidlist\":[[{0},\"{1}\"]]}}", 
-                        gidlist[0,0], gidlist[0,1]);
-                }
-            }
-        }
-
         #region FormMethods
         /* Load 'Main' Form   */
         public Main(string[] sFile)
@@ -471,10 +441,10 @@ namespace Nagru___Manga_Organizer
         /* Select next item in listview */
         private void Btn_GoDn_Click(object sender, EventArgs e)
         {
+            if (LV_Entries.Items.Count <= 1) return;
             int iPos = 0;
-            if (LV_Entries.Items.Count == 0)
-                return;
-            else if (LV_Entries.SelectedItems.Count != 0)
+            
+            if (LV_Entries.SelectedItems.Count != 0)
             {
                 iPos = LV_Entries.SelectedItems[0].Index;
                 if (++iPos >= LV_Entries.Items.Count) iPos = 0;
@@ -482,15 +452,16 @@ namespace Nagru___Manga_Organizer
 
             LV_Entries.FocusedItem = LV_Entries.Items[iPos];
             LV_Entries.Items[iPos].Selected = true;
+            this.Focus();
         }
 
         /* Select previous item in listview */
         private void Btn_GoUp_Click(object sender, EventArgs e)
         {
+            if (LV_Entries.Items.Count <= 1) return;
             int iPos = LV_Entries.Items.Count - 1;
-            if (LV_Entries.Items.Count == 0)
-                return;
-            else if (LV_Entries.SelectedItems.Count != 0)
+
+            if (LV_Entries.SelectedItems.Count != 0)
             {
                 iPos = LV_Entries.SelectedItems[0].Index;
                 if (--iPos < 0) iPos = LV_Entries.Items.Count - 1;
@@ -498,6 +469,19 @@ namespace Nagru___Manga_Organizer
 
             LV_Entries.FocusedItem = LV_Entries.Items[iPos];
             LV_Entries.Items[iPos].Selected = true;
+            this.Focus();
+        }
+
+        /* Selects a random doujin */
+        private void Btn_Rand_Click(object sender, EventArgs e)
+        {
+            if (LV_Entries.Items.Count <= 1) return;
+
+            Random rnd = new Random();
+            int iPos = rnd.Next(LV_Entries.Items.Count);
+            LV_Entries.FocusedItem = LV_Entries.Items[iPos];
+            LV_Entries.Items[iPos].Selected = true;
+            this.Focus();
         }
 
         /* Move TxBx_Tags cursor pos. based on ScrTags value */
@@ -592,6 +576,17 @@ namespace Nagru___Manga_Organizer
             //grab index of selected item
             this.BeginInvoke(new DelVoidInt(SetData), lData.FindIndex(new Search(
                 lvi.SubItems[0].Text + lvi.SubItems[1].Text).Match));
+        }
+
+        /* Used to simulate js Object Literal for JSON */
+        public static string JSON(string sURL)
+        {
+            string[] asChunk = sURL.Split('/');
+            if (asChunk.Length == 7)
+                return string.Format(
+                    "{{\"method\":\"gdata\",\"gidlist\":[[{0},\"{1}\"]]}}",
+                    asChunk[4], asChunk[5]);
+            else return string.Empty;
         }
 
         /* Remove non-fav'ed entries */
@@ -851,7 +846,7 @@ namespace Nagru___Manga_Organizer
                 StringSplitOptions.RemoveEmptyEntries);
 
             //parse it out
-            if (CmbBx_Artist.Text == "" && TxBx_Title.Text == "" && sName.Length >= 2)
+            if (sName.Length >= 2 && CmbBx_Artist.Text == "" && TxBx_Title.Text == "")
             {
                 CmbBx_Artist.Text = sName[0].Trim();
                 TxBx_Title.Text = sName[1].Trim();
@@ -1188,7 +1183,7 @@ namespace Nagru___Manga_Organizer
 
                     using (Stream s = rq.GetRequestStream())
                     {
-                        byte[] byContent = System.Text.Encoding.ASCII.GetBytes(new stAPI(fmGet.Url).ToString());
+                        byte[] byContent = System.Text.Encoding.ASCII.GetBytes(JSON(fmGet.Url));
                         s.Write(byContent, 0, byContent.Length);
                     }
                     using (StreamReader sr = new StreamReader(((System.Net.HttpWebResponse)rq.GetResponse()).GetResponseStream()))
@@ -1201,7 +1196,7 @@ namespace Nagru___Manga_Organizer
 
                     //parse metadata
                     Text = "Parsing metadata...";
-                    SplitTitle(System.Net.WebUtility.HtmlDecode(asResp[2].Split(':')[1].Substring(1)));
+                    SplitTitle(ExtString.DecodeNonAscii(System.Net.WebUtility.HtmlDecode(asResp[2].Split(':')[1].Substring(1))));
                     CmbBx_Type.Text = asResp[4].Split(':')[1].Substring(1);
                     frTxBx_Notes.Text = asResp[7] + '\n' + asResp[8];
                     DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
