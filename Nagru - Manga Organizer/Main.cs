@@ -441,7 +441,7 @@ namespace Nagru___Manga_Organizer
         /* Select next item in listview */
         private void Btn_GoDn_Click(object sender, EventArgs e)
         {
-            if (LV_Entries.Items.Count <= 1) return;
+            if (LV_Entries.Items.Count == 0) return;
             int iPos = 0;
             
             if (LV_Entries.SelectedItems.Count != 0)
@@ -450,15 +450,13 @@ namespace Nagru___Manga_Organizer
                 if (++iPos >= LV_Entries.Items.Count) iPos = 0;
             }
 
-            LV_Entries.FocusedItem = LV_Entries.Items[iPos];
-            LV_Entries.Items[iPos].Selected = true;
-            this.Focus();
+            ScrollTo(iPos);
         }
 
         /* Select previous item in listview */
         private void Btn_GoUp_Click(object sender, EventArgs e)
         {
-            if (LV_Entries.Items.Count <= 1) return;
+            if (LV_Entries.Items.Count == 0) return;
             int iPos = LV_Entries.Items.Count - 1;
 
             if (LV_Entries.SelectedItems.Count != 0)
@@ -467,21 +465,16 @@ namespace Nagru___Manga_Organizer
                 if (--iPos < 0) iPos = LV_Entries.Items.Count - 1;
             }
 
-            LV_Entries.FocusedItem = LV_Entries.Items[iPos];
-            LV_Entries.Items[iPos].Selected = true;
-            this.Focus();
+            ScrollTo(iPos);
         }
 
         /* Selects a random doujin */
         private void Btn_Rand_Click(object sender, EventArgs e)
         {
-            if (LV_Entries.Items.Count <= 1) return;
+            if (LV_Entries.Items.Count == 0) return;
 
             Random rnd = new Random();
-            int iPos = rnd.Next(LV_Entries.Items.Count);
-            LV_Entries.FocusedItem = LV_Entries.Items[iPos];
-            LV_Entries.Items[iPos].Selected = true;
-            this.Focus();
+            ScrollTo(rnd.Next(LV_Entries.Items.Count));
         }
 
         /* Move TxBx_Tags cursor pos. based on ScrTags value */
@@ -551,6 +544,15 @@ namespace Nagru___Manga_Organizer
             LV_Entries.Select();
         }
 
+        /* Inserts text at specified point  */
+        private void AddText_Rich(string sAdd, FixedRichTextBox frTxBx)
+        {
+            int iNewStart = frTxBx.SelectionStart + sAdd.Length;
+            frTxBx.Text = frTxBx.Text.Insert(
+                frTxBx.SelectionStart, sAdd);
+            frTxBx.SelectionStart = iNewStart;
+        }
+
         /* Get first image in target folder */
         void GetImage(Object obj)
         {
@@ -615,6 +617,7 @@ namespace Nagru___Manga_Organizer
             lItems.Clear();
             LV_Entries.Sort();
             LV_Entries.EndUpdate();
+            Text = "Returned: " + LV_Entries.Items.Count + " entries";
             Cursor = Cursors.Default;
 
             //prevent loss of search parameters
@@ -642,17 +645,11 @@ namespace Nagru___Manga_Organizer
                 for (int i = 0; i < LV_Entries.Items.Count; i++)
                     if (LV_Entries.Items[i].SubItems[1].Text == lData[indx].sTitle)
                     {
-                        LV_Entries.FocusedItem = LV_Entries.Items[i];
-                        LV_Entries.Items[i].Selected = true;
                         iPos = i;
                         break;
                     }
 
-            /* Compensate for broken scroll-to function
-             * by running it multiple times (3 is sweet-spot) */
-            LV_Entries.TopItem = LV_Entries.Items[iPos];
-            LV_Entries.TopItem = LV_Entries.Items[iPos];
-            LV_Entries.TopItem = LV_Entries.Items[iPos];
+            ScrollTo(iPos);
         }
 
         /* Set properties back to default   */
@@ -716,6 +713,18 @@ namespace Nagru___Manga_Organizer
 
             Text = "Saved";
             Cursor = Cursors.Default;
+        }
+
+        private void ScrollTo(int iPos)
+        {
+            LV_Entries.FocusedItem = LV_Entries.Items[iPos];
+            LV_Entries.Items[iPos].Selected = true;
+
+            /* Compensate for broken scroll-to function
+             * by running it multiple times (3 is sweet-spot) */
+            LV_Entries.TopItem = LV_Entries.Items[iPos];
+            LV_Entries.TopItem = LV_Entries.Items[iPos];
+            LV_Entries.TopItem = LV_Entries.Items[iPos];
         }
 
         /* Search database entries   */
@@ -1256,30 +1265,28 @@ namespace Nagru___Manga_Organizer
 
         private void MnRTx_Paste_Click(object sender, EventArgs e)
         {
-            int iNewStart;
-            string sAdd = Clipboard.GetText();
-
             if (TabControl.SelectedIndex == 2)
             {
-                iNewStart = frTxBx_Notes.SelectionStart + sAdd.Length;
-                frTxBx_Notes.Text = frTxBx_Notes.Text.Insert(
-                    frTxBx_Notes.SelectionStart, sAdd);
-                frTxBx_Notes.SelectionStart = iNewStart;
+                AddText_Rich(Clipboard.GetText(), frTxBx_Notes);
                 bSavText = false;
             }
-            else
-            {
-                iNewStart = frTxBx_Desc.SelectionStart + sAdd.Length;
-                frTxBx_Desc.Text = frTxBx_Desc.Text.Insert(
-                    frTxBx_Desc.SelectionStart, sAdd);
-                frTxBx_Desc.SelectionStart = iNewStart;
-            }
+            else AddText_Rich(Clipboard.GetText(), frTxBx_Desc);
         }
 
         private void MnRTx_SelectAll_Click(object sender, EventArgs e)
         {
             if (TabControl.SelectedIndex == 2) frTxBx_Notes.SelectAll();
             else frTxBx_Desc.SelectAll();
+        }
+
+        /* Prevent mixed font types when c/p  */
+        private void frTxBx_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Modifiers == Keys.Control && e.KeyCode == Keys.V)
+            {
+                AddText_Rich(Clipboard.GetText(), (FixedRichTextBox)sender);
+                e.Handled = true;
+            }
         }
         #endregion
 
@@ -1373,10 +1380,7 @@ namespace Nagru___Manga_Organizer
             {
                 case "frTxBx_Desc":
                 case "frTxBx_Notes":
-                    FixedRichTextBox frTxBx = (FixedRichTextBox)sender;
-                    iNewStart = frTxBx.SelectionStart + sAdd.Length;
-                    frTxBx.Text = frTxBx.Text.Insert(frTxBx.SelectionStart, sAdd);
-                    frTxBx.SelectionStart = iNewStart;
+                    AddText_Rich(sAdd, (FixedRichTextBox)sender);
                     break;
                 case "TxBx_Title":
                     if (sAdd.Contains('[')) SplitTitle(sAdd);

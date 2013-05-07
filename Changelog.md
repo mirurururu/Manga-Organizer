@@ -1,3 +1,7 @@
+#### Date
+	- Fully fixed mixed-font bug
+	- Ensure proper listview count in title
+
 #### May 06, 2013
 	- Added button for random doujin selection
 	- Fixed display of japanese unicode

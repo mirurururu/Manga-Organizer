@@ -52,6 +52,7 @@
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.MnTx_SelAll = new System.Windows.Forms.ToolStripMenuItem();
             this.Tb_View = new System.Windows.Forms.TabPage();
+            this.Btn_Rand = new System.Windows.Forms.Button();
             this.ScrTags = new System.Windows.Forms.HScrollBar();
             this.CmbBx_Artist = new System.Windows.Forms.ComboBox();
             this.Btn_GoUp = new System.Windows.Forms.Button();
@@ -105,7 +106,6 @@
             this.Tb_Notes = new System.Windows.Forms.TabPage();
             this.frTxBx_Notes = new Nagru___Manga_Organizer.FixedRichTextBox();
             this.Delay = new System.Windows.Forms.Timer(this.components);
-            this.Btn_Rand = new System.Windows.Forms.Button();
             this.TabControl.SuspendLayout();
             this.Tb_Browse.SuspendLayout();
             this.Mn_TxBx.SuspendLayout();
@@ -363,6 +363,19 @@
             this.Tb_View.Size = new System.Drawing.Size(926, 549);
             this.Tb_View.TabIndex = 1;
             this.Tb_View.Text = "View";
+            // 
+            // Btn_Rand
+            // 
+            this.Btn_Rand.FlatAppearance.BorderSize = 0;
+            this.Btn_Rand.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.Btn_Rand.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Btn_Rand.Location = new System.Drawing.Point(411, 9);
+            this.Btn_Rand.Name = "Btn_Rand";
+            this.Btn_Rand.Size = new System.Drawing.Size(23, 23);
+            this.Btn_Rand.TabIndex = 27;
+            this.Btn_Rand.Text = "♣";
+            this.Btn_Rand.UseVisualStyleBackColor = true;
+            this.Btn_Rand.Click += new System.EventHandler(this.Btn_Rand_Click);
             // 
             // ScrTags
             // 
@@ -818,6 +831,7 @@
             this.frTxBx_Desc.Text = "";
             this.frTxBx_Desc.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.frTxBx_Desc_LinkClicked);
             this.frTxBx_Desc.TextChanged += new System.EventHandler(this.EntryAlt_Text);
+            this.frTxBx_Desc.KeyDown += new System.Windows.Forms.KeyEventHandler(this.frTxBx_KeyDown);
             // 
             // Mn_rTxBx
             // 
@@ -907,24 +921,12 @@
             this.frTxBx_Notes.Text = "";
             this.frTxBx_Notes.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.frTxBx_Notes_LinkClicked);
             this.frTxBx_Notes.TextChanged += new System.EventHandler(this.frTxBx_Notes_TextChanged);
+            this.frTxBx_Notes.KeyDown += new System.Windows.Forms.KeyEventHandler(this.frTxBx_KeyDown);
             // 
             // Delay
             // 
             this.Delay.Interval = 300;
             this.Delay.Tick += new System.EventHandler(this.Delay_Tick);
-            // 
-            // Btn_Rand
-            // 
-            this.Btn_Rand.FlatAppearance.BorderSize = 0;
-            this.Btn_Rand.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.Btn_Rand.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Btn_Rand.Location = new System.Drawing.Point(411, 9);
-            this.Btn_Rand.Name = "Btn_Rand";
-            this.Btn_Rand.Size = new System.Drawing.Size(23, 23);
-            this.Btn_Rand.TabIndex = 27;
-            this.Btn_Rand.Text = "♣";
-            this.Btn_Rand.UseVisualStyleBackColor = true;
-            this.Btn_Rand.Click += new System.EventHandler(this.Btn_Rand_Click);
             // 
             // Main
             // 
