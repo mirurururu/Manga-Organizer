@@ -1,6 +1,6 @@
 #### May 09, 2013
 	- Searches now support spaces: replace ' ' with '_'
-	- Multiple folder can now be drag-dropped simultaneously
+	- Multiple folders can now be drag-dropped simultaneously
 	- Changed Scan code from List<> to Dictionary<> based
 	- Removed unnecessary class: Search.cs
 
