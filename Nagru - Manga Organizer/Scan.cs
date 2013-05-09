@@ -34,7 +34,7 @@ namespace Nagru___Manga_Organizer
             //grab ignored files
             foreach (string sItem in Properties.Settings.Default.Ignore.Split('|'))
                 if (sItem != string.Empty) lIgnored.Add(sItem);
-            
+
             //bind LV_Found to sorter & set column size
             LV_Found.ListViewItemSorter = lvSortObj;
             LV_Found_Resize(sender, e);
@@ -99,7 +99,7 @@ namespace Nagru___Manga_Organizer
                     //check if filepath already in database
                     bool bExists = false;
                     for (int x = 0; x < lCurr.Count; x++)
-                        if (asDirs[i].Equals(lCurr[x].sLoc, 
+                        if (asDirs[i].Equals(lCurr[x].sLoc,
                             StringComparison.OrdinalIgnoreCase))
                         {
                             bExists = true;
@@ -114,10 +114,10 @@ namespace Nagru___Manga_Organizer
 
                         Main.stEntry en;
                         if (sTitle.Length == 2)
-                            en = new Main.stEntry(sTitle[1].TrimStart(), sTitle[0], asDirs[i], "", "", "",
+                            en = new Main.stEntry(sTitle[1].TrimStart(), sTitle[0], asDirs[i], "", "Manga", "",
                                 DateTime.Now, ExtDirectory.GetFiles(asDirs[i]).Length, false);
                         else
-                            en = new Main.stEntry(sTitle[0].TrimStart(), "", asDirs[i], "", "", "",
+                            en = new Main.stEntry(sTitle[0].TrimStart(), "", asDirs[i], "", "Manga", "",
                                 DateTime.Now, ExtDirectory.GetFiles(asDirs[i]).Length, false);
 
                         lFound.Add(en);
@@ -227,9 +227,16 @@ namespace Nagru___Manga_Organizer
         /*Open folder of double-clicked item */
         private void LV_Found_DoubleClick(object sender, EventArgs e)
         {
-            short indx = (short)lFound.FindIndex(new Search(
-                LV_Found.FocusedItem.SubItems[0].Text +
-                LV_Found.FocusedItem.SubItems[1].Text).Match);
+            short indx = -1;
+            string sMatch = LV_Found.FocusedItem.SubItems[0].Text +
+                LV_Found.FocusedItem.SubItems[1].Text;
+
+            for (int i = 0; i < lFound.Count; i++)
+                if (sMatch == lFound[i].sArtist + lFound[i].sTitle)
+                {
+                    indx = (short)i;
+                    break;
+                }
 
             if (indx < 0 || !Directory.Exists(lFound[indx].sLoc))
             {
@@ -243,28 +250,24 @@ namespace Nagru___Manga_Organizer
         /* Sends selected items back to Main Form */
         private void Btn_Add_Click(object sender, EventArgs e)
         {
-            if (LV_Found.SelectedItems.Count > 0)
-            {
-                for (int i = 0; i < LV_Found.SelectedItems.Count; i++)
-                {
-                    lCurr.Add(lFound[lFound.FindIndex(
-                        new Search(LV_Found.SelectedItems[i].SubItems[0].Text
-                        + LV_Found.SelectedItems[i].SubItems[1].Text).Match)]);
-                }
-                delNewEntry.Invoke();
-            }
-            else if (LV_Found.Items.Count > 0 && MessageBox.Show("Are you sure you wish to add all found entries?",
-                "Manga Organizer", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-            {
+            if (LV_Found.SelectedItems.Count == 0)
                 for (int i = 0; i < LV_Found.Items.Count; i++)
-                {
-                    lCurr.Add(lFound[lFound.FindIndex(
-                        new Search(LV_Found.Items[i].SubItems[0].Text
-                        + LV_Found.Items[i].SubItems[1].Text).Match)]);
-                }
-                delNewEntry.Invoke();
+                    LV_Found.Items[i].Selected = true;
+
+            for (int i = 0; i < LV_Found.SelectedItems.Count; i++)
+            {
+                string sMatch = LV_Found.SelectedItems[i].SubItems[0].Text
+                    + LV_Found.SelectedItems[i].SubItems[1].Text;
+
+                for (int x = 0; x < lFound.Count; x++)
+                    if (sMatch == lFound[x].sArtist + lFound[x].sTitle)
+                    {
+                        lCurr.Add(lFound[x]);
+                        break;
+                    }
             }
 
+            delNewEntry.Invoke();
             this.Close();
         }
 

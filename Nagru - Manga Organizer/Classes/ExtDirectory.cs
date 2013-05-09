@@ -17,10 +17,14 @@ namespace Nagru___Manga_Organizer
             List<string> lFiles = new List<string>();
             string[] sFilters = Filter.Split('|');
 
-            //for each filter find matching file names
-            for (int i = 0; i < sFilters.Length; i++)
-                lFiles.AddRange(System.IO.Directory.GetFiles(SourceFolder,
-                    sFilters[i], SearchOption));
+            try
+            {
+                //for each filter find matching file names
+                for (int i = 0; i < sFilters.Length; i++)
+                    lFiles.AddRange(System.IO.Directory.GetFiles(SourceFolder,
+                        sFilters[i], SearchOption));
+            }
+            catch (UnauthorizedAccessException) { }
 
             lFiles.Sort(new TrueCompare());
             return lFiles.ToArray();
@@ -48,6 +52,8 @@ namespace Nagru___Manga_Organizer
         /* Ensure chosen folder is not protected before operating */
         public static bool Restricted(string Path)
         {
+            if (!Directory.Exists(Path)) return true;
+
             try
             {
                 string[] asDirs = Directory.GetDirectories(Path, "*", SearchOption.TopDirectoryOnly);
@@ -59,11 +65,10 @@ namespace Nagru___Manga_Organizer
                         FileIOPermissionAccess.Write, asDirs[i]);
                     fp.Demand();
                 }
-
-                return false;
             }
-            catch (Exception)
-            { return true; }
+            catch (Exception) { return true; }
+            
+            return false;
         }
     }
 }

@@ -195,6 +195,9 @@ namespace Nagru___Manga_Organizer
         /* Prevent Form close if unsaved data present   */
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
         {
+            Properties.Settings.Default.Position = new Rectangle(this.Location, this.Size);
+            Properties.Settings.Default.Save();
+
             if (!bSavList || !bSavText)
             {
                 switch (MessageBox.Show("Save before exiting?", "Manga Organizer",
@@ -209,8 +212,6 @@ namespace Nagru___Manga_Organizer
                         break;
                 }
             }
-            Properties.Settings.Default.Position = new Rectangle(this.Location, this.Size);
-            Properties.Settings.Default.Save();
         }
 
         /* Display image from selected folder   */
@@ -233,7 +234,6 @@ namespace Nagru___Manga_Organizer
                         if (!Text.StartsWith("S"))
                             Text = "Selected: " + lData[indx].ToString();
                         MnTS_Del.Visible = true;
-                        MnTS_Open.Visible = true;
                     }
                     this.AcceptButton = null;
                     break;
@@ -443,7 +443,7 @@ namespace Nagru___Manga_Organizer
         {
             if (LV_Entries.Items.Count == 0) return;
             int iPos = 0;
-            
+
             if (LV_Entries.SelectedItems.Count != 0)
             {
                 iPos = LV_Entries.SelectedItems[0].Index;
@@ -574,13 +574,18 @@ namespace Nagru___Manga_Organizer
         void GetIndex(Object obj)
         {
             ListViewItem lvi = (ListViewItem)obj;
+            string sMatch = lvi.SubItems[0].Text + lvi.SubItems[1].Text;
 
-            //grab index of selected item
-            this.BeginInvoke(new DelVoidInt(SetData), lData.FindIndex(new Search(
-                lvi.SubItems[0].Text + lvi.SubItems[1].Text).Match));
+            for (int i = 0; i < lData.Count; i++)
+                if (sMatch == lData[i].sArtist + lData[i].sTitle)
+                {
+                    this.BeginInvoke(new DelVoidInt(SetData), i);
+                    break;
+                }
         }
 
-        /* Used to simulate js Object Literal for JSON */
+        /* Used to simulate JS Object Literal for JSON 
+           Inspired by Hupotronics' ExLinks   */
         public static string JSON(string sURL)
         {
             string[] asChunk = sURL.Split('/');
@@ -693,7 +698,7 @@ namespace Nagru___Manga_Organizer
 
             //grab filepath
             string sPath = Properties.Settings.Default.SavLoc;
-            if (sPath != string.Empty && !ExtDirectory.Restricted(sPath))
+            if (sPath != string.Empty && Directory.Exists(sPath))
                 sPath += "\\MangaDatabase.bin";
             else sPath = Environment.CurrentDirectory + "\\MangaDatabase.bin";
 
@@ -728,49 +733,57 @@ namespace Nagru___Manga_Organizer
         }
 
         /* Search database entries   */
-        void Search()
+        void Search(ListViewItem lvi = null)
         {
             Cursor = Cursors.WaitCursor;
-            List<string> lTagsAllow = new List<string>(), lTagsDeny = new List<string>();
-            foreach (string s in TxBx_Search.Text.Split(' '))
+
+            //process filters into usable format
+            string[] sTags = TxBx_Search.Text.Split(' ');
+            Dictionary<string, bool> dtFilter = new Dictionary<string, bool>(sTags.Length);
+            for (int x = 0; x < sTags.Length; x++)
             {
-                if (string.IsNullOrEmpty(s)) continue;
-                if (!s.StartsWith("-")) lTagsAllow.Add(s);
-                else lTagsDeny.Add(s.Substring(1, s.Length - 1));
+                if (string.IsNullOrEmpty(sTags[x]) || sTags[x] == "-") continue;
+                sTags[x] = sTags[x].Replace('_', ' ');
+                if (!sTags[x].StartsWith("-"))
+                {
+                    if (!dtFilter.ContainsKey(sTags[x]))
+                        dtFilter.Add(sTags[x], true);
+                }
+                else
+                {
+                    sTags[x] = sTags[x].Substring(1, sTags[x].Length - 1);
+                    if (!dtFilter.ContainsKey(sTags[x]))
+                        dtFilter.Add(sTags[x], false);
+                }
             }
 
-            string[] sDoubles = lTagsAllow.Intersect(lTagsDeny).ToArray();
-            if (sDoubles.Length > 0)
-                for (int i = 0; i < sDoubles.Length; i++)
-                {
-                    lTagsAllow.Remove(sDoubles[i]);
-                    lTagsDeny.Remove(sDoubles[i]);
-                }
-
-            bool bBreak = false;
+            //search by tags, title, artist, and type
             LV_Entries.BeginUpdate();
-            for (int x = 0; x < LV_Entries.Items.Count; x++)
-            {
-                for (int y = 0; y < lTagsDeny.Count; y++)
+            if (lvi == null)
+                for (int x = 0; x < LV_Entries.Items.Count; x++)
+                    foreach (KeyValuePair<string, bool> kvp in dtFilter)
+                    {
+                        if (ExtString.Contains(LV_Entries.Items[x].SubItems[3].Text, kvp.Key) ||
+                            ExtString.Contains(LV_Entries.Items[x].SubItems[1].Text, kvp.Key) ||
+                            ExtString.Contains(LV_Entries.Items[x].SubItems[0].Text, kvp.Key) ||
+                            ExtString.Contains(LV_Entries.Items[x].SubItems[4].Text, kvp.Key))
+                        {
+                            if (!kvp.Value) { LV_Entries.Items.RemoveAt(x--); break; }
+                        }
+                        else if (kvp.Value) { LV_Entries.Items.RemoveAt(x--); break; }
+                    }
+            else
+                foreach (KeyValuePair<string, bool> kvp in dtFilter)
                 {
-                    //search by tags, title, artist, and type
-                    if (ExtString.Contains(LV_Entries.Items[x].SubItems[3].Text, lTagsDeny[y]) ||
-                        ExtString.Contains(LV_Entries.Items[x].SubItems[1].Text, lTagsDeny[y]) ||
-                        ExtString.Contains(LV_Entries.Items[x].SubItems[0].Text, lTagsDeny[y]) ||
-                        ExtString.Contains(LV_Entries.Items[x].SubItems[4].Text, lTagsDeny[y]))
-                    { LV_Entries.Items.RemoveAt(x--); bBreak = true; break; }
+                    if (ExtString.Contains(lvi.SubItems[3].Text, kvp.Key) ||
+                        ExtString.Contains(lvi.SubItems[1].Text, kvp.Key) ||
+                        ExtString.Contains(lvi.SubItems[0].Text, kvp.Key) ||
+                        ExtString.Contains(lvi.SubItems[4].Text, kvp.Key))
+                    {
+                        if (!kvp.Value) { lvi.Remove(); Reset(); break; }
+                    }
+                    else if (kvp.Value) { lvi.Remove(); Reset(); break; }
                 }
-                if (bBreak) { bBreak = false; continue; }
-                for (int y = 0; y < lTagsAllow.Count; y++)
-                {
-                    //search by tags, title, artist, and type
-                    if (ExtString.Contains(LV_Entries.Items[x].SubItems[3].Text, lTagsAllow[y]) ||
-                        ExtString.Contains(LV_Entries.Items[x].SubItems[1].Text, lTagsAllow[y]) ||
-                        ExtString.Contains(LV_Entries.Items[x].SubItems[0].Text, lTagsAllow[y]) ||
-                        ExtString.Contains(LV_Entries.Items[x].SubItems[4].Text, lTagsAllow[y])) { }
-                    else { LV_Entries.Items.RemoveAt(x--); break; }
-                }
-            }
             LV_Entries.EndUpdate();
 
             Text = "Returned: " + LV_Entries.Items.Count + " entries";
@@ -835,6 +848,7 @@ namespace Nagru___Manga_Organizer
             if (PicBx_Cover.Image == null) return;
             PicBx_Cover.Image.Dispose();
             PicBx_Cover.Image = null;
+            MnTS_Open.Visible = false;
 
             //force garbage collection
             GC.Collect();
@@ -954,13 +968,14 @@ namespace Nagru___Manga_Organizer
                 {
                     lData.Add(en);
 
-                    //update LV_Entries & maintain scroll position
+                    //add artist to autocomplete
                     if (!CmbBx_Artist.Items.Contains(CmbBx_Artist.Text))
                     {
                         CmbBx_Artist.AutoCompleteCustomSource.Add(CmbBx_Artist.Text);
                         CmbBx_Artist.Items.Add(CmbBx_Artist.Text);
                     }
 
+                    //update LV_Entries & maintain scroll position
                     int iPos = LV_Entries.TopItem == null ? -1 : LV_Entries.TopItem.Index;
                     AddEntries();
                     Reset();
@@ -999,48 +1014,8 @@ namespace Nagru___Manga_Organizer
             }
             else if (TxBx_Search.Text != "")
             {
-                Cursor = Cursors.WaitCursor;
-                List<string> lTagsAllow = new List<string>(), lTagsDeny = new List<string>();
-                foreach (string s in TxBx_Search.Text.Split(' '))
-                {
-                    if (string.IsNullOrEmpty(s)) continue;
-                    if (!s.StartsWith("-")) lTagsAllow.Add(s);
-                    else lTagsDeny.Add(s.Substring(1, s.Length - 1));
-                }
-
-                string[] sDoubles = lTagsAllow.Intersect(lTagsDeny).ToArray();
-                if (sDoubles.Length > 0)
-                    for (int i = 0; i < sDoubles.Length; i++)
-                    {
-                        lTagsAllow.Remove(sDoubles[i]);
-                        lTagsDeny.Remove(sDoubles[i]);
-                    }
-
-                bool bBreak = false;
-                for (int y = 0; y < lTagsDeny.Count; y++)
-                {
-                    //search by tags, title, artist, and type
-                    if (ExtString.Contains(lvi.SubItems[3].Text, lTagsDeny[y]) ||
-                        ExtString.Contains(lvi.SubItems[1].Text, lTagsDeny[y]) ||
-                        ExtString.Contains(lvi.SubItems[0].Text, lTagsDeny[y]) ||
-                        ExtString.Contains(lvi.SubItems[4].Text, lTagsDeny[y]))
-                    { lvi.Remove(); Reset(); bBreak = true; break; }
-                }
-                if (!bBreak)
-                {
-                    for (int y = 0; y < lTagsAllow.Count; y++)
-                    {
-                        //search by tags, title, artist, and type
-                        if (ExtString.Contains(lvi.SubItems[3].Text, lTagsAllow[y]) ||
-                            ExtString.Contains(lvi.SubItems[1].Text, lTagsAllow[y]) ||
-                            ExtString.Contains(lvi.SubItems[0].Text, lTagsAllow[y]) ||
-                            ExtString.Contains(lvi.SubItems[4].Text, lTagsAllow[y])) { }
-                        else { lvi.Remove(); Reset(); break; }
-                    }
-                }
-
-                Text = "Returned: " + LV_Entries.Items.Count + " entries";
-                Cursor = Cursors.Default;
+                //check if still included
+                Search(lvi);
             }
             else ReFocus();
 
@@ -1145,7 +1120,7 @@ namespace Nagru___Manga_Organizer
         /* Opens current entry location   */
         private void MnTS_OpenEntryFolder_Click(object sender, EventArgs e)
         {
-            if (TxBx_Loc.Text != string.Empty || !ExtDirectory.Restricted(TxBx_Loc.Text))
+            if (TxBx_Loc.Text != string.Empty && !ExtDirectory.Restricted(TxBx_Loc.Text))
                 System.Diagnostics.Process.Start(TxBx_Loc.Text);
         }
 
@@ -1214,7 +1189,7 @@ namespace Nagru___Manga_Organizer
 
                     for (int i = 11; i < asResp.Length; i++)
                     {
-                        if(i == 11)
+                        if (i == 11)
                             TxBx_Tags.Text += asResp[i].Split(':')[1].Substring(2) + ", ";
                         else if (i == asResp.Length - 1)
                             TxBx_Tags.Text += asResp[i].Substring(0, asResp[i].Length - 5);
@@ -1440,34 +1415,65 @@ namespace Nagru___Manga_Organizer
         /* Adds folder to database when dragged over LV_Entries */
         private void LV_Entries_DragDrop(object sender, DragEventArgs e)
         {
-            string sFile = ((string[])e.Data.GetData(DataFormats.FileDrop, false))[0];
+            string[] asDir = ((string[])e.Data.GetData(DataFormats.FileDrop, false));
+            short iTrack = indx;
 
-            if (!ExtDirectory.Restricted(sFile))
+            //remove restricted folders
+            string sError = string.Empty;
+            for (int i = 0; i < asDir.Length; i++)
+                if (ExtDirectory.Restricted(asDir[i]))
+                {
+                    sError += asDir[i] + '\n';
+                    asDir[i] = string.Empty;
+                    continue;
+                }
+            if (sError != string.Empty)
             {
+                MessageBox.Show("Access to the following folder(s) is restricted:\n" + sError,
+                        "Manga Organizer", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                sError = string.Empty;
+            }
+
+            //add all remaining folders
+            for (int i = 0; i < asDir.Length; i++)
+            {
+                if (asDir[i] == string.Empty) continue;
+
                 //Get formatted directory name
-                string[] sTitle = Path.GetFileName(sFile).Split(
+                string[] sTitle = Path.GetFileName(asDir[i]).Split(
                     new string[] { "[", "]" }, StringSplitOptions.RemoveEmptyEntries);
 
                 //add item
                 Main.stEntry en;
                 if (sTitle.Length == 2)
-                    en = new Main.stEntry(sTitle[1].TrimStart(), sTitle[0], sFile, "", "", "",
-                        DateTime.Now, ExtDirectory.GetFiles(sFile).Length, false);
+                    en = new Main.stEntry(sTitle[1].TrimStart(), sTitle[0], asDir[i], "", "", "",
+                        DateTime.Now, ExtDirectory.GetFiles(asDir[i]).Length, false);
                 else
-                    en = new Main.stEntry(sTitle[0].TrimStart(), "", sFile, "", "", "",
-                        DateTime.Now, ExtDirectory.GetFiles(sFile).Length, false);
+                    en = new Main.stEntry(sTitle[0].TrimStart(), "", asDir[i], "", "", "",
+                        DateTime.Now, ExtDirectory.GetFiles(asDir[i]).Length, false);
 
                 if (!lData.Contains(en))
                 {
                     lData.Add(en);
                     indx = (short)(lData.Count - 1);
-                    AddEntries();
+
+                    if (en.sArtist != "" && !CmbBx_Artist.Items.Contains(en.sArtist))
+                    {
+                        CmbBx_Artist.AutoCompleteCustomSource.Add(en.sArtist);
+                        CmbBx_Artist.Items.Add(en.sArtist);
+                    }
                 }
-                else MessageBox.Show("This item already exists in the database.",
+                else sError += asDir[i] + '\n';
+            }
+            if (sError != string.Empty)
+            {
+                MessageBox.Show("The following path(s) already exists in the database:\n" + sError,
                     "Manga Organizer", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            else MessageBox.Show("Access to this folder is restricted.",
-                    "Manga Organizer", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+            //Update LV
+            if (iTrack != indx)
+                AddEntries();
         }
         #endregion
     }

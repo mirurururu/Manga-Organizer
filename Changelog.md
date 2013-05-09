@@ -1,3 +1,9 @@
+#### May 09, 2013
+	- Searches now support spaces: replace ' ' with '_'
+	- Multiple folder can now be drag-dropped simultaneously
+	- Changed Search code from List<> to Dictionary<> based
+	- Removed unnecessary class: Search.cs
+
 #### May 07, 2013
 	- Fully fixed mixed-font bug
 	- Ensure proper listview count in title
