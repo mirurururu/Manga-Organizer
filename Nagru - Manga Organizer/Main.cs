@@ -262,12 +262,12 @@ namespace Nagru___Manga_Organizer
         {
             Scan fmScan = new Scan();
             fmScan.delNewEntry = AddEntries;
-            fmScan.CurrentItems = lData;
+            fmScan.lCurr = lData;
             fmScan.delDone = fmScanDone;
             Btn_Scan.Enabled = false;
 
             fmScan.Show();
-            LV_Entries.Select();
+            fmScan.Select();
         }
         private void fmScanDone() { Btn_Scan.Enabled = true; }
 
@@ -343,8 +343,8 @@ namespace Nagru___Manga_Organizer
         private void LV_Entries_DoubleClick(object sender, EventArgs e)
         { OpenFile(); }
 
-        /* Give listview priority whenever mouse enters it */
-        private void LV_Entries_MouseEnter(object sender, EventArgs e)
+        /* Give listview priority whenever mouse hovers in it */
+        private void LV_Entries_MouseHover(object sender, EventArgs e)
         {
             if (!LV_Entries.Focused)
                 LV_Entries.Focus();
@@ -1164,6 +1164,7 @@ namespace Nagru___Manga_Organizer
                     rq.Method = "POST";
                     rq.Timeout = 5000;
                     rq.KeepAlive = false;
+                    rq.Proxy = null;
 
                     using (Stream s = rq.GetRequestStream())
                     {

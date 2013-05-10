@@ -39,7 +39,6 @@
             this.MnTx_Paste = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.MnTx_SelAll = new System.Windows.Forms.ToolStripMenuItem();
-            this.Btn_Scan = new System.Windows.Forms.Button();
             this.Btn_Ignore = new System.Windows.Forms.Button();
             this.ChkBx_All = new System.Windows.Forms.CheckBox();
             this.LV_Found = new Nagru___Manga_Organizer.ListViewNF();
@@ -65,9 +64,9 @@
             this.TxBx_Loc.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TxBx_Loc.ContextMenuStrip = this.Mn_TxBx;
-            this.TxBx_Loc.Location = new System.Drawing.Point(66, 10);
+            this.TxBx_Loc.Location = new System.Drawing.Point(12, 10);
             this.TxBx_Loc.Name = "TxBx_Loc";
-            this.TxBx_Loc.Size = new System.Drawing.Size(427, 20);
+            this.TxBx_Loc.Size = new System.Drawing.Size(481, 20);
             this.TxBx_Loc.TabIndex = 4;
             this.TxBx_Loc.Click += new System.EventHandler(this.TxBx_Loc_Click);
             // 
@@ -82,26 +81,26 @@
             this.toolStripSeparator3,
             this.MnTx_SelAll});
             this.Mn_TxBx.Name = "Mn_Context";
-            this.Mn_TxBx.Size = new System.Drawing.Size(153, 148);
+            this.Mn_TxBx.Size = new System.Drawing.Size(116, 126);
             // 
             // MnTx_Undo
             // 
             this.MnTx_Undo.Name = "MnTx_Undo";
             this.MnTx_Undo.ShowShortcutKeys = false;
-            this.MnTx_Undo.Size = new System.Drawing.Size(152, 22);
+            this.MnTx_Undo.Size = new System.Drawing.Size(115, 22);
             this.MnTx_Undo.Text = "Undo";
             this.MnTx_Undo.Click += new System.EventHandler(this.MnTx_Undo_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(112, 6);
             // 
             // MnTx_Cut
             // 
             this.MnTx_Cut.Name = "MnTx_Cut";
             this.MnTx_Cut.ShowShortcutKeys = false;
-            this.MnTx_Cut.Size = new System.Drawing.Size(152, 22);
+            this.MnTx_Cut.Size = new System.Drawing.Size(115, 22);
             this.MnTx_Cut.Text = "Cut";
             this.MnTx_Cut.Click += new System.EventHandler(this.MnTx_Cut_Click);
             // 
@@ -109,7 +108,7 @@
             // 
             this.MnTx_Copy.Name = "MnTx_Copy";
             this.MnTx_Copy.ShowShortcutKeys = false;
-            this.MnTx_Copy.Size = new System.Drawing.Size(152, 22);
+            this.MnTx_Copy.Size = new System.Drawing.Size(115, 22);
             this.MnTx_Copy.Text = "Copy";
             this.MnTx_Copy.Click += new System.EventHandler(this.MnTx_Copy_Click);
             // 
@@ -117,32 +116,22 @@
             // 
             this.MnTx_Paste.Name = "MnTx_Paste";
             this.MnTx_Paste.ShowShortcutKeys = false;
-            this.MnTx_Paste.Size = new System.Drawing.Size(152, 22);
+            this.MnTx_Paste.Size = new System.Drawing.Size(115, 22);
             this.MnTx_Paste.Text = "Paste";
             this.MnTx_Paste.Click += new System.EventHandler(this.MnTx_Paste_Click);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(112, 6);
             // 
             // MnTx_SelAll
             // 
             this.MnTx_SelAll.Name = "MnTx_SelAll";
             this.MnTx_SelAll.ShowShortcutKeys = false;
-            this.MnTx_SelAll.Size = new System.Drawing.Size(152, 22);
+            this.MnTx_SelAll.Size = new System.Drawing.Size(115, 22);
             this.MnTx_SelAll.Text = "Select All";
             this.MnTx_SelAll.Click += new System.EventHandler(this.MnTx_SelAll_Click);
-            // 
-            // Btn_Scan
-            // 
-            this.Btn_Scan.Location = new System.Drawing.Point(12, 9);
-            this.Btn_Scan.Name = "Btn_Scan";
-            this.Btn_Scan.Size = new System.Drawing.Size(48, 21);
-            this.Btn_Scan.TabIndex = 24;
-            this.Btn_Scan.Text = "Start";
-            this.Btn_Scan.UseVisualStyleBackColor = true;
-            this.Btn_Scan.Click += new System.EventHandler(this.Btn_Scan_Click);
             // 
             // Btn_Ignore
             // 
@@ -181,14 +170,15 @@
             this.LV_Found.FullRowSelect = true;
             this.LV_Found.GridLines = true;
             this.LV_Found.HideSelection = false;
-            this.LV_Found.Location = new System.Drawing.Point(12, 36);
+            this.LV_Found.Location = new System.Drawing.Point(0, 36);
             this.LV_Found.Name = "LV_Found";
-            this.LV_Found.Size = new System.Drawing.Size(717, 295);
+            this.LV_Found.Size = new System.Drawing.Size(741, 307);
             this.LV_Found.TabIndex = 7;
             this.LV_Found.UseCompatibleStateImageBehavior = false;
             this.LV_Found.View = System.Windows.Forms.View.Details;
             this.LV_Found.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.LV_Found_ColumnClick);
             this.LV_Found.DoubleClick += new System.EventHandler(this.LV_Found_DoubleClick);
+            this.LV_Found.MouseHover += new System.EventHandler(this.LV_Found_MouseHover);
             this.LV_Found.Resize += new System.EventHandler(this.LV_Found_Resize);
             // 
             // ColArtist
@@ -208,13 +198,11 @@
             // 
             // Scan
             // 
-            this.AcceptButton = this.Btn_Scan;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(741, 343);
             this.Controls.Add(this.ChkBx_All);
             this.Controls.Add(this.Btn_Ignore);
-            this.Controls.Add(this.Btn_Scan);
             this.Controls.Add(this.LV_Found);
             this.Controls.Add(this.TxBx_Loc);
             this.Controls.Add(this.Btn_Add);
@@ -239,7 +227,6 @@
         private System.Windows.Forms.ColumnHeader ColArtist;
         private System.Windows.Forms.ColumnHeader ColTitle;
         private System.Windows.Forms.ColumnHeader ColPages;
-        private System.Windows.Forms.Button Btn_Scan;
         private System.Windows.Forms.Button Btn_Ignore;
         private System.Windows.Forms.CheckBox ChkBx_All;
         private System.Windows.Forms.ContextMenuStrip Mn_TxBx;

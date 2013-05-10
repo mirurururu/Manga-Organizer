@@ -190,7 +190,7 @@
             this.LV_Entries.DragDrop += new System.Windows.Forms.DragEventHandler(this.LV_Entries_DragDrop);
             this.LV_Entries.DragEnter += new System.Windows.Forms.DragEventHandler(this.LV_Entries_DragEnter);
             this.LV_Entries.DoubleClick += new System.EventHandler(this.LV_Entries_DoubleClick);
-            this.LV_Entries.MouseEnter += new System.EventHandler(this.LV_Entries_MouseEnter);
+            this.LV_Entries.MouseHover += new System.EventHandler(this.LV_Entries_MouseHover);
             this.LV_Entries.Resize += new System.EventHandler(this.LV_Entries_Resize);
             // 
             // ColArtist

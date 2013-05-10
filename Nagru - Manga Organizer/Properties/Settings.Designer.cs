@@ -77,7 +77,7 @@ namespace Nagru___Manga_Organizer.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("v. 05-09-2013")]
+        [global::System.Configuration.DefaultSettingValueAttribute("v. 05-10-2013")]
         public string Version {
             get {
                 return ((string)(this["Version"]));

@@ -1,3 +1,8 @@
+#### May 10, 2013
+	- Fixed WebRequest hangs by setting 'Proxy = null;'
+	- Fixed unpolished behaviour with LV focusing
+	- Improved Scan speed using hashsets
+
 #### May 09, 2013
 	- Searches now support spaces: replace ' ' with '_'
 	- Multiple folders can now be drag-dropped simultaneously
@@ -121,7 +126,7 @@
 	- Updated Reset method
 
 #### Oct 16, 2012
-	- Fixed icon breaking WinXP compatability
+	- Fixed new icon breaking WinXP compatability
 
 #### Oct 15, 2012
     - Small UI adj. pII

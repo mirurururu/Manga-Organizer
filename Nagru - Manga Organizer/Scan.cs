@@ -2,8 +2,6 @@
 using System.IO;
 using System.Windows.Forms;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using System.Security.Permissions;
 
 namespace Nagru___Manga_Organizer
 {
@@ -14,14 +12,12 @@ namespace Nagru___Manga_Organizer
         public DelVoidVoid delNewEntry;
         public DelVoidVoid delDone;
 
-        public List<Main.stEntry> CurrentItems
-        { set { lCurr = value; } }
+        public List<Main.stEntry> lCurr { set; get; }
 
         LVsorter lvSortObj = new LVsorter();
+        HashSet<string> hsPaths = new HashSet<string>();
+        HashSet<string> hsIgnore = new HashSet<string>();
         List<Main.stEntry> lFound = new List<Main.stEntry>();
-        List<Main.stEntry> lCurr = new List<Main.stEntry>();
-        List<string> lIgnored = new List<string>();
-
 
         #region ScanOperation
         /* Load 'Scan' Form   */
@@ -31,9 +27,14 @@ namespace Nagru___Manga_Organizer
         /* Initialize Scan Form */
         private void Scan_Load(object sender, EventArgs e)
         {
-            //grab ignored files
-            foreach (string sItem in Properties.Settings.Default.Ignore.Split('|'))
-                if (sItem != string.Empty) lIgnored.Add(sItem);
+            //set-up hashset for ignored files
+            string[] sRaw = Properties.Settings.Default.Ignore.Split('|');
+            for (int i = 0; i < sRaw.Length - 1; i++)
+                hsIgnore.Add(sRaw[i]);
+
+            //set-up hashset for path list
+            for (int i = 0; i < lCurr.Count; i++)
+                hsPaths.Add(lCurr[i].sLoc);
 
             //bind LV_Found to sorter & set column size
             LV_Found.ListViewItemSorter = lvSortObj;
@@ -45,23 +46,23 @@ namespace Nagru___Manga_Organizer
                 sPath = Environment.CurrentDirectory;
             TxBx_Loc.Text = sPath;
             TxBx_Loc.SelectionStart = TxBx_Loc.Text.Length;
+            TryScan();
         }
 
         /* Choose new folder path */
         private void TxBx_Loc_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog fbd = new FolderBrowserDialog();
-            fbd.RootFolder = Environment.SpecialFolder.MyComputer;
+            fbd.RootFolder = Environment.SpecialFolder.Desktop;
             fbd.Description = "Select the directory you want to scan.";
 
             //initialize selected folder
             if (TxBx_Loc.Text == string.Empty || !Directory.Exists(TxBx_Loc.Text))
                 fbd.SelectedPath = Environment.CurrentDirectory;
-            fbd.SelectedPath = TxBx_Loc.Text;
+            else fbd.SelectedPath = TxBx_Loc.Text;
 
             //Set new folder path
-            if (fbd.ShowDialog() == DialogResult.OK)
-            {
+            if (fbd.ShowDialog() == DialogResult.OK) {
                 TxBx_Loc.Text = fbd.SelectedPath;
                 TxBx_Loc.SelectionStart = TxBx_Loc.Text.Length;
                 TryScan();
@@ -69,15 +70,10 @@ namespace Nagru___Manga_Organizer
             fbd.Dispose();
         }
 
-        /* Start scan manually */
-        private void Btn_Scan_Click(object sender, EventArgs e)
-        { TryScan(); }
-
         /* Start directory scan in new thread */
         private void TryScan()
         {
-            if (!ExtDirectory.Restricted(TxBx_Loc.Text))
-            {
+            if (!ExtDirectory.Restricted(TxBx_Loc.Text)) {
                 lFound.Clear();
                 LV_Found.Items.Clear();
                 Cursor = Cursors.WaitCursor;
@@ -92,40 +88,25 @@ namespace Nagru___Manga_Organizer
         {
             string[] asDirs = Directory.GetDirectories(
                 TxBx_Loc.Text, "*", SearchOption.TopDirectoryOnly);
+            if (asDirs.Length == 0) {
+                BeginInvoke(new DelVoidVoid(SetFoundItems));
+                return;
+            }
 
-            if (asDirs.Length > 0)
-                for (int i = 0; i < asDirs.Length; i++)
-                {
-                    //check if filepath already in database
-                    bool bExists = false;
-                    for (int x = 0; x < lCurr.Count; x++)
-                        if (asDirs[i].Equals(lCurr[x].sLoc,
-                            StringComparison.OrdinalIgnoreCase))
-                        {
-                            bExists = true;
-                            break;
-                        }
+            //lCurr.Contains
+            for (int i = 0; i < asDirs.Length; i++) {
+                if (hsPaths.Contains(asDirs[i])) continue;
 
-                    //if not, add to potential 'found' items
-                    if (!bExists)
-                    {
-                        string[] sTitle = Path.GetFileName(asDirs[i]).Split(
-                            new string[] { "[", "]" }, StringSplitOptions.RemoveEmptyEntries);
+                string[] sTitle = Path.GetFileName(asDirs[i]).Split(
+                    new string[] { "[", "]" }, StringSplitOptions.RemoveEmptyEntries);
 
-                        Main.stEntry en;
-                        if (sTitle.Length == 2)
-                            en = new Main.stEntry(sTitle[1].TrimStart(), sTitle[0], asDirs[i], "", "Manga", "",
-                                DateTime.Now, ExtDirectory.GetFiles(asDirs[i]).Length, false);
-                        else
-                            en = new Main.stEntry(sTitle[0].TrimStart(), "", asDirs[i], "", "Manga", "",
-                                DateTime.Now, ExtDirectory.GetFiles(asDirs[i]).Length, false);
+                Main.stEntry en = new Main.stEntry((sTitle.Length == 2) ? sTitle[1].TrimStart() :
+                    sTitle[0].TrimStart(), (sTitle.Length == 2) ? sTitle[0] : "", asDirs[i], "",
+                    "Manga", "", DateTime.Now, ExtDirectory.GetFiles(asDirs[i]).Length, false);
 
-                        lFound.Add(en);
-                        BeginInvoke(new DelVoidEntry(AddItem), en);
-                    }
-                }
-
-            //finish form operations of scanning
+                lFound.Add(en);
+                BeginInvoke(new DelVoidEntry(AddItem), en);
+            }
             BeginInvoke(new DelVoidVoid(SetFoundItems));
         }
 
@@ -136,10 +117,8 @@ namespace Nagru___Manga_Organizer
             lvi.SubItems.Add(en.sTitle);
             lvi.SubItems.Add(en.iPages.ToString());
 
-            if (lIgnored.Contains(lvi.SubItems[0].Text + lvi.SubItems[1].Text))
-            {
-                if (ChkBx_All.Checked)
-                {
+            if (hsIgnore.Contains(lvi.SubItems[0].Text + lvi.SubItems[1].Text)) {
+                if (ChkBx_All.Checked) {
                     lvi.BackColor = System.Drawing.Color.MistyRose;
                     LV_Found.Items.Add(lvi);
                 }
@@ -164,16 +143,13 @@ namespace Nagru___Manga_Organizer
             List<ListViewItem> lItems = new List<ListViewItem>(LV_Found.Items.Count + 1);
 
             //refresh LV_Entries
-            for (int i = 0; i < lFound.Count; i++)
-            {
+            for (int i = 0; i < lFound.Count; i++) {
                 ListViewItem lvi = new ListViewItem(lFound[i].sArtist);
                 lvi.SubItems.Add(lFound[i].sTitle);
                 lvi.SubItems.Add(lFound[i].iPages.ToString());
 
-                if (lIgnored.Contains(lvi.SubItems[0].Text + lvi.SubItems[1].Text))
-                {
-                    if (ChkBx_All.Checked)
-                    {
+                if (hsIgnore.Contains(lvi.SubItems[0].Text + lvi.SubItems[1].Text)) {
+                    if (ChkBx_All.Checked) {
                         lvi.BackColor = System.Drawing.Color.MistyRose;
                         lItems.Add(lvi);
                     }
@@ -196,8 +172,7 @@ namespace Nagru___Manga_Organizer
         /* Sort entries based on clicked column */
         private void LV_Found_ColumnClick(object sender, ColumnClickEventArgs e)
         {
-            if (e.Column != lvSortObj.ColToSort)
-            {
+            if (e.Column != lvSortObj.ColToSort) {
                 lvSortObj.ColToSort = e.Column;
                 lvSortObj.OrdOfSort = SortOrder.Ascending;
             }
@@ -218,6 +193,13 @@ namespace Nagru___Manga_Organizer
             LV_Found.EndUpdate();
         }
 
+        /* Give listview priority whenever mouse hovers in it */
+        private void LV_Found_MouseHover(object sender, EventArgs e)
+        {
+            if (!LV_Found.Focused)
+                LV_Found.Focus();
+        }
+
         /* Change whether LV shows ignored items or not */
         private void ChkBx_All_CheckedChanged(object sender, EventArgs e)
         { UpdateLV(); }
@@ -232,14 +214,12 @@ namespace Nagru___Manga_Organizer
                 LV_Found.FocusedItem.SubItems[1].Text;
 
             for (int i = 0; i < lFound.Count; i++)
-                if (sMatch == lFound[i].sArtist + lFound[i].sTitle)
-                {
+                if (sMatch == lFound[i].sArtist + lFound[i].sTitle) {
                     indx = (short)i;
                     break;
                 }
 
-            if (indx < 0 || !Directory.Exists(lFound[indx].sLoc))
-            {
+            if (indx < 0 || !Directory.Exists(lFound[indx].sLoc)) {
                 MessageBox.Show("Could not open location.", "Manga Organizer",
                   MessageBoxButtons.OK, MessageBoxIcon.Error); return;
             }
@@ -250,25 +230,20 @@ namespace Nagru___Manga_Organizer
         /* Sends selected items back to Main Form */
         private void Btn_Add_Click(object sender, EventArgs e)
         {
-            if (LV_Found.SelectedItems.Count == 0)
-                for (int i = 0; i < LV_Found.Items.Count; i++)
-                    LV_Found.Items[i].Selected = true;
+            if (LV_Found.SelectedItems.Count == 0) return;
 
-            for (int i = 0; i < LV_Found.SelectedItems.Count; i++)
-            {
+            for (int i = 0; i < LV_Found.SelectedItems.Count; i++) {
                 string sMatch = LV_Found.SelectedItems[i].SubItems[0].Text
                     + LV_Found.SelectedItems[i].SubItems[1].Text;
 
                 for (int x = 0; x < lFound.Count; x++)
-                    if (sMatch == lFound[x].sArtist + lFound[x].sTitle)
-                    {
+                    if (sMatch == lFound[x].sArtist + lFound[x].sTitle) {
                         lCurr.Add(lFound[x]);
                         break;
                     }
             }
 
             delNewEntry.Invoke();
-            this.Close();
         }
 
         /* Unselect item(s) */
@@ -279,14 +254,16 @@ namespace Nagru___Manga_Organizer
         private void Scan_FormClosing(object sender, FormClosingEventArgs e)
         {
             //preserve ignored items
-            string sNewIgn = "";
-            for (int i = 0; i < lIgnored.Count; i++)
-                if (lIgnored[i] != string.Empty) sNewIgn += lIgnored[i] + '|';
-            Properties.Settings.Default.Ignore = sNewIgn;
+            string sNew = "";
+            foreach (string svar in hsIgnore)
+                if (svar != string.Empty) sNew += svar + '|';
+
+            Properties.Settings.Default.Ignore = sNew;
             Properties.Settings.Default.Save();
 
             //clear old data
-            lIgnored.Clear();
+            hsIgnore.Clear();
+            hsPaths.Clear();
             lFound.Clear();
 
             //update main form
@@ -296,35 +273,24 @@ namespace Nagru___Manga_Organizer
         /* Add or remove item from ignored list based on context */
         private void Btn_Ignore_Click(object sender, EventArgs e)
         {
-            if (LV_Found.SelectedItems.Count == 0)
-            {
-                MessageBox.Show("You must select at least one item.", "Manga Organizer",
-                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                return;
-            }
+            if (LV_Found.SelectedItems.Count == 0) return;
 
-            if (ChkBx_All.Checked)
-                for (int i = 0; i < LV_Found.SelectedItems.Count; i++)
-                {
-                    string sItem = LV_Found.SelectedItems[i].SubItems[0].Text +
-                            LV_Found.SelectedItems[i].SubItems[1].Text;
+            LV_Found.BeginUpdate();
+            for (int i = 0; i < LV_Found.SelectedItems.Count; i++) {
+                string sItem = LV_Found.SelectedItems[i].SubItems[0].Text +
+                        LV_Found.SelectedItems[i].SubItems[1].Text;
 
-                    if (lIgnored.Contains(sItem))
-                        for (int x = 0; x < lIgnored.Count; x++)
-                        {
-                            if (lIgnored[x] == sItem)
-                            {
-                                lIgnored.RemoveAt(x);
-                                break;
-                            }
-                        }
-                    else lIgnored.Add(sItem);
+                if (hsIgnore.Contains(sItem)) {
+                    hsIgnore.Remove(sItem);
+                    LV_Found.SelectedItems[i].BackColor = System.Drawing.SystemColors.Window;
                 }
-            else for (int i = 0; i < LV_Found.SelectedItems.Count; i++)
-                    lIgnored.Add(LV_Found.SelectedItems[i].SubItems[0].Text +
-                            LV_Found.SelectedItems[i].SubItems[1].Text);
-
-            UpdateLV();
+                else {
+                    hsIgnore.Add(sItem);
+                    if (!ChkBx_All.Checked) LV_Found.SelectedItems[i--].Remove();
+                    else LV_Found.SelectedItems[i].BackColor = System.Drawing.Color.MistyRose;
+                }
+            }
+            LV_Found.EndUpdate();
         }
         #endregion
 
