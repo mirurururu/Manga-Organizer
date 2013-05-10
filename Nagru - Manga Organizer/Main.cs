@@ -979,7 +979,6 @@ namespace Nagru___Manga_Organizer
                     int iPos = LV_Entries.TopItem == null ? -1 : LV_Entries.TopItem.Index;
                     AddEntries();
                     Reset();
-                    ReFocus(iPos);
                 }
             }
             else MessageBox.Show("This item already exists in the database.",

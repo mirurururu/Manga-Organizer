@@ -1,6 +1,7 @@
 #### May 10, 2013
 	- Fixed WebRequest hangs by setting 'Proxy = null;'
-	- Fixed unpolished behaviour with LV focusing
+	- Fixed unpolished behaviour with listview focusing
+	- Removed aberrant Refocus() call in MnTs_New
 	- Improved Scan speed using hashsets
 
 #### May 09, 2013
