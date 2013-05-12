@@ -10,16 +10,19 @@ namespace Nagru___Manga_Organizer
         delegate void DelVoidInt(bool? bResult);
         DelVoidInt delFini = null;
 
+        string sVer = Properties.Settings.Default.Version;
+
         public About()
         { InitializeComponent(); }
 
         private void About_Load(object sender, EventArgs e)
         {
             delFini = Checked;
-            Text = string.Format("About ({0})", Properties.Settings.Default.Version);
+            Text = string.Format("About (v. {0}-{1}-20{2})", 
+                sVer.Substring(2, 2), sVer.Substring(4, 2), sVer.Substring(0, 2));
 
             Lbl_P1.Text = "This program provides tagging, searching and other basic management for a\n" +
-            "folder directory. It is intended as a companion to the EH website, and\n" +
+            "folder directory. It is intended as a companion to the E-H website, and\n" +
             "optimally functions with directory names formatted as \"[Artist] Title\".\n" +
             "Copyright (C) 2012  Nagru\n\n\n" +
             "This program is free software; you can redistribute it and/or modify it\n" +
@@ -58,7 +61,7 @@ namespace Nagru___Manga_Organizer
                 
                 using (StreamReader sr = new StreamReader(rq.GetResponse().GetResponseStream()))
                 {
-                    if (sr.ReadToEnd().Contains(Properties.Settings.Default.Version))
+                    if (sr.ReadToEnd().Contains(sVer))
                         bNew = false;
                     else bNew = true;
                 }
@@ -77,14 +80,14 @@ namespace Nagru___Manga_Organizer
 
         private void Checked(bool? bNew)
         {
-            Text = "About (" + Properties.Settings.Default.Version + ") - ";
+            Text = Text.Substring(0, 21);
             switch (bNew)
             {
-                case null: Text += "Could not establish a connection";
+                case null: Text += " - Could not establish a connection";
                     break;
-                case false: Text += "Latest version";
+                case false: Text += " - Latest version";
                     break;
-                case true: Text += "New version available";
+                case true: Text += " - New version available";
                     break;
             }
 

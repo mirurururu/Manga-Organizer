@@ -56,7 +56,7 @@
             this.Col_Page.Text = "Page";
             this.Col_Page.Width = 400;
             // 
-            // Browse_GoTo
+            // BrowseTo
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -65,10 +65,10 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.KeyPreview = true;
             this.MinimumSize = new System.Drawing.Size(150, 100);
-            this.Name = "Browse_GoTo";
+            this.Name = "BrowseTo";
             this.Text = "Select pages: ";
             this.Load += new System.EventHandler(this.Browse_GoTo_Load);
-            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Browse_GoTo_KeyUp);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.BrowseTo_KeyDown);
             this.ResumeLayout(false);
 
         }

@@ -28,66 +28,46 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.picBx_Right = new System.Windows.Forms.PictureBox();
-            this.picBx_Left = new System.Windows.Forms.PictureBox();
-            ((System.ComponentModel.ISupportInitialize)(this.picBx_Right)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.picBx_Left)).BeginInit();
+            this.picBx = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.picBx)).BeginInit();
             this.SuspendLayout();
             // 
-            // picBx_Right
+            // picBx
             // 
-            this.picBx_Right.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.picBx_Right.BackColor = System.Drawing.Color.DarkGray;
-            this.picBx_Right.Location = new System.Drawing.Point(250, 0);
-            this.picBx_Right.Name = "picBx_Right";
-            this.picBx_Right.Size = new System.Drawing.Size(250, 390);
-            this.picBx_Right.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.picBx_Right.TabIndex = 0;
-            this.picBx_Right.TabStop = false;
-            this.picBx_Right.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Browse_MouseUp);
+            this.picBx.BackColor = System.Drawing.Color.DarkGray;
+            this.picBx.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.picBx.Location = new System.Drawing.Point(0, 0);
+            this.picBx.Name = "picBx";
+            this.picBx.Size = new System.Drawing.Size(784, 562);
+            this.picBx.TabIndex = 1;
+            this.picBx.TabStop = false;
+            this.picBx.Paint += new System.Windows.Forms.PaintEventHandler(this.picBx_Left_Paint);
+            this.picBx.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Browse_MouseUp);
             // 
-            // picBx_Left
-            // 
-            this.picBx_Left.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.picBx_Left.BackColor = System.Drawing.Color.DarkGray;
-            this.picBx_Left.Location = new System.Drawing.Point(0, 0);
-            this.picBx_Left.Name = "picBx_Left";
-            this.picBx_Left.Size = new System.Drawing.Size(244, 390);
-            this.picBx_Left.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.picBx_Left.TabIndex = 1;
-            this.picBx_Left.TabStop = false;
-            this.picBx_Left.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Browse_MouseUp);
-            // 
-            // Browse
+            // Browse_Img
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.DarkGray;
-            this.ClientSize = new System.Drawing.Size(500, 389);
-            this.Controls.Add(this.picBx_Left);
-            this.Controls.Add(this.picBx_Right);
+            this.ClientSize = new System.Drawing.Size(784, 562);
+            this.Controls.Add(this.picBx);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "Browse";
+            this.Name = "Browse_Img";
             this.ShowInTaskbar = false;
             this.Text = "Browse";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Browse_FormClosing);
             this.Load += new System.EventHandler(this.Browse_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Browse_KeyDown);
             this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Browse_MouseUp);
-            ((System.ComponentModel.ISupportInitialize)(this.picBx_Right)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.picBx_Left)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picBx)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.PictureBox picBx_Right;
-        private System.Windows.Forms.PictureBox picBx_Left;
+        private System.Windows.Forms.PictureBox picBx;
     }
 }

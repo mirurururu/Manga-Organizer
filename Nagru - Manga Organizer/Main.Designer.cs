@@ -925,7 +925,7 @@
             // 
             // Delay
             // 
-            this.Delay.Interval = 300;
+            this.Delay.Interval = 400;
             this.Delay.Tick += new System.EventHandler(this.Delay_Tick);
             // 
             // Main

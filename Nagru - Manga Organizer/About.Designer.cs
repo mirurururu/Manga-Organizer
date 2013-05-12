@@ -74,7 +74,7 @@
             this.LnkLbl_Git.Size = new System.Drawing.Size(371, 23);
             this.LnkLbl_Git.TabIndex = 3;
             this.LnkLbl_Git.TabStop = true;
-            this.LnkLbl_Git.Text = "http://nagru.github.com/Manga-Organizer";
+            this.LnkLbl_Git.Text = "http://nagru.github.io/Manga-Organizer";
             this.LnkLbl_Git.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.LnkLbl_Git.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkClicked);
             // 

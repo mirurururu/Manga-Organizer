@@ -1,3 +1,9 @@
+#### May 11, 2013
+	- Fixed Scan behaviour
+	- Custom imageviewer now displays images side-by-side
+	- Minor listview update speed increase
+	- Changed entry type from struct to class
+
 #### May 10, 2013
 	- Fixed WebRequest hangs by setting 'Proxy = null;'
 	- Fixed unpolished behaviour with listview focusing

@@ -41,7 +41,7 @@ namespace Nagru___Manga_Organizer
             LV_Found_Resize(sender, e);
 
             //grab filepath
-            string sPath = Properties.Settings.Default.SavLoc;
+            string sPath = Properties.Settings.Default.DefLoc;
             if (sPath == string.Empty || !Directory.Exists(sPath))
                 sPath = Environment.CurrentDirectory;
             TxBx_Loc.Text = sPath;
@@ -83,29 +83,18 @@ namespace Nagru___Manga_Organizer
                 "Scan", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
-        /* Scan default directory for entries */
+        /* Scan passed directory for entries */
+        //static IEnumerable<Main.stEntry> ScanDir() { -yield return- }
         private void ScanDir(Object obj)
         {
             string[] asDirs = Directory.GetDirectories(
                 TxBx_Loc.Text, "*", SearchOption.TopDirectoryOnly);
-            if (asDirs.Length == 0) {
-                BeginInvoke(new DelVoidVoid(SetFoundItems));
-                return;
-            }
 
             //lCurr.Contains
-            for (int i = 0; i < asDirs.Length; i++) {
+            for (int i = 0; i < asDirs.Length; i++)
+            {
                 if (hsPaths.Contains(asDirs[i])) continue;
-
-                string[] sTitle = Path.GetFileName(asDirs[i]).Split(
-                    new string[] { "[", "]" }, StringSplitOptions.RemoveEmptyEntries);
-
-                Main.stEntry en = new Main.stEntry((sTitle.Length == 2) ? sTitle[1].TrimStart() :
-                    sTitle[0].TrimStart(), (sTitle.Length == 2) ? sTitle[0] : "", asDirs[i], "",
-                    "Manga", "", DateTime.Now, ExtDirectory.GetFiles(asDirs[i]).Length, false);
-
-                lFound.Add(en);
-                BeginInvoke(new DelVoidEntry(AddItem), en);
+                BeginInvoke(new DelVoidEntry(AddItem), new Main.stEntry(asDirs[i]));
             }
             BeginInvoke(new DelVoidVoid(SetFoundItems));
         }
@@ -114,8 +103,8 @@ namespace Nagru___Manga_Organizer
         private void AddItem(Main.stEntry en)
         {
             ListViewItem lvi = new ListViewItem(en.sArtist);
-            lvi.SubItems.Add(en.sTitle);
-            lvi.SubItems.Add(en.iPages.ToString());
+            lvi.SubItems.AddRange(new string[] { en.sTitle, en.iPages.ToString() });
+            lFound.Add(en);
 
             if (hsIgnore.Contains(lvi.SubItems[0].Text + lvi.SubItems[1].Text)) {
                 if (ChkBx_All.Checked) {
@@ -239,10 +228,12 @@ namespace Nagru___Manga_Organizer
                 for (int x = 0; x < lFound.Count; x++)
                     if (sMatch == lFound[x].sArtist + lFound[x].sTitle) {
                         lCurr.Add(lFound[x]);
+                        lFound.RemoveAt(x);
                         break;
                     }
             }
-
+            
+            UpdateLV();
             delNewEntry.Invoke();
         }
 

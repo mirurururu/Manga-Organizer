@@ -10,8 +10,11 @@ namespace Nagru___Manga_Organizer
     public partial class BrowseTo : Form
     {
         public List<string> lFiles;
+        public Image imgL { get; private set; }
+        public Image imgR { get; private set; }
         public int iPage { get; set; }
-
+        public bool bWL, bWR;
+        
         public BrowseTo()
         {
             InitializeComponent();
@@ -23,12 +26,8 @@ namespace Nagru___Manga_Organizer
             for (int i = 0; i < lFiles.Count; i++)
                 LV_Pages.Items.Add(new ListViewItem(lFiles[i]));
             Col_Page.Width = LV_Pages.DisplayRectangle.Width;
-
-            if (iPage > 0) iPage--;
             LV_SelectPages();
-
-            /* Compensate for broken scroll-to function
-             * by running it multiple times (3 is sweet-spot) */
+            
             if (LV_Pages.Items.Count == 0) return;
             LV_Pages.TopItem = LV_Pages.Items[iPage];
             LV_Pages.TopItem = LV_Pages.Items[iPage];
@@ -55,30 +54,38 @@ namespace Nagru___Manga_Organizer
             LV_Pages.Items[iNext].Selected = true;
         }
 
-        private void Browse_GoTo_KeyUp(object sender, KeyEventArgs e)
-        { 
-            if (e.KeyCode == Keys.Enter) 
-                UpdatePage();
+        private void BrowseTo_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.Enter:
+                    UpdatePage();
+                    break;
+                default:
+                    this.Close();
+                    break;
+            }
             e.Handled = true;
         }
 
         private void LV_Pages_DoubleClick(object sender, EventArgs e)
         { UpdatePage(); }
-
+        
         private void UpdatePage()
         {
-            Image img;
+            if (iPage == 0 && !(bWL || bWR))
+                if(++iPage >= lFiles.Count) iPage = 0;
             using (FileStream fs = new FileStream(
                 lFiles[iPage], FileMode.Open, FileAccess.Read))
-                img = Image.FromStream(fs);
-
-            if (img.Height < img.Width)
+                imgL = Image.FromStream(fs);
+            if (!(bWL = imgL.Height < imgL.Width))
             {
-                for (int i = 0; i < 3; i++)
-                    if (--iPage < 0)
-                        iPage = LV_Pages.Items.Count - 1;
+                if (iPage - 1 < 0) iPage = lFiles.Count;
+                using (FileStream fs = new FileStream(
+                    lFiles[iPage - 1], FileMode.Open, FileAccess.Read))
+                    imgR = Image.FromStream(fs);
+                bWR = imgR.Height < imgR.Width;
             }
-            else iPage += 2;
 
             this.DialogResult = DialogResult.OK;
             this.Close();

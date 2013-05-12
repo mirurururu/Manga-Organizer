@@ -131,7 +131,7 @@
     <EmbeddedResource Include="Browse_Img.resx">
       <DependentUpon>Browse_Img.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="BrowseTo.resx">
+    <EmbeddedResource Include="Browse_Pgs.resx">
       <DependentUpon>Browse_Pgs.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GetUrl.resx">

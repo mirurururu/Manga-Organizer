@@ -24,7 +24,7 @@ namespace Nagru___Manga_Organizer
         }
 
         /* Convert unicode to usable Ascii
-           Author: Adam Sills, (October 23, 2009)         */
+           Author: Adam Sills (October 23, 2009)         */
         public static string DecodeNonAscii(string sRaw)
         {
             return System.Text.RegularExpressions.Regex.Replace(sRaw, @"\\u(?<Value>[a-zA-Z0-9]{4})",
