@@ -25,11 +25,13 @@ namespace Nagru___Manga_Organizer
         private void Browse_Load(object sender, EventArgs e)
         {
             Cursor.Hide();
-            
+
             //set fullscreen
-            Bounds = Screen.PrimaryScreen.Bounds;
-            FormBorderStyle = FormBorderStyle.None;
-            WindowState = FormWindowState.Maximized;
+            #if !DEBUG
+                Bounds = Screen.PrimaryScreen.Bounds;
+                FormBorderStyle = FormBorderStyle.None;
+                WindowState = FormWindowState.Maximized;
+            #endif
             fWidth = (float)(this.Width / 2.0);
 
             //get files
