@@ -5,15 +5,12 @@ using System.Collections.Generic;
 
 namespace Nagru___Manga_Organizer
 {
+    /* Show how many times a tag is used */
     public partial class Stats : Form
     {
-        public List<Main.stEntry> CurrentItems
-        { set { lCurr = value; } }
-        
-        List<Main.stEntry> lCurr;
+        public List<Main.stEntry> lCurr { private get; set; }
         LVsorter lvSortObj = new LVsorter();
-
-        /* Show how many times a tag is used */
+        
         public Stats()
         {
             InitializeComponent();
@@ -26,19 +23,16 @@ namespace Nagru___Manga_Organizer
             ResizeLV();
         }
 
-        /* Sort entries based on clicked column   */
         private void LV_Stats_ColumnClick(object sender, ColumnClickEventArgs e)
         {
             if (e.Column != lvSortObj.ColToSort)
                 lvSortObj.NewColumn(e.Column, SortOrder.Ascending);
-            else lvSortObj.SwapOrder(); //reverse sort order
-
+            else lvSortObj.SwapOrder();
             LV_Stats.Sort();
         }
 
         /* Auto-resizes Col_Tags to match Form width   */
-        private void LV_Stats_Resize(object sender, EventArgs e)
-        { ResizeLV(); }
+        private void LV_Stats_Resize(object sender, EventArgs e) { ResizeLV(); }
         private void ResizeLV()
         {
             LV_Stats.BeginUpdate();
@@ -60,8 +54,7 @@ namespace Nagru___Manga_Organizer
 
             for (int i = 0; i < lCurr.Count; i++)
             {
-                if (ChkBx_FavStats.Checked)
-                    if (!lCurr[i].bFav) continue;
+                if (ChkBx_FavStats.Checked && !lCurr[i].bFav) continue;
                 foreach (string svar in lCurr[i].sTags.Split(','))
                 {
                     string sItem = svar.TrimStart();
@@ -89,6 +82,11 @@ namespace Nagru___Manga_Organizer
 
             Text = string.Format("Stats: {0} tags in {1} manga", sdtTags.Count, iCount);
             LV_Stats.Select();
+        }
+
+        private void Stats_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            this.DialogResult = DialogResult.OK;
         }
     }
 }

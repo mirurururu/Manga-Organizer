@@ -1,3 +1,14 @@
+#### May 13, 2013
+	- Complete Search() rehaul to better reflect EH's
+	 (eg. title:celeb_wife date:>01/01/12 -vanilla)
+	- Search now includes Description, Date, & Pages fields
+	- More LINQ usage
+	- Cont. code cleanup
+
+#### May 12, 2013
+	- Fixed broken "Shell->Open With..." feature
+	- Various code cleanup
+
 #### May 11, 2013
 	- Fixed Scan behaviour
 	- Custom imageviewer now displays images side-by-side

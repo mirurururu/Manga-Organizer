@@ -6,8 +6,9 @@ namespace Nagru___Manga_Organizer
     public partial class GetUrl : Form
     {
         Uri uri;
-        public string Url
-        { get { return uri.AbsoluteUri; } }
+        public string Url {
+            get { return uri.AbsoluteUri; }
+        }
 
         public GetUrl()
         {

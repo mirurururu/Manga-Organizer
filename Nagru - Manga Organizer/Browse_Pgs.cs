@@ -9,11 +9,12 @@ namespace Nagru___Manga_Organizer
 {
     public partial class BrowseTo : Form
     {
-        public List<string> lFiles;
+        public List<string> lFiles { private get; set; }
         public Image imgL { get; private set; }
         public Image imgR { get; private set; }
         public int iPage { get; set; }
-        public bool bWL, bWR;
+        public bool bWL { get; set;}
+        public bool bWR { get; set; }
         
         public BrowseTo()
         {
@@ -71,6 +72,7 @@ namespace Nagru___Manga_Organizer
         private void LV_Pages_DoubleClick(object sender, EventArgs e)
         { UpdatePage(); }
         
+        /* Return selected pages to Browse_Img */
         private void UpdatePage()
         {
             if (iPage == 0 && !(bWL || bWR))

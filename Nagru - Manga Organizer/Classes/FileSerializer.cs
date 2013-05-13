@@ -8,7 +8,6 @@ namespace Nagru___Manga_Organizer
        Author: sdktsg, (Jan 9, 2008)                         */
     public static class FileSerializer
     {
-        //serialize passed object
         public static void Serialize(string sFilepath, object obj)
         {
             if (obj == null)
@@ -24,7 +23,6 @@ namespace Nagru___Manga_Organizer
             finally { if (stream != null) stream.Close(); }
         }
 
-        //deserialize passed file
         public static T Deserialize<T>(string sFilepath)
         {
             T obj = default(T);

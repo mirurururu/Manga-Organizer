@@ -212,7 +212,6 @@
             this.Text = "Scan";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Scan_FormClosing);
             this.Load += new System.EventHandler(this.Scan_Load);
-            this.Click += new System.EventHandler(this.Scan_Click);
             this.Mn_TxBx.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();

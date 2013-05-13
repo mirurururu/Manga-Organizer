@@ -1,36 +1,31 @@
 ﻿using System;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Nagru___Manga_Organizer
 {
-    /* Extends String.Contains to support case options & multiple filters  */
     public static class ExtString
     {
-        public static bool Contains(this string sSource, string sCheck,
-            StringComparison scComp = StringComparison.OrdinalIgnoreCase)
+        public static bool Contains(this string sRaw, string sFind,
+            StringComparison cComp = StringComparison.OrdinalIgnoreCase)
         {
-            string[] sFilters = sCheck.Split('\0');
-            for (int i = 0; i < sFilters.Length; i++)
-                if ((sSource.IndexOf(sFilters[i], scComp) >= 0))
-                    return true;
-
+            if (sRaw.IndexOf(sFind, cComp) >= 0) return true;
             return false;
         }
 
-        public static string[] Split(string sRaw, string sFilter, 
-            StringSplitOptions SplitOption = StringSplitOptions.RemoveEmptyEntries)
+        public static string[] Split(string sRaw, params string[] sFilter)
         {
-            return sRaw.Split(new string[] { sFilter }, SplitOption);
+            return sRaw.Split(sFilter, StringSplitOptions.RemoveEmptyEntries);
         }
 
         /* Convert unicode to usable Ascii
            Author: Adam Sills (October 23, 2009)         */
         public static string DecodeNonAscii(string sRaw)
         {
-            return System.Text.RegularExpressions.Regex.Replace(sRaw, @"\\u(?<Value>[a-zA-Z0-9]{4})",
-                m =>
-                {
-                    return ((char)int.Parse(m.Groups["Value"].Value, System.Globalization.NumberStyles.HexNumber)).ToString();
+            return Regex.Replace(sRaw, @"\\u(?<Value>[a-zA-Z0-9]{4})",
+                m => {
+                    return ((char)int.Parse(m.Groups["Value"].Value, 
+                        System.Globalization.NumberStyles.HexNumber)).ToString();
                 });
         }
     }

@@ -92,6 +92,7 @@
             this.MinimizeBox = false;
             this.Name = "About";
             this.Text = "About <Error>";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.About_FormClosing);
             this.Load += new System.EventHandler(this.About_Load);
             this.Shown += new System.EventHandler(this.About_Shown);
             this.ResumeLayout(false);

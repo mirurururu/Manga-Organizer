@@ -50,7 +50,6 @@ namespace Nagru___Manga_Organizer
 
             try
             {
-                //grab version info
                 System.Net.ServicePointManager.DefaultConnectionLimit = 64;
                 HttpWebRequest rq = (HttpWebRequest)HttpWebRequest.Create("http://dl.dropboxusercontent.com/u/103899726/Version.txt");
                 rq.UserAgent = "Mozilla/5.0 (Windows; U; MSIE 9.0; WIndows NT 9.0; en-US))";
@@ -106,6 +105,11 @@ namespace Nagru___Manga_Organizer
                 LnkLbl_Gpl.LinkVisited = true;
                 System.Diagnostics.Process.Start("http://www.gnu.org/licenses/gpl.html");
             }
+        }
+
+        private void About_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            this.DialogResult = DialogResult.OK;
         }
     }
 }

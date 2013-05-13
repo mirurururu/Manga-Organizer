@@ -9,17 +9,15 @@ namespace Nagru___Manga_Organizer
        Author: Microsoft (March 13, 2008)          */
     public class LVsorter : IComparer
     {
-        public int ColToSort;       //specifies column to sort
-        public SortOrder OrdOfSort; //specifies order sorting
+        public int ColToSort;
+        public SortOrder OrdOfSort;
 
-        /* Initializes column & order  */
         public LVsorter()
         {
             ColToSort = 0;
             OrdOfSort = SortOrder.Ascending;
         }
 
-        /* Swaps current direction of column sorting   */
         public void SwapOrder()
         {
             if (OrdOfSort == SortOrder.Ascending) 
@@ -27,18 +25,16 @@ namespace Nagru___Manga_Organizer
             else OrdOfSort = SortOrder.Ascending;
         }
 
-        /* Set new column to sort  */
         public void NewColumn(int Column, SortOrder Order)
         { ColToSort = Column; OrdOfSort = Order; }
 
-        /* Compare ListViewItems (accounts for numbers)  */
         public int Compare(object x, object y)
         {
             if (x == null || y == null) return 0;
             ListViewItem lviX = (ListViewItem)x;
             ListViewItem lviY = (ListViewItem)y;
 
-            //choose sorting style
+            //sort by art-tit, tit-art or custom-single
             string sX, sY;
             switch (ColToSort)
             {

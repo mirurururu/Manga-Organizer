@@ -5,7 +5,7 @@ using System.Security.Permissions;
 
 namespace Nagru___Manga_Organizer
 {
-    public static class ExtDirectory
+    public static class ExtDir
     {
         /* Extends Directory.GetFiles to support multiple filters
            Author: Bean Software (2002-2008)                            */

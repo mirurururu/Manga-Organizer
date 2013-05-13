@@ -260,6 +260,7 @@
             // 
             this.TxBx_Search.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.TxBx_Search.CharacterCasing = System.Windows.Forms.CharacterCasing.Lower;
             this.TxBx_Search.ContextMenuStrip = this.Mn_TxBx;
             this.TxBx_Search.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.TxBx_Search.Location = new System.Drawing.Point(59, 6);

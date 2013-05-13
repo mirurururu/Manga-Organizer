@@ -9,11 +9,11 @@ namespace Nagru___Manga_Organizer
 {
     public partial class Browse_Img : Form
     {
-        public int iPage;
-        public string sPath;
+        public int iPage { get; set;}
+        public string sPath { get; set; }
+        public List<string> lFiles { get; set; }
 
-        List<string> lFiles = new List<string>(25);
-        Image imgR = null, imgL = null;
+        Image imgR, imgL;
         bool bWideL, bWideR, bNext;
         float fWidth;
 
@@ -26,18 +26,13 @@ namespace Nagru___Manga_Organizer
         {
             Cursor.Hide();
 
-            //set fullscreen
             #if !DEBUG
                 Bounds = Screen.PrimaryScreen.Bounds;
                 FormBorderStyle = FormBorderStyle.None;
                 WindowState = FormWindowState.Maximized;
             #endif
+
             fWidth = (float)(this.Width / 2.0);
-
-            //get files
-            lFiles.AddRange(ExtDirectory.GetFiles(sPath,
-                SearchOption.TopDirectoryOnly));
-
             if (iPage == -1) Next();
             else Prev();
         }
@@ -93,7 +88,7 @@ namespace Nagru___Manga_Organizer
                     }
 
                     fmGoTo.Dispose();
-                    this.Focus();
+                    this.Select();
                     Cursor.Hide();
                     break;
                 case Keys.PrintScreen:
@@ -112,8 +107,7 @@ namespace Nagru___Manga_Organizer
             }
         }
 
-        /* Go to next page */
-        void Next()
+        private void Next()
         {
             bNext = true;
             Reset();
@@ -134,8 +128,7 @@ namespace Nagru___Manga_Organizer
             picBx.Refresh();
         }
 
-        /* Go to previous page */
-        void Prev()
+        private void Prev()
         {
             if (iPage != 0 && !(bWideR || bWideL)) iPage--;
             bNext = false;
@@ -157,8 +150,7 @@ namespace Nagru___Manga_Organizer
             picBx.Refresh();
         }
 
-        /* Set flags back to default */
-        void Reset()
+        private void Reset()
         {
             bWideL = false;
             bWideR = false;
@@ -171,19 +163,16 @@ namespace Nagru___Manga_Organizer
             Graphics g = e.Graphics;
             g.InterpolationMode = InterpolationMode.HighQualityBicubic;
 
-            if (!bWideL && !bWideR)
-            {
+            if (!bWideL && !bWideR) {
                 DrawImage_L(g, ResizeImage(imgL, fWidth, picBx.Height));
                 DrawImage_R(g, ResizeImage(imgR, fWidth, picBx.Height));
             }
-            else if (bWideL)
-            {
+            else if (bWideL) {
                 if (!bNext)
                     DrawImage_L(g, ResizeImage(imgL, picBx.Width, picBx.Height));
                 else DrawImage_R(g, ResizeImage(imgR, fWidth, picBx.Height));
             }
-            else /* if (bWideR) */
-            {
+            else /*if (bWideR)*/ {
                 if (bNext)
                     DrawImage_R(g, ResizeImage(imgR, picBx.Width, picBx.Height));
                 else DrawImage_L(g, ResizeImage(imgL, fWidth, picBx.Height));
@@ -191,7 +180,6 @@ namespace Nagru___Manga_Organizer
             picBx.ResumeLayout();
         }
 
-        /* Draw image to picBx */
         private void DrawImage_L(Graphics g, Image img)
         {
             g.DrawImage(img,
@@ -222,19 +210,16 @@ namespace Nagru___Manga_Organizer
             int iNewHeight = (int)(img.Height * fAdj);
 
             Image newImage = new Bitmap(iNewWidth, iNewHeight);
-            using (Graphics g = Graphics.FromImage(newImage))
-            {
+            using (Graphics g = Graphics.FromImage(newImage)) {
                 g.InterpolationMode = InterpolationMode.HighQualityBicubic;
                 g.DrawImage(img, 0, 0, iNewWidth, iNewHeight);
             }
             return newImage;
         }
 
-        /* Alternative form closing method  */
         private void Browse_MouseUp(object sender, MouseEventArgs e)
         { this.Close(); }
 
-        /* Re-enable cursor when finished browsing */
         private void Browse_FormClosing(object sender, FormClosingEventArgs e)
         {
             iPage += 2;
