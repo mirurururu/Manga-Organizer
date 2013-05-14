@@ -59,5 +59,15 @@ namespace Nagru___Manga_Organizer.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] Ionic_Zip {
+            get {
+                object obj = ResourceManager.GetObject("Ionic_Zip", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }

@@ -1,7 +1,12 @@
+#### May 14, 2013
+	- Added tab shortcuts (ctrl + [0-3])
+	- Added support for .zip archives
+	- Embedded Ionic.Zip.dll
+
 #### May 13, 2013
 	- Complete Search() rehaul to better reflect EH's
 	 (eg. title:celeb_wife date:>01/01/12 -vanilla)
-	- Search now includes Description, Date, & Pages fields
+	- Searches now include Description, Date, & Pages fields
 	- More LINQ usage
 	- Cont. code cleanup
 

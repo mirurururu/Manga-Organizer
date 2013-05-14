@@ -80,12 +80,15 @@ namespace Nagru___Manga_Organizer
         //static IEnumerable<Main.stEntry> ScanDir() { -yield return- }
         private void ScanDir(Object obj)
         {
-            string[] asDirs = Directory.GetDirectories(
-                TxBx_Loc.Text, "*", SearchOption.TopDirectoryOnly);
+            List<string> lEns = new List<string>();
+            lEns.AddRange(ExtDir.GetFiles(TxBx_Loc.Text, Filter: "*.zip"));
+            lEns.AddRange(Directory.GetDirectories(
+                TxBx_Loc.Text, "*", SearchOption.TopDirectoryOnly));
 
-            for (int i = 0; i < asDirs.Length; i++) {
-                if (hsPaths.Contains(asDirs[i])) continue;
-                BeginInvoke(new DelVoidEntry(AddItem), new Main.stEntry(asDirs[i]));
+            for (int i = 0; i < lEns.Count; i++) {
+                if (!hsPaths.Contains(lEns[i]))
+                    BeginInvoke(new DelVoidEntry(AddItem), 
+                        new Main.stEntry(lEns[i]));
             }
             BeginInvoke(new DelVoidVoid(SetFoundItems));
         }

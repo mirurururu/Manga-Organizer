@@ -17,8 +17,7 @@ namespace Nagru___Manga_Organizer
             List<string> lFiles = new List<string>();
             string[] sFilters = Filter.Split('|');
 
-            try
-            {
+            try {
                 //for each filter find matching file names
                 for (int i = 0; i < sFilters.Length; i++)
                     lFiles.AddRange(System.IO.Directory.GetFiles(SourceFolder,
@@ -28,25 +27,6 @@ namespace Nagru___Manga_Organizer
 
             lFiles.Sort(new TrueCompare());
             return lFiles.ToArray();
-        }
-
-        /* Delete passed directory, including all files/subfolders  */
-        public static void Delete(Object obj)
-        {
-            string sPath = obj as string;
-
-            //delete all sub-files
-            string[] asSub = Directory.GetFiles(sPath);
-            for (int i = 0; i < asSub.Length; i++)
-                File.Delete(asSub[i]);
-
-            //delete all subfolders
-            asSub = Directory.GetDirectories(sPath);
-            for (int i = 0; i < asSub.Length; i++)
-                Delete(asSub[i]);
-
-            //delete current folder
-            Directory.Delete(sPath);
         }
 
         /* Ensure chosen folder is not protected before operating */

@@ -33,12 +33,6 @@
             this.TabControl = new System.Windows.Forms.TabControl();
             this.Tb_Browse = new System.Windows.Forms.TabPage();
             this.ChkBx_ShowFav = new System.Windows.Forms.CheckBox();
-            this.LV_Entries = new Nagru___Manga_Organizer.ListViewNF();
-            this.ColArtist = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ColTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ColPages = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ColTags = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ColType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Btn_Scan = new System.Windows.Forms.Button();
             this.Btn_Clear = new System.Windows.Forms.Button();
             this.Lbl_Search = new System.Windows.Forms.Label();
@@ -77,15 +71,16 @@
             this.MnTS_Menu = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTS_CopyTitle = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTS_OpenEntryFolder = new System.Windows.Forms.ToolStripMenuItem();
-            this.MnTS_DefLoc = new System.Windows.Forms.ToolStripMenuItem();
+            this.MnTS_GET = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.MnTS_Save = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTS_OpenDataFolder = new System.Windows.Forms.ToolStripMenuItem();
-            this.MnTS_SavLoc = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.MnTS_GET = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.MnTS_Stats = new System.Windows.Forms.ToolStripMenuItem();
+            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.MnTs_DefSav = new System.Windows.Forms.ToolStripMenuItem();
+            this.MnTs_DefRoot = new System.Windows.Forms.ToolStripMenuItem();
+            this.MnTs_DefZip = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTS_About = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTs_Quit = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTS_SecretSort = new System.Windows.Forms.ToolStripSeparator();
@@ -94,7 +89,6 @@
             this.MnTS_Open = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTS_Del = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTS_Clear = new System.Windows.Forms.ToolStripMenuItem();
-            this.frTxBx_Desc = new Nagru___Manga_Organizer.FixedRichTextBox();
             this.Mn_rTxBx = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.MnRTx_Undo = new System.Windows.Forms.ToolStripMenuItem();
             this.tsSeperate = new System.Windows.Forms.ToolStripSeparator();
@@ -104,8 +98,15 @@
             this.tsSeperate2 = new System.Windows.Forms.ToolStripSeparator();
             this.MnRTx_SelectAll = new System.Windows.Forms.ToolStripMenuItem();
             this.Tb_Notes = new System.Windows.Forms.TabPage();
-            this.frTxBx_Notes = new Nagru___Manga_Organizer.FixedRichTextBox();
             this.Delay = new System.Windows.Forms.Timer(this.components);
+            this.LV_Entries = new Nagru___Manga_Organizer.ListViewNF();
+            this.ColArtist = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ColTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ColPages = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ColTags = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ColType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.frTxBx_Desc = new Nagru___Manga_Organizer.FixedRichTextBox();
+            this.frTxBx_Notes = new Nagru___Manga_Organizer.FixedRichTextBox();
             this.TabControl.SuspendLayout();
             this.Tb_Browse.SuspendLayout();
             this.Mn_TxBx.SuspendLayout();
@@ -161,63 +162,6 @@
             this.ChkBx_ShowFav.Text = "Favs Only";
             this.ChkBx_ShowFav.UseVisualStyleBackColor = true;
             this.ChkBx_ShowFav.CheckedChanged += new System.EventHandler(this.ChkBx_ShowFav_CheckedChanged);
-            // 
-            // LV_Entries
-            // 
-            this.LV_Entries.AllowDrop = true;
-            this.LV_Entries.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.LV_Entries.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.ColArtist,
-            this.ColTitle,
-            this.ColPages,
-            this.ColTags,
-            this.ColType});
-            this.LV_Entries.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LV_Entries.FullRowSelect = true;
-            this.LV_Entries.GridLines = true;
-            this.LV_Entries.HideSelection = false;
-            this.LV_Entries.Location = new System.Drawing.Point(0, 32);
-            this.LV_Entries.MultiSelect = false;
-            this.LV_Entries.Name = "LV_Entries";
-            this.LV_Entries.Size = new System.Drawing.Size(923, 517);
-            this.LV_Entries.TabIndex = 0;
-            this.LV_Entries.UseCompatibleStateImageBehavior = false;
-            this.LV_Entries.View = System.Windows.Forms.View.Details;
-            this.LV_Entries.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.LV_Entries_ColumnClick);
-            this.LV_Entries.SelectedIndexChanged += new System.EventHandler(this.LV_Entries_SelectedIndexChanged);
-            this.LV_Entries.DragDrop += new System.Windows.Forms.DragEventHandler(this.LV_Entries_DragDrop);
-            this.LV_Entries.DragEnter += new System.Windows.Forms.DragEventHandler(this.LV_Entries_DragEnter);
-            this.LV_Entries.DoubleClick += new System.EventHandler(this.LV_Entries_DoubleClick);
-            this.LV_Entries.MouseHover += new System.EventHandler(this.LV_Entries_MouseHover);
-            this.LV_Entries.Resize += new System.EventHandler(this.LV_Entries_Resize);
-            // 
-            // ColArtist
-            // 
-            this.ColArtist.Text = "Artist";
-            this.ColArtist.Width = 202;
-            // 
-            // ColTitle
-            // 
-            this.ColTitle.Text = "Title";
-            this.ColTitle.Width = 321;
-            // 
-            // ColPages
-            // 
-            this.ColPages.Text = "Pages";
-            this.ColPages.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.ColPages.Width = 46;
-            // 
-            // ColTags
-            // 
-            this.ColTags.Text = "Tags";
-            this.ColTags.Width = 261;
-            // 
-            // ColType
-            // 
-            this.ColType.Text = "Type";
-            this.ColType.Width = 72;
             // 
             // Btn_Scan
             // 
@@ -662,15 +606,13 @@
             this.MnTS_Menu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.MnTS_CopyTitle,
             this.MnTS_OpenEntryFolder,
-            this.MnTS_DefLoc,
+            this.MnTS_GET,
             this.toolStripSeparator5,
             this.MnTS_Save,
             this.MnTS_OpenDataFolder,
-            this.MnTS_SavLoc,
-            this.toolStripSeparator1,
-            this.MnTS_GET,
             this.toolStripSeparator4,
             this.MnTS_Stats,
+            this.settingsToolStripMenuItem,
             this.MnTS_About,
             this.MnTs_Quit});
             this.MnTS_Menu.Name = "MnTS_Menu";
@@ -680,82 +622,100 @@
             // MnTS_CopyTitle
             // 
             this.MnTS_CopyTitle.Name = "MnTS_CopyTitle";
-            this.MnTS_CopyTitle.Size = new System.Drawing.Size(191, 22);
+            this.MnTS_CopyTitle.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
+            this.MnTS_CopyTitle.ShowShortcutKeys = false;
+            this.MnTS_CopyTitle.Size = new System.Drawing.Size(190, 22);
             this.MnTS_CopyTitle.Text = "Copy Formatted Title";
             this.MnTS_CopyTitle.Click += new System.EventHandler(this.MnTS_CopyTitle_Click);
             // 
             // MnTS_OpenEntryFolder
             // 
             this.MnTS_OpenEntryFolder.Name = "MnTS_OpenEntryFolder";
-            this.MnTS_OpenEntryFolder.Size = new System.Drawing.Size(191, 22);
+            this.MnTS_OpenEntryFolder.Size = new System.Drawing.Size(190, 22);
             this.MnTS_OpenEntryFolder.Text = "Open Entry\'s Folder";
             this.MnTS_OpenEntryFolder.Click += new System.EventHandler(this.MnTS_OpenEntryFolder_Click);
             // 
-            // MnTS_DefLoc
+            // MnTS_GET
             // 
-            this.MnTS_DefLoc.Name = "MnTS_DefLoc";
-            this.MnTS_DefLoc.Size = new System.Drawing.Size(191, 22);
-            this.MnTS_DefLoc.Text = "Change Root Folder";
-            this.MnTS_DefLoc.Click += new System.EventHandler(this.MnTS_DefLoc_Click);
+            this.MnTS_GET.Name = "MnTS_GET";
+            this.MnTS_GET.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.U)));
+            this.MnTS_GET.ShowShortcutKeys = false;
+            this.MnTS_GET.Size = new System.Drawing.Size(190, 22);
+            this.MnTS_GET.Text = "GET from URL";
+            this.MnTS_GET.Click += new System.EventHandler(this.MnTS_GET_Click);
             // 
             // toolStripSeparator5
             // 
             this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(188, 6);
+            this.toolStripSeparator5.Size = new System.Drawing.Size(187, 6);
             // 
             // MnTS_Save
             // 
             this.MnTS_Save.Name = "MnTS_Save";
             this.MnTS_Save.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this.MnTS_Save.ShowShortcutKeys = false;
-            this.MnTS_Save.Size = new System.Drawing.Size(191, 22);
+            this.MnTS_Save.Size = new System.Drawing.Size(190, 22);
             this.MnTS_Save.Text = "Save Database";
             this.MnTS_Save.Click += new System.EventHandler(this.MnTS_Save_Click);
             // 
             // MnTS_OpenDataFolder
             // 
             this.MnTS_OpenDataFolder.Name = "MnTS_OpenDataFolder";
-            this.MnTS_OpenDataFolder.Size = new System.Drawing.Size(191, 22);
+            this.MnTS_OpenDataFolder.Size = new System.Drawing.Size(190, 22);
             this.MnTS_OpenDataFolder.Text = "Open Database Folder";
             this.MnTS_OpenDataFolder.Click += new System.EventHandler(this.MnTS_OpenDataFolder_Click);
-            // 
-            // MnTS_SavLoc
-            // 
-            this.MnTS_SavLoc.Name = "MnTS_SavLoc";
-            this.MnTS_SavLoc.Size = new System.Drawing.Size(191, 22);
-            this.MnTS_SavLoc.Text = "Change Save Location";
-            this.MnTS_SavLoc.Click += new System.EventHandler(this.MnTS_SavLoc_Click);
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(188, 6);
-            // 
-            // MnTS_GET
-            // 
-            this.MnTS_GET.Name = "MnTS_GET";
-            this.MnTS_GET.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
-            this.MnTS_GET.ShowShortcutKeys = false;
-            this.MnTS_GET.Size = new System.Drawing.Size(191, 22);
-            this.MnTS_GET.Text = "GET from URL";
-            this.MnTS_GET.Click += new System.EventHandler(this.MnTS_GET_Click);
             // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(188, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(187, 6);
             // 
             // MnTS_Stats
             // 
             this.MnTS_Stats.Name = "MnTS_Stats";
-            this.MnTS_Stats.Size = new System.Drawing.Size(191, 22);
+            this.MnTS_Stats.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.T)));
+            this.MnTS_Stats.ShowShortcutKeys = false;
+            this.MnTS_Stats.Size = new System.Drawing.Size(190, 22);
             this.MnTS_Stats.Text = "Show Tag Stats";
             this.MnTS_Stats.Click += new System.EventHandler(this.MnTS_Stats_Click);
+            // 
+            // settingsToolStripMenuItem
+            // 
+            this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MnTs_DefSav,
+            this.MnTs_DefRoot,
+            this.MnTs_DefZip});
+            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.settingsToolStripMenuItem.Text = "Settings";
+            // 
+            // MnTs_DefSav
+            // 
+            this.MnTs_DefSav.Name = "MnTs_DefSav";
+            this.MnTs_DefSav.Size = new System.Drawing.Size(147, 22);
+            this.MnTs_DefSav.Text = "Save Location";
+            this.MnTs_DefSav.Click += new System.EventHandler(this.MnTs_DefSav_Click);
+            // 
+            // MnTs_DefRoot
+            // 
+            this.MnTs_DefRoot.Name = "MnTs_DefRoot";
+            this.MnTs_DefRoot.Size = new System.Drawing.Size(147, 22);
+            this.MnTs_DefRoot.Text = "Root Folder";
+            this.MnTs_DefRoot.Click += new System.EventHandler(this.MnTs_DefRoot_Click);
+            // 
+            // MnTs_DefZip
+            // 
+            this.MnTs_DefZip.Name = "MnTs_DefZip";
+            this.MnTs_DefZip.Size = new System.Drawing.Size(147, 22);
+            this.MnTs_DefZip.Text = "Default Zip";
+            this.MnTs_DefZip.Click += new System.EventHandler(this.MnTs_DefZip_Click);
             // 
             // MnTS_About
             // 
             this.MnTS_About.Name = "MnTS_About";
-            this.MnTS_About.Size = new System.Drawing.Size(191, 22);
+            this.MnTS_About.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.B)));
+            this.MnTS_About.ShowShortcutKeys = false;
+            this.MnTS_About.Size = new System.Drawing.Size(190, 22);
             this.MnTS_About.Text = "About";
             this.MnTS_About.Click += new System.EventHandler(this.MnTS_About_Click);
             // 
@@ -764,7 +724,7 @@
             this.MnTs_Quit.Name = "MnTs_Quit";
             this.MnTs_Quit.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
             this.MnTs_Quit.ShowShortcutKeys = false;
-            this.MnTs_Quit.Size = new System.Drawing.Size(191, 22);
+            this.MnTs_Quit.Size = new System.Drawing.Size(190, 22);
             this.MnTs_Quit.Text = "Quit";
             this.MnTs_Quit.Click += new System.EventHandler(this.MnTs_Quit_Click);
             // 
@@ -815,24 +775,11 @@
             // MnTS_Clear
             // 
             this.MnTS_Clear.Name = "MnTS_Clear";
+            this.MnTS_Clear.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
+            this.MnTS_Clear.ShowShortcutKeys = false;
             this.MnTS_Clear.Size = new System.Drawing.Size(46, 23);
             this.MnTS_Clear.Text = "Clear";
             this.MnTS_Clear.Click += new System.EventHandler(this.MnTS_Clear_Click);
-            // 
-            // frTxBx_Desc
-            // 
-            this.frTxBx_Desc.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.frTxBx_Desc.ContextMenuStrip = this.Mn_rTxBx;
-            this.frTxBx_Desc.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.frTxBx_Desc.Location = new System.Drawing.Point(8, 278);
-            this.frTxBx_Desc.Name = "frTxBx_Desc";
-            this.frTxBx_Desc.Size = new System.Drawing.Size(484, 264);
-            this.frTxBx_Desc.TabIndex = 8;
-            this.frTxBx_Desc.Text = "";
-            this.frTxBx_Desc.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.frTxBx_Desc_LinkClicked);
-            this.frTxBx_Desc.TextChanged += new System.EventHandler(this.EntryAlt_Text);
-            this.frTxBx_Desc.KeyDown += new System.Windows.Forms.KeyEventHandler(this.frTxBx_KeyDown);
             // 
             // Mn_rTxBx
             // 
@@ -907,6 +854,83 @@
             this.Tb_Notes.Text = "Notes";
             this.Tb_Notes.UseVisualStyleBackColor = true;
             // 
+            // Delay
+            // 
+            this.Delay.Interval = 400;
+            this.Delay.Tick += new System.EventHandler(this.Delay_Tick);
+            // 
+            // LV_Entries
+            // 
+            this.LV_Entries.AllowDrop = true;
+            this.LV_Entries.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.LV_Entries.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.ColArtist,
+            this.ColTitle,
+            this.ColPages,
+            this.ColTags,
+            this.ColType});
+            this.LV_Entries.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LV_Entries.FullRowSelect = true;
+            this.LV_Entries.GridLines = true;
+            this.LV_Entries.HideSelection = false;
+            this.LV_Entries.Location = new System.Drawing.Point(0, 32);
+            this.LV_Entries.MultiSelect = false;
+            this.LV_Entries.Name = "LV_Entries";
+            this.LV_Entries.Size = new System.Drawing.Size(923, 517);
+            this.LV_Entries.TabIndex = 0;
+            this.LV_Entries.UseCompatibleStateImageBehavior = false;
+            this.LV_Entries.View = System.Windows.Forms.View.Details;
+            this.LV_Entries.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.LV_Entries_ColumnClick);
+            this.LV_Entries.SelectedIndexChanged += new System.EventHandler(this.LV_Entries_SelectedIndexChanged);
+            this.LV_Entries.DragDrop += new System.Windows.Forms.DragEventHandler(this.LV_Entries_DragDrop);
+            this.LV_Entries.DragEnter += new System.Windows.Forms.DragEventHandler(this.LV_Entries_DragEnter);
+            this.LV_Entries.DoubleClick += new System.EventHandler(this.LV_Entries_DoubleClick);
+            this.LV_Entries.MouseHover += new System.EventHandler(this.LV_Entries_MouseHover);
+            this.LV_Entries.Resize += new System.EventHandler(this.LV_Entries_Resize);
+            // 
+            // ColArtist
+            // 
+            this.ColArtist.Text = "Artist";
+            this.ColArtist.Width = 202;
+            // 
+            // ColTitle
+            // 
+            this.ColTitle.Text = "Title";
+            this.ColTitle.Width = 321;
+            // 
+            // ColPages
+            // 
+            this.ColPages.Text = "Pages";
+            this.ColPages.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.ColPages.Width = 46;
+            // 
+            // ColTags
+            // 
+            this.ColTags.Text = "Tags";
+            this.ColTags.Width = 261;
+            // 
+            // ColType
+            // 
+            this.ColType.Text = "Type";
+            this.ColType.Width = 72;
+            // 
+            // frTxBx_Desc
+            // 
+            this.frTxBx_Desc.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.frTxBx_Desc.ContextMenuStrip = this.Mn_rTxBx;
+            this.frTxBx_Desc.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.frTxBx_Desc.Location = new System.Drawing.Point(8, 278);
+            this.frTxBx_Desc.Name = "frTxBx_Desc";
+            this.frTxBx_Desc.Size = new System.Drawing.Size(484, 264);
+            this.frTxBx_Desc.TabIndex = 8;
+            this.frTxBx_Desc.Text = "";
+            this.frTxBx_Desc.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.frTxBx_Desc_LinkClicked);
+            this.frTxBx_Desc.TextChanged += new System.EventHandler(this.EntryAlt_Text);
+            this.frTxBx_Desc.KeyDown += new System.Windows.Forms.KeyEventHandler(this.frTxBx_KeyDown);
+            // 
             // frTxBx_Notes
             // 
             this.frTxBx_Notes.AcceptsTab = true;
@@ -924,11 +948,6 @@
             this.frTxBx_Notes.TextChanged += new System.EventHandler(this.frTxBx_Notes_TextChanged);
             this.frTxBx_Notes.KeyDown += new System.Windows.Forms.KeyEventHandler(this.frTxBx_KeyDown);
             // 
-            // Delay
-            // 
-            this.Delay.Interval = 400;
-            this.Delay.Tick += new System.EventHandler(this.Delay_Tick);
-            // 
             // Main
             // 
             this.AcceptButton = this.Btn_Clear;
@@ -938,12 +957,14 @@
             this.ClientSize = new System.Drawing.Size(934, 575);
             this.Controls.Add(this.TabControl);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.KeyPreview = true;
             this.MainMenuStrip = this.Mn_EntryOps;
             this.MinimumSize = new System.Drawing.Size(750, 150);
             this.Name = "Main";
             this.Text = "Manga Organizer";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Main_FormClosing);
             this.Load += new System.EventHandler(this.Main_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Main_KeyDown);
             this.TabControl.ResumeLayout(false);
             this.Tb_Browse.ResumeLayout(false);
             this.Tb_Browse.PerformLayout();
@@ -995,19 +1016,16 @@
         private System.Windows.Forms.MenuStrip Mn_EntryOps;
         private System.Windows.Forms.ToolStripMenuItem MnTS_Menu;
         private System.Windows.Forms.ToolStripMenuItem MnTS_CopyTitle;
-        private System.Windows.Forms.ToolStripMenuItem MnTS_DefLoc;
         private System.Windows.Forms.ToolStripMenuItem MnTS_New;
         private System.Windows.Forms.ToolStripMenuItem MnTS_Edit;
         private System.Windows.Forms.ToolStripMenuItem MnTS_Del;
         private System.Windows.Forms.ToolStripMenuItem MnTS_Open;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem MnTS_Save;
         private System.Windows.Forms.ToolStripMenuItem MnTS_OpenDataFolder;
         private System.Windows.Forms.ToolStripSeparator MnTS_SecretSort;
         private System.Windows.Forms.ToolStripMenuItem MnTS_OpenEntryFolder;
         private FixedRichTextBox frTxBx_Notes;
         private FixedRichTextBox frTxBx_Desc;
-        private System.Windows.Forms.ToolStripMenuItem MnTS_SavLoc;
         private System.Windows.Forms.Button Btn_Scan;
         private System.Windows.Forms.Timer Delay;
         private System.Windows.Forms.ToolStripMenuItem MnTS_Clear;
@@ -1038,6 +1056,10 @@
         private System.Windows.Forms.ToolStripMenuItem MnTS_Stats;
         private System.Windows.Forms.HScrollBar ScrTags;
         private System.Windows.Forms.Button Btn_Rand;
+        private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem MnTs_DefZip;
+        private System.Windows.Forms.ToolStripMenuItem MnTs_DefSav;
+        private System.Windows.Forms.ToolStripMenuItem MnTs_DefRoot;
     }
 }
 

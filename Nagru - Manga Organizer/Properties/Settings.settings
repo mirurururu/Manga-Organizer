@@ -15,10 +15,13 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="Version" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">130513</Value>
+      <Value Profile="(Default)">130514</Value>
     </Setting>
     <Setting Name="Position" Type="System.Drawing.Rectangle" Scope="User">
       <Value Profile="(Default)">100, 100, 950, 613</Value>
+    </Setting>
+    <Setting Name="DefZip" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>
 </SettingsFile>
