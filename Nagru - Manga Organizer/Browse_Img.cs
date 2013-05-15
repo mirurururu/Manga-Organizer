@@ -9,19 +9,17 @@ namespace Nagru___Manga_Organizer
 {
     public partial class Browse_Img : Form
     {
-        public int iPage { get; set;}
-        public string sPath { get; set; }
-        public List<string> lFiles { get; set; }
+        public Ionic.Zip.ZipFile zip;
+        public List<string> lFiles;
+        public int iPage;
 
         Image imgR, imgL;
-        bool bWideL, bWideR, bNext;
+        bool bWideL, bWideR, bNext, bZip;
         float fWidth;
 
-        /* Initialize form */
         public Browse_Img()
         { InitializeComponent(); }
 
-        /* Set form to fullscreen and grab files */
         private void Browse_Load(object sender, EventArgs e)
         {
             Cursor.Hide();
@@ -33,11 +31,11 @@ namespace Nagru___Manga_Organizer
             #endif
 
             fWidth = (float)(this.Width / 2.0);
+            if (zip != null) bZip = true;
             if (iPage == -1) Next();
             else Prev();
         }
 
-        /* Navigate files or close form */
         private void Browse_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.KeyCode)
@@ -113,12 +111,16 @@ namespace Nagru___Manga_Organizer
             Reset();
 
             if (++iPage >= lFiles.Count) iPage = 0;
+            if(bZip && !File.Exists(lFiles[iPage])) 
+                zip[iPage].Extract(zip.TempFileFolder);
             using (FileStream fs = new FileStream(
                 lFiles[iPage], FileMode.Open, FileAccess.Read))
                 imgR = Image.FromStream(fs);
             if (!(bWideR = imgR.Height < imgR.Width))
             {
                 if (++iPage >= lFiles.Count) iPage = 0;
+                if (bZip && !File.Exists(lFiles[iPage]))
+                    zip[iPage].Extract(zip.TempFileFolder);
                 using (FileStream fs = new FileStream(
                     lFiles[iPage], FileMode.Open, FileAccess.Read))
                     imgL = Image.FromStream(fs);
@@ -136,12 +138,16 @@ namespace Nagru___Manga_Organizer
 
             if (--iPage < 0) iPage = lFiles.Count - 1;
             else if (iPage >= lFiles.Count) iPage = 0;
+            if (bZip && !File.Exists(lFiles[iPage]))
+                zip[iPage].Extract(zip.TempFileFolder);
             using (FileStream fs = new FileStream(
                 lFiles[iPage], FileMode.Open, FileAccess.Read))
                 imgL = Image.FromStream(fs);
             if (!(bWideL = imgL.Height < imgL.Width))
             {
-                if (iPage - 1 < 0) iPage = lFiles.Count;
+                if (iPage - 1 < 0) iPage = lFiles.Count + 1;
+                if (bZip && !File.Exists(lFiles[iPage - 1]))
+                    zip[iPage - 1].Extract(zip.TempFileFolder);
                 using (FileStream fs = new FileStream(
                     lFiles[iPage - 1], FileMode.Open, FileAccess.Read))
                     imgR = Image.FromStream(fs);
@@ -222,8 +228,8 @@ namespace Nagru___Manga_Organizer
 
         private void Browse_FormClosing(object sender, FormClosingEventArgs e)
         {
-            iPage += 2;
             Cursor.Show();
+            iPage += 2;
         }
     }
 }

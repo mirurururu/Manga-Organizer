@@ -8,9 +8,9 @@ namespace Nagru___Manga_Organizer
     public partial class Scan : Form
     {
         private delegate void DelVoidEntry(Main.stEntry en);
-        public delegate void DelVoidVoid();
-        public DelVoidVoid delNewEntry;
-        public DelVoidVoid delDone;
+        public delegate void DelVoid();
+        public DelVoid delNewEntry;
+        public DelVoid delDone;
 
         public List<Main.stEntry> lCurr { private get; set; }
 
@@ -51,7 +51,7 @@ namespace Nagru___Manga_Organizer
             fbd.RootFolder = Environment.SpecialFolder.Desktop;
             fbd.Description = "Select the directory you want to scan.";
 
-            if (TxBx_Loc.Text == string.Empty || !Directory.Exists(TxBx_Loc.Text))
+            if (TxBx_Loc.Text == "" || !Directory.Exists(TxBx_Loc.Text))
                 fbd.SelectedPath = Environment.CurrentDirectory;
             else fbd.SelectedPath = TxBx_Loc.Text;
 
@@ -77,7 +77,6 @@ namespace Nagru___Manga_Organizer
         }
 
         /* Scan passed directory for entries */
-        //static IEnumerable<Main.stEntry> ScanDir() { -yield return- }
         private void ScanDir(Object obj)
         {
             List<string> lEns = new List<string>();
@@ -87,19 +86,23 @@ namespace Nagru___Manga_Organizer
 
             for (int i = 0; i < lEns.Count; i++) {
                 if (!hsPaths.Contains(lEns[i]))
-                    BeginInvoke(new DelVoidEntry(AddItem), 
+                    BeginInvoke(new DelVoidEntry(AddItem),
                         new Main.stEntry(lEns[i]));
             }
-            BeginInvoke(new DelVoidVoid(SetFoundItems));
+            BeginInvoke(new DelVoid(SetFoundItems));
         }
 
         /* Add new item to listview */
         private void AddItem(Main.stEntry en)
         {
             ListViewItem lvi = new ListViewItem(en.sArtist);
-            lvi.SubItems.AddRange(new string[] { en.sTitle, en.iPages.ToString() });
+            lvi.SubItems.AddRange(new string[] { 
+                en.sTitle, 
+                en.iPages.ToString(),
+                lFound.Count.ToString()
+            });
             lFound.Add(en);
-
+            
             if (hsIgnore.Contains(lvi.SubItems[0].Text + lvi.SubItems[1].Text)) {
                 if (ChkBx_All.Checked) {
                     lvi.BackColor = System.Drawing.Color.MistyRose;
@@ -127,8 +130,11 @@ namespace Nagru___Manga_Organizer
 
             for (int i = 0; i < lFound.Count; i++) {
                 ListViewItem lvi = new ListViewItem(lFound[i].sArtist);
-                lvi.SubItems.Add(lFound[i].sTitle);
-                lvi.SubItems.Add(lFound[i].iPages.ToString());
+                lvi.SubItems.AddRange(new string[] {
+                    lFound[i].sTitle,
+                    lFound[i].iPages.ToString(),
+                    i.ToString()
+                });
 
                 if (hsIgnore.Contains(lvi.SubItems[0].Text + lvi.SubItems[1].Text)) {
                     if (ChkBx_All.Checked) {
@@ -187,22 +193,8 @@ namespace Nagru___Manga_Organizer
         /*Open folder of double-clicked item */
         private void LV_Found_DoubleClick(object sender, EventArgs e)
         {
-            short indx = -1;
-            string sMatch = LV_Found.FocusedItem.SubItems[0].Text +
-                LV_Found.FocusedItem.SubItems[1].Text;
-
-            for (int i = 0; i < lFound.Count; i++)
-                if (sMatch == lFound[i].sArtist + lFound[i].sTitle) {
-                    indx = (short)i;
-                    break;
-                }
-
-            if (indx < 0 || !Directory.Exists(lFound[indx].sLoc)) {
-                MessageBox.Show("Could not open location.", "Manga Organizer",
-                  MessageBoxButtons.OK, MessageBoxIcon.Error); return;
-            }
-
-            System.Diagnostics.Process.Start(lFound[indx].sLoc);
+            int iPos = Convert.ToInt32(LV_Found.FocusedItem.SubItems[3].Text);
+            System.Diagnostics.Process.Start(lFound[iPos].sLoc);
         }
 
         /* Sends selected item(s) back to Main */
@@ -211,15 +203,9 @@ namespace Nagru___Manga_Organizer
             if (LV_Found.SelectedItems.Count == 0) return;
 
             for (int i = 0; i < LV_Found.SelectedItems.Count; i++) {
-                string sMatch = LV_Found.SelectedItems[i].SubItems[0].Text
-                    + LV_Found.SelectedItems[i].SubItems[1].Text;
-
-                for (int x = 0; x < lFound.Count; x++)
-                    if (sMatch == lFound[x].sArtist + lFound[x].sTitle) {
-                        lCurr.Add(lFound[x]);
-                        lFound.RemoveAt(x);
-                        break;
-                    }
+                int iPos = Convert.ToInt32(LV_Found.FocusedItem.SubItems[3].Text);
+                lCurr.Add(lFound[iPos - i]);
+                lFound.RemoveAt(iPos);
             }
             
             UpdateLV();

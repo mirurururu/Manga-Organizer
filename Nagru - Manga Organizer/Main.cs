@@ -10,10 +10,6 @@
  * Microsoft Public License (Ms-PL)
  */
 
-#if DEBUG
-#warning DEBUG version
-#endif
-
 using System;
 using System.IO;
 using System.Linq;
@@ -585,53 +581,50 @@ namespace Nagru___Manga_Organizer
         /* Alternative to MnTS_Open */
         private void PicBx_Cover_Click(object sender, EventArgs e)
         {
-            if (PicBx_Cover.Image == null) 
+            if (PicBx_Cover.Image == null)
                 return;
 
-            string sPath = TxBx_Loc.Text;
+            Browse_Img fmBrowse = new Browse_Img();
+            fmBrowse.iPage = iPage;
+
             string[] sFiles = new string[0];
-            if (Directory.Exists(sPath))
-                sFiles = ExtDir.GetFiles(
-                    sPath, SearchOption.TopDirectoryOnly, "*.zip");
-            else if (File.Exists(sPath))
-                sFiles = new string[1] { sPath };
-
-            if (sFiles.Length > 0)
-            {
-                try {
-                    Text = "Unzipping file...";
-                    Cursor = Cursors.WaitCursor;
-                    sPath = Path.GetDirectoryName(sFiles[0]);
-                    DirectoryInfo di = Directory.CreateDirectory(sPath += "\\!tmp");
-                    di.Attributes = FileAttributes.Directory | FileAttributes.Hidden;
-                    using (Ionic.Zip.ZipFile zip = Ionic.Zip.ZipFile.Read(sFiles[0])) {
-                        for (int i = 0; i < zip.Count; i++) {
-                            Ionic.Zip.ZipEntry ze = zip[i];
-                            ze.Extract(sPath, Ionic.Zip.ExtractExistingFileAction.DoNotOverwrite);
-                        }
-                    }
-                    Cursor = Cursors.Default;
-                    Text = "Finished";
+            if (!File.Exists(TxBx_Loc.Text)) {
+                if (Directory.Exists(TxBx_Loc.Text)) {
+                    sFiles = ExtDir.GetFiles(TxBx_Loc.Text,
+                        SearchOption.TopDirectoryOnly, "*.zip");
                 }
-                catch (Ionic.Zip.ZipException) { }
             }
+            else sFiles = new string[1] { TxBx_Loc.Text };
 
-            sFiles = ExtDir.GetFiles(
-                sPath, SearchOption.TopDirectoryOnly);
-            if (sFiles.Length > 0)
+            if (sFiles.Length > 0
+                && Ionic.Zip.ZipFile.IsZipFile(sFiles[0]))
             {
-                Browse_Img fmBrowse = new Browse_Img();
-                fmBrowse.sPath = TxBx_Loc.Text;
-                fmBrowse.lFiles = sFiles.ToList<string>();
-                fmBrowse.iPage = iPage;
-                fmBrowse.ShowDialog();
+                string sDir = Path.GetDirectoryName(sFiles[0]) + "\\!tmp";
+                fmBrowse.lFiles = new List<string>(25);
+                
+                DirectoryInfo di = Directory.CreateDirectory(sDir);
+                #if !DEBUG
+                    di.Attributes = FileAttributes.Directory | FileAttributes.Hidden;
+                #endif
+                using (Ionic.Zip.ZipFile zip = Ionic.Zip.ZipFile.Read(sFiles[0])) {
+                    for (int i = 0; i < zip.Count; i++)
+                        fmBrowse.lFiles.Add(sDir + '\\' + zip[i].FileName);
 
-                iPage = (short)fmBrowse.iPage;
-                fmBrowse.Dispose();
-                GC.Collect();
+                    zip.TempFileFolder = sDir;
+                    fmBrowse.zip = zip;
+                    fmBrowse.ShowDialog();
+                    iPage = (short)fmBrowse.iPage;
+                    Directory.Delete(sDir, true);
+                }
             }
-            if(sPath.EndsWith("\\!tmp"))
-                Directory.Delete(sPath, true);
+            else if ((sFiles = ExtDir.GetFiles(TxBx_Loc.Text,
+                SearchOption.TopDirectoryOnly)).Length > 0)
+            {
+                fmBrowse.lFiles = sFiles.ToList<string>();
+                fmBrowse.ShowDialog();
+                iPage = (short)fmBrowse.iPage;
+            }
+            fmBrowse.Dispose();
         }
 
         /* Dynamically update PicBx when user manually alters path */
@@ -741,14 +734,6 @@ namespace Nagru___Manga_Organizer
             if (indx > -1) ReFocus();
         }
 
-        private void AddText_Rich(string sAdd, FixedRichTextBox frTxBx)
-        {
-            int iNewStart = frTxBx.SelectionStart + sAdd.Length;
-            frTxBx.Text = frTxBx.Text.Insert(
-                frTxBx.SelectionStart, sAdd);
-            frTxBx.SelectionStart = iNewStart;
-        }
-
         private void GetImage(Object obj)
         {
             BeginInvoke(new DelVoidVoid(SetPicBxNull));
@@ -764,8 +749,10 @@ namespace Nagru___Manga_Organizer
             if (sFiles.Length > 0) {
                 if(Ionic.Zip.ZipFile.IsZipFile(sFiles[0])) {
                     using (Ionic.Zip.ZipFile zip = Ionic.Zip.ZipFile.Read(sFiles[0])) {
-                        BeginInvoke(new DelVoidString(SetPicBxImage), sFiles[0]);
-                        BeginInvoke(new DelVoidInt(SetNudCount), zip.Count);
+                        if(zip.Count > 0) {
+                            BeginInvoke(new DelVoidString(SetPicBxImage), sFiles[0]);
+                            BeginInvoke(new DelVoidInt(SetNudCount), zip.Count);
+                        }
                     }
                 }
             }
@@ -789,6 +776,13 @@ namespace Nagru___Manga_Organizer
                     this.BeginInvoke(new DelVoidInt(SetData), i);
                     break;
                 }
+        }
+
+        private static int InsertText(Control c, string sAdd, int iStart)
+        {
+            int iNewStart = iStart + sAdd.Length;
+            c.Text = c.Text.Insert(iStart, sAdd);
+            return iNewStart;
         }
 
         /* Used to simulate JS Object Literal for JSON 
@@ -998,12 +992,9 @@ namespace Nagru___Manga_Organizer
                 using (Ionic.Zip.ZipFile zip = Ionic.Zip.ZipFile.Read(sPath)) {
                     sPath = Path.GetDirectoryName(sPath);
                     Directory.CreateDirectory(sPath += "\\!tmp");
-                    Ionic.Zip.ZipEntry ze = zip[0];
-                    ze.Extract(sPath);
-                    TrySet(sPath + '\\' + ze.FileName);
-
-                    if (Directory.Exists(sPath))
-                        Directory.Delete(sPath, true);
+                    zip[0].Extract(sPath);
+                    TrySet(sPath + '\\' + zip[0].FileName);
+                    Directory.Delete(sPath, true);
                 }
             }
             else TrySet(sPath);
@@ -1422,10 +1413,12 @@ namespace Nagru___Manga_Organizer
         private void MnRTx_Paste_Click(object sender, EventArgs e)
         {
             if (TabControl.SelectedIndex == 2) {
-                AddText_Rich(Clipboard.GetText(), frTxBx_Notes);
+                frTxBx_Notes.SelectionStart = InsertText(
+                    frTxBx_Notes, Clipboard.GetText(), frTxBx_Notes.SelectionStart);
                 bSavText = false;
             }
-            else AddText_Rich(Clipboard.GetText(), frTxBx_Desc);
+            else frTxBx_Desc.SelectionStart = InsertText(
+                frTxBx_Desc, Clipboard.GetText(), frTxBx_Desc.SelectionStart);
         }
 
         private void MnRTx_SelectAll_Click(object sender, EventArgs e)
@@ -1438,7 +1431,13 @@ namespace Nagru___Manga_Organizer
         private void frTxBx_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Modifiers == Keys.Control && e.KeyCode == Keys.V) {
-                AddText_Rich(Clipboard.GetText(), (FixedRichTextBox)sender);
+                if (TabControl.SelectedIndex == 2) {
+                    frTxBx_Notes.SelectionStart = InsertText(
+                        frTxBx_Notes, Clipboard.GetText(), frTxBx_Notes.SelectionStart);
+                    bSavText = false;
+                }
+                else frTxBx_Desc.SelectionStart = InsertText(
+                    frTxBx_Desc, Clipboard.GetText(), frTxBx_Desc.SelectionStart);
                 e.Handled = true;
             }
         }
@@ -1524,21 +1523,22 @@ namespace Nagru___Manga_Organizer
         private void DragDropTxBx(object sender, DragEventArgs e)
         {
             string sAdd = (string)e.Data.GetData(DataFormats.Text);
-            int iNewStart;
 
             switch ((sender as Control).Name)
             {
                 case "frTxBx_Desc":
+                    frTxBx_Desc.SelectionStart = InsertText(
+                        frTxBx_Desc, sAdd, frTxBx_Desc.SelectionStart);
+                    break;
                 case "frTxBx_Notes":
-                    AddText_Rich(sAdd, (FixedRichTextBox)sender);
+                    frTxBx_Notes.SelectionStart = InsertText(
+                        frTxBx_Notes, sAdd, frTxBx_Notes.SelectionStart);
                     break;
                 case "TxBx_Title":
                     if (sAdd.Contains('[')) SplitTitle(sAdd);
                     else {
-                        iNewStart = TxBx_Title.SelectionStart + sAdd.Length;
-                        TxBx_Title.Text = TxBx_Title.Text.Insert(
-                            TxBx_Title.SelectionStart, sAdd);
-                        TxBx_Title.SelectionStart = iNewStart;
+                        TxBx_Title.SelectionStart = InsertText(
+                            TxBx_Title, sAdd, TxBx_Title.SelectionStart);
                     }
                     break;
                 case "TxBx_Loc":
@@ -1560,10 +1560,8 @@ namespace Nagru___Manga_Organizer
                 case "CmbBx_Artist":
                     if (sAdd.Contains('[')) SplitTitle(sAdd);
                     else {
-                        iNewStart = CmbBx_Artist.SelectionStart + sAdd.Length;
-                        CmbBx_Artist.Text = CmbBx_Artist.Text.Insert(
-                            CmbBx_Artist.SelectionStart, sAdd);
-                        CmbBx_Artist.SelectionStart = iNewStart;
+                        CmbBx_Artist.SelectionStart = InsertText(
+                            CmbBx_Artist, sAdd, CmbBx_Artist.SelectionStart);
                     }
                     break;
             }
@@ -1576,7 +1574,8 @@ namespace Nagru___Manga_Organizer
             if (sTemp == null) return;
 
             FileAttributes fa = File.GetAttributes(sTemp[0]);
-            if (fa == FileAttributes.Directory)
+            if (fa == FileAttributes.Directory 
+                || Ionic.Zip.ZipFile.IsZipFile(sTemp[0]))
                 e.Effect = DragDropEffects.Copy;
             else e.Effect = DragDropEffects.None;
         }
@@ -1586,27 +1585,12 @@ namespace Nagru___Manga_Organizer
         {
             string[] asDir = ((string[])e.Data.GetData(DataFormats.FileDrop, false));
             short iTrack = indx;
-
-            //remove restricted folders
-            string sError = string.Empty;
-            for (int i = 0; i < asDir.Length; i++)
-                if (ExtDir.Restricted(asDir[i]))
-                {
-                    sError += asDir[i] + '\n';
-                    asDir[i] = string.Empty;
-                    continue;
-                }
-            if (sError != string.Empty)
-            {
-                MessageBox.Show("Access to the following folder(s) is restricted:\n" + sError,
-                        "Manga Organizer", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                sError = string.Empty;
-            }
+            string sError = "";
 
             //add all remaining folders
             for (int i = 0; i < asDir.Length; i++)
             {
-                if (asDir[i] == string.Empty) continue;
+                if (asDir[i] == "") continue;
 
                 //add item
                 Main.stEntry en = new stEntry(asDir[i]);
@@ -1615,7 +1599,8 @@ namespace Nagru___Manga_Organizer
                     lData.Add(en);
                     indx = (short)(lData.Count - 1);
 
-                    if (en.sArtist != "" && !CmbBx_Artist.Items.Contains(en.sArtist))
+                    if (en.sArtist != "" 
+                        && !CmbBx_Artist.Items.Contains(en.sArtist))
                     {
                         CmbBx_Artist.AutoCompleteCustomSource.Add(en.sArtist);
                         CmbBx_Artist.Items.Add(en.sArtist);
@@ -1623,7 +1608,7 @@ namespace Nagru___Manga_Organizer
                 }
                 else sError += asDir[i] + '\n';
             }
-            if (sError != string.Empty)
+            if (sError != "")
             {
                 MessageBox.Show("The following path(s) already exists in the database:\n" + sError,
                     "Manga Organizer", MessageBoxButtons.OK, MessageBoxIcon.Error);

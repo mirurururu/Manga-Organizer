@@ -45,6 +45,7 @@
             this.ColArtist = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ColTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ColPages = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ColPos = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Mn_TxBx.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -165,7 +166,8 @@
             this.LV_Found.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.ColArtist,
             this.ColTitle,
-            this.ColPages});
+            this.ColPages,
+            this.ColPos});
             this.LV_Found.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LV_Found.FullRowSelect = true;
             this.LV_Found.GridLines = true;
@@ -195,6 +197,10 @@
             // 
             this.ColPages.Text = "Pages";
             this.ColPages.Width = 67;
+            // 
+            // ColPos
+            // 
+            this.ColPos.Width = 0;
             // 
             // Scan
             // 
@@ -236,5 +242,6 @@
         private System.Windows.Forms.ToolStripMenuItem MnTx_Paste;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripMenuItem MnTx_SelAll;
+        private System.Windows.Forms.ColumnHeader ColPos;
     }
 }

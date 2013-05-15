@@ -1,3 +1,8 @@
+#### May 15, 2013
+	- Browsing zip files now only extracts pages on a 'need to' basis
+	- Scan & Drag/Drop now support zip files
+	- Improved Scan efficiency
+
 #### May 14, 2013
 	- Added tab shortcuts (ctrl + [0-3])
 	- Added support for .zip archives

@@ -17,7 +17,7 @@ For examples of it running see: <a href="https://raw.github.com/Nagru/Manga-Orga
 
 Notes:
 - no install required
-- searches function similarly to EH's
+- searches function similarly to EH's<br />
   (eg. title:celeb_wife date:>01/01/12 -vanilla)
 - entry data can be automatically loaded from an EH gallery url
 - 'auto-magic' also applies to copy/pasted tags, gallery titles pasted into the artist field, and folders dropped onto the listview
