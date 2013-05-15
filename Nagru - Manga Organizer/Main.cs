@@ -18,6 +18,7 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using Ionic.Zip;
 
 namespace Nagru___Manga_Organizer
 {
@@ -101,8 +102,8 @@ namespace Nagru___Manga_Organizer
                     sFiles = new string[1] { _Path };
 
                 if (sFiles.Length > 0) {
-                    if(Ionic.Zip.ZipFile.IsZipFile(sFiles[0])) {
-                        using (Ionic.Zip.ZipFile zip = Ionic.Zip.ZipFile.Read(sFiles[0]))
+                    if(ZipFile.IsZipFile(sFiles[0])) {
+                        using (ZipFile zip = ZipFile.Read(sFiles[0]))
                             iPages = (ushort)zip.Count;
                     }
                 }
@@ -597,7 +598,7 @@ namespace Nagru___Manga_Organizer
             else sFiles = new string[1] { TxBx_Loc.Text };
 
             if (sFiles.Length > 0
-                && Ionic.Zip.ZipFile.IsZipFile(sFiles[0]))
+                && ZipFile.IsZipFile(sFiles[0]))
             {
                 string sDir = Path.GetDirectoryName(sFiles[0]) + "\\!tmp";
                 fmBrowse.lFiles = new List<string>(25);
@@ -606,7 +607,7 @@ namespace Nagru___Manga_Organizer
                 #if !DEBUG
                     di.Attributes = FileAttributes.Directory | FileAttributes.Hidden;
                 #endif
-                using (Ionic.Zip.ZipFile zip = Ionic.Zip.ZipFile.Read(sFiles[0])) {
+                using (ZipFile zip = ZipFile.Read(sFiles[0])) {
                     for (int i = 0; i < zip.Count; i++)
                         fmBrowse.lFiles.Add(sDir + '\\' + zip[i].FileName);
 
@@ -740,30 +741,29 @@ namespace Nagru___Manga_Organizer
 
             //Get cover and filecount
             string[] sFiles = new string[0];
-            if (Directory.Exists(TxBx_Loc.Text))
-                sFiles = ExtDir.GetFiles(
-                    TxBx_Loc.Text, SearchOption.TopDirectoryOnly, "*.zip");
-            else if (File.Exists(TxBx_Loc.Text))
-                sFiles = new string[1] { TxBx_Loc.Text };
+            if (!File.Exists(TxBx_Loc.Text)) {
+                if (Directory.Exists(TxBx_Loc.Text)) {
+                    sFiles = ExtDir.GetFiles(TxBx_Loc.Text,
+                        SearchOption.TopDirectoryOnly, "*.zip");
+                }
+            }
+            else sFiles = new string[1] { TxBx_Loc.Text };
 
-            if (sFiles.Length > 0) {
-                if(Ionic.Zip.ZipFile.IsZipFile(sFiles[0])) {
-                    using (Ionic.Zip.ZipFile zip = Ionic.Zip.ZipFile.Read(sFiles[0])) {
-                        if(zip.Count > 0) {
-                            BeginInvoke(new DelVoidString(SetPicBxImage), sFiles[0]);
-                            BeginInvoke(new DelVoidInt(SetNudCount), zip.Count);
-                        }
+            if (sFiles.Length > 0
+                && ZipFile.IsZipFile(sFiles[0]))
+            {
+                using (ZipFile zip = ZipFile.Read(sFiles[0])) {
+                    if (zip.Count > 0) {
+                        BeginInvoke(new DelVoidString(SetPicBxImage), sFiles[0]);
+                        BeginInvoke(new DelVoidInt(SetNudCount), zip.Count);
                     }
                 }
             }
-            else {
-                sFiles = ExtDir.GetFiles(
-                    TxBx_Loc.Text, SearchOption.TopDirectoryOnly);
-
-                if (sFiles.Length > 0) {
-                    BeginInvoke(new DelVoidString(SetPicBxImage), sFiles[0]);
-                    BeginInvoke(new DelVoidInt(SetNudCount), sFiles.Length);
-                }
+            else if ((sFiles = ExtDir.GetFiles(TxBx_Loc.Text,
+                SearchOption.TopDirectoryOnly)).Length > 0)
+            {
+                BeginInvoke(new DelVoidString(SetPicBxImage), sFiles[0]);
+                BeginInvoke(new DelVoidInt(SetNudCount), sFiles.Length);
             }
         }
 
@@ -989,7 +989,7 @@ namespace Nagru___Manga_Organizer
             MnTS_Open.Visible = true;
             string sPath = obj as string;
             if (sPath.EndsWith(".zip")) {
-                using (Ionic.Zip.ZipFile zip = Ionic.Zip.ZipFile.Read(sPath)) {
+                using (ZipFile zip = ZipFile.Read(sPath)) {
                     sPath = Path.GetDirectoryName(sPath);
                     Directory.CreateDirectory(sPath += "\\!tmp");
                     zip[0].Extract(sPath);
@@ -1574,8 +1574,7 @@ namespace Nagru___Manga_Organizer
             if (sTemp == null) return;
 
             FileAttributes fa = File.GetAttributes(sTemp[0]);
-            if (fa == FileAttributes.Directory 
-                || Ionic.Zip.ZipFile.IsZipFile(sTemp[0]))
+            if (fa == FileAttributes.Directory || ZipFile.IsZipFile(sTemp[0]))
                 e.Effect = DragDropEffects.Copy;
             else e.Effect = DragDropEffects.None;
         }
