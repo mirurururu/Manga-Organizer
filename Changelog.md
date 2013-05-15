@@ -4,7 +4,7 @@
 	- Improved Scan efficiency
 
 #### May 14, 2013
-	- Added tab shortcuts (ctrl + [0-3])
+	- Added tab shortcuts (ctrl + [1-3])
 	- Added support for .zip archives
 	- Embedded Ionic.Zip.dll
 
