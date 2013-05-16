@@ -24,6 +24,9 @@ namespace Nagru___Manga_Organizer
 
         private void Browse_GoTo_Load(object sender, EventArgs e)
         {
+            if (Properties.Settings.Default.DefGrid)
+                LV_Pages.GridLines = true;
+
             for (int i = 0; i < lFiles.Count; i++)
                 LV_Pages.Items.Add(new ListViewItem(lFiles[i]));
             Col_Page.Width = LV_Pages.DisplayRectangle.Width;

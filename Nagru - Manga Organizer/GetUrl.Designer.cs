@@ -118,13 +118,14 @@
             // 
             // Btn_Get
             // 
+            this.Btn_Get.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.Btn_Get.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.Btn_Get.Location = new System.Drawing.Point(306, 10);
             this.Btn_Get.Name = "Btn_Get";
             this.Btn_Get.Size = new System.Drawing.Size(75, 23);
             this.Btn_Get.TabIndex = 1;
             this.Btn_Get.Text = "GET";
-            this.Btn_Get.UseVisualStyleBackColor = true;
+            this.Btn_Get.UseVisualStyleBackColor = false;
             this.Btn_Get.Click += new System.EventHandler(this.Btn_Get_Click);
             // 
             // GetUrl
@@ -132,6 +133,7 @@
             this.AcceptButton = this.Btn_Get;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.ClientSize = new System.Drawing.Size(393, 42);
             this.Controls.Add(this.TxBx_Url);
             this.Controls.Add(this.Btn_Get);

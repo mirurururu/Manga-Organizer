@@ -1,3 +1,7 @@
+#### May 16, 2013
+	- UI consistency changes
+	- fixed GetUrl() mistake
+
 #### May 15, 2013
 	- Browsing zip files now only extracts pages on a 'need to' basis
 	- Scan & Drag/Drop now support zip files

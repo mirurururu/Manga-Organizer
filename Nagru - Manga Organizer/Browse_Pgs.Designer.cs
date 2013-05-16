@@ -38,7 +38,6 @@
             this.Col_Page});
             this.LV_Pages.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LV_Pages.FullRowSelect = true;
-            this.LV_Pages.GridLines = true;
             this.LV_Pages.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.LV_Pages.HideSelection = false;
             this.LV_Pages.Location = new System.Drawing.Point(0, 0);
@@ -66,6 +65,8 @@
             this.KeyPreview = true;
             this.MinimumSize = new System.Drawing.Size(150, 100);
             this.Name = "BrowseTo";
+            this.ShowIcon = false;
+            this.ShowInTaskbar = false;
             this.Text = "Select pages: ";
             this.Load += new System.EventHandler(this.Browse_GoTo_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.BrowseTo_KeyDown);

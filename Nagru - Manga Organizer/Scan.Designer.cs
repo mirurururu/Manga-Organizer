@@ -52,12 +52,14 @@
             // Btn_Add
             // 
             this.Btn_Add.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.Btn_Add.Location = new System.Drawing.Point(572, 9);
+            this.Btn_Add.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.Btn_Add.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.Btn_Add.Location = new System.Drawing.Point(572, 8);
             this.Btn_Add.Name = "Btn_Add";
-            this.Btn_Add.Size = new System.Drawing.Size(72, 21);
+            this.Btn_Add.Size = new System.Drawing.Size(72, 23);
             this.Btn_Add.TabIndex = 2;
             this.Btn_Add.Text = "Add Item(s)";
-            this.Btn_Add.UseVisualStyleBackColor = true;
+            this.Btn_Add.UseVisualStyleBackColor = false;
             this.Btn_Add.Click += new System.EventHandler(this.Btn_Add_Click);
             // 
             // TxBx_Loc
@@ -137,25 +139,30 @@
             // Btn_Ignore
             // 
             this.Btn_Ignore.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.Btn_Ignore.Location = new System.Drawing.Point(650, 9);
+            this.Btn_Ignore.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.Btn_Ignore.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.Btn_Ignore.Location = new System.Drawing.Point(650, 8);
             this.Btn_Ignore.Name = "Btn_Ignore";
-            this.Btn_Ignore.Size = new System.Drawing.Size(79, 21);
+            this.Btn_Ignore.Size = new System.Drawing.Size(79, 23);
             this.Btn_Ignore.TabIndex = 25;
             this.Btn_Ignore.Text = "Ignore Item(s)";
-            this.Btn_Ignore.UseVisualStyleBackColor = true;
+            this.Btn_Ignore.UseVisualStyleBackColor = false;
             this.Btn_Ignore.Click += new System.EventHandler(this.Btn_Ignore_Click);
             // 
             // ChkBx_All
             // 
             this.ChkBx_All.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ChkBx_All.Appearance = System.Windows.Forms.Appearance.Button;
             this.ChkBx_All.AutoSize = true;
-            this.ChkBx_All.Location = new System.Drawing.Point(499, 12);
+            this.ChkBx_All.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.ChkBx_All.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.ChkBx_All.Location = new System.Drawing.Point(508, 8);
             this.ChkBx_All.Name = "ChkBx_All";
             this.ChkBx_All.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.ChkBx_All.Size = new System.Drawing.Size(67, 17);
+            this.ChkBx_All.Size = new System.Drawing.Size(58, 23);
             this.ChkBx_All.TabIndex = 26;
             this.ChkBx_All.Text = "Show All";
-            this.ChkBx_All.UseVisualStyleBackColor = true;
+            this.ChkBx_All.UseVisualStyleBackColor = false;
             this.ChkBx_All.CheckedChanged += new System.EventHandler(this.ChkBx_All_CheckedChanged);
             // 
             // LV_Found
@@ -170,7 +177,6 @@
             this.ColPos});
             this.LV_Found.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LV_Found.FullRowSelect = true;
-            this.LV_Found.GridLines = true;
             this.LV_Found.HideSelection = false;
             this.LV_Found.Location = new System.Drawing.Point(0, 36);
             this.LV_Found.Name = "LV_Found";
@@ -206,6 +212,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.ClientSize = new System.Drawing.Size(741, 343);
             this.Controls.Add(this.ChkBx_All);
             this.Controls.Add(this.Btn_Ignore);
@@ -215,6 +222,8 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.MinimumSize = new System.Drawing.Size(510, 150);
             this.Name = "Scan";
+            this.ShowIcon = false;
+            this.ShowInTaskbar = false;
             this.Text = "Scan";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Scan_FormClosing);
             this.Load += new System.EventHandler(this.Scan_Load);

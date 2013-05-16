@@ -55,6 +55,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "Browse_Img";
+            this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.Text = "Browse";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Browse_FormClosing);

@@ -82,6 +82,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.ClientSize = new System.Drawing.Size(395, 310);
             this.Controls.Add(this.LnkLbl_Git);
             this.Controls.Add(this.Lbl_P2);
@@ -91,7 +92,9 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "About";
-            this.Text = "About <Error>";
+            this.ShowIcon = false;
+            this.ShowInTaskbar = false;
+            this.Text = "About ";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.About_FormClosing);
             this.Load += new System.EventHandler(this.About_Load);
             this.Shown += new System.EventHandler(this.About_Shown);

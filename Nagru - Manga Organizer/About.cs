@@ -18,7 +18,7 @@ namespace Nagru___Manga_Organizer
         private void About_Load(object sender, EventArgs e)
         {
             delFini = Checked;
-            Text = string.Format("About (v. {0}-{1}-20{2})", 
+            Text += string.Format("(v. {0}-{1}-20{2})", 
                 sVer.Substring(2, 2), sVer.Substring(4, 2), sVer.Substring(0, 2));
 
             Lbl_P1.Text = "This program provides tagging, searching and other basic management for a\n" +

@@ -25,6 +25,8 @@ namespace Nagru___Manga_Organizer
 
         private void Scan_Load(object sender, EventArgs e)
         {
+            if (Properties.Settings.Default.DefGrid)
+                LV_Found.GridLines = true;
             LV_Found.ListViewItemSorter = lvSortObj;
             LV_Found_Resize(sender, e);
 

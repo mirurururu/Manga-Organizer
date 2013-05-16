@@ -16,11 +16,8 @@ namespace Nagru___Manga_Organizer
                Author: K. Scott Allen (August 20, 2004) */
             using (Mutex mutex = new Mutex(false, @"Global\" + Application.ProductName))
             {
-                if (!mutex.WaitOne(0, false)) {
-                    MessageBox.Show("Instance already running", Application.ProductName, 
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (!mutex.WaitOne(0, false))
                     return;
-                }
 
                 GC.Collect();
                 Application.Run(new Main(args));

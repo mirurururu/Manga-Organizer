@@ -19,6 +19,9 @@ namespace Nagru___Manga_Organizer
 
         private void Stats_Load(object sender, EventArgs e)
         {
+            if (Properties.Settings.Default.DefGrid)
+                LV_Stats.GridLines = true;
+
             ShowStats();
             ResizeLV();
         }

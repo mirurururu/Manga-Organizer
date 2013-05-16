@@ -45,7 +45,6 @@
             this.colCount,
             this.colPer});
             this.LV_Stats.FullRowSelect = true;
-            this.LV_Stats.GridLines = true;
             this.LV_Stats.Location = new System.Drawing.Point(0, 26);
             this.LV_Stats.MultiSelect = false;
             this.LV_Stats.Name = "LV_Stats";
@@ -71,30 +70,34 @@
             // 
             // ChkBx_FavStats
             // 
-            this.ChkBx_FavStats.AutoSize = true;
-            this.ChkBx_FavStats.Location = new System.Drawing.Point(12, 5);
+            this.ChkBx_FavStats.Appearance = System.Windows.Forms.Appearance.Button;
+            this.ChkBx_FavStats.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.ChkBx_FavStats.Location = new System.Drawing.Point(0, 0);
             this.ChkBx_FavStats.Name = "ChkBx_FavStats";
             this.ChkBx_FavStats.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.ChkBx_FavStats.Size = new System.Drawing.Size(73, 17);
+            this.ChkBx_FavStats.Size = new System.Drawing.Size(217, 27);
             this.ChkBx_FavStats.TabIndex = 1;
-            this.ChkBx_FavStats.Text = "Favs Only";
-            this.ChkBx_FavStats.UseVisualStyleBackColor = true;
+            this.ChkBx_FavStats.Text = "From Favourites Only";
+            this.ChkBx_FavStats.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.ChkBx_FavStats.UseVisualStyleBackColor = false;
             this.ChkBx_FavStats.CheckedChanged += new System.EventHandler(this.ChkBx_FavStats_CheckedChanged);
             // 
             // Stats
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.ClientSize = new System.Drawing.Size(217, 387);
             this.Controls.Add(this.ChkBx_FavStats);
             this.Controls.Add(this.LV_Stats);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Name = "Stats";
+            this.ShowIcon = false;
+            this.ShowInTaskbar = false;
             this.Text = "Stats";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Stats_FormClosing);
             this.Load += new System.EventHandler(this.Stats_Load);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 

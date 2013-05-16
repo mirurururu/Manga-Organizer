@@ -310,12 +310,16 @@ namespace Nagru___Manga_Organizer
             frTxBx_Notes.DragEnter += new DragEventHandler(DragEnterTxBx);
             frTxBx_Notes.Text = Properties.Settings.Default.Notes;
 
+            //check user settings
             this.Location = Properties.Settings.Default.Position.Location;
             this.Width = Properties.Settings.Default.Position.Width;
             this.Height = Properties.Settings.Default.Position.Height;
-
             if (Properties.Settings.Default.DefZip)
                 MnTs_DefZip.Checked = true;
+            if (Properties.Settings.Default.DefGrid) {
+                LV_Entries.GridLines = true;
+                MnTs_Grid.Checked = true;
+            }
 
             //load database
             string sPath = Properties.Settings.Default.SavLoc != string.Empty ?
@@ -341,7 +345,12 @@ namespace Nagru___Manga_Organizer
         /* Prevent Form close if unsaved data present   */
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (!bSavList || !bSavText)
+            if (!bSavText) {
+                Properties.Settings.Default.Notes = frTxBx_Notes.Text;
+                Properties.Settings.Default.Save();
+            }
+
+            if (!bSavList)
             {
                 switch (MessageBox.Show("Save before exiting?", "Manga Organizer",
                     MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
@@ -356,11 +365,9 @@ namespace Nagru___Manga_Organizer
                 }
             }
 
-            if(!e.Cancel) {
-                Properties.Settings.Default.Position = 
-                    new Rectangle(this.Location, this.Size);
-                Properties.Settings.Default.Save();
-            }
+            Properties.Settings.Default.Position =
+                new Rectangle(this.Location, this.Size);
+            Properties.Settings.Default.Save();
         }
 
         /* Display image from selected folder   */
@@ -889,12 +896,6 @@ namespace Nagru___Manga_Organizer
                 bSavList = true;
             }
 
-            if (!bSavText) {
-                Properties.Settings.Default.Notes = frTxBx_Notes.Text;
-                Properties.Settings.Default.Save();
-                bSavText = true;
-            }
-
             Text = "Saved";
             Cursor = Cursors.Default;
         }
@@ -1243,10 +1244,8 @@ namespace Nagru___Manga_Organizer
         private void MnTS_About_Click(object sender, EventArgs e)
         {
             About fmAbout = new About();
-            fmAbout.Show();
-
-            if (fmAbout.DialogResult == DialogResult.OK)
-                fmAbout.Dispose();
+            fmAbout.ShowDialog();
+            fmAbout.Dispose();
         }
 
         private void MnTS_Stats_Click(object sender, EventArgs e)
@@ -1254,9 +1253,6 @@ namespace Nagru___Manga_Organizer
             Stats fmStats = new Stats();
             fmStats.lCurr = lData;
             fmStats.Show();
-            
-            if (fmStats.DialogResult == DialogResult.OK)
-                fmStats.Dispose();
         }
 
         /* Uses EH API to get metadata from gallery URL */
@@ -1297,7 +1293,6 @@ namespace Nagru___Manga_Organizer
                     Text = "Parsing metadata...";
                     SplitTitle(ExtString.DecodeNonAscii(System.Net.WebUtility.HtmlDecode(asResp[2].Split(':')[1].Substring(1))));
                     CmbBx_Type.Text = asResp[4].Split(':')[1].Substring(1);
-                    frTxBx_Notes.Text = asResp[7] + '\n' + asResp[8];
                     DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
                     Dt_Date.Value = dt.AddSeconds((long)Convert.ToDouble(asResp[7].Split(':')[1].Substring(1)));
                     Nud_Pages.Value = Convert.ToInt32(asResp[8].Split(':')[1].Substring(1));
@@ -1318,10 +1313,19 @@ namespace Nagru___Manga_Organizer
             fmGet.Dispose();
         }
 
+        private void MnTs_Grid_Click(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.DefGrid = !Properties.Settings.Default.DefGrid;
+            MnTs_Grid.Checked = !MnTs_Grid.Checked;
+            Properties.Settings.Default.Save();
+            LV_Entries.GridLines = !LV_Entries.GridLines;
+        }
+
         private void MnTs_DefZip_Click(object sender, EventArgs e)
         {
             Properties.Settings.Default.DefZip = !Properties.Settings.Default.DefZip;
             MnTs_DefZip.Checked = !MnTs_DefZip.Checked;
+            Properties.Settings.Default.Save();
         }
 
         private void MnTs_DefRoot_Click(object sender, EventArgs e)
@@ -1388,50 +1392,119 @@ namespace Nagru___Manga_Organizer
         { this.Close(); }
         #endregion
 
-        #region Menu_RichText
-        private void MnRTx_Undo_Click(object sender, EventArgs e)
+        #region Menu_Text
+        private void MnTx_Undo_Click(object sender, EventArgs e)
         {
-            if (TabControl.SelectedIndex == 2) frTxBx_Notes.Undo();
-            else frTxBx_Desc.Undo();
-        }
-
-        private void MnRTx_Cut_Click(object sender, EventArgs e)
-        {
-            if (TabControl.SelectedIndex == 2) {
-                frTxBx_Notes.Cut();
-                bSavText = false;
+            switch (ActiveControl.GetType().Name) {
+                case "FixedRichTextBox":
+                    ((FixedRichTextBox)ActiveControl).Undo();
+                    if (TabControl.SelectedIndex == 2) bSavText = true;
+                    break;
+                case "TextBox":
+                    ((TextBox)ActiveControl).Undo();
+                    break;
+                case "ComboBox":
+                    ((ComboBox)ActiveControl).ResetText();
+                    break;
             }
-            else frTxBx_Desc.Cut();
         }
 
-        private void MnRTx_Copy_Click(object sender, EventArgs e)
+        private void MnTx_Cut_Click(object sender, EventArgs e)
         {
-            if (TabControl.SelectedIndex == 2) frTxBx_Notes.Copy();
-            else frTxBx_Desc.Copy();
-        }
-
-        private void MnRTx_Paste_Click(object sender, EventArgs e)
-        {
-            if (TabControl.SelectedIndex == 2) {
-                frTxBx_Notes.SelectionStart = InsertText(
-                    frTxBx_Notes, Clipboard.GetText(), frTxBx_Notes.SelectionStart);
-                bSavText = false;
+            switch (ActiveControl.GetType().Name)
+            {
+                case "FixedRichTextBox":
+                    ((FixedRichTextBox)ActiveControl).Cut();
+                    if (TabControl.SelectedIndex == 2) bSavText = false;
+                    break;
+                case "TextBox":
+                    ((TextBox)ActiveControl).Cut();
+                    break;
+                case "ComboBox":
+                    ComboBox cx = (ComboBox)ActiveControl;
+                    if (cx.SelectedText != "") {
+                        Clipboard.SetText(cx.SelectedText);
+                        cx.SelectedText = "";
+                    }
+                    break;
             }
-            else frTxBx_Desc.SelectionStart = InsertText(
-                frTxBx_Desc, Clipboard.GetText(), frTxBx_Desc.SelectionStart);
         }
 
-        private void MnRTx_SelectAll_Click(object sender, EventArgs e)
+        private void MnTx_Copy_Click(object sender, EventArgs e)
         {
-            if (TabControl.SelectedIndex == 2) frTxBx_Notes.SelectAll();
-            else frTxBx_Desc.SelectAll();
+            switch (ActiveControl.GetType().Name) {
+                case "FixedRichTextBox":
+                    ((FixedRichTextBox)ActiveControl).Copy();
+                    break;
+                case "TextBox":
+                    ((TextBox)ActiveControl).Copy();
+                    break;
+                case "ComboBox":
+                    Clipboard.SetText(((ComboBox)ActiveControl).SelectedText);
+                    break;
+            }
+        }
+
+        private void MnTx_Paste_Click(object sender, EventArgs e)
+        {
+            switch (ActiveControl.GetType().Name)
+            {
+                case "FixedRichTextBox":
+                    ((FixedRichTextBox)ActiveControl).Paste();
+                    if (TabControl.SelectedIndex == 2) bSavText = false;
+                    break;
+                case "TextBox":
+                    TextBox txt = (TextBox)ActiveControl;
+                    if (txt.Name == "TxBx_Tags")
+                    {
+                        if (!Clipboard.GetText().Contains("\n"))
+                        { txt.Paste(); return; }
+
+                        string[] sTags = Clipboard.GetText().Split(new char[] { '(', '\n' });
+
+                        for (int i = 0; i < sTags.Length; i++)
+                            if (!sTags[i].EndsWith("\r") && !sTags[i].EndsWith(")"))
+                            {
+                                TxBx_Tags.Text += sTags[i].TrimEnd();
+                                if (i != sTags.Length - 2)
+                                    TxBx_Tags.Text += ", ";
+                            }
+                    }
+                    else txt.Paste();
+                    break;
+                case "ComboBox":
+                    ComboBox cb = (ComboBox)ActiveControl;
+                    if (cb.Text == string.Empty
+                        && TxBx_Title.Text == string.Empty)
+                        SplitTitle(Clipboard.GetText());
+                    else cb.Text = Clipboard.GetText();
+                    break;
+            }
+        }
+
+        private void MnTx_SelAll_Click(object sender, EventArgs e)
+        {
+            switch (ActiveControl.GetType().Name)
+            {
+                case "FixedRichTextBox":
+                    ((FixedRichTextBox)ActiveControl).SelectAll();
+                    break;
+                case "TextBox":
+                    ((TextBox)ActiveControl).SelectAll();
+                    break;
+                case "ComboBox":
+                    ((ComboBox)ActiveControl).SelectAll();
+                    break;
+            }
         }
 
         /* Prevent mixed font types when c/p  */
         private void frTxBx_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Modifiers == Keys.Control && e.KeyCode == Keys.V) {
-                if (TabControl.SelectedIndex == 2) {
+            if (e.Modifiers == Keys.Control && e.KeyCode == Keys.V)
+            {
+                if (TabControl.SelectedIndex == 2)
+                {
                     frTxBx_Notes.SelectionStart = InsertText(
                         frTxBx_Notes, Clipboard.GetText(), frTxBx_Notes.SelectionStart);
                     bSavText = false;
@@ -1440,73 +1513,6 @@ namespace Nagru___Manga_Organizer
                     frTxBx_Desc, Clipboard.GetText(), frTxBx_Desc.SelectionStart);
                 e.Handled = true;
             }
-        }
-        #endregion
-
-        #region Menu_Text
-        private void MnTx_Undo_Click(object sender, EventArgs e)
-        {
-            if (ActiveControl is TextBox)
-                (ActiveControl as TextBox).Undo();
-            else (ActiveControl as ComboBox).ResetText();
-        }
-
-        private void MnTx_Cut_Click(object sender, EventArgs e)
-        {
-            if (ActiveControl is TextBox)
-                (ActiveControl as TextBox).Cut();
-            else {
-                if ((ActiveControl as ComboBox).SelectedText == "") return;
-                Clipboard.SetText((ActiveControl as ComboBox).SelectedText);
-                (ActiveControl as ComboBox).SelectedText = "";
-            }
-        }
-
-        private void MnTx_Copy_Click(object sender, EventArgs e)
-        {
-            if (ActiveControl is TextBox)
-                (ActiveControl as TextBox).Copy();
-            else Clipboard.SetText((ActiveControl as ComboBox).SelectedText);
-        }
-
-        private void MnTx_Paste_Click(object sender, EventArgs e)
-        {
-            MnTx_Undo.Enabled = true;
-            if (ActiveControl is TextBox)
-            {
-                TextBox txbx = ActiveControl as TextBox;
-
-                if (txbx == TxBx_Tags)
-                {
-                    if (!Clipboard.GetText().Contains("\n"))
-                    { txbx.Paste(); return; }
-
-                    string[] sTags = Clipboard.GetText().Split(new char[] { '(', '\n' });
-
-                    for (int i = 0; i < sTags.Length; i++)
-                        if (!sTags[i].EndsWith("\r") && !sTags[i].EndsWith(")")) {
-                            TxBx_Tags.Text += sTags[i].TrimEnd();
-                            if (i != sTags.Length - 2)
-                                TxBx_Tags.Text += ", ";
-                        }
-                }
-                else txbx.Paste();
-            }
-            else if (ActiveControl is ComboBox)
-            {
-                if (CmbBx_Artist.Text == string.Empty
-                    && TxBx_Title.Text == string.Empty) {
-                    SplitTitle(Clipboard.GetText());
-                }
-                else CmbBx_Artist.Text = Clipboard.GetText();
-            }
-        }
-
-        private void MnTx_SelAll_Click(object sender, EventArgs e)
-        {
-            if (ActiveControl is TextBox)
-                (ActiveControl as TextBox).SelectAll();
-            else (ActiveControl as ComboBox).SelectAll();
         }
         #endregion
 
