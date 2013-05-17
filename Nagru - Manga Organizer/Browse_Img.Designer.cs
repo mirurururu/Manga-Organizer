@@ -34,7 +34,7 @@
             // 
             // picBx
             // 
-            this.picBx.BackColor = System.Drawing.Color.DarkGray;
+            this.picBx.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(39)))), ((int)(((byte)(40)))), ((int)(((byte)(34)))));
             this.picBx.Dock = System.Windows.Forms.DockStyle.Fill;
             this.picBx.Location = new System.Drawing.Point(0, 0);
             this.picBx.Name = "picBx";

@@ -1,6 +1,12 @@
+#### May 17, 2013
+	- Improved context menu behaviour
+	- Changed picturebox back-colour to same as Notes field
+	- Fixed delete operation not updating listview
+	- Fixed crash when browsing .zip containing non-images
+
 #### May 16, 2013
 	- UI consistency changes
-	- fixed GetUrl() mistake
+	- fixed GetUrl() mistake which sent EH metadata to Notes field
 
 #### May 15, 2013
 	- Browsing zip files now only extracts pages on a 'need to' basis

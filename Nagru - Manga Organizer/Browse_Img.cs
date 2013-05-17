@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Drawing.Drawing2D;
 using System.Drawing;
 using System.IO;
+using Enc = System.Text.Encoding;
 
 namespace Nagru___Manga_Organizer
 {
@@ -110,20 +111,19 @@ namespace Nagru___Manga_Organizer
             bNext = true;
             Reset();
 
-            if (++iPage >= lFiles.Count) iPage = 0;
-            if(bZip && !File.Exists(lFiles[iPage])) 
-                zip[iPage].Extract(zip.TempFileFolder);
-            using (FileStream fs = new FileStream(
-                lFiles[iPage], FileMode.Open, FileAccess.Read))
-                imgR = Image.FromStream(fs);
+            do {
+                if (++iPage >= lFiles.Count) iPage = 0;
+                imgR = TrySet(iPage);
+            }
+            while (imgR == null);
             if (!(bWideR = imgR.Height < imgR.Width))
             {
-                if (++iPage >= lFiles.Count) iPage = 0;
-                if (bZip && !File.Exists(lFiles[iPage]))
-                    zip[iPage].Extract(zip.TempFileFolder);
-                using (FileStream fs = new FileStream(
-                    lFiles[iPage], FileMode.Open, FileAccess.Read))
-                    imgL = Image.FromStream(fs);
+                do {
+                    if (++iPage >= lFiles.Count) iPage = 0;
+                    imgL = TrySet(iPage);
+                }
+                while (imgL == null);
+
                 if (bWideL = imgL.Height < imgL.Width)
                     iPage--;
             }
@@ -136,24 +136,36 @@ namespace Nagru___Manga_Organizer
             bNext = false;
             Reset();
 
-            if (--iPage < 0) iPage = lFiles.Count - 1;
-            else if (iPage >= lFiles.Count) iPage = 0;
-            if (bZip && !File.Exists(lFiles[iPage]))
-                zip[iPage].Extract(zip.TempFileFolder);
-            using (FileStream fs = new FileStream(
-                lFiles[iPage], FileMode.Open, FileAccess.Read))
-                imgL = Image.FromStream(fs);
+            do {
+                if (--iPage < 0) iPage = lFiles.Count - 1;
+                else if (iPage >= lFiles.Count) iPage = 0;
+                imgL = TrySet(iPage);
+            }
+            while (imgL == null);
             if (!(bWideL = imgL.Height < imgL.Width))
             {
-                if (iPage - 1 < 0) iPage = lFiles.Count + 1;
-                if (bZip && !File.Exists(lFiles[iPage - 1]))
-                    zip[iPage - 1].Extract(zip.TempFileFolder);
-                using (FileStream fs = new FileStream(
-                    lFiles[iPage - 1], FileMode.Open, FileAccess.Read))
-                    imgR = Image.FromStream(fs);
+                do {
+                    if (--iPage < 0) iPage = lFiles.Count - 1;
+                    imgR = TrySet(iPage);
+                }
+                while (imgR == null);
+                iPage++;
                 bWideR = imgR.Height < imgR.Width;
             }
             picBx.Refresh();
+        }
+
+        private Image TrySet(int i)
+        {
+            try
+            {
+                if (bZip && !File.Exists(lFiles[i]))
+                    zip[i].Extract(zip.TempFileFolder);
+                using (FileStream fs = new FileStream(
+                    lFiles[i], FileMode.Open, FileAccess.Read))
+                    return Image.FromStream(fs);
+            }
+            catch { return null; }
         }
 
         private void Reset()
