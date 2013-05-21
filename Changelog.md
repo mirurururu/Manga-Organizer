@@ -1,3 +1,9 @@
+#### May 20, 2013
+	- Improved listview resizing
+	- Fixed 'Random Manga' button from returning the same entry twice in a row
+	- Fixed context menu paste not triggering Search event
+	- Small code improvements (500kb less RAM, yay...)
+
 #### May 17, 2013
 	- Improved context menu behaviour
 	- Changed picturebox back-colour to same as Notes field

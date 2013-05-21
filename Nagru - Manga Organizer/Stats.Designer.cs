@@ -53,6 +53,7 @@
             this.LV_Stats.UseCompatibleStateImageBehavior = false;
             this.LV_Stats.View = System.Windows.Forms.View.Details;
             this.LV_Stats.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.LV_Stats_ColumnClick);
+            this.LV_Stats.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.LV_Stats_ColumnWidthChanging);
             this.LV_Stats.Resize += new System.EventHandler(this.LV_Stats_Resize);
             // 
             // colTags
@@ -70,6 +71,8 @@
             // 
             // ChkBx_FavStats
             // 
+            this.ChkBx_FavStats.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.ChkBx_FavStats.Appearance = System.Windows.Forms.Appearance.Button;
             this.ChkBx_FavStats.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.ChkBx_FavStats.Location = new System.Drawing.Point(0, 0);
@@ -91,6 +94,7 @@
             this.Controls.Add(this.ChkBx_FavStats);
             this.Controls.Add(this.LV_Stats);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
+            this.MinimumSize = new System.Drawing.Size(200, 200);
             this.Name = "Stats";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;

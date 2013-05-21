@@ -47,6 +47,12 @@ namespace Nagru___Manga_Organizer
             LV_Stats.EndUpdate();
         }
 
+        private void LV_Stats_ColumnWidthChanging(object sender, ColumnWidthChangingEventArgs e)
+        {
+            e.Cancel = true;
+            e.NewWidth = LV_Stats.Columns[e.ColumnIndex].Width;
+        }
+
         private void ChkBx_FavStats_CheckedChanged(object sender, EventArgs e)
         { ShowStats(); }
 

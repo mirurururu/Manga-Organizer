@@ -43,6 +43,7 @@
             this.MnTx_Cut = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTx_Copy = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTx_Paste = new System.Windows.Forms.ToolStripMenuItem();
+            this.MnTx_Delete = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.MnTx_SelAll = new System.Windows.Forms.ToolStripMenuItem();
             this.Tb_View = new System.Windows.Forms.TabPage();
@@ -70,8 +71,8 @@
             this.Mn_EntryOps = new System.Windows.Forms.MenuStrip();
             this.MnTS_Menu = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTS_CopyTitle = new System.Windows.Forms.ToolStripMenuItem();
-            this.MnTS_OpenEntryFolder = new System.Windows.Forms.ToolStripMenuItem();
-            this.MnTS_GET = new System.Windows.Forms.ToolStripMenuItem();
+            this.MnTS_OpenSource = new System.Windows.Forms.ToolStripMenuItem();
+            this.MnTS_LoadUrl = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.MnTS_Save = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTS_OpenDataFolder = new System.Windows.Forms.ToolStripMenuItem();
@@ -81,7 +82,7 @@
             this.MnTs_DefSav = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTs_DefRoot = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTs_DefZip = new System.Windows.Forms.ToolStripMenuItem();
-            this.MnTs_Grid = new System.Windows.Forms.ToolStripMenuItem();
+            this.MnTs_DefGrid = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTS_About = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTs_Quit = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTS_SecretSort = new System.Windows.Forms.ToolStripSeparator();
@@ -92,7 +93,6 @@
             this.MnTS_Clear = new System.Windows.Forms.ToolStripMenuItem();
             this.Tb_Notes = new System.Windows.Forms.TabPage();
             this.Delay = new System.Windows.Forms.Timer(this.components);
-            this.MnTx_Delete = new System.Windows.Forms.ToolStripMenuItem();
             this.LV_Entries = new Nagru___Manga_Organizer.ListViewNF();
             this.ColArtist = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ColTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -267,6 +267,13 @@
             this.MnTx_Paste.Text = "Paste";
             this.MnTx_Paste.Click += new System.EventHandler(this.MnTx_Paste_Click);
             // 
+            // MnTx_Delete
+            // 
+            this.MnTx_Delete.Name = "MnTx_Delete";
+            this.MnTx_Delete.Size = new System.Drawing.Size(90, 22);
+            this.MnTx_Delete.Text = "Delete";
+            this.MnTx_Delete.Click += new System.EventHandler(this.MnTx_Delete_Click);
+            // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
@@ -339,7 +346,7 @@
             // 
             this.CmbBx_Artist.AllowDrop = true;
             this.CmbBx_Artist.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
-            this.CmbBx_Artist.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
+            this.CmbBx_Artist.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
             this.CmbBx_Artist.ContextMenuStrip = this.Mn_TxBx;
             this.CmbBx_Artist.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.CmbBx_Artist.FormattingEnabled = true;
@@ -591,6 +598,7 @@
             this.PicBx_Cover.TabIndex = 0;
             this.PicBx_Cover.TabStop = false;
             this.PicBx_Cover.Click += new System.EventHandler(this.PicBx_Cover_Click);
+            this.PicBx_Cover.Paint += new System.Windows.Forms.PaintEventHandler(this.PicBx_Cover_Paint);
             // 
             // Mn_EntryOps
             // 
@@ -608,7 +616,7 @@
             this.Mn_EntryOps.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
             this.Mn_EntryOps.Location = new System.Drawing.Point(3, 3);
             this.Mn_EntryOps.Name = "Mn_EntryOps";
-            this.Mn_EntryOps.Size = new System.Drawing.Size(153, 27);
+            this.Mn_EntryOps.Size = new System.Drawing.Size(384, 27);
             this.Mn_EntryOps.TabIndex = 21;
             this.Mn_EntryOps.Text = "menuStrip";
             // 
@@ -616,8 +624,8 @@
             // 
             this.MnTS_Menu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.MnTS_CopyTitle,
-            this.MnTS_OpenEntryFolder,
-            this.MnTS_GET,
+            this.MnTS_OpenSource,
+            this.MnTS_LoadUrl,
             this.toolStripSeparator5,
             this.MnTS_Save,
             this.MnTS_OpenDataFolder,
@@ -640,25 +648,25 @@
             this.MnTS_CopyTitle.ToolTipText = "Ctrl+F";
             this.MnTS_CopyTitle.Click += new System.EventHandler(this.MnTS_CopyTitle_Click);
             // 
-            // MnTS_OpenEntryFolder
+            // MnTS_OpenSource
             // 
-            this.MnTS_OpenEntryFolder.Name = "MnTS_OpenEntryFolder";
-            this.MnTS_OpenEntryFolder.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.O)));
-            this.MnTS_OpenEntryFolder.ShowShortcutKeys = false;
-            this.MnTS_OpenEntryFolder.Size = new System.Drawing.Size(183, 22);
-            this.MnTS_OpenEntryFolder.Text = "Open Entry\'s Folder";
-            this.MnTS_OpenEntryFolder.ToolTipText = "Alt+O";
-            this.MnTS_OpenEntryFolder.Click += new System.EventHandler(this.MnTS_OpenEntryFolder_Click);
+            this.MnTS_OpenSource.Name = "MnTS_OpenSource";
+            this.MnTS_OpenSource.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.O)));
+            this.MnTS_OpenSource.ShowShortcutKeys = false;
+            this.MnTS_OpenSource.Size = new System.Drawing.Size(183, 22);
+            this.MnTS_OpenSource.Text = "Open Entry\'s Folder";
+            this.MnTS_OpenSource.ToolTipText = "Alt+O";
+            this.MnTS_OpenSource.Click += new System.EventHandler(this.MnTS_OpenSource_Click);
             // 
-            // MnTS_GET
+            // MnTS_LoadUrl
             // 
-            this.MnTS_GET.Name = "MnTS_GET";
-            this.MnTS_GET.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.U)));
-            this.MnTS_GET.ShowShortcutKeys = false;
-            this.MnTS_GET.Size = new System.Drawing.Size(183, 22);
-            this.MnTS_GET.Text = "GET from URL";
-            this.MnTS_GET.ToolTipText = "Ctrl+U";
-            this.MnTS_GET.Click += new System.EventHandler(this.MnTS_GET_Click);
+            this.MnTS_LoadUrl.Name = "MnTS_LoadUrl";
+            this.MnTS_LoadUrl.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.U)));
+            this.MnTS_LoadUrl.ShowShortcutKeys = false;
+            this.MnTS_LoadUrl.Size = new System.Drawing.Size(183, 22);
+            this.MnTS_LoadUrl.Text = "GET from URL";
+            this.MnTS_LoadUrl.ToolTipText = "Ctrl+U";
+            this.MnTS_LoadUrl.Click += new System.EventHandler(this.MnTS_LoadUrl_Click);
             // 
             // toolStripSeparator5
             // 
@@ -706,7 +714,7 @@
             this.MnTs_DefSav,
             this.MnTs_DefRoot,
             this.MnTs_DefZip,
-            this.MnTs_Grid});
+            this.MnTs_DefGrid});
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
             this.settingsToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.settingsToolStripMenuItem.Text = "Settings";
@@ -714,30 +722,30 @@
             // MnTs_DefSav
             // 
             this.MnTs_DefSav.Name = "MnTs_DefSav";
-            this.MnTs_DefSav.Size = new System.Drawing.Size(150, 22);
+            this.MnTs_DefSav.Size = new System.Drawing.Size(152, 22);
             this.MnTs_DefSav.Text = "Save Location";
             this.MnTs_DefSav.Click += new System.EventHandler(this.MnTs_DefSav_Click);
             // 
             // MnTs_DefRoot
             // 
             this.MnTs_DefRoot.Name = "MnTs_DefRoot";
-            this.MnTs_DefRoot.Size = new System.Drawing.Size(150, 22);
+            this.MnTs_DefRoot.Size = new System.Drawing.Size(152, 22);
             this.MnTs_DefRoot.Text = "Root Folder";
             this.MnTs_DefRoot.Click += new System.EventHandler(this.MnTs_DefRoot_Click);
             // 
             // MnTs_DefZip
             // 
             this.MnTs_DefZip.Name = "MnTs_DefZip";
-            this.MnTs_DefZip.Size = new System.Drawing.Size(150, 22);
+            this.MnTs_DefZip.Size = new System.Drawing.Size(152, 22);
             this.MnTs_DefZip.Text = "Default Zip";
             this.MnTs_DefZip.Click += new System.EventHandler(this.MnTs_DefZip_Click);
             // 
-            // MnTs_Grid
+            // MnTs_DefGrid
             // 
-            this.MnTs_Grid.Name = "MnTs_Grid";
-            this.MnTs_Grid.Size = new System.Drawing.Size(150, 22);
-            this.MnTs_Grid.Text = "Draw Gridlines";
-            this.MnTs_Grid.Click += new System.EventHandler(this.MnTs_Grid_Click);
+            this.MnTs_DefGrid.Name = "MnTs_DefGrid";
+            this.MnTs_DefGrid.Size = new System.Drawing.Size(152, 22);
+            this.MnTs_DefGrid.Text = "Draw Gridlines";
+            this.MnTs_DefGrid.Click += new System.EventHandler(this.MnTs_DefGrid_Click);
             // 
             // MnTS_About
             // 
@@ -832,19 +840,13 @@
             this.Delay.Interval = 400;
             this.Delay.Tick += new System.EventHandler(this.Delay_Tick);
             // 
-            // MnTx_Delete
-            // 
-            this.MnTx_Delete.Name = "MnTx_Delete";
-            this.MnTx_Delete.Size = new System.Drawing.Size(90, 22);
-            this.MnTx_Delete.Text = "Delete";
-            this.MnTx_Delete.Click += new System.EventHandler(this.MnTx_Delete_Click);
-            // 
             // LV_Entries
             // 
             this.LV_Entries.AllowDrop = true;
             this.LV_Entries.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.LV_Entries.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.LV_Entries.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.ColArtist,
             this.ColTitle,
@@ -855,6 +857,7 @@
             this.LV_Entries.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LV_Entries.FullRowSelect = true;
             this.LV_Entries.HideSelection = false;
+            this.LV_Entries.LabelWrap = false;
             this.LV_Entries.Location = new System.Drawing.Point(0, 32);
             this.LV_Entries.MultiSelect = false;
             this.LV_Entries.Name = "LV_Entries";
@@ -863,6 +866,7 @@
             this.LV_Entries.UseCompatibleStateImageBehavior = false;
             this.LV_Entries.View = System.Windows.Forms.View.Details;
             this.LV_Entries.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.LV_Entries_ColumnClick);
+            this.LV_Entries.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.LV_Entries_ColumnWidthChanging);
             this.LV_Entries.SelectedIndexChanged += new System.EventHandler(this.LV_Entries_SelectedIndexChanged);
             this.LV_Entries.DragDrop += new System.Windows.Forms.DragEventHandler(this.LV_Entries_DragDrop);
             this.LV_Entries.DragEnter += new System.Windows.Forms.DragEventHandler(this.LV_Entries_DragEnter);
@@ -884,7 +888,7 @@
             // 
             this.ColPages.Text = "Pages";
             this.ColPages.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.ColPages.Width = 46;
+            this.ColPages.Width = 50;
             // 
             // ColTags
             // 
@@ -894,7 +898,7 @@
             // ColType
             // 
             this.ColType.Text = "Type";
-            this.ColType.Width = 72;
+            this.ColType.Width = 80;
             // 
             // ColPos
             // 
@@ -947,7 +951,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MainMenuStrip = this.Mn_EntryOps;
-            this.MinimumSize = new System.Drawing.Size(750, 150);
+            this.MinimumSize = new System.Drawing.Size(350, 150);
             this.Name = "Main";
             this.Text = "Manga Organizer";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Main_FormClosing);
@@ -1002,7 +1006,7 @@
         private System.Windows.Forms.ToolStripMenuItem MnTS_Save;
         private System.Windows.Forms.ToolStripMenuItem MnTS_OpenDataFolder;
         private System.Windows.Forms.ToolStripSeparator MnTS_SecretSort;
-        private System.Windows.Forms.ToolStripMenuItem MnTS_OpenEntryFolder;
+        private System.Windows.Forms.ToolStripMenuItem MnTS_OpenSource;
         private FixedRichTextBox frTxBx_Notes;
         private FixedRichTextBox frTxBx_Desc;
         private System.Windows.Forms.Button Btn_Scan;
@@ -1025,7 +1029,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripMenuItem MnTS_About;
         private System.Windows.Forms.CheckBox ChkBx_ShowFav;
-        private System.Windows.Forms.ToolStripMenuItem MnTS_GET;
+        private System.Windows.Forms.ToolStripMenuItem MnTS_LoadUrl;
         private System.Windows.Forms.ToolStripMenuItem MnTs_Quit;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
         private System.Windows.Forms.Button Btn_GoUp;
@@ -1038,7 +1042,7 @@
         private System.Windows.Forms.ToolStripMenuItem MnTs_DefZip;
         private System.Windows.Forms.ToolStripMenuItem MnTs_DefSav;
         private System.Windows.Forms.ToolStripMenuItem MnTs_DefRoot;
-        private System.Windows.Forms.ToolStripMenuItem MnTs_Grid;
+        private System.Windows.Forms.ToolStripMenuItem MnTs_DefGrid;
         private System.Windows.Forms.ContextMenuStrip Mn_TxBx;
         private System.Windows.Forms.ColumnHeader ColPos;
         private System.Windows.Forms.ToolStripMenuItem MnTx_Delete;

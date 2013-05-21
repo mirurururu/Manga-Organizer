@@ -185,6 +185,7 @@
             this.LV_Found.UseCompatibleStateImageBehavior = false;
             this.LV_Found.View = System.Windows.Forms.View.Details;
             this.LV_Found.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.LV_Found_ColumnClick);
+            this.LV_Found.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.LV_Found_ColumnWidthChanging);
             this.LV_Found.DoubleClick += new System.EventHandler(this.LV_Found_DoubleClick);
             this.LV_Found.MouseHover += new System.EventHandler(this.LV_Found_MouseHover);
             this.LV_Found.Resize += new System.EventHandler(this.LV_Found_Resize);
@@ -220,7 +221,7 @@
             this.Controls.Add(this.TxBx_Loc);
             this.Controls.Add(this.Btn_Add);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
-            this.MinimumSize = new System.Drawing.Size(510, 150);
+            this.MinimumSize = new System.Drawing.Size(300, 150);
             this.Name = "Scan";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;

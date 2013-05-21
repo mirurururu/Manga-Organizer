@@ -63,6 +63,7 @@ namespace Nagru___Manga_Organizer
                 TryScan();
             }
             fbd.Dispose();
+            LV_Found.Select();
         }
 
         /* Start scan op in new thread */
@@ -186,6 +187,12 @@ namespace Nagru___Manga_Organizer
             if (!LV_Found.Focused) LV_Found.Select();
         }
 
+        private void LV_Found_ColumnWidthChanging(object sender, ColumnWidthChangingEventArgs e)
+        {
+            e.Cancel = true;
+            e.NewWidth = LV_Found.Columns[e.ColumnIndex].Width;
+        }
+
         /* Toggle whether LV shows ignored items */
         private void ChkBx_All_CheckedChanged(object sender, EventArgs e)
         { UpdateLV(); }
@@ -246,7 +253,6 @@ namespace Nagru___Manga_Organizer
                 if (svar != "") sNew += svar + '|';
 
             Properties.Settings.Default.Ignore = sNew;
-            Properties.Settings.Default.Save();
             hsIgnore.Clear();
             hsPaths.Clear();
             lFound.Clear();

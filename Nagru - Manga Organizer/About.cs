@@ -50,8 +50,9 @@ namespace Nagru___Manga_Organizer
 
             try
             {
-                System.Net.ServicePointManager.DefaultConnectionLimit = 64;
-                HttpWebRequest rq = (HttpWebRequest)HttpWebRequest.Create("http://dl.dropboxusercontent.com/u/103899726/Version.txt");
+                ServicePointManager.DefaultConnectionLimit = 64;
+                HttpWebRequest rq = (HttpWebRequest)
+                    WebRequest.Create("http://dl.dropboxusercontent.com/u/103899726/Version.txt");
                 rq.UserAgent = "Mozilla/5.0 (Windows; U; MSIE 9.0; WIndows NT 9.0; en-US))";
                 rq.Method = "GET";
                 rq.Timeout = 5000;
@@ -66,13 +67,11 @@ namespace Nagru___Manga_Organizer
                 }
                 rq.Abort();
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 MessageBox.Show("A connection could not be established:\n" + e.Message,
                         Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            finally
-            {
+            finally {
                 try { Invoke(delFini, bNew); } catch { }
             }
         }
