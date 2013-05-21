@@ -77,7 +77,7 @@ namespace Nagru___Manga_Organizer.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("130520")]
+        [global::System.Configuration.DefaultSettingValueAttribute("130521")]
         public string Version {
             get {
                 return ((string)(this["Version"]));
@@ -117,6 +117,18 @@ namespace Nagru___Manga_Organizer.Properties {
             }
             set {
                 this["DefGrid"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("39, 40, 34")]
+        public global::System.Drawing.Color DefColour {
+            get {
+                return ((global::System.Drawing.Color)(this["DefColour"]));
+            }
+            set {
+                this["DefColour"] = value;
             }
         }
     }

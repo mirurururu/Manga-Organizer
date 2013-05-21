@@ -31,7 +31,7 @@ namespace Nagru___Manga_Organizer
 
         List<stEntry> lData = new List<stEntry>(500);
         LVsorter lvSortObj = new LVsorter();
-        bool bSavList = true, bSavText = true;
+        bool bSavList = true, bSavText = true, bResize = false;
         short indx = -1, iPage = -1;
 
         /* Holds manga metadata */
@@ -143,7 +143,7 @@ namespace Nagru___Manga_Organizer
                 sType = info.GetString("Type");
                 bFav = info.GetBoolean("Fav");
                 sTags = info.GetString("Tags");
-                iPages = (ushort)info.GetInt16("Pages");
+                iPages = (ushort)info.GetInt32("Pages");
             }
 
             /* custom serialization to read datatypes manually */
@@ -249,11 +249,11 @@ namespace Nagru___Manga_Organizer
                         break;
                     default:
                         bMatch = (ExtString.Contains(en.sTags, sTerm) ||
-                        ExtString.Contains(en.sTitle, sTerm) ||
-                        ExtString.Contains(en.sArtist, sTerm) ||
-                        ExtString.Contains(en.sDesc, sTerm) ||
-                        ExtString.Contains(en.dtDate.ToString(), sTerm) ||
-                        ExtString.Contains(en.sType, sTerm));
+                            ExtString.Contains(en.sTitle, sTerm) ||
+                            ExtString.Contains(en.sArtist, sTerm) ||
+                            ExtString.Contains(en.sDesc, sTerm) ||
+                            ExtString.Contains(en.dtDate.ToString(), sTerm) ||
+                            ExtString.Contains(en.sType, sTerm));
                         break;
                 }
 
@@ -265,11 +265,12 @@ namespace Nagru___Manga_Organizer
         public Main(string[] sFile)
         {
             InitializeComponent();
+            const int iFileName = 18;
 
             //if database opened with "Shell->Open with..."
             if (sFile.Length > 0 && sFile[0].EndsWith("\\MangaDatabase.bin") &&
                 Properties.Settings.Default.SavLoc != 
-                sFile[0].Substring(0, sFile[0].Length - 18))
+                sFile[0].Substring(0, sFile[0].Length - iFileName))
             {
                 Properties.Settings.Default.SavLoc = sFile[0];
                 MessageBox.Show("Default database location changed to:\n\"" + sFile[0] + "\"",
@@ -319,6 +320,7 @@ namespace Nagru___Manga_Organizer
                 LV_Entries.GridLines = true;
                 MnTs_DefGrid.Checked = true;
             }
+            PicBx_Cover.BackColor = Properties.Settings.Default.DefColour;
 
             //load database
             string sPath = Properties.Settings.Default.SavLoc != string.Empty ?
@@ -397,17 +399,30 @@ namespace Nagru___Manga_Organizer
 
         private void Main_KeyDown(object sender, KeyEventArgs e)
         {
-            if (!e.Control) return;
-            switch (e.KeyCode) {
-                case Keys.D1:
-                    TabControl.SelectedIndex = 0;
-                    break;
-                case Keys.D2:
-                    TabControl.SelectedIndex = 1;
-                    break;
-                case Keys.D3:
+            if (e.Control) {
+                switch (e.KeyCode) {
+                    case Keys.D1:
+                        TabControl.SelectedIndex = 0;
+                        break;
+                    case Keys.D2:
+                        TabControl.SelectedIndex = 1;
+                        break;
+                    case Keys.D3:
+                        TabControl.SelectedIndex = 2;
+                        break;
+                }
+            }
+            else if (e.KeyCode == Keys.Left) {
+                if (TabControl.SelectedIndex == 0)
                     TabControl.SelectedIndex = 2;
-                    break;
+                else TabControl.SelectedIndex--;
+                e.Handled = true;
+            }
+            else if (e.KeyCode == Keys.Right) {
+                if (TabControl.SelectedIndex == 2)
+                    TabControl.SelectedIndex = 0;
+                else TabControl.SelectedIndex++;
+                e.Handled = true;
             }
         }
         #endregion
@@ -476,6 +491,7 @@ namespace Nagru___Manga_Organizer
             else lvSortObj.SwapOrder();
 
             LV_Entries.Sort();
+            Alternate();
         }
 
         /* Proportionally-resizes columns   */
@@ -625,12 +641,27 @@ namespace Nagru___Manga_Organizer
                 iPage = (short)fmBrowse.iPage;
             }
             fmBrowse.Dispose();
+            GC.Collect();
+        }
+
+        private void PicBx_Cover_Resize(object sender, EventArgs e)
+        { bResize = true; }
+
+        private void Main_ResizeEnd(object sender, EventArgs e)
+        {
+            if (bResize && PicBx_Cover.Image != null) {
+                ThreadPool.QueueUserWorkItem(GetImage);
+                bResize = false;
+            }
         }
 
         private void PicBx_Cover_Paint(object sender, PaintEventArgs e)
         {
-            if (PicBx_Cover.Image != null) 
-                MnTS_Open.Visible = true;
+            if (PicBx_Cover.Image != null) {
+                if(!MnTS_Open.Visible) MnTS_Open.Visible = true;
+            }
+            else if (MnTS_Open.Visible)
+                MnTS_Open.Visible = false;
         }
 
         /* Dynamically update PicBx when user manually alters path */
@@ -739,9 +770,21 @@ namespace Nagru___Manga_Organizer
             if (indx != -1) ReFocus();
         }
 
+        private void Alternate()
+        {
+            if (Properties.Settings.Default.DefGrid) return;
+            for (int i = 0; i < LV_Entries.Items.Count; i++) {
+                if (LV_Entries.Items[i].BackColor != Color.LightYellow) {
+                    if (i % 2 == 0)
+                        LV_Entries.Items[i].BackColor = Color.FromArgb(245, 245, 245);
+                    else LV_Entries.Items[i].BackColor = SystemColors.Window;
+                }
+            }
+        }
+
         private void GetImage(Object obj)
         {
-            SetPicBxNull();
+            BeginInvoke(new DelVoid(SetPicBxNull));
 
             //Get cover and filecount
             string[] sFiles = new string[0];
@@ -820,7 +863,7 @@ namespace Nagru___Manga_Organizer
         {
             if (LV_Entries.Items.Count == 0)
                 return;
-            
+
             for (int i = 0; i < LV_Entries.Items.Count; i++)
                 if (LV_Entries.Items[i].SubItems[1].Text == lData[indx].sTitle) {
                     ScrollTo(i);
@@ -873,6 +916,8 @@ namespace Nagru___Manga_Organizer
             else sPath = Environment.CurrentDirectory + "\\MangaDatabase.bin";
 
             if (!bSavList) {
+                lData.Sort((eX, eY) => (eX.sArtist + eX.sTitle)
+                    .CompareTo(eY.sArtist + eY.sTitle));
                 if (File.Exists(sPath)) File.Delete(sPath);
                 FileSerializer.Serialize(sPath, lData);
                 bSavList = true;
@@ -990,8 +1035,10 @@ namespace Nagru___Manga_Organizer
         private void TrySet(string s)
         {
             try {
-                using (var bmpTemp = new Bitmap(s))
-                    PicBx_Cover.Image = new Bitmap(bmpTemp);
+                using (Bitmap bmpTmp = new Bitmap(s)) {
+                    PicBx_Cover.Image = ExtImage.Resize(
+                        bmpTmp, PicBx_Cover.Width, PicBx_Cover.Height);
+                }
             }
             catch {
                 MessageBox.Show("The following file could not be loaded:\n" + s,
@@ -1004,7 +1051,6 @@ namespace Nagru___Manga_Organizer
             if (PicBx_Cover.Image != null) {
                 PicBx_Cover.Image.Dispose();
                 PicBx_Cover.Image = null;
-                MnTS_Open.Visible = false;
                 GC.Collect();
             }
         }
@@ -1058,6 +1104,7 @@ namespace Nagru___Manga_Organizer
             LV_Entries.Items.Clear();
             LV_Entries.Items.AddRange(aItems);
             LV_Entries.Sort();
+            Alternate();
             LV_Entries.EndUpdate();
             Cursor = Cursors.Default;
 
@@ -1130,6 +1177,7 @@ namespace Nagru___Manga_Organizer
             if (ChkBx_ShowFav.Checked && !lData[indx].bFav)
             {
                 lvi.Remove();
+                Alternate();
             }
             else if (TxBx_Search.Text != "")
             {
@@ -1144,6 +1192,7 @@ namespace Nagru___Manga_Organizer
                     if (!lTerms[y].Equals(lData[indx]))
                     {
                         lvi.Remove();
+                        Alternate();
                         break;
                     }
                 }
@@ -1390,6 +1439,21 @@ namespace Nagru___Manga_Organizer
             Properties.Settings.Default.DefGrid = !Properties.Settings.Default.DefGrid;
             MnTs_DefGrid.Checked = !MnTs_DefGrid.Checked;
             LV_Entries.GridLines = !LV_Entries.GridLines;
+            UpdateLV();
+        }
+
+        private void MnTS_DefColour_Click(object sender, EventArgs e)
+        {
+            ColorDialog cd = new ColorDialog();
+            cd.CustomColors = new int[2] {
+                ColorTranslator.ToOle(Color.FromArgb(39,40,34)),
+                ColorTranslator.ToOle(PicBx_Cover.BackColor)  };
+            cd.Color = PicBx_Cover.BackColor;
+
+            if (cd.ShowDialog() == DialogResult.OK) {
+                PicBx_Cover.BackColor = cd.Color;
+                Properties.Settings.Default.DefColour = cd.Color;
+            }
         }
         #endregion
 

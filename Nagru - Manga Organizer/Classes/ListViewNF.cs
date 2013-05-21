@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using System.Runtime.InteropServices;
 
 namespace Nagru___Manga_Organizer
 {
@@ -21,6 +22,16 @@ namespace Nagru___Manga_Organizer
         protected override void OnNotifyMessage(Message m)
         {
             if (m.Msg != 0x14) base.OnNotifyMessage(m);
+        }
+
+        /* Give listview WindowsExplorer style
+           Author: Zach Johnson (Mar 27, 2010) */
+        [DllImport("uxtheme.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
+        internal static extern int SetWindowTheme(IntPtr hWnd, string appName, string partList);
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+            SetWindowTheme(this.Handle, "explorer", null);
         }
     }
 }

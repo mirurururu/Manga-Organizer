@@ -25,13 +25,14 @@ namespace Nagru___Manga_Organizer
         {
             Cursor.Hide();
 
+            picBx.BackColor = Properties.Settings.Default.DefColour;
             #if !DEBUG
                 Bounds = Screen.PrimaryScreen.Bounds;
                 FormBorderStyle = FormBorderStyle.None;
                 WindowState = FormWindowState.Maximized;
             #endif
 
-            fWidth = (float)(this.Width / 2.0);
+            fWidth = (float)(Bounds.Width / 2.0);
             if (zip != null) bZip = true;
             if (iPage == -1) Next();
             else Prev();
@@ -155,15 +156,14 @@ namespace Nagru___Manga_Organizer
             picBx.Refresh();
         }
 
-        private Image TrySet(int i)
+        private Bitmap TrySet(int i)
         {
             try
             {
                 if (bZip && !File.Exists(lFiles[i]))
                     zip[i].Extract(zip.TempFileFolder);
-                using (FileStream fs = new FileStream(
-                    lFiles[i], FileMode.Open, FileAccess.Read))
-                    return Image.FromStream(fs);
+                using (Bitmap bmpTmp = new Bitmap(lFiles[i]))
+                    return new Bitmap(bmpTmp);
             }
             catch { return null; }
         }
@@ -172,6 +172,9 @@ namespace Nagru___Manga_Organizer
         {
             bWideL = false;
             bWideR = false;
+            imgL = null;
+            imgR = null;
+            GC.Collect();
         }
 
         /* Process which images to draw & how */
@@ -182,18 +185,18 @@ namespace Nagru___Manga_Organizer
             g.InterpolationMode = InterpolationMode.HighQualityBicubic;
 
             if (!bWideL && !bWideR) {
-                DrawImage_L(g, ResizeImage(imgL, fWidth, picBx.Height));
-                DrawImage_R(g, ResizeImage(imgR, fWidth, picBx.Height));
+                DrawImage_L(g, ExtImage.Resize(imgL, fWidth, picBx.Height));
+                DrawImage_R(g, ExtImage.Resize(imgR, fWidth, picBx.Height));
             }
             else if (bWideL) {
                 if (!bNext)
-                    DrawImage_L(g, ResizeImage(imgL, picBx.Width, picBx.Height));
-                else DrawImage_R(g, ResizeImage(imgR, fWidth, picBx.Height));
+                    DrawImage_L(g, ExtImage.Resize(imgL, picBx.Width, picBx.Height));
+                else DrawImage_R(g, ExtImage.Resize(imgR, fWidth, picBx.Height));
             }
             else /*if (bWideR)*/ {
                 if (bNext)
-                    DrawImage_R(g, ResizeImage(imgR, picBx.Width, picBx.Height));
-                else DrawImage_L(g, ResizeImage(imgL, fWidth, picBx.Height));
+                    DrawImage_R(g, ExtImage.Resize(imgR, picBx.Width, picBx.Height));
+                else DrawImage_L(g, ExtImage.Resize(imgL, fWidth, picBx.Height));
             }
             picBx.ResumeLayout();
         }
@@ -201,7 +204,7 @@ namespace Nagru___Manga_Organizer
         private void DrawImage_L(Graphics g, Image img)
         {
             g.DrawImage(img,
-                (bWideL) ? (int)(fWidth - img.Width / 2.0) : fWidth - img.Width,
+                (bWideL) ? (int)(fWidth - img.Width / 2.0) : fWidth - img.Width - 5,
                 (bWideL) ? (int)(picBx.Height / 2.0 - img.Height / 2.0) : 0,
                 img.Width,
                 img.Height);
@@ -209,30 +212,10 @@ namespace Nagru___Manga_Organizer
         private void DrawImage_R(Graphics g, Image img)
         {
             g.DrawImage(img,
-                (bWideR) ? (int)(fWidth - img.Width / 2.0) : fWidth,
+                (bWideR) ? (int)(fWidth - img.Width / 2.0) : fWidth + 5,
                 (bWideR) ? (int)(picBx.Height / 2.0 - img.Height / 2.0) : 0,
                 img.Width,
                 img.Height);
-        }
-
-        /* Proper image scaling   
-           Author: MBigglesWorth (May 5, 2011) */
-        public static Image ResizeImage(Image img, float fWidth, int iHeight)
-        {
-            if (img.Width > img.Height && fWidth > img.Width) return img;
-
-            float fPerWidth = fWidth / (float)img.Width;
-            float fPerHeight = (float)iHeight / (float)img.Height;
-            float fAdj = fPerHeight < fPerWidth ? fPerHeight : fPerWidth;
-            int iNewWidth = (int)(img.Width * fAdj);
-            int iNewHeight = (int)(img.Height * fAdj);
-
-            Image newImage = new Bitmap(iNewWidth, iNewHeight);
-            using (Graphics g = Graphics.FromImage(newImage)) {
-                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                g.DrawImage(img, 0, 0, iNewWidth, iNewHeight);
-            }
-            return newImage;
         }
 
         private void Browse_MouseUp(object sender, MouseEventArgs e)

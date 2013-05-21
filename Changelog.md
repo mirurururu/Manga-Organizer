@@ -1,3 +1,11 @@
+#### May 21, 2013
+	- Added ability to choose PictureBox BackColor
+	- Added slight gap between images while browsing
+	- Added alternating listview item color
+	- Chnaged listview style to WindowsExplorer
+	- Reduced memory usage during image browsing
+	- Small image loading improvement
+
 #### May 20, 2013
 	- Improved listview resizing
 	- Fixed 'Random Manga' button from returning the same entry twice in a row

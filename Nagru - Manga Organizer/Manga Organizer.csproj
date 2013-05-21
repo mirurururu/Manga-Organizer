@@ -93,6 +93,7 @@
       <DependentUpon>Browse_Pgs.cs</DependentUpon>
     </Compile>
     <Compile Include="Classes\ExtDirectory.cs" />
+    <Compile Include="Classes\ExtImage.cs" />
     <Compile Include="Classes\ExtString.cs" />
     <Compile Include="Classes\FileSerializer.cs" />
     <Compile Include="Classes\FixedRichTextBox.cs">

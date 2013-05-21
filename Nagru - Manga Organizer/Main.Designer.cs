@@ -83,6 +83,7 @@
             this.MnTs_DefRoot = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTs_DefZip = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTs_DefGrid = new System.Windows.Forms.ToolStripMenuItem();
+            this.MnTS_DefColour = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTS_About = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTs_Quit = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTS_SecretSort = new System.Windows.Forms.ToolStripSeparator();
@@ -599,6 +600,7 @@
             this.PicBx_Cover.TabStop = false;
             this.PicBx_Cover.Click += new System.EventHandler(this.PicBx_Cover_Click);
             this.PicBx_Cover.Paint += new System.Windows.Forms.PaintEventHandler(this.PicBx_Cover_Paint);
+            this.PicBx_Cover.Resize += new System.EventHandler(this.PicBx_Cover_Resize);
             // 
             // Mn_EntryOps
             // 
@@ -616,7 +618,7 @@
             this.Mn_EntryOps.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
             this.Mn_EntryOps.Location = new System.Drawing.Point(3, 3);
             this.Mn_EntryOps.Name = "Mn_EntryOps";
-            this.Mn_EntryOps.Size = new System.Drawing.Size(384, 27);
+            this.Mn_EntryOps.Size = new System.Drawing.Size(153, 27);
             this.Mn_EntryOps.TabIndex = 21;
             this.Mn_EntryOps.Text = "menuStrip";
             // 
@@ -714,7 +716,8 @@
             this.MnTs_DefSav,
             this.MnTs_DefRoot,
             this.MnTs_DefZip,
-            this.MnTs_DefGrid});
+            this.MnTs_DefGrid,
+            this.MnTS_DefColour});
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
             this.settingsToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.settingsToolStripMenuItem.Text = "Settings";
@@ -722,30 +725,39 @@
             // MnTs_DefSav
             // 
             this.MnTs_DefSav.Name = "MnTs_DefSav";
-            this.MnTs_DefSav.Size = new System.Drawing.Size(152, 22);
+            this.MnTs_DefSav.Size = new System.Drawing.Size(170, 22);
             this.MnTs_DefSav.Text = "Save Location";
             this.MnTs_DefSav.Click += new System.EventHandler(this.MnTs_DefSav_Click);
             // 
             // MnTs_DefRoot
             // 
             this.MnTs_DefRoot.Name = "MnTs_DefRoot";
-            this.MnTs_DefRoot.Size = new System.Drawing.Size(152, 22);
+            this.MnTs_DefRoot.Size = new System.Drawing.Size(170, 22);
             this.MnTs_DefRoot.Text = "Root Folder";
             this.MnTs_DefRoot.Click += new System.EventHandler(this.MnTs_DefRoot_Click);
             // 
             // MnTs_DefZip
             // 
             this.MnTs_DefZip.Name = "MnTs_DefZip";
-            this.MnTs_DefZip.Size = new System.Drawing.Size(152, 22);
+            this.MnTs_DefZip.Size = new System.Drawing.Size(170, 22);
             this.MnTs_DefZip.Text = "Default Zip";
             this.MnTs_DefZip.Click += new System.EventHandler(this.MnTs_DefZip_Click);
             // 
             // MnTs_DefGrid
             // 
             this.MnTs_DefGrid.Name = "MnTs_DefGrid";
-            this.MnTs_DefGrid.Size = new System.Drawing.Size(152, 22);
+            this.MnTs_DefGrid.Size = new System.Drawing.Size(170, 22);
             this.MnTs_DefGrid.Text = "Draw Gridlines";
             this.MnTs_DefGrid.Click += new System.EventHandler(this.MnTs_DefGrid_Click);
+            // 
+            // MnTS_DefColour
+            // 
+            this.MnTS_DefColour.Name = "MnTS_DefColour";
+            this.MnTS_DefColour.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
+            this.MnTS_DefColour.ShowShortcutKeys = false;
+            this.MnTS_DefColour.Size = new System.Drawing.Size(170, 22);
+            this.MnTS_DefColour.Text = "Background Colour";
+            this.MnTS_DefColour.Click += new System.EventHandler(this.MnTS_DefColour_Click);
             // 
             // MnTS_About
             // 
@@ -956,6 +968,7 @@
             this.Text = "Manga Organizer";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Main_FormClosing);
             this.Load += new System.EventHandler(this.Main_Load);
+            this.ResizeEnd += new System.EventHandler(this.Main_ResizeEnd);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Main_KeyDown);
             this.TabControl.ResumeLayout(false);
             this.Tb_Browse.ResumeLayout(false);
@@ -1046,6 +1059,7 @@
         private System.Windows.Forms.ContextMenuStrip Mn_TxBx;
         private System.Windows.Forms.ColumnHeader ColPos;
         private System.Windows.Forms.ToolStripMenuItem MnTx_Delete;
+        private System.Windows.Forms.ToolStripMenuItem MnTS_DefColour;
     }
 }
 
