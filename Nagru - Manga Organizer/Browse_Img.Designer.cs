@@ -41,7 +41,7 @@
             this.picBx.Size = new System.Drawing.Size(784, 562);
             this.picBx.TabIndex = 1;
             this.picBx.TabStop = false;
-            this.picBx.Paint += new System.Windows.Forms.PaintEventHandler(this.picBx_Left_Paint);
+            this.picBx.Paint += new System.Windows.Forms.PaintEventHandler(this.picBx_Paint);
             this.picBx.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Browse_MouseUp);
             // 
             // Browse_Img

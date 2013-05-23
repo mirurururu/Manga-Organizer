@@ -1,3 +1,8 @@
+#### May 23, 2013
+	- Replaced 'Favourite' checkbox with StarControl
+	- Changed entry structure to accommodate this
+	- Fixed image scaling on wide pictures
+
 #### May 21, 2013
 	- Added ability to choose PictureBox BackColor
 	- Added slight gap between images while browsing

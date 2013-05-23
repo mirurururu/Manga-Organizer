@@ -33,6 +33,14 @@
             this.TabControl = new System.Windows.Forms.TabControl();
             this.Tb_Browse = new System.Windows.Forms.TabPage();
             this.ChkBx_ShowFav = new System.Windows.Forms.CheckBox();
+            this.LV_Entries = new Nagru___Manga_Organizer.ListViewNF();
+            this.ColArtist = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ColTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ColPages = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ColTags = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ColType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ColPos = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ColRating = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Btn_Scan = new System.Windows.Forms.Button();
             this.Btn_Clear = new System.Windows.Forms.Button();
             this.Lbl_Search = new System.Windows.Forms.Label();
@@ -47,13 +55,13 @@
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.MnTx_SelAll = new System.Windows.Forms.ToolStripMenuItem();
             this.Tb_View = new System.Windows.Forms.TabPage();
+            this.srRating = new Nagru___Manga_Organizer.StarRatingControl();
             this.Btn_Rand = new System.Windows.Forms.Button();
             this.ScrTags = new System.Windows.Forms.HScrollBar();
             this.CmbBx_Artist = new System.Windows.Forms.ComboBox();
             this.Btn_GoUp = new System.Windows.Forms.Button();
             this.Btn_GoDn = new System.Windows.Forms.Button();
             this.Btn_Loc = new System.Windows.Forms.Button();
-            this.ChkBx_Fav = new System.Windows.Forms.CheckBox();
             this.TxBx_Loc = new System.Windows.Forms.TextBox();
             this.Lbl_Desc = new System.Windows.Forms.Label();
             this.CmbBx_Type = new System.Windows.Forms.ComboBox();
@@ -92,17 +100,10 @@
             this.MnTS_Open = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTS_Del = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTS_Clear = new System.Windows.Forms.ToolStripMenuItem();
-            this.Tb_Notes = new System.Windows.Forms.TabPage();
-            this.Delay = new System.Windows.Forms.Timer(this.components);
-            this.LV_Entries = new Nagru___Manga_Organizer.ListViewNF();
-            this.ColArtist = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ColTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ColPages = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ColTags = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ColType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ColPos = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.frTxBx_Desc = new Nagru___Manga_Organizer.FixedRichTextBox();
+            this.Tb_Notes = new System.Windows.Forms.TabPage();
             this.frTxBx_Notes = new Nagru___Manga_Organizer.FixedRichTextBox();
+            this.Delay = new System.Windows.Forms.Timer(this.components);
             this.TabControl.SuspendLayout();
             this.Tb_Browse.SuspendLayout();
             this.Mn_TxBx.SuspendLayout();
@@ -161,6 +162,77 @@
             this.ChkBx_ShowFav.Text = "Favs Only";
             this.ChkBx_ShowFav.UseVisualStyleBackColor = false;
             this.ChkBx_ShowFav.CheckedChanged += new System.EventHandler(this.ChkBx_ShowFav_CheckedChanged);
+            // 
+            // LV_Entries
+            // 
+            this.LV_Entries.AllowDrop = true;
+            this.LV_Entries.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.LV_Entries.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.LV_Entries.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.ColArtist,
+            this.ColTitle,
+            this.ColPages,
+            this.ColTags,
+            this.ColType,
+            this.ColPos,
+            this.ColRating});
+            this.LV_Entries.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LV_Entries.FullRowSelect = true;
+            this.LV_Entries.HideSelection = false;
+            this.LV_Entries.LabelWrap = false;
+            this.LV_Entries.Location = new System.Drawing.Point(0, 32);
+            this.LV_Entries.MultiSelect = false;
+            this.LV_Entries.Name = "LV_Entries";
+            this.LV_Entries.Size = new System.Drawing.Size(923, 517);
+            this.LV_Entries.TabIndex = 0;
+            this.LV_Entries.UseCompatibleStateImageBehavior = false;
+            this.LV_Entries.View = System.Windows.Forms.View.Details;
+            this.LV_Entries.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.LV_Entries_ColumnClick);
+            this.LV_Entries.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.LV_Entries_ColumnWidthChanging);
+            this.LV_Entries.SelectedIndexChanged += new System.EventHandler(this.LV_Entries_SelectedIndexChanged);
+            this.LV_Entries.DragDrop += new System.Windows.Forms.DragEventHandler(this.LV_Entries_DragDrop);
+            this.LV_Entries.DragEnter += new System.Windows.Forms.DragEventHandler(this.LV_Entries_DragEnter);
+            this.LV_Entries.DoubleClick += new System.EventHandler(this.LV_Entries_DoubleClick);
+            this.LV_Entries.MouseHover += new System.EventHandler(this.LV_Entries_MouseHover);
+            this.LV_Entries.Resize += new System.EventHandler(this.LV_Entries_Resize);
+            // 
+            // ColArtist
+            // 
+            this.ColArtist.Text = "Artist";
+            this.ColArtist.Width = 202;
+            // 
+            // ColTitle
+            // 
+            this.ColTitle.Text = "Title";
+            this.ColTitle.Width = 298;
+            // 
+            // ColPages
+            // 
+            this.ColPages.Text = "Pages";
+            this.ColPages.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.ColPages.Width = 50;
+            // 
+            // ColTags
+            // 
+            this.ColTags.Text = "Tags";
+            this.ColTags.Width = 228;
+            // 
+            // ColType
+            // 
+            this.ColType.Text = "Type";
+            this.ColType.Width = 80;
+            // 
+            // ColPos
+            // 
+            this.ColPos.Width = 0;
+            // 
+            // ColRating
+            // 
+            this.ColRating.Text = "Rating";
+            this.ColRating.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.ColRating.Width = 70;
             // 
             // Btn_Scan
             // 
@@ -291,13 +363,13 @@
             // Tb_View
             // 
             this.Tb_View.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.Tb_View.Controls.Add(this.srRating);
             this.Tb_View.Controls.Add(this.Btn_Rand);
             this.Tb_View.Controls.Add(this.ScrTags);
             this.Tb_View.Controls.Add(this.CmbBx_Artist);
             this.Tb_View.Controls.Add(this.Btn_GoUp);
             this.Tb_View.Controls.Add(this.Btn_GoDn);
             this.Tb_View.Controls.Add(this.Btn_Loc);
-            this.Tb_View.Controls.Add(this.ChkBx_Fav);
             this.Tb_View.Controls.Add(this.TxBx_Loc);
             this.Tb_View.Controls.Add(this.Lbl_Desc);
             this.Tb_View.Controls.Add(this.CmbBx_Type);
@@ -320,6 +392,22 @@
             this.Tb_View.Size = new System.Drawing.Size(926, 549);
             this.Tb_View.TabIndex = 1;
             this.Tb_View.Text = "View";
+            // 
+            // srRating
+            // 
+            this.srRating.HoverColor = System.Drawing.Color.Yellow;
+            this.srRating.HoverStar = 0;
+            this.srRating.Location = new System.Drawing.Point(372, 216);
+            this.srRating.Name = "srRating";
+            this.srRating.OutlineColor = System.Drawing.Color.DarkGray;
+            this.srRating.OutlineThickness = 1;
+            this.srRating.SelectedColor = System.Drawing.Color.Goldenrod;
+            this.srRating.SelectedStar = 0;
+            this.srRating.Size = new System.Drawing.Size(120, 18);
+            this.srRating.StarSpacing = 8;
+            this.srRating.TabIndex = 28;
+            this.srRating.Text = "starRatingControl1";
+            this.srRating.Click += new System.EventHandler(this.srRating_Click);
             // 
             // Btn_Rand
             // 
@@ -398,19 +486,6 @@
             this.Btn_Loc.UseVisualStyleBackColor = false;
             this.Btn_Loc.Click += new System.EventHandler(this.Btn_Loc_Click);
             // 
-            // ChkBx_Fav
-            // 
-            this.ChkBx_Fav.AutoSize = true;
-            this.ChkBx_Fav.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.ChkBx_Fav.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ChkBx_Fav.Location = new System.Drawing.Point(440, 182);
-            this.ChkBx_Fav.Name = "ChkBx_Fav";
-            this.ChkBx_Fav.Size = new System.Drawing.Size(44, 19);
-            this.ChkBx_Fav.TabIndex = 6;
-            this.ChkBx_Fav.Text = "Fav";
-            this.ChkBx_Fav.UseVisualStyleBackColor = false;
-            this.ChkBx_Fav.CheckStateChanged += new System.EventHandler(this.ChkBx_Fav_CheckStateChanged);
-            // 
             // TxBx_Loc
             // 
             this.TxBx_Loc.AllowDrop = true;
@@ -482,7 +557,7 @@
             // Nud_Pages
             // 
             this.Nud_Pages.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Nud_Pages.Location = new System.Drawing.Point(337, 181);
+            this.Nud_Pages.Location = new System.Drawing.Point(401, 181);
             this.Nud_Pages.Maximum = new decimal(new int[] {
             2147483646,
             0,
@@ -515,7 +590,7 @@
             // 
             this.Lbl_Pages.AutoSize = true;
             this.Lbl_Pages.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Lbl_Pages.Location = new System.Drawing.Point(290, 184);
+            this.Lbl_Pages.Location = new System.Drawing.Point(354, 184);
             this.Lbl_Pages.Name = "Lbl_Pages";
             this.Lbl_Pages.Size = new System.Drawing.Size(41, 15);
             this.Lbl_Pages.TabIndex = 7;
@@ -599,7 +674,6 @@
             this.PicBx_Cover.TabIndex = 0;
             this.PicBx_Cover.TabStop = false;
             this.PicBx_Cover.Click += new System.EventHandler(this.PicBx_Cover_Click);
-            this.PicBx_Cover.Paint += new System.Windows.Forms.PaintEventHandler(this.PicBx_Cover_Paint);
             this.PicBx_Cover.Resize += new System.EventHandler(this.PicBx_Cover_Resize);
             // 
             // Mn_EntryOps
@@ -837,85 +911,6 @@
             this.MnTS_Clear.ToolTipText = "Ctrl+R";
             this.MnTS_Clear.Click += new System.EventHandler(this.MnTS_Clear_Click);
             // 
-            // Tb_Notes
-            // 
-            this.Tb_Notes.Controls.Add(this.frTxBx_Notes);
-            this.Tb_Notes.Location = new System.Drawing.Point(4, 22);
-            this.Tb_Notes.Name = "Tb_Notes";
-            this.Tb_Notes.Size = new System.Drawing.Size(926, 549);
-            this.Tb_Notes.TabIndex = 2;
-            this.Tb_Notes.Text = "Notes";
-            this.Tb_Notes.UseVisualStyleBackColor = true;
-            // 
-            // Delay
-            // 
-            this.Delay.Interval = 400;
-            this.Delay.Tick += new System.EventHandler(this.Delay_Tick);
-            // 
-            // LV_Entries
-            // 
-            this.LV_Entries.AllowDrop = true;
-            this.LV_Entries.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.LV_Entries.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.LV_Entries.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.ColArtist,
-            this.ColTitle,
-            this.ColPages,
-            this.ColTags,
-            this.ColType,
-            this.ColPos});
-            this.LV_Entries.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LV_Entries.FullRowSelect = true;
-            this.LV_Entries.HideSelection = false;
-            this.LV_Entries.LabelWrap = false;
-            this.LV_Entries.Location = new System.Drawing.Point(0, 32);
-            this.LV_Entries.MultiSelect = false;
-            this.LV_Entries.Name = "LV_Entries";
-            this.LV_Entries.Size = new System.Drawing.Size(923, 517);
-            this.LV_Entries.TabIndex = 0;
-            this.LV_Entries.UseCompatibleStateImageBehavior = false;
-            this.LV_Entries.View = System.Windows.Forms.View.Details;
-            this.LV_Entries.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.LV_Entries_ColumnClick);
-            this.LV_Entries.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.LV_Entries_ColumnWidthChanging);
-            this.LV_Entries.SelectedIndexChanged += new System.EventHandler(this.LV_Entries_SelectedIndexChanged);
-            this.LV_Entries.DragDrop += new System.Windows.Forms.DragEventHandler(this.LV_Entries_DragDrop);
-            this.LV_Entries.DragEnter += new System.Windows.Forms.DragEventHandler(this.LV_Entries_DragEnter);
-            this.LV_Entries.DoubleClick += new System.EventHandler(this.LV_Entries_DoubleClick);
-            this.LV_Entries.MouseHover += new System.EventHandler(this.LV_Entries_MouseHover);
-            this.LV_Entries.Resize += new System.EventHandler(this.LV_Entries_Resize);
-            // 
-            // ColArtist
-            // 
-            this.ColArtist.Text = "Artist";
-            this.ColArtist.Width = 202;
-            // 
-            // ColTitle
-            // 
-            this.ColTitle.Text = "Title";
-            this.ColTitle.Width = 321;
-            // 
-            // ColPages
-            // 
-            this.ColPages.Text = "Pages";
-            this.ColPages.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.ColPages.Width = 50;
-            // 
-            // ColTags
-            // 
-            this.ColTags.Text = "Tags";
-            this.ColTags.Width = 261;
-            // 
-            // ColType
-            // 
-            this.ColType.Text = "Type";
-            this.ColType.Width = 80;
-            // 
-            // ColPos
-            // 
-            this.ColPos.Width = 0;
-            // 
             // frTxBx_Desc
             // 
             this.frTxBx_Desc.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -931,6 +926,16 @@
             this.frTxBx_Desc.TextChanged += new System.EventHandler(this.EntryAlt_Text);
             this.frTxBx_Desc.KeyDown += new System.Windows.Forms.KeyEventHandler(this.frTxBx_KeyDown);
             this.frTxBx_Desc.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TbPg_Click);
+            // 
+            // Tb_Notes
+            // 
+            this.Tb_Notes.Controls.Add(this.frTxBx_Notes);
+            this.Tb_Notes.Location = new System.Drawing.Point(4, 22);
+            this.Tb_Notes.Name = "Tb_Notes";
+            this.Tb_Notes.Size = new System.Drawing.Size(926, 549);
+            this.Tb_Notes.TabIndex = 2;
+            this.Tb_Notes.Text = "Notes";
+            this.Tb_Notes.UseVisualStyleBackColor = true;
             // 
             // frTxBx_Notes
             // 
@@ -950,6 +955,11 @@
             this.frTxBx_Notes.TextChanged += new System.EventHandler(this.frTxBx_Notes_TextChanged);
             this.frTxBx_Notes.KeyDown += new System.Windows.Forms.KeyEventHandler(this.frTxBx_KeyDown);
             this.frTxBx_Notes.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TbPg_Click);
+            // 
+            // Delay
+            // 
+            this.Delay.Interval = 400;
+            this.Delay.Tick += new System.EventHandler(this.Delay_Tick);
             // 
             // Main
             // 
@@ -1008,7 +1018,6 @@
         private System.Windows.Forms.TextBox TxBx_Loc;
         private System.Windows.Forms.TabPage Tb_Notes;
         private System.Windows.Forms.Button Btn_Clear;
-        private System.Windows.Forms.CheckBox ChkBx_Fav;
         private System.Windows.Forms.MenuStrip Mn_EntryOps;
         private System.Windows.Forms.ToolStripMenuItem MnTS_Menu;
         private System.Windows.Forms.ToolStripMenuItem MnTS_CopyTitle;
@@ -1060,6 +1069,8 @@
         private System.Windows.Forms.ColumnHeader ColPos;
         private System.Windows.Forms.ToolStripMenuItem MnTx_Delete;
         private System.Windows.Forms.ToolStripMenuItem MnTS_DefColour;
+        private StarRatingControl srRating;
+        private System.Windows.Forms.ColumnHeader ColRating;
     }
 }
 

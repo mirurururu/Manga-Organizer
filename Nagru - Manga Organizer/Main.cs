@@ -29,44 +29,46 @@ namespace Nagru___Manga_Organizer
         delegate void DelInt(int iNum);
         delegate void DelString(string sMsg);
 
-        List<stEntry> lData = new List<stEntry>(500);
+        List<csEntry> lData = new List<csEntry>(500);
         LVsorter lvSortObj = new LVsorter();
         bool bSavList = true, bSavText = true, bResize = false;
         short indx = -1, iPage = -1;
 
         /* Holds manga metadata */
         [Serializable]
-        public class stEntry : ISerializable
+        public class csEntry : ISerializable
         {
-            public string sTitle, sArtist,
+            public string sArtist, sTitle, 
                 sLoc, sType, sDesc, sTags;
             public DateTime dtDate;
             public ushort iPages;
-            public bool bFav;
+            public byte byRat;
 
-            public stEntry(string _Title, string _Artist, string _Loc, string _Desc,
-                string _Tags, string _Type, DateTime _Date, decimal _Pages, bool _Fav)
+            public csEntry(string _Artist, string _Title, string _Loc, string _Desc,
+                string _Tags, string _Type, DateTime _Date, decimal _Pages, int _Rating)
             {
-                sTitle = _Title;
                 sArtist = _Artist;
+                sTitle = _Title;
                 sLoc = _Loc;
                 sDesc = _Desc;
                 dtDate = _Date;
                 iPages = (ushort)_Pages;
                 sType = _Type;
-                bFav = _Fav;
+                byRat = Convert.ToByte(_Rating);
                 
                 //trim, clean, and format tags
                 sTags = "";
-                if (_Tags == string.Empty) return;
+                if (_Tags == "") return;
                 string[] sRaw = _Tags.Split(',').Select(
                     x => x.Trim()).Distinct().ToArray<string>();
                 Array.Sort(sRaw);
                 sTags = String.Join(", ", sRaw);
             }
-            public stEntry(string _Path)
+            public csEntry(string _Path)
             {
-                string sRaw = Path.GetFileNameWithoutExtension(_Path);
+                string sRaw = Path.GetFileName(_Path);
+                if (sRaw.EndsWith(".zip"))
+                    sRaw = sRaw.Substring(0, sRaw.Length - 4);
 
                 //Get formatted title
                 if (sRaw.StartsWith("(")) {
@@ -91,7 +93,7 @@ namespace Nagru___Manga_Organizer
                 sDesc = "";
                 sTags = "";
                 dtDate = DateTime.Now;
-                bFav = false;
+                byRat = 0;
 
                 //Get filecount
                 string[] sFiles = new string[0];
@@ -122,7 +124,7 @@ namespace Nagru___Manga_Organizer
             /* Override equals to compare entry titles */
             public override bool Equals(object obj)
             {
-                stEntry en = obj as stEntry;
+                csEntry en = obj as csEntry;
                 if (obj != null)
                     return (en.sArtist + en.sTitle).Equals(
                         sArtist + sTitle, StringComparison.OrdinalIgnoreCase);
@@ -133,17 +135,17 @@ namespace Nagru___Manga_Organizer
             public override int GetHashCode() { return 1; }
 
             /* custom serialization to save datatypes manually */
-            protected stEntry(SerializationInfo info, StreamingContext ctxt)
+            protected csEntry(SerializationInfo info, StreamingContext ctxt)
             {
-                sTitle = info.GetString("Title");
-                sArtist = info.GetString("Artist");
-                sLoc = info.GetString("Loc");
-                sDesc = info.GetString("Desc");
-                dtDate = info.GetDateTime("Date");
-                sType = info.GetString("Type");
-                bFav = info.GetBoolean("Fav");
-                sTags = info.GetString("Tags");
-                iPages = (ushort)info.GetInt32("Pages");
+                sTitle = info.GetString("TI");
+                sArtist = info.GetString("AR");
+                sLoc = info.GetString("LO");
+                sDesc = info.GetString("DS");
+                dtDate = info.GetDateTime("DT");
+                sType = info.GetString("TY");
+                byRat = info.GetByte("RT");
+                sTags = info.GetString("TG");
+                iPages = (ushort)info.GetInt32("PG");
             }
 
             /* custom serialization to read datatypes manually */
@@ -152,26 +154,26 @@ namespace Nagru___Manga_Organizer
                 SecurityPermissionFlag.SerializationFormatter)]
             public virtual void GetObjectData(SerializationInfo info, StreamingContext ctxt)
             {
-                info.AddValue("Title", sTitle);
-                info.AddValue("Artist", sArtist);
-                info.AddValue("Loc", sLoc);
-                info.AddValue("Desc", sDesc);
-                info.AddValue("Date", dtDate);
-                info.AddValue("Pages", iPages);
-                info.AddValue("Type", sType);
-                info.AddValue("Fav", bFav);
-                info.AddValue("Tags", sTags);
+                info.AddValue("TI", sTitle);
+                info.AddValue("AR", sArtist);
+                info.AddValue("LO", sLoc);
+                info.AddValue("DS", sDesc);
+                info.AddValue("DT", dtDate);
+                info.AddValue("PG", iPages);
+                info.AddValue("TY", sType);
+                info.AddValue("RT", byRat);
+                info.AddValue("TG", sTags);
             }
         }
 
         /* Search term processing */
-        private class stTerm
+        private class csTerm
         {
             readonly bool bAllow;
             readonly string sType;
             readonly string sTerm;
 
-            public stTerm(string _Raw)
+            public csTerm(string _Raw)
             {
                 string[] sSplit = _Raw.Trim().Split(':');
                 if (sSplit.Length == 2 && sSplit[1] != "") {
@@ -188,7 +190,7 @@ namespace Nagru___Manga_Organizer
                 else bAllow = true;
             }
 
-            public bool Equals(stEntry en)
+            public bool Equals(csEntry en)
             {
                 bool bMatch = false;
                 switch (sType)
@@ -328,9 +330,17 @@ namespace Nagru___Manga_Organizer
             sPath += "\\MangaDatabase.bin";
             if (lData.Count == 0 && File.Exists(sPath))
             {
-                lData = FileSerializer.Deserialize<List<stEntry>>(sPath) ?? new List<stEntry>(0);
+                lData = FileSerializer.Deserialize<List<csEntry>>(sPath) ?? new List<csEntry>(0);
 
-                if (lData.Count == 0) return;
+                if (lData.Count == 0) {
+                    lData = FileSerializer.ConvertDB(sPath);
+                    if (lData == null) {
+                        MessageBox.Show("The database was invalid.", "Manga Organizer",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    bSavList = false;
+                }
                 UpdateLV();
 
                 //set up CmbBx autocomplete
@@ -412,18 +422,6 @@ namespace Nagru___Manga_Organizer
                         break;
                 }
             }
-            else if (e.KeyCode == Keys.Left) {
-                if (TabControl.SelectedIndex == 0)
-                    TabControl.SelectedIndex = 2;
-                else TabControl.SelectedIndex--;
-                e.Handled = true;
-            }
-            else if (e.KeyCode == Keys.Right) {
-                if (TabControl.SelectedIndex == 2)
-                    TabControl.SelectedIndex = 0;
-                else TabControl.SelectedIndex++;
-                e.Handled = true;
-            }
         }
         #endregion
 
@@ -497,7 +495,7 @@ namespace Nagru___Manga_Organizer
         /* Proportionally-resizes columns   */
         private void LV_Entries_Resize(object sender, EventArgs e)
         {
-            const int iStatic = 130, iScroll = 20;
+            const int iStatic = 200, iScroll = 20;
             int iMod = LV_Entries.Width / 20;
             LV_Entries.BeginUpdate();
             LV_Entries.Columns[0].Width = iMod * 3;
@@ -533,7 +531,7 @@ namespace Nagru___Manga_Organizer
             if (ChkBx_ShowFav.Checked) OnlyFavs();
             else UpdateLV();
 
-            if (indx != -1 && lData[indx].bFav) ReFocus();
+            if (indx != -1 && lData[indx].byRat < 5) ReFocus();
             else Reset();
 
             LV_Entries.Select();
@@ -645,23 +643,21 @@ namespace Nagru___Manga_Organizer
         }
 
         private void PicBx_Cover_Resize(object sender, EventArgs e)
-        { bResize = true; }
+        {
+            if (PicBx_Cover.Image == null) return;
+            SizeF sf = PicBx_Cover.Image.PhysicalDimension;
+            if (sf.Height < PicBx_Cover.Height)
+                bResize = true;
+            else if(sf.Width > PicBx_Cover.Width)
+                bResize = true;
+        }
 
         private void Main_ResizeEnd(object sender, EventArgs e)
         {
-            if (bResize && PicBx_Cover.Image != null) {
+            if (bResize) {
                 ThreadPool.QueueUserWorkItem(GetImage);
                 bResize = false;
             }
-        }
-
-        private void PicBx_Cover_Paint(object sender, PaintEventArgs e)
-        {
-            if (PicBx_Cover.Image != null) {
-                if(!MnTS_Open.Visible) MnTS_Open.Visible = true;
-            }
-            else if (MnTS_Open.Visible)
-                MnTS_Open.Visible = false;
         }
 
         /* Dynamically update PicBx when user manually alters path */
@@ -675,7 +671,10 @@ namespace Nagru___Manga_Organizer
                 iPage = -1;
                 ThreadPool.QueueUserWorkItem(GetImage);
             }
-            else SetPicBxNull();
+            else {
+                SetPicBxNull();
+                SetOpenStatus(0);
+            }
         }
 
         /* Programmatically select item in LV_Entries  */
@@ -739,6 +738,17 @@ namespace Nagru___Manga_Organizer
             else ScrTags.Visible = false;
         }
 
+        private void srRating_Click(object sender, EventArgs e)
+        {
+            if (indx == -1 || lData[indx].byRat == srRating.SelectedStar) 
+                return;
+
+            lData[indx].byRat = (byte)srRating.SelectedStar;
+            LV_Entries.SelectedItems[0].SubItems[6].Text = 
+                RatingFormat(lData[indx].byRat);
+            bSavList = false;
+        }
+
         /* Only enable edit when changes have been made */
         private void EntryAlt_Text(object sender, EventArgs e)
         {
@@ -746,8 +756,6 @@ namespace Nagru___Manga_Organizer
             if (TxBx_Tags.ContainsFocus) SetScroll();
         }
         private void EntryAlt_DtNum(object sender, EventArgs e)
-        { if (indx != -1) MnTS_Edit.Visible = true; }
-        private void ChkBx_Fav_CheckStateChanged(object sender, EventArgs e)
         { if (indx != -1) MnTS_Edit.Visible = true; }
         #endregion
 
@@ -770,10 +778,10 @@ namespace Nagru___Manga_Organizer
             if (indx != -1) ReFocus();
         }
 
-        private void Alternate()
+        private void Alternate(int iStart = 0)
         {
             if (Properties.Settings.Default.DefGrid) return;
-            for (int i = 0; i < LV_Entries.Items.Count; i++) {
+            for (int i = iStart; i < LV_Entries.Items.Count; i++) {
                 if (LV_Entries.Items[i].BackColor != Color.LightYellow) {
                     if (i % 2 == 0)
                         LV_Entries.Items[i].BackColor = Color.FromArgb(245, 245, 245);
@@ -807,11 +815,11 @@ namespace Nagru___Manga_Organizer
                 }
             }
             else if ((sFiles = ExtDir.GetFiles(TxBx_Loc.Text,
-                SearchOption.TopDirectoryOnly)).Length > 0)
-            {
+                SearchOption.TopDirectoryOnly)).Length > 0) {
                 SetPicBxImage(sFiles[0]);
                 BeginInvoke(new DelInt(SetNudCount), sFiles.Length);
             }
+            else BeginInvoke(new DelInt(SetOpenStatus), 0);
         }
 
         private static int InsertText(Control c, string sAdd, int iStart)
@@ -838,9 +846,8 @@ namespace Nagru___Manga_Organizer
             Cursor = Cursors.WaitCursor;
             LV_Entries.BeginUpdate();
             for (int i = 0; i < LV_Entries.Items.Count; i++) {
-                if(LV_Entries.Items[i].BackColor != Color.LightYellow) {
+                if(LV_Entries.Items[i].BackColor != Color.LightYellow)
                     LV_Entries.Items.RemoveAt(i--);
-                }
             }
             LV_Entries.EndUpdate();
             Text = "Returned: " + LV_Entries.Items.Count + " entries";
@@ -857,6 +864,14 @@ namespace Nagru___Manga_Organizer
                 if (sFiles.Length > 0) System.Diagnostics.Process.Start(sFiles[0]);
             }
             else System.Diagnostics.Process.Start(@TxBx_Loc.Text);
+        }
+
+        private static string RatingFormat(byte byVal)
+        {
+            System.Text.StringBuilder sb =
+                new System.Text.StringBuilder("");
+            sb.Append('☆', byVal);
+            return sb.ToString();
         }
 
         private void ReFocus()
@@ -893,7 +908,7 @@ namespace Nagru___Manga_Organizer
             CmbBx_Artist.Text = "";
             CmbBx_Type.Text = "Manga";
             Dt_Date.Value = DateTime.Now;
-            ChkBx_Fav.Checked = false;
+            srRating.SelectedStar = 0;
             ScrTags.Visible = false;
             SetPicBxNull();
 
@@ -948,11 +963,11 @@ namespace Nagru___Manga_Organizer
         {
             Cursor = Cursors.WaitCursor;
             string[] sTags = TxBx_Search.Text.Split(' ');
-            List<stTerm> lTerms = new List<stTerm>(5);
+            List<csTerm> lTerms = new List<csTerm>(5);
             List<ListViewItem> lItems = new List<ListViewItem>(lData.Count);
 
             for (int i = 0; i < sTags.Length; i++)
-                lTerms.Add(new stTerm(sTags[i]));
+                lTerms.Add(new csTerm(sTags[i]));
 
             for (int x = 0; x < lData.Count; x++) {
                 bool b = true;
@@ -965,13 +980,14 @@ namespace Nagru___Manga_Organizer
                 if (!b) continue;
 
                 ListViewItem lvi = new ListViewItem(lData[x].sArtist);
-                if (lData[x].bFav) lvi.BackColor = Color.LightYellow;
+                if (lData[x].byRat == 5) lvi.BackColor = Color.LightYellow;
                 lvi.SubItems.AddRange(new string[] {
                         lData[x].sTitle,
                         lData[x].iPages.ToString(),
                         lData[x].sTags,
                         lData[x].sType,
-                        x.ToString()
+                        x.ToString(),
+                        RatingFormat(lData[x].byRat)
                     });
                 lItems.Add(lvi);
             }
@@ -1001,7 +1017,7 @@ namespace Nagru___Manga_Organizer
             frTxBx_Desc.Text = lData[indx].sDesc;
             CmbBx_Type.Text = lData[indx].sType;
             Dt_Date.Value = lData[indx].dtDate;
-            ChkBx_Fav.Checked = lData[indx].bFav;
+            srRating.SelectedStar = lData[indx].byRat;
             Nud_Pages.Value = lData[indx].iPages;
             TxBx_Tags.Text = lData[indx].sTags;
             
@@ -1015,6 +1031,19 @@ namespace Nagru___Manga_Organizer
         {
             Nud_Pages.Value = iNum;
             TxBx_Loc.SelectionStart = TxBx_Loc.Text.Length;
+            SetOpenStatus(1);
+        }
+
+        private void SetOpenStatus(int iExists)
+        {
+            if (iExists == 1) {
+                if (!MnTS_Open.Visible)
+                    MnTS_Open.Visible = true;
+            }
+            else {
+                if (MnTS_Open.Visible)
+                    MnTS_Open.Visible = false;
+            }
         }
 
         private void SetPicBxImage(string sPath)
@@ -1036,7 +1065,7 @@ namespace Nagru___Manga_Organizer
         {
             try {
                 using (Bitmap bmpTmp = new Bitmap(s)) {
-                    PicBx_Cover.Image = ExtImage.Resize(
+                    PicBx_Cover.Image = ExtImage.Scale(
                         bmpTmp, PicBx_Cover.Width, PicBx_Cover.Height);
                 }
             }
@@ -1089,13 +1118,14 @@ namespace Nagru___Manga_Organizer
             for (int i = 0; i < lData.Count; i++)
             {
                 ListViewItem lvi = new ListViewItem(lData[i].sArtist);
-                if (lData[i].bFav) lvi.BackColor = Color.LightYellow;
+                if (lData[i].byRat == 5) lvi.BackColor = Color.LightYellow;
                 lvi.SubItems.AddRange(new string[] {
                     lData[i].sTitle,
                     lData[i].iPages.ToString(),
                     lData[i].sTags,
                     lData[i].sType,
-                    i.ToString()
+                    i.ToString(),
+                    RatingFormat(lData[i].byRat)
                 });
                 aItems[i] = lvi;
             }
@@ -1123,13 +1153,13 @@ namespace Nagru___Manga_Organizer
                 return;
             }
 
-            stEntry en = new stEntry(TxBx_Title.Text, CmbBx_Artist.Text,
+            csEntry en = new csEntry(CmbBx_Artist.Text, TxBx_Title.Text, 
                 TxBx_Loc.Text, frTxBx_Desc.Text, TxBx_Tags.Text, CmbBx_Type.Text,
-                Dt_Date.Value.Date, Nud_Pages.Value, ChkBx_Fav.Checked);
+                Dt_Date.Value.Date, Nud_Pages.Value, srRating.SelectedStar);
 
             if (!lData.Contains(en))
             {
-                if (MessageBox.Show("Are you sure you wish to add:\n\"" + en + "\"?",
+                if (MessageBox.Show("Are you sure you wish to add:\n\"" + en + "\"",
                     "Manga Organizer", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
                     == DialogResult.Yes)
                 {
@@ -1157,15 +1187,15 @@ namespace Nagru___Manga_Organizer
             if (indx == -1) return;
 
             //overwrite entry properties
-            lData[indx] = new stEntry(TxBx_Title.Text, CmbBx_Artist.Text,
+            lData[indx] = new csEntry(CmbBx_Artist.Text, TxBx_Title.Text, 
                 TxBx_Loc.Text, frTxBx_Desc.Text, TxBx_Tags.Text, CmbBx_Type.Text,
-                Dt_Date.Value, Nud_Pages.Value, ChkBx_Fav.Checked);
+                Dt_Date.Value, Nud_Pages.Value, srRating.SelectedStar);
             Text = "Edited entry: " + lData[indx].ToString();
             TxBx_Tags.Text = lData[indx].sTags;
 
             //update LV_Entries & maintain selection
             ListViewItem lvi = LV_Entries.FocusedItem;
-            if (lData[indx].bFav) lvi.BackColor = Color.LightYellow;
+            if (lData[indx].byRat == 5) lvi.BackColor = Color.LightYellow;
             else lvi.BackColor = SystemColors.Window;
             lvi.SubItems[0].Text = lData[indx].sArtist;
             lvi.SubItems[1].Text = lData[indx].sTitle;
@@ -1174,25 +1204,24 @@ namespace Nagru___Manga_Organizer
             lvi.SubItems[4].Text = lData[indx].sType;
             LV_Entries.Sort();
 
-            if (ChkBx_ShowFav.Checked && !lData[indx].bFav)
+            int iPos = lvi.Index;
+            if (ChkBx_ShowFav.Checked && !(lData[indx].byRat == 5))
             {
                 lvi.Remove();
-                Alternate();
+                Alternate(iPos);
             }
             else if (TxBx_Search.Text != "")
             {
                 string[] sTags = TxBx_Search.Text.Split(' ');
-                List<stTerm> lTerms = new List<stTerm>(5);
+                List<csTerm> lTerms = new List<csTerm>(5);
 
                 for (int i = 0; i < sTags.Length; i++)
-                    lTerms.Add(new stTerm(sTags[i]));
+                    lTerms.Add(new csTerm(sTags[i]));
 
-                for (int y = 0; y < lTerms.Count; y++)
-                {
-                    if (!lTerms[y].Equals(lData[indx]))
-                    {
+                for (int y = 0; y < lTerms.Count; y++) {
+                    if (!lTerms[y].Equals(lData[indx])) {
                         lvi.Remove();
-                        Alternate();
+                        Alternate(iPos);
                         break;
                     }
                 }
@@ -1252,10 +1281,17 @@ namespace Nagru___Manga_Organizer
                 }
 
                 //remove from database
-                lData.RemoveAt(indx);
-                Reset();
-                UpdateLV();
                 bSavList = false;
+                int iPos = LV_Entries.FocusedItem.Index;
+                lData.RemoveAt(indx);
+                UpdateLV();
+                Reset();
+
+                if(iPos <= LV_Entries.Items.Count) {
+                    LV_Entries.TopItem = LV_Entries.Items[iPos];
+                    LV_Entries.TopItem = LV_Entries.Items[iPos];
+                    LV_Entries.TopItem = LV_Entries.Items[iPos];
+                }
             }
         }
 
@@ -1391,7 +1427,7 @@ namespace Nagru___Manga_Organizer
                     "Manga Organizer", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
                     == DialogResult.Yes)
                 {
-                    lData = FileSerializer.Deserialize<List<stEntry>>(sPath);
+                    lData = FileSerializer.Deserialize<List<csEntry>>(sPath);
 
                     if (lData != null)
                     {
@@ -1724,7 +1760,7 @@ namespace Nagru___Manga_Organizer
                 if (asDir[i] == "") continue;
 
                 //add item
-                Main.stEntry en = new stEntry(asDir[i]);
+                Main.csEntry en = new csEntry(asDir[i]);
                 if (!lData.Contains(en))
                 {
                     lData.Add(en);
@@ -1744,6 +1780,65 @@ namespace Nagru___Manga_Organizer
             //Update LV
             if (iTrack != indx)
                 AddEntries();
+        }
+        #endregion
+
+        #region Cruft
+        /* Legacy Manga entry code 
+           Used for converting old databases */
+        [Serializable]
+        public class stEntry : ISerializable
+        {
+            public string sTitle, sArtist,
+                sLoc, sType, sDesc, sTags;
+            public DateTime dtDate;
+            public ushort iPages;
+            public bool bFav;
+
+            public stEntry(string _Title, string _Artist, string _Loc, string _Desc,
+                string _Tags, string _Type, DateTime _Date, decimal _Pages, bool _Fav)
+            {
+                sTitle = _Title;
+                sArtist = _Artist;
+                sLoc = _Loc;
+                sDesc = _Desc;
+                dtDate = _Date;
+                iPages = (ushort)_Pages;
+                sType = _Type;
+                bFav = _Fav;
+                sTags = _Tags;
+            }
+
+            /* custom serialization to save datatypes manually */
+            protected stEntry(SerializationInfo info, StreamingContext ctxt)
+            {
+                sTitle = info.GetString("Title");
+                sArtist = info.GetString("Artist");
+                sLoc = info.GetString("Loc");
+                sDesc = info.GetString("Desc");
+                dtDate = info.GetDateTime("Date");
+                sType = info.GetString("Type");
+                bFav = info.GetBoolean("Fav");
+                sTags = info.GetString("Tags");
+                iPages = (ushort)info.GetInt32("Pages");
+            }
+
+            /* custom serialization to read datatypes manually */
+            [System.Security.Permissions.SecurityPermission(System.Security.Permissions.
+                SecurityAction.LinkDemand, Flags = System.Security.Permissions.
+                SecurityPermissionFlag.SerializationFormatter)]
+            public virtual void GetObjectData(SerializationInfo info, StreamingContext ctxt)
+            {
+                info.AddValue("Title", sTitle);
+                info.AddValue("Artist", sArtist);
+                info.AddValue("Loc", sLoc);
+                info.AddValue("Desc", sDesc);
+                info.AddValue("Date", dtDate);
+                info.AddValue("Pages", iPages);
+                info.AddValue("Type", sType);
+                info.AddValue("Fav", bFav);
+                info.AddValue("Tags", sTags);
+            }
         }
         #endregion
     }

@@ -7,17 +7,17 @@ namespace Nagru___Manga_Organizer
 {
     public partial class Scan : Form
     {
-        private delegate void DelVoidEntry(Main.stEntry en);
+        private delegate void DelVoidEntry(Main.csEntry en);
         public delegate void DelVoid();
         public DelVoid delNewEntry;
         public DelVoid delDone;
 
-        public List<Main.stEntry> lCurr { private get; set; }
+        public List<Main.csEntry> lCurr { private get; set; }
 
         LVsorter lvSortObj = new LVsorter();
         HashSet<string> hsPaths = new HashSet<string>();
         HashSet<string> hsIgnore = new HashSet<string>();
-        List<Main.stEntry> lFound = new List<Main.stEntry>();
+        List<Main.csEntry> lFound = new List<Main.csEntry>();
 
         #region ScanOperation
         public Scan()
@@ -83,20 +83,21 @@ namespace Nagru___Manga_Organizer
         private void ScanDir(Object obj)
         {
             List<string> lEns = new List<string>();
-            lEns.AddRange(ExtDir.GetFiles(TxBx_Loc.Text, Filter: "*.zip"));
-            lEns.AddRange(Directory.GetDirectories(
-                TxBx_Loc.Text, "*", SearchOption.TopDirectoryOnly));
+            lEns.AddRange(ExtDir.GetFiles(TxBx_Loc.Text, 
+                SearchOption.TopDirectoryOnly, "*.zip"));
+            lEns.AddRange(Directory.GetDirectories(TxBx_Loc.Text, 
+                "*", SearchOption.TopDirectoryOnly));
 
             for (int i = 0; i < lEns.Count; i++) {
                 if (!hsPaths.Contains(lEns[i]))
                     BeginInvoke(new DelVoidEntry(AddItem),
-                        new Main.stEntry(lEns[i]));
+                        new Main.csEntry(lEns[i]));
             }
             BeginInvoke(new DelVoid(SetFoundItems));
         }
 
         /* Add new item to listview */
-        private void AddItem(Main.stEntry en)
+        private void AddItem(Main.csEntry en)
         {
             ListViewItem lvi = new ListViewItem(en.sArtist);
             lvi.SubItems.AddRange(new string[] { 
@@ -106,7 +107,7 @@ namespace Nagru___Manga_Organizer
             });
             lFound.Add(en);
             
-            if (hsIgnore.Contains(lvi.SubItems[0].Text + lvi.SubItems[1].Text)) {
+            if (hsIgnore.Contains(en.sArtist + en.sTitle)) {
                 if (ChkBx_All.Checked) {
                     lvi.BackColor = System.Drawing.Color.MistyRose;
                     LV_Found.Items.Add(lvi);

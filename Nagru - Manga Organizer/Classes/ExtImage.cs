@@ -7,23 +7,19 @@ namespace Nagru___Manga_Organizer
     public static class ExtImage
     {
         /* Proper image scaling   
-           Author: MBigglesWorth (May 5, 2011) */
-        public static Image Resize(Image img, float fWidth, float fHeight)
+           Author: Alex Aza (Jun 28, 2011) */
+        public static Bitmap Scale(Image img, float fMaxWidth, float fMaxHeight)
         {
-            if (img.Width > img.Height && fWidth > img.Width) return img;
+            float fRatio = Math.Min(
+                fMaxWidth / img.Width,
+                fMaxHeight / img.Height);
 
-            float fPerWidth = fWidth / (float)img.Width;
-            float fPerHeight = fHeight / (float)img.Height;
-            float fAdj = fPerHeight < fPerWidth ? fPerHeight : fPerWidth;
-            int iNewWidth = (int)(img.Width * fAdj);
-            int iNewHeight = (int)(img.Height * fAdj);
+            int iWidth = (int)(img.Width * fRatio);
+            int iHeight = (int)(img.Height * fRatio);
 
-            Image newImage = new Bitmap(iNewWidth, iNewHeight);
-            using (Graphics g = Graphics.FromImage(newImage)) {
-                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                g.DrawImage(img, 0, 0, iNewWidth, iNewHeight);
-            }
-            return newImage;
+            Bitmap bmpNew = new Bitmap(iWidth, iHeight);
+            Graphics.FromImage(bmpNew).DrawImage(img, 0, 0, iWidth, iHeight);
+            return bmpNew;
         }
     }
 }

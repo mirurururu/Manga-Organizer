@@ -1,5 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Nagru___Manga_Organizer
@@ -28,22 +31,36 @@ namespace Nagru___Manga_Organizer
             T obj = default(T);
             Stream stream = null;
 
-            try
-            {
+            try {
                 stream = File.Open(sFilepath, FileMode.Open);
                 BinaryFormatter bFormatter = new BinaryFormatter();
                 obj = (T)bFormatter.Deserialize(stream);
             }
-            catch
-            {
-                System.Windows.Forms.MessageBox.Show(
-                    "The database was invalid.", "Manga Organizer", 
-                    System.Windows.Forms.MessageBoxButtons.OK, 
-                    System.Windows.Forms.MessageBoxIcon.Error);
+            catch { }
+            finally { 
+                if (stream != null) 
+                    stream.Close(); 
             }
-            finally { if (stream != null) stream.Close(); }
 
             return obj;
+        }
+
+        public static List<Main.csEntry> ConvertDB(string sPath)
+        {
+            List<Main.stEntry> lOld = Deserialize<List<Main.stEntry>>(sPath);
+            if (lOld.Count == 0) return null;
+            
+            //backup old database
+            Serialize(sPath.Substring(0, sPath.Length - 4) + "_OldBK.bin", lOld);
+
+            //convert to new format
+            List<Main.csEntry> lNew = new List<Main.csEntry>(lOld.Count);
+            for(int i = 0; i < lOld.Count; i++) {
+                int iRating = lOld[i].bFav ? 5 : 3;
+                lNew.Add(new Main.csEntry(lOld[i].sArtist, lOld[i].sTitle, lOld[i].sLoc, lOld[i].sDesc, 
+                    lOld[i].sTags, lOld[i].sType, lOld[i].dtDate, lOld[i].iPages, iRating));
+            }
+            return lNew;
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Nagru___Manga_Organizer
     /* Show how many times a tag is used */
     public partial class Stats : Form
     {
-        public List<Main.stEntry> lCurr { private get; set; }
+        public List<Main.csEntry> lCurr { private get; set; }
         LVsorter lvSortObj = new LVsorter();
         
         public Stats()
@@ -63,7 +63,7 @@ namespace Nagru___Manga_Organizer
 
             for (int i = 0; i < lCurr.Count; i++)
             {
-                if (ChkBx_FavStats.Checked && !lCurr[i].bFav) continue;
+                if (ChkBx_FavStats.Checked && !(lCurr[i].byRat == 5)) continue;
                 foreach (string svar in lCurr[i].sTags.Split(','))
                 {
                     string sItem = svar.TrimStart();
