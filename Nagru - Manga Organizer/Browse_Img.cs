@@ -162,8 +162,9 @@ namespace Nagru___Manga_Organizer
             {
                 if (bZip && !File.Exists(lFiles[i]))
                     zip[i].Extract(zip.TempFileFolder);
-                return ExtImage.Scale(new Bitmap(
-                    lFiles[i]), picBx.Width, picBx.Height);
+                return ExtImage.Scale(
+                    new Bitmap(lFiles[i]), 
+                    picBx.Width, picBx.Height);
             }
             catch { return null; }
         }
@@ -193,7 +194,7 @@ namespace Nagru___Manga_Organizer
                     DrawImage_L(g, imgL);
                 else DrawImage_R(g, imgR);
             }
-            else /*if (bWideR)*/ {
+            else {
                 if (bNext)
                     DrawImage_R(g, imgR);
                 else DrawImage_L(g, imgL);
@@ -221,8 +222,8 @@ namespace Nagru___Manga_Organizer
 
         private void Browse_FormClosing(object sender, FormClosingEventArgs e)
         {
-            imgL.Dispose();
-            imgR.Dispose();
+            if(imgL != null) imgL.Dispose();
+            if(imgR != null) imgR.Dispose();
             Cursor.Show();
             iPage += 2;
         }

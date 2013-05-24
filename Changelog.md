@@ -1,3 +1,7 @@
+#### May 24, 2013
+	- Fixed alternating item colours not showing when searching
+	- Fixed exception in custom imagebrowser
+
 #### May 23, 2013
 	- Replaced 'Favourite' checkbox with StarControl
 	- Changed entry structure to accommodate this

@@ -487,7 +487,7 @@ namespace Nagru___Manga_Organizer
             if (e.Column != lvSortObj.ColToSort)
                 lvSortObj.NewColumn(e.Column, SortOrder.Ascending);
             else lvSortObj.SwapOrder();
-
+            
             LV_Entries.Sort();
             Alternate();
         }
@@ -642,6 +642,7 @@ namespace Nagru___Manga_Organizer
             GC.Collect();
         }
 
+        /* Redraw cover image if size has changed */
         private void PicBx_Cover_Resize(object sender, EventArgs e)
         {
             if (PicBx_Cover.Image == null) return;
@@ -651,7 +652,6 @@ namespace Nagru___Manga_Organizer
             else if(sf.Width > PicBx_Cover.Width)
                 bResize = true;
         }
-
         private void Main_ResizeEnd(object sender, EventArgs e)
         {
             if (bResize) {
@@ -666,8 +666,7 @@ namespace Nagru___Manga_Organizer
             if (indx != -1) MnTS_Edit.Visible = true;
 
             if (File.Exists(TxBx_Loc.Text)
-                || Directory.Exists(TxBx_Loc.Text)) 
-            {
+                || Directory.Exists(TxBx_Loc.Text)) {
                 iPage = -1;
                 ThreadPool.QueueUserWorkItem(GetImage);
             }
@@ -743,10 +742,20 @@ namespace Nagru___Manga_Organizer
             if (indx == -1 || lData[indx].byRat == srRating.SelectedStar) 
                 return;
 
+            //update rating
             lData[indx].byRat = (byte)srRating.SelectedStar;
             LV_Entries.SelectedItems[0].SubItems[6].Text = 
                 RatingFormat(lData[indx].byRat);
             bSavList = false;
+
+            //set BackColor
+            if (lData[indx].byRat == 5)
+                LV_Entries.FocusedItem.BackColor = Color.LightYellow;
+            else {
+                if (LV_Entries.FocusedItem.Index % 2 == 0)
+                    LV_Entries.FocusedItem.BackColor = Color.FromArgb(245, 245, 245);
+                else LV_Entries.FocusedItem.BackColor = SystemColors.Window;
+            }
         }
 
         /* Only enable edit when changes have been made */
@@ -996,6 +1005,7 @@ namespace Nagru___Manga_Organizer
             LV_Entries.Items.Clear();
             LV_Entries.Items.AddRange(lItems.ToArray());
             LV_Entries.Sort();
+            Alternate();
             LV_Entries.EndUpdate();
             Text = "Returned: " + LV_Entries.Items.Count + " entries";
             Cursor = Cursors.Default;
@@ -1195,8 +1205,8 @@ namespace Nagru___Manga_Organizer
 
             //update LV_Entries & maintain selection
             ListViewItem lvi = LV_Entries.FocusedItem;
-            if (lData[indx].byRat == 5) lvi.BackColor = Color.LightYellow;
-            else lvi.BackColor = SystemColors.Window;
+            if (lData[indx].byRat == 5) 
+                lvi.BackColor = Color.LightYellow;
             lvi.SubItems[0].Text = lData[indx].sArtist;
             lvi.SubItems[1].Text = lData[indx].sTitle;
             lvi.SubItems[2].Text = lData[indx].iPages.ToString();
@@ -1208,7 +1218,6 @@ namespace Nagru___Manga_Organizer
             if (ChkBx_ShowFav.Checked && !(lData[indx].byRat == 5))
             {
                 lvi.Remove();
-                Alternate(iPos);
             }
             else if (TxBx_Search.Text != "")
             {
@@ -1221,13 +1230,13 @@ namespace Nagru___Manga_Organizer
                 for (int y = 0; y < lTerms.Count; y++) {
                     if (!lTerms[y].Equals(lData[indx])) {
                         lvi.Remove();
-                        Alternate(iPos);
                         break;
                     }
                 }
             }
             else ReFocus();
 
+            Alternate(iPos);
             bSavList = false;
             MnTS_Edit.Visible = false;
         }
@@ -1287,7 +1296,7 @@ namespace Nagru___Manga_Organizer
                 UpdateLV();
                 Reset();
 
-                if(iPos <= LV_Entries.Items.Count) {
+                if(iPos < LV_Entries.Items.Count) {
                     LV_Entries.TopItem = LV_Entries.Items[iPos];
                     LV_Entries.TopItem = LV_Entries.Items[iPos];
                     LV_Entries.TopItem = LV_Entries.Items[iPos];
