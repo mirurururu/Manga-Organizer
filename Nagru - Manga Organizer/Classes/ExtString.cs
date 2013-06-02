@@ -18,6 +18,18 @@ namespace Nagru___Manga_Organizer
             return sRaw.Split(sFilter, StringSplitOptions.RemoveEmptyEntries);
         }
 
+        public static string ReplaceHTML(string sRaw)
+        {
+            return DecodeNonAscii(sRaw
+                .Replace("&amp;", "&")
+                .Replace("&quot;", "\"")
+                .Replace("&lt;", "<")
+                .Replace("&gt;", ">")
+                .Replace("&frac14;", "¼")
+                .Replace("&frac12;", "½")
+                .Replace("&frac34;", "¾"));
+        }
+
         /* Convert unicode to usable Ascii
            Author: Adam Sills (October 23, 2009)         */
         public static string DecodeNonAscii(string sRaw)

@@ -1,3 +1,6 @@
+#### June 02, 2013
+	- Fixed exception in GetURL()
+
 #### May 24, 2013
 	- Fixed alternating item colours not showing when searching
 	- Fixed exception in custom imagebrowser

@@ -972,16 +972,16 @@ namespace Nagru___Manga_Organizer
         {
             Cursor = Cursors.WaitCursor;
             string[] sTags = TxBx_Search.Text.Split(' ');
-            List<csTerm> lTerms = new List<csTerm>(5);
+            csTerm[] aTerms = new csTerm[sTags.Length];
             List<ListViewItem> lItems = new List<ListViewItem>(lData.Count);
 
             for (int i = 0; i < sTags.Length; i++)
-                lTerms.Add(new csTerm(sTags[i]));
-
+                aTerms[i] = new csTerm(sTags[i]);
+            
             for (int x = 0; x < lData.Count; x++) {
                 bool b = true;
-                for (int y = 0; y < lTerms.Count; y++) {
-                    if (!lTerms[y].Equals(lData[x])) {
+                for (int y = 0; y < aTerms.Length; y++) {
+                    if (!aTerms[y].Equals(lData[x])) {
                         b = false;
                         break;
                     }
@@ -1000,7 +1000,7 @@ namespace Nagru___Manga_Organizer
                     });
                 lItems.Add(lvi);
             }
-
+            
             LV_Entries.BeginUpdate();
             LV_Entries.Items.Clear();
             LV_Entries.Items.AddRange(lItems.ToArray());
@@ -1153,7 +1153,7 @@ namespace Nagru___Manga_Organizer
         }
         #endregion
 
-        #region Menu_EntryOps
+        #region EntryOps
         private void MnTS_New_Click(object sender, EventArgs e)
         {
             //reject when title is unfilled
@@ -1308,7 +1308,7 @@ namespace Nagru___Manga_Organizer
         { Reset(); }
         #endregion
 
-        #region Menu_Main
+        #region Menu
         private void MnTS_CopyTitle_Click(object sender, EventArgs e)
         {
             Clipboard.SetText(string.Format(
@@ -1361,11 +1361,15 @@ namespace Nagru___Manga_Organizer
 
                     //parse metadata
                     Text = "Parsing metadata...";
-                    SplitTitle(ExtString.DecodeNonAscii(asResp[2].Split(':')[1].Substring(1)));
+                    string sRaw = asResp[2].Split(':')[1].Substring(1);
+                    SplitTitle(ExtString.ReplaceHTML(sRaw));
                     CmbBx_Type.Text = asResp[4].Split(':')[1].Substring(1);
                     DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-                    Dt_Date.Value = dt.AddSeconds((long)Convert.ToDouble(asResp[7].Split(':')[1].Substring(1)));
+                    sRaw = asResp[7].Split(':')[1].Substring(1);
+                    Dt_Date.Value = dt.AddSeconds((long)Convert.ToDouble(sRaw));
                     Nud_Pages.Value = Convert.ToInt32(asResp[8].Split(':')[1].Substring(1));
+                    sRaw = asResp[9].Split(':')[3].Substring(1);
+                    srRating.SelectedStar = (int)Convert.ToDouble(sRaw);
 
                     asResp[11] = asResp[11].Split(':')[1].Substring(2);
                     TxBx_Tags.Text = string.Join(", ", asResp, 11, asResp.Length - 11);
@@ -1415,7 +1419,7 @@ namespace Nagru___Manga_Organizer
         { this.Close(); }
         #endregion
 
-        #region Menu_Settings
+        #region Settings
         private void MnTs_DefSav_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog fbd = new FolderBrowserDialog();
