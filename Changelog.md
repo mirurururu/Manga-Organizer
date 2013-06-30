@@ -1,3 +1,6 @@
+#### June 30, 2013
+	- Fixed mistake in Scan code when adding new items
+
 #### June 02, 2013
 	- Fixed exception in GetURL()
 

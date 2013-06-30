@@ -212,12 +212,17 @@ namespace Nagru___Manga_Organizer
         {
             if (LV_Found.SelectedItems.Count == 0) return;
 
+            List<int> lRm = new List<int>(LV_Found.SelectedItems.Count);
             for (int i = 0; i < LV_Found.SelectedItems.Count; i++) {
-                int iPos = Convert.ToInt32(LV_Found.FocusedItem.SubItems[3].Text);
-                lCurr.Add(lFound[iPos - i]);
-                lFound.RemoveAt(iPos);
+                int iPos = Convert.ToInt32(LV_Found.SelectedItems[i].SubItems[3].Text);
+                lCurr.Add(lFound[iPos]);
+                lRm.Add(iPos);
             }
-            
+
+            lRm.Sort();
+            for(int i = lRm.Count - 1; i > -1; i--) {
+                lFound.RemoveAt(i);
+            }
             UpdateLV();
             delNewEntry.Invoke();
         }
@@ -279,5 +284,13 @@ namespace Nagru___Manga_Organizer
         private void MnTx_SelAll_Click(object sender, EventArgs e)
         { TxBx_Loc.SelectAll(); }
         #endregion
+
+        private void LV_Found_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //int iPos = Convert.ToInt32(LV_Found.FocusedItem.SubItems[3].Text);
+            //string sCheck = "SelIndex: " + LV_Found.FocusedItem.SubItems[3].Text;
+            //sCheck += "\nlFound: " + lFound[iPos].ToString();
+            //Console.WriteLine(sCheck);
+        }
     }
 }

@@ -1311,9 +1311,13 @@ namespace Nagru___Manga_Organizer
         #region Menu
         private void MnTS_CopyTitle_Click(object sender, EventArgs e)
         {
-            Clipboard.SetText(string.Format(
-                (CmbBx_Artist.Text != "") ? "[{0}] {1}" : "{1}",
-                CmbBx_Artist.Text, TxBx_Title.Text));
+            string sContent = string.Format((CmbBx_Artist.Text != "") 
+                ? "[{0}] {1}" : "{1}",
+                CmbBx_Artist.Text, TxBx_Title.Text);
+
+            if (sContent != "")
+                Clipboard.SetText(sContent);
+            else Clipboard.Clear();
             Text = "Name copied to clipboard";
         }
 
@@ -1369,7 +1373,7 @@ namespace Nagru___Manga_Organizer
                     Dt_Date.Value = dt.AddSeconds((long)Convert.ToDouble(sRaw));
                     Nud_Pages.Value = Convert.ToInt32(asResp[8].Split(':')[1].Substring(1));
                     sRaw = asResp[9].Split(':')[3].Substring(1);
-                    srRating.SelectedStar = (int)Convert.ToDouble(sRaw);
+                    srRating.SelectedStar = Convert.ToInt16(Convert.ToDouble(sRaw));
 
                     asResp[11] = asResp[11].Split(':')[1].Substring(2);
                     TxBx_Tags.Text = string.Join(", ", asResp, 11, asResp.Length - 11);
@@ -1566,11 +1570,13 @@ namespace Nagru___Manga_Organizer
             {
                 case "FixedRichTextBox":
                     FixedRichTextBox fr = ((FixedRichTextBox)ActiveControl);
+                    fr.SelectedText = "";
                     fr.SelectionStart = InsertText(fr, sAdd, fr.SelectionStart);
                     if (TabControl.SelectedIndex == 2) bSavText = false;
                     break;
                 case "TextBox":
                     TextBox txt = (TextBox)ActiveControl;
+                    txt.SelectedText = "";
                     if (txt.Name == "TxBx_Tags" && sAdd.Contains("\r")) {
                         IEnumerable<string> ie = sAdd.Split('(', '\n');
                         ie = ie.Where(s => !s.EndsWith("\r") && !s.EndsWith(")") && !s.Equals(""));
@@ -1584,6 +1590,7 @@ namespace Nagru___Manga_Organizer
                     break;
                 case "ComboBox":
                     ComboBox cb = (ComboBox)ActiveControl;
+                    cb.SelectedText = "";
                     if (cb.Text == string.Empty
                         && TxBx_Title.Text == string.Empty)
                         SplitTitle(sAdd);
