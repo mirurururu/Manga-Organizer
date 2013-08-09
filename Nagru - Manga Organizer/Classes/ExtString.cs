@@ -25,6 +25,7 @@ namespace Nagru___Manga_Organizer
                 .Replace("&quot;", "\"")
                 .Replace("&lt;", "<")
                 .Replace("&gt;", ">")
+                .Replace("&#039;", "'")
                 .Replace("&frac14;", "¼")
                 .Replace("&frac12;", "½")
                 .Replace("&frac34;", "¾"));

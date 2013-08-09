@@ -97,11 +97,10 @@ namespace Nagru___Manga_Organizer
 
                 //Get filecount
                 string[] sFiles = new string[0];
-                if (Directory.Exists(_Path))
-                    sFiles = ExtDir.GetFiles(
-                        _Path, SearchOption.TopDirectoryOnly, "*.zip");
-                else if (File.Exists(_Path))
+                if (File.Exists(_Path))
                     sFiles = new string[1] { _Path };
+                else sFiles = ExtDir.GetFiles(_Path,
+                    SearchOption.TopDirectoryOnly, "*.zip");
 
                 if (sFiles.Length > 0) {
                     if(ZipFile.IsZipFile(sFiles[0])) {
@@ -602,10 +601,8 @@ namespace Nagru___Manga_Organizer
 
             string[] sFiles = new string[0];
             if (!File.Exists(TxBx_Loc.Text)) {
-                if (Directory.Exists(TxBx_Loc.Text)) {
-                    sFiles = ExtDir.GetFiles(TxBx_Loc.Text,
-                        SearchOption.TopDirectoryOnly, "*.zip");
-                }
+                sFiles = ExtDir.GetFiles(TxBx_Loc.Text,
+                    SearchOption.TopDirectoryOnly, "*.zip");
             }
             else sFiles = new string[1] { TxBx_Loc.Text };
 
@@ -806,10 +803,8 @@ namespace Nagru___Manga_Organizer
             //Get cover and filecount
             string[] sFiles = new string[0];
             if (!File.Exists(TxBx_Loc.Text)) {
-                if (Directory.Exists(TxBx_Loc.Text)) {
-                    sFiles = ExtDir.GetFiles(TxBx_Loc.Text,
-                        SearchOption.TopDirectoryOnly, "*.zip");
-                }
+                sFiles = ExtDir.GetFiles(TxBx_Loc.Text,
+                    SearchOption.TopDirectoryOnly, "*.zip");
             }
             else sFiles = new string[1] { TxBx_Loc.Text };
 

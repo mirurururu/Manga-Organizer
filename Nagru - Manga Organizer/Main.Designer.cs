@@ -395,16 +395,11 @@
             // 
             // srRating
             // 
-            this.srRating.HoverColor = System.Drawing.Color.Yellow;
-            this.srRating.HoverStar = 0;
             this.srRating.Location = new System.Drawing.Point(372, 216);
             this.srRating.Name = "srRating";
-            this.srRating.OutlineColor = System.Drawing.Color.DarkGray;
             this.srRating.OutlineThickness = 1;
-            this.srRating.SelectedColor = System.Drawing.Color.Goldenrod;
             this.srRating.SelectedStar = 0;
             this.srRating.Size = new System.Drawing.Size(120, 18);
-            this.srRating.StarSpacing = 8;
             this.srRating.TabIndex = 28;
             this.srRating.Text = "starRatingControl1";
             this.srRating.Click += new System.EventHandler(this.srRating_Click);
