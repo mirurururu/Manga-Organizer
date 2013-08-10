@@ -1,3 +1,9 @@
+#### August 10, 2013
+	- Added pie chart to statistics page
+	- Added &#039; condition to ReplaceHTML()
+	- Improved StarControl efficiency
+	- Suppress RichTextBox beeps on reaching start/end
+
 #### June 30, 2013
 	- Fixed mistake in Scan code when adding new items
 

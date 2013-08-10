@@ -213,8 +213,7 @@ namespace Nagru___Manga_Organizer
                         DateTime dt = new DateTime();
                         char c = sTerm[0];
 
-                        switch (c)
-                        {
+                        switch (c) {
                             case '<':
                                 if (DateTime.TryParse(sTerm.Substring(1), out dt))
                                     bMatch = dt >= en.dtDate;
@@ -233,8 +232,7 @@ namespace Nagru___Manga_Organizer
                         c = sTerm[0];
                         int i;
 
-                        switch (c)
-                        {
+                        switch (c) {
                             case '<':
                                 if (int.TryParse(sTerm.Substring(1), out i))
                                     bMatch = en.iPages <= i;
@@ -1684,18 +1682,20 @@ namespace Nagru___Manga_Organizer
         /* Prevent mixed font types when c/p  */
         private void frTxBx_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Modifiers == Keys.Control && e.KeyCode == Keys.V)
-            {
-                if (TabControl.SelectedIndex == 2)
-                {
+            if (e.Modifiers == Keys.Control && e.KeyCode == Keys.V) {
+                if (TabControl.SelectedIndex == 2) {
                     frTxBx_Notes.SelectionStart = InsertText(
                         frTxBx_Notes, Clipboard.GetText(), frTxBx_Notes.SelectionStart);
                     bSavText = false;
                 }
-                else frTxBx_Desc.SelectionStart = InsertText(
-                    frTxBx_Desc, Clipboard.GetText(), frTxBx_Desc.SelectionStart);
+                else {
+                    frTxBx_Desc.SelectionStart = InsertText(
+                        frTxBx_Desc, Clipboard.GetText(), frTxBx_Desc.SelectionStart);
+                }
                 e.Handled = true;
             }
+            else if ((frTxBx_Notes.SelectionStart == frTxBx_Notes.TextLength && e.KeyCode == Keys.Right)
+                || (frTxBx_Notes.SelectionStart == 0 && e.KeyCode == Keys.Left)) e.Handled = true;
         }
         #endregion
 

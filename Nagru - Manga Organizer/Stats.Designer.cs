@@ -28,38 +28,146 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.LV_Stats = new Nagru___Manga_Organizer.ListViewNF();
-            this.colTags = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            this.chtTags = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.ChkBx_FavsOnly0 = new System.Windows.Forms.CheckBox();
+            this.pnlView0 = new System.Windows.Forms.Panel();
+            this.BtnSwitch0 = new System.Windows.Forms.Button();
+            this.pnlView1 = new System.Windows.Forms.Panel();
+            this.BtnSwitch1 = new System.Windows.Forms.Button();
+            this.ChkBx_FavsOnly1 = new System.Windows.Forms.CheckBox();
+            this.lvStats = new Nagru___Manga_Organizer.ListViewNF();
+            this.colTag = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colCount = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colPer = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ChkBx_FavStats = new System.Windows.Forms.CheckBox();
+            ((System.ComponentModel.ISupportInitialize)(this.chtTags)).BeginInit();
+            this.pnlView0.SuspendLayout();
+            this.pnlView1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // LV_Stats
+            // chtTags
             // 
-            this.LV_Stats.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            chartArea1.Name = "ChartArea1";
+            this.chtTags.ChartAreas.Add(chartArea1);
+            this.chtTags.Dock = System.Windows.Forms.DockStyle.Fill;
+            legend1.Enabled = false;
+            legend1.Name = "Legend1";
+            this.chtTags.Legends.Add(legend1);
+            this.chtTags.Location = new System.Drawing.Point(0, 0);
+            this.chtTags.Name = "chtTags";
+            series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
+            series1.Legend = "Legend1";
+            series1.Name = "Tags";
+            series1.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
+            series1.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
+            this.chtTags.Series.Add(series1);
+            this.chtTags.Size = new System.Drawing.Size(647, 571);
+            this.chtTags.TabIndex = 2;
+            this.chtTags.Text = "chart1";
+            this.chtTags.TextAntiAliasingQuality = System.Windows.Forms.DataVisualization.Charting.TextAntiAliasingQuality.SystemDefault;
+            // 
+            // ChkBx_FavsOnly0
+            // 
+            this.ChkBx_FavsOnly0.Appearance = System.Windows.Forms.Appearance.Button;
+            this.ChkBx_FavsOnly0.AutoSize = true;
+            this.ChkBx_FavsOnly0.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.ChkBx_FavsOnly0.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.ChkBx_FavsOnly0.Location = new System.Drawing.Point(12, 12);
+            this.ChkBx_FavsOnly0.Name = "ChkBx_FavsOnly0";
+            this.ChkBx_FavsOnly0.Size = new System.Drawing.Size(64, 23);
+            this.ChkBx_FavsOnly0.TabIndex = 4;
+            this.ChkBx_FavsOnly0.Text = "Favs Only";
+            this.ChkBx_FavsOnly0.UseVisualStyleBackColor = false;
+            this.ChkBx_FavsOnly0.CheckedChanged += new System.EventHandler(this.ChkBx_FavsOnly0_CheckedChanged);
+            // 
+            // pnlView0
+            // 
+            this.pnlView0.Controls.Add(this.BtnSwitch0);
+            this.pnlView0.Controls.Add(this.ChkBx_FavsOnly0);
+            this.pnlView0.Controls.Add(this.chtTags);
+            this.pnlView0.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlView0.Location = new System.Drawing.Point(0, 0);
+            this.pnlView0.Name = "pnlView0";
+            this.pnlView0.Size = new System.Drawing.Size(647, 571);
+            this.pnlView0.TabIndex = 5;
+            // 
+            // BtnSwitch0
+            // 
+            this.BtnSwitch0.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.BtnSwitch0.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.BtnSwitch0.Location = new System.Drawing.Point(12, 41);
+            this.BtnSwitch0.Name = "BtnSwitch0";
+            this.BtnSwitch0.Size = new System.Drawing.Size(64, 23);
+            this.BtnSwitch0.TabIndex = 30;
+            this.BtnSwitch0.Text = "Switch";
+            this.BtnSwitch0.UseVisualStyleBackColor = false;
+            this.BtnSwitch0.Click += new System.EventHandler(this.BtnSwitch_Click);
+            // 
+            // pnlView1
+            // 
+            this.pnlView1.Controls.Add(this.BtnSwitch1);
+            this.pnlView1.Controls.Add(this.ChkBx_FavsOnly1);
+            this.pnlView1.Controls.Add(this.lvStats);
+            this.pnlView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlView1.Location = new System.Drawing.Point(0, 0);
+            this.pnlView1.Name = "pnlView1";
+            this.pnlView1.Size = new System.Drawing.Size(647, 571);
+            this.pnlView1.TabIndex = 6;
+            this.pnlView1.Visible = false;
+            // 
+            // BtnSwitch1
+            // 
+            this.BtnSwitch1.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.BtnSwitch1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.BtnSwitch1.Location = new System.Drawing.Point(82, 12);
+            this.BtnSwitch1.Name = "BtnSwitch1";
+            this.BtnSwitch1.Size = new System.Drawing.Size(75, 23);
+            this.BtnSwitch1.TabIndex = 29;
+            this.BtnSwitch1.Text = "Switch View";
+            this.BtnSwitch1.UseVisualStyleBackColor = false;
+            this.BtnSwitch1.Click += new System.EventHandler(this.BtnSwitch_Click);
+            // 
+            // ChkBx_FavsOnly1
+            // 
+            this.ChkBx_FavsOnly1.Appearance = System.Windows.Forms.Appearance.Button;
+            this.ChkBx_FavsOnly1.AutoSize = true;
+            this.ChkBx_FavsOnly1.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.ChkBx_FavsOnly1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.ChkBx_FavsOnly1.Location = new System.Drawing.Point(12, 12);
+            this.ChkBx_FavsOnly1.Name = "ChkBx_FavsOnly1";
+            this.ChkBx_FavsOnly1.Size = new System.Drawing.Size(64, 23);
+            this.ChkBx_FavsOnly1.TabIndex = 28;
+            this.ChkBx_FavsOnly1.Text = "Favs Only";
+            this.ChkBx_FavsOnly1.UseVisualStyleBackColor = false;
+            this.ChkBx_FavsOnly1.CheckedChanged += new System.EventHandler(this.ChkBx_FavsOnly1_CheckedChanged);
+            // 
+            // lvStats
+            // 
+            this.lvStats.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.LV_Stats.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.colTags,
+            this.lvStats.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.colTag,
             this.colCount,
             this.colPer});
-            this.LV_Stats.FullRowSelect = true;
-            this.LV_Stats.Location = new System.Drawing.Point(0, 26);
-            this.LV_Stats.MultiSelect = false;
-            this.LV_Stats.Name = "LV_Stats";
-            this.LV_Stats.Size = new System.Drawing.Size(217, 361);
-            this.LV_Stats.TabIndex = 0;
-            this.LV_Stats.UseCompatibleStateImageBehavior = false;
-            this.LV_Stats.View = System.Windows.Forms.View.Details;
-            this.LV_Stats.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.LV_Stats_ColumnClick);
-            this.LV_Stats.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.LV_Stats_ColumnWidthChanging);
-            this.LV_Stats.Resize += new System.EventHandler(this.LV_Stats_Resize);
+            this.lvStats.FullRowSelect = true;
+            this.lvStats.Location = new System.Drawing.Point(12, 41);
+            this.lvStats.MultiSelect = false;
+            this.lvStats.Name = "lvStats";
+            this.lvStats.Size = new System.Drawing.Size(623, 518);
+            this.lvStats.TabIndex = 0;
+            this.lvStats.UseCompatibleStateImageBehavior = false;
+            this.lvStats.View = System.Windows.Forms.View.Details;
+            this.lvStats.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.lvStats_ColumnClick);
+            this.lvStats.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.lvStats_ColumnWidthChanging);
+            this.lvStats.Resize += new System.EventHandler(this.lvStats_Resize);
             // 
-            // colTags
+            // colTag
             // 
-            this.colTags.Text = "Tag";
-            this.colTags.Width = 93;
+            this.colTag.Text = "Tag";
             // 
             // colCount
             // 
@@ -69,30 +177,14 @@
             // 
             this.colPer.Text = "Percent";
             // 
-            // ChkBx_FavStats
-            // 
-            this.ChkBx_FavStats.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.ChkBx_FavStats.Appearance = System.Windows.Forms.Appearance.Button;
-            this.ChkBx_FavStats.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.ChkBx_FavStats.Location = new System.Drawing.Point(0, 0);
-            this.ChkBx_FavStats.Name = "ChkBx_FavStats";
-            this.ChkBx_FavStats.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.ChkBx_FavStats.Size = new System.Drawing.Size(217, 27);
-            this.ChkBx_FavStats.TabIndex = 1;
-            this.ChkBx_FavStats.Text = "From Favourites Only";
-            this.ChkBx_FavStats.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.ChkBx_FavStats.UseVisualStyleBackColor = false;
-            this.ChkBx_FavStats.CheckedChanged += new System.EventHandler(this.ChkBx_FavStats_CheckedChanged);
-            // 
             // Stats
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.ClientSize = new System.Drawing.Size(217, 387);
-            this.Controls.Add(this.ChkBx_FavStats);
-            this.Controls.Add(this.LV_Stats);
+            this.ClientSize = new System.Drawing.Size(647, 571);
+            this.Controls.Add(this.pnlView0);
+            this.Controls.Add(this.pnlView1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.MinimumSize = new System.Drawing.Size(200, 200);
             this.Name = "Stats";
@@ -101,16 +193,27 @@
             this.Text = "Stats";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Stats_FormClosing);
             this.Load += new System.EventHandler(this.Stats_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.chtTags)).EndInit();
+            this.pnlView0.ResumeLayout(false);
+            this.pnlView0.PerformLayout();
+            this.pnlView1.ResumeLayout(false);
+            this.pnlView1.PerformLayout();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private ListViewNF LV_Stats;
-        private System.Windows.Forms.ColumnHeader colTags;
+        private System.Windows.Forms.DataVisualization.Charting.Chart chtTags;
+        private System.Windows.Forms.CheckBox ChkBx_FavsOnly0;
+        private System.Windows.Forms.Panel pnlView0;
+        private System.Windows.Forms.Panel pnlView1;
+        private System.Windows.Forms.CheckBox ChkBx_FavsOnly1;
+        private ListViewNF lvStats;
+        private System.Windows.Forms.ColumnHeader colTag;
         private System.Windows.Forms.ColumnHeader colCount;
         private System.Windows.Forms.ColumnHeader colPer;
-        private System.Windows.Forms.CheckBox ChkBx_FavStats;
+        private System.Windows.Forms.Button BtnSwitch0;
+        private System.Windows.Forms.Button BtnSwitch1;
     }
 }
