@@ -786,11 +786,11 @@ namespace Nagru___Manga_Organizer
         {
             if (Properties.Settings.Default.DefGrid) return;
             for (int i = iStart; i < LV_Entries.Items.Count; i++) {
-                if (LV_Entries.Items[i].BackColor != Color.LightYellow) {
-                    if (i % 2 == 0)
-                        LV_Entries.Items[i].BackColor = Color.FromArgb(245, 245, 245);
-                    else LV_Entries.Items[i].BackColor = SystemColors.Window;
-                }
+                if (LV_Entries.Items[i].BackColor == Color.LightYellow)
+                    continue;
+                if (i % 2 != 0)
+                    LV_Entries.Items[i].BackColor = Color.FromArgb(245, 245, 245);
+                else LV_Entries.Items[i].BackColor = SystemColors.Window;
             }
         }
 
@@ -1324,12 +1324,15 @@ namespace Nagru___Manga_Organizer
         private void MnTS_LoadUrl_Click(object sender, EventArgs e)
         {
             GetUrl fmGet = new GetUrl();
+            fmGet.StartPosition = FormStartPosition.Manual;
+            fmGet.Location = this.Location;
             fmGet.ShowDialog();
 
             //process url
             if (fmGet.DialogResult == DialogResult.OK)
             {
-                string[] asResp;
+                bool bExc = false;
+                string[] asResp = new string[0];
                 this.Cursor = Cursors.WaitCursor;
                 Text = "Sending request...";
 
@@ -1349,34 +1352,37 @@ namespace Nagru___Manga_Organizer
                         byte[] byContent = System.Text.Encoding.ASCII.GetBytes(JSON(fmGet.Url));
                         s.Write(byContent, 0, byContent.Length);
                     }
-                    using (StreamReader sr = new StreamReader(((
-                        HttpWebResponse)rq.GetResponse()).GetResponseStream())) {
+                    using (StreamReader sr = new StreamReader((
+                        (HttpWebResponse)rq.GetResponse()).GetResponseStream())) {
                         Text = "Downloading page...";
                         asResp = ExtString.Split(sr.ReadToEnd(), "\",\"");
                         rq.Abort();
                     }
-
+                } catch {
+                    bExc = true;
+                } finally {
                     //parse metadata
-                    Text = "Parsing metadata...";
-                    string sRaw = asResp[2].Split(':')[1].Substring(1);
-                    SplitTitle(ExtString.ReplaceHTML(sRaw));
-                    CmbBx_Type.Text = asResp[4].Split(':')[1].Substring(1);
-                    DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-                    sRaw = asResp[7].Split(':')[1].Substring(1);
-                    Dt_Date.Value = dt.AddSeconds((long)Convert.ToDouble(sRaw));
-                    Nud_Pages.Value = Convert.ToInt32(asResp[8].Split(':')[1].Substring(1));
-                    sRaw = asResp[9].Split(':')[3].Substring(1);
-                    srRating.SelectedStar = Convert.ToInt16(Convert.ToDouble(sRaw));
+                    if(!bExc && asResp.Length > 1) {
+                        Text = "Parsing metadata...";
+                        string sRaw = asResp[2].Split(':')[1].Substring(1);
+                        SplitTitle(ExtString.ReplaceHTML(sRaw));
+                        CmbBx_Type.Text = asResp[4].Split(':')[1].Substring(1);
+                        DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+                        sRaw = asResp[7].Split(':')[1].Substring(1);
+                        Dt_Date.Value = dt.AddSeconds((long)Convert.ToDouble(sRaw));
+                        Nud_Pages.Value = Convert.ToInt32(asResp[8].Split(':')[1].Substring(1));
+                        sRaw = asResp[9].Split(':')[3].Substring(1);
+                        srRating.SelectedStar = Convert.ToInt16(Convert.ToDouble(sRaw));
 
-                    asResp[11] = asResp[11].Split(':')[1].Substring(2);
-                    TxBx_Tags.Text = string.Join(", ", asResp, 11, asResp.Length - 11);
-                    TxBx_Tags.Text = TxBx_Tags.Text.Substring(0, TxBx_Tags.Text.Length - 5);
-                }
-                catch {
-                    MessageBox.Show("URL was invalid or the connection timed out.",
-                        Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                finally {
+                        asResp[11] = asResp[11].Split(':')[1].Substring(2);
+                        TxBx_Tags.Text = string.Join(", ", asResp, 11, asResp.Length - 11);
+                        TxBx_Tags.Text = TxBx_Tags.Text.Substring(0, TxBx_Tags.Text.Length - 5);
+                    }
+                    else {
+                        MessageBox.Show("The URL was invalid or the connection timed out.",
+                            Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+
                     Text = "Finished";
                     this.Cursor = Cursors.Default;
                 }

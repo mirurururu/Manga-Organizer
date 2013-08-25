@@ -1,3 +1,8 @@
+#### August 24, 2013
+	- Added alternating row colors to Scan Form
+	- Improved GetURL() efficiency & start-up placement
+	- Fixed item removal from Scan listview
+
 #### August 10, 2013
 	- Added pie chart to statistics page
 	- Added &#039; condition to ReplaceHTML()
@@ -23,7 +28,7 @@
 	- Added ability to choose PictureBox BackColor
 	- Added slight gap between images while browsing
 	- Added alternating listview item color
-	- Chnaged listview style to WindowsExplorer
+	- Changed listview style to WindowsExplorer
 	- Reduced memory usage during image browsing
 	- Small image loading improvement
 
@@ -54,7 +59,7 @@
 	- Embedded Ionic.Zip.dll
 
 #### May 13, 2013
-	- Complete Search() rehaul to better reflect EH's
+	- Complete Search() re-haul to better reflect EH's
 	 (eg. title:celeb_wife date:>01/01/12 -vanilla)
 	- Searches now include Description, Date, & Pages fields
 	- More LINQ usage
@@ -87,8 +92,8 @@
 	- Ensure proper listview count in title
 
 #### May 06, 2013
-	- Added button for random doujin selection
-	- Fixed display of japanese unicode
+	- Added button for random manga selection
+	- Fixed display of Japanese Unicode
 
 #### May 05, 2013
 	- Improved performance of GetFromURL()
@@ -144,19 +149,19 @@
 	- Semi-fixed broken ContextMenu
 
 #### Dec 09, 2012
-	- Added ability to browse by filepath while using custom imageviewer by pressing 'f'
+	- Added ability to browse by filepath in custom imageviewer by pressing 'f'
 
 #### Dec 03, 2012
 	- Added Artist auto-complete
 	- Fixed Btn_Loc auto-select code
-	- Fixed Up/Dn buttons improper font type
+	- Fixed Up/Down buttons improper font type
 
 #### Nov 25, 2012
 	- Added up/down browsing from View tab
 	- Fixed bug in OnlyFavs() by making it additive, rather than subtractive
 
 #### Nov 16, 2012
-	- Retargeted .NET 4.0 (sorry about the hiccup)
+	- Re-targeted .NET 4.0 (sorry about the hiccup)
 
 #### Nov 12, 2012
 	- Improved scanning by comparing filepaths, not titles
@@ -199,10 +204,10 @@
 	- Updated Reset method
 
 #### Oct 16, 2012
-	- Fixed new icon breaking WinXP compatability
+	- Fixed new icon breaking WinXP compatibility
 
 #### Oct 15, 2012
-    - Small UI adj. pII
+    - Small UI adjustment pII
 
 #### Oct 14, 2012
 	- Removed sorting redundancy
@@ -236,7 +241,7 @@
 	- Fixed UI layout
 
 #### Oct 03, 2012
-	- Added realtime update of PicBx on manual location edits
+	- Added real-time update of PicBx on manual location edits
     - Bugfix for custom context menu
     - Fixed infinite loop in ShowFavs
     - Added optional in-program imageviewer

@@ -76,8 +76,7 @@ namespace Nagru___Manga_Organizer
                         fmGoTo.iPage = iPage;
                     else fmGoTo.iPage = iPage - 1;
 
-                    if (fmGoTo.ShowDialog() == DialogResult.OK) 
-                    {
+                    if (fmGoTo.ShowDialog() == DialogResult.OK) {
                         bNext = false;
                         iPage = fmGoTo.iPage;
                         bWideL = fmGoTo.bWL;
@@ -112,18 +111,16 @@ namespace Nagru___Manga_Organizer
             bNext = true;
             Reset();
 
-            do {
+            while (imgR == null) {
                 if (++iPage >= lFiles.Count) iPage = 0;
                 imgR = TrySet(iPage);
             }
-            while (imgR == null);
-            if (!(bWideR = imgR.Height < imgR.Width))
-            {
-                do {
+
+            if (!(bWideR = imgR.Height < imgR.Width)) {
+                while (imgL == null) {
                     if (++iPage >= lFiles.Count) iPage = 0;
                     imgL = TrySet(iPage);
                 }
-                while (imgL == null);
 
                 if (bWideL = imgL.Height < imgL.Width)
                     iPage--;
@@ -137,19 +134,18 @@ namespace Nagru___Manga_Organizer
             bNext = false;
             Reset();
 
-            do {
+            while (imgL == null) {
                 if (--iPage < 0) iPage = lFiles.Count - 1;
                 else if (iPage >= lFiles.Count) iPage = 0;
                 imgL = TrySet(iPage);
             }
-            while (imgL == null);
-            if (!(bWideL = imgL.Height < imgL.Width))
-            {
-                do {
+
+            if (!(bWideL = imgL.Height < imgL.Width)) {
+                while (imgR == null) {
                     if (--iPage < 0) iPage = lFiles.Count - 1;
                     imgR = TrySet(iPage);
                 }
-                while (imgR == null);
+                
                 iPage++;
                 bWideR = imgR.Height < imgR.Width;
             }
@@ -158,8 +154,7 @@ namespace Nagru___Manga_Organizer
 
         private Bitmap TrySet(int i)
         {
-            try
-            {
+            try {
                 if (bZip && !File.Exists(lFiles[i]))
                     zip[i].Extract(zip.TempFileFolder);
                 return ExtImage.Scale(
@@ -188,11 +183,6 @@ namespace Nagru___Manga_Organizer
             if (!bWideL && !bWideR) {
                 DrawImage_L(g, imgL);
                 DrawImage_R(g, imgR);
-            }
-            else if (bWideL) {
-                if (!bNext)
-                    DrawImage_L(g, imgL);
-                else DrawImage_R(g, imgR);
             }
             else {
                 if (bNext)

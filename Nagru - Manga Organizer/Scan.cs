@@ -120,6 +120,7 @@ namespace Nagru___Manga_Organizer
         private void SetFoundItems()
         {
             LV_Found.Sort();
+            Alternate();
             Cursor = Cursors.Default;
             Text = "Found " + LV_Found.Items.Count + " possible entries";
         }
@@ -153,11 +154,24 @@ namespace Nagru___Manga_Organizer
             LV_Found.Items.Clear();
             LV_Found.Items.AddRange(lItems.ToArray());
             LV_Found.Sort();
+            Alternate();
             LV_Found.EndUpdate();
 
             LV_Found.Select();
             Cursor = Cursors.Default;
             Text = "Found " + LV_Found.Items.Count + " possible entries";
+        }
+
+        private void Alternate()
+        {
+            if (Properties.Settings.Default.DefGrid) return;
+            for (int i = 0; i < LV_Found.Items.Count; i++) {
+                if (LV_Found.Items[i].BackColor == System.Drawing.Color.MistyRose)
+                    continue;
+                if (i % 2 != 0)
+                    LV_Found.Items[i].BackColor = System.Drawing.Color.FromArgb(245, 245, 245);
+                else LV_Found.Items[i].BackColor = System.Drawing.SystemColors.Window;
+            }
         }
 
         private void LV_Found_ColumnClick(object sender, ColumnClickEventArgs e)
@@ -169,6 +183,7 @@ namespace Nagru___Manga_Organizer
             else lvSortObj.SwapOrder();
 
             LV_Found.Sort();
+            Alternate();
         }
 
         /* Auto-resizes Col_Title to match fmScan width   */
@@ -185,7 +200,8 @@ namespace Nagru___Manga_Organizer
 
         private void LV_Found_MouseHover(object sender, EventArgs e)
         {
-            if (!LV_Found.Focused) LV_Found.Select();
+            if (!LV_Found.Focused) 
+                LV_Found.Select();
         }
 
         private void LV_Found_ColumnWidthChanging(object sender, ColumnWidthChangingEventArgs e)
@@ -221,7 +237,7 @@ namespace Nagru___Manga_Organizer
 
             lRm.Sort();
             for(int i = lRm.Count - 1; i > -1; i--) {
-                lFound.RemoveAt(i);
+                lFound.RemoveAt(lRm[i]);
             }
             UpdateLV();
             delNewEntry.Invoke();
@@ -284,13 +300,5 @@ namespace Nagru___Manga_Organizer
         private void MnTx_SelAll_Click(object sender, EventArgs e)
         { TxBx_Loc.SelectAll(); }
         #endregion
-
-        private void LV_Found_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            //int iPos = Convert.ToInt32(LV_Found.FocusedItem.SubItems[3].Text);
-            //string sCheck = "SelIndex: " + LV_Found.FocusedItem.SubItems[3].Text;
-            //sCheck += "\nlFound: " + lFound[iPos].ToString();
-            //Console.WriteLine(sCheck);
-        }
     }
 }
