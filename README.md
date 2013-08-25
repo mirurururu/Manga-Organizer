@@ -3,7 +3,7 @@ Manga-Organizer
 
 <p align="justify">As a mild hoarder I found that a folder hierarchy simply doesn't cut it when you have hundreds of folders to manage. No tagging, no automation, labyrinthine directory structures; it simply becomes a mess to find anything. So I got fed up with it and wrote a program to handle all of this properly.</p>
 
-<p align="justify">It basically provides semi-automated metadate for your manga, EH-style searches, and the option to use a built-in 2-page image browser. When first ran, either press the 'Scan' button or drag/drop your folders/zips onto the listview. This will fill out the artist, title, and page count fields. Other tags can be loaded from an EH gallery URL, drag/drop'ed into the 'Tags' textbox, or added manually.</p>
+<p align="justify">It basically provides semi-automated metadata for your manga, EH-style searches, and the option to use a built-in 2-page image browser. When first ran, either press the 'Scan' button or drag your folders/zips onto the listview. This will fill out the artist, title, and page count fields. Other tags can be loaded from an EH gallery URL, dragged into the 'Tags' textbox, or added manually.</p>
 
 If this sounds useful to you, please give it a shot: <a href="https://dl.dropboxusercontent.com/u/103899726/Manga%20Organizer.exe">Download</a>
 
