@@ -1,3 +1,7 @@
+#### August 25, 2013
+	- Fix for zip file browsing
+	- Improved entry deletion code
+
 #### August 24, 2013
 	- Added alternating row colors to Scan Form
 	- Improved GetURL() efficiency & start-up placement

@@ -192,8 +192,7 @@ namespace Nagru___Manga_Organizer
             public bool Equals(csEntry en)
             {
                 bool bMatch = false;
-                switch (sType)
-                {
+                switch (sType) {
                     case "artist":
                         bMatch = ExtString.Contains(en.sArtist, sTerm);
                         break;
@@ -607,13 +606,10 @@ namespace Nagru___Manga_Organizer
             if (sFiles.Length > 0
                 && ZipFile.IsZipFile(sFiles[0]))
             {
-                string sDir = Path.GetDirectoryName(sFiles[0]) + "\\!tmp";
+                string sDir = Path.GetDirectoryName(sFiles[0]) + "\\!tmp-mo";
                 fmBrowse.lFiles = new List<string>(25);
                 
                 DirectoryInfo di = Directory.CreateDirectory(sDir);
-                #if !DEBUG
-                    di.Attributes = FileAttributes.Directory | FileAttributes.Hidden;
-                #endif
                 using (ZipFile zip = ZipFile.Read(sFiles[0])) {
                     for (int i = 0; i < zip.Count; i++) {
                         fmBrowse.lFiles.Add(sDir + '\\' + zip[i].FileName);
@@ -623,8 +619,8 @@ namespace Nagru___Manga_Organizer
                     fmBrowse.zip = zip;
                     fmBrowse.ShowDialog();
                     iPage = (short)fmBrowse.iPage;
-                    Directory.Delete(sDir, true);
                 }
+                Directory.Delete(sDir, true);
             }
             else if ((sFiles = ExtDir.GetFiles(TxBx_Loc.Text,
                 SearchOption.TopDirectoryOnly)).Length > 0)
@@ -1245,44 +1241,42 @@ namespace Nagru___Manga_Organizer
             if (indx == -1) return;
 
             //ensure deletion is intentional
-            DialogResult dResult = MessageBox.Show("Do you want to delete the source directory/file as well?",
-                "Manga Organizer", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+            string msg = ""; bool bFile = false, bRst = true;
+            if (!(bRst = ExtDir.Restricted(lData[indx].sLoc)))
+                msg = "Do you want to delete the source directory as well?";
+            else if (bFile = File.Exists(lData[indx].sLoc))
+                msg = "Do you want to delete the source file as well?";
+            else msg = "Are you sure you wish to delete this entry?";
+            DialogResult dResult = MessageBox.Show(msg, "Manga Organizer", 
+                MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+            if ((bRst && !bFile) && dResult == DialogResult.No)
+                dResult = DialogResult.Cancel;
 
-            if (dResult == DialogResult.Yes)
-            {
-                if (!ExtDir.Restricted(lData[indx].sLoc))
-                {
-                    //warn user before deleting large directory
+            //delete source file\directory
+            if (dResult == DialogResult.Yes) {
+                if (!bRst) {
+                    //warn user before deleting subdirectories
                     int iNumDir = Directory.GetDirectories(lData[indx].sLoc).Length;
-                    if (iNumDir > 0)
-                    {
-                        dResult = MessageBox.Show("This directory contains " + iNumDir + " subfolder(s),\n" +
-                            "are you sure you want to delete them?", "Manga Organizer",
-                            MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+                    if (iNumDir > 0) {
+                        dResult = MessageBox.Show(string.Format("This directory contains {0} subfolder(s),\n" +
+                            "are you sure you want to delete them?", iNumDir), "Manga Organizer",
+                            MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
                     }
-                }
-                else
-                {
-                    if (File.Exists(lData[indx].sLoc))
-                    {
+                    if (dResult == DialogResult.Yes) {
                         this.Cursor = Cursors.WaitCursor;
-                        File.Delete(lData[indx].sLoc);
+                        Directory.Delete(lData[indx].sLoc, true);
                         this.Cursor = Cursors.Default;
                     }
-                    dResult = DialogResult.No;
                 }
-            }
-
-            if (dResult != DialogResult.Cancel)
-            {
-                if (dResult == DialogResult.Yes)
-                {
+                else if (bFile) {
                     this.Cursor = Cursors.WaitCursor;
-                    Directory.Delete(lData[indx].sLoc, true);
+                    File.Delete(lData[indx].sLoc);
                     this.Cursor = Cursors.Default;
                 }
-
-                //remove from database
+            }
+            
+            //remove from database
+            if (dResult != DialogResult.Cancel) {
                 bSavList = false;
                 int iPos = LV_Entries.FocusedItem.Index;
                 lData.RemoveAt(indx);
@@ -1304,19 +1298,20 @@ namespace Nagru___Manga_Organizer
         #region Menu
         private void MnTS_CopyTitle_Click(object sender, EventArgs e)
         {
-            string sContent = string.Format((CmbBx_Artist.Text != "") 
-                ? "[{0}] {1}" : "{1}",
-                CmbBx_Artist.Text, TxBx_Title.Text);
+            if(TxBx_Title.Text == "") {
+                MessageBox.Show("The title field cannot be empty.",
+                    Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
 
-            if (sContent != "")
-                Clipboard.SetText(sContent);
-            else Clipboard.Clear();
+            Clipboard.SetText(string.Format((CmbBx_Artist.Text != "") 
+                ? "[{0}] {1}" : "{1}", CmbBx_Artist.Text, TxBx_Title.Text));
             Text = "Name copied to clipboard";
         }
 
         private void MnTS_OpenSource_Click(object sender, EventArgs e)
         {
-            if (TxBx_Loc.Text != "" && !ExtDir.Restricted(TxBx_Loc.Text))
+            if (!ExtDir.Restricted(TxBx_Loc.Text))
                 System.Diagnostics.Process.Start(TxBx_Loc.Text);
         }
 
@@ -1401,7 +1396,7 @@ namespace Nagru___Manga_Organizer
             if (Directory.Exists(sPath))
                 System.Diagnostics.Process.Start(sPath);
             else MessageBox.Show("This directory no longer exists.", "Manga Organizer",
-                MessageBoxButtons.YesNoCancel, MessageBoxIcon.Error);
+                MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         private void MnTS_Stats_Click(object sender, EventArgs e)
@@ -1438,15 +1433,13 @@ namespace Nagru___Manga_Organizer
                 sPath += "\\MangaDatabase.bin";
 
                 //move old save to new location
-                if (File.Exists(fbd.SelectedPath)
-                    && MessageBox.Show("Open existing database at:\n" + fbd.SelectedPath,
-                    "Manga Organizer", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
-                    == DialogResult.Yes)
+                if (File.Exists(fbd.SelectedPath) && 
+                    MessageBox.Show("Open existing database at:\n" + fbd.SelectedPath,
+                    "Manga Organizer", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     lData = FileSerializer.Deserialize<List<csEntry>>(sPath);
 
-                    if (lData != null)
-                    {
+                    if (lData != null) {
                         UpdateLV();
 
                         //set up CmbBx autocomplete
@@ -1471,9 +1464,8 @@ namespace Nagru___Manga_Organizer
             FolderBrowserDialog fbd = new FolderBrowserDialog();
             fbd.SelectedPath = Properties.Settings.Default.DefLoc;
 
-            if (fbd.ShowDialog() == DialogResult.OK
-                && !ExtDir.Restricted(fbd.SelectedPath))
-            {
+            if (fbd.ShowDialog() == DialogResult.OK&& 
+                !ExtDir.Restricted(fbd.SelectedPath)) {
                 Properties.Settings.Default.DefLoc = fbd.SelectedPath;
                 Text = "Default location changed";
             }
@@ -1499,7 +1491,8 @@ namespace Nagru___Manga_Organizer
             ColorDialog cd = new ColorDialog();
             cd.CustomColors = new int[2] {
                 ColorTranslator.ToOle(Color.FromArgb(39,40,34)),
-                ColorTranslator.ToOle(PicBx_Cover.BackColor)  };
+                ColorTranslator.ToOle(PicBx_Cover.BackColor)
+            };
             cd.Color = PicBx_Cover.BackColor;
 
             if (cd.ShowDialog() == DialogResult.OK) {
@@ -1515,7 +1508,8 @@ namespace Nagru___Manga_Organizer
             switch (ActiveControl.GetType().Name) {
                 case "FixedRichTextBox":
                     ((FixedRichTextBox)ActiveControl).Undo();
-                    if (TabControl.SelectedIndex == 2) bSavText = true;
+                    if (TabControl.SelectedIndex == 2 && !frTxBx_Notes.CanUndo) 
+                        bSavText = true;
                     break;
                 case "TextBox":
                     ((TextBox)ActiveControl).Undo();
@@ -1528,8 +1522,7 @@ namespace Nagru___Manga_Organizer
 
         private void MnTx_Cut_Click(object sender, EventArgs e)
         {
-            switch (ActiveControl.GetType().Name)
-            {
+            switch (ActiveControl.GetType().Name) {
                 case "FixedRichTextBox":
                     ((FixedRichTextBox)ActiveControl).Cut();
                     if (TabControl.SelectedIndex == 2) bSavText = false;
@@ -1565,8 +1558,7 @@ namespace Nagru___Manga_Organizer
         private void MnTx_Paste_Click(object sender, EventArgs e)
         {
             string sAdd = Clipboard.GetText();
-            switch (ActiveControl.GetType().Name)
-            {
+            switch (ActiveControl.GetType().Name) {
                 case "FixedRichTextBox":
                     FixedRichTextBox fr = ((FixedRichTextBox)ActiveControl);
                     fr.SelectedText = "";
@@ -1600,8 +1592,7 @@ namespace Nagru___Manga_Organizer
 
         private void MnTx_Delete_Click(object sender, EventArgs e)
         {
-            switch (ActiveControl.GetType().Name)
-            {
+            switch (ActiveControl.GetType().Name) {
                 case "FixedRichTextBox":
                     ((FixedRichTextBox)ActiveControl).SelectedText = "";
                     break;
@@ -1616,8 +1607,7 @@ namespace Nagru___Manga_Organizer
 
         private void MnTx_SelAll_Click(object sender, EventArgs e)
         {
-            switch (ActiveControl.GetType().Name)
-            {
+            switch (ActiveControl.GetType().Name) {
                 case "FixedRichTextBox":
                     ((FixedRichTextBox)ActiveControl).SelectAll();
                     break;
@@ -1633,75 +1623,55 @@ namespace Nagru___Manga_Organizer
         private void Mn_TxBx_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
             bool bUndo = false, bSelect = false;
-            switch (ActiveControl.GetType().Name)
-            {
+            switch (ActiveControl.GetType().Name) {
                 case "FixedRichTextBox":
-                    FixedRichTextBox fr = (FixedRichTextBox)ActiveControl;
+                    FixedRichTextBox fr = ActiveControl as FixedRichTextBox;
                     if (fr.CanUndo) bUndo = true;
                     if (fr.SelectionLength > 0) bSelect = true;
                     break;
                 case "TextBox":
-                    TextBox txt = (TextBox)ActiveControl;
+                    TextBox txt = ActiveControl as TextBox;
                     if (txt.CanUndo) bUndo = true;
                     if (txt.SelectionLength > 0) bSelect = true;
                     break;
                 case "ComboBox":
-                    ComboBox cb = (ComboBox)ActiveControl;
+                    ComboBox cb = ActiveControl as ComboBox;
                     if (cb.SelectionLength > 0) bSelect = true;
                     bUndo = true;
                     break;
             }
 
-            if (bUndo) MnTx_Undo.Enabled = true;
-            else MnTx_Undo.Enabled = false;
-
-            if (bSelect) {
-                MnTx_Cut.Enabled = true;
-                MnTx_Copy.Enabled = true;
-                MnTx_Delete.Enabled = true;
-            }
-            else {
-                MnTx_Cut.Enabled = false;
-                MnTx_Copy.Enabled = false;
-                MnTx_Delete.Enabled = false;
-            }
+            MnTx_Undo.Enabled = bUndo;
+            MnTx_Cut.Enabled = bSelect;
+            MnTx_Copy.Enabled = bSelect;
+            MnTx_Delete.Enabled = bSelect;
         }
 
         /* Ensure element recieves focus when right-clicked */
         private void TbPg_Click(object sender, MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Right) return;
-            switch (sender.GetType().Name)
-            {
-                case "FixedRichTextBox":
-                    ((FixedRichTextBox)sender).Select();
-                    break;
-                case "TextBox":
-                    ((TextBox)sender).Select();
-                    break;
-                case "ComboBox":
-                    ((ComboBox)sender).Select();
-                    break;
-            }
+            Control cnt = sender as Control;
+            if (cnt.CanSelect) cnt.Select();
         }
 
-        /* Prevent mixed font types when c/p  */
         private void frTxBx_KeyDown(object sender, KeyEventArgs e)
         {
+            /* Prevent mixed font types when c/p  */
             if (e.Modifiers == Keys.Control && e.KeyCode == Keys.V) {
-                if (TabControl.SelectedIndex == 2) {
-                    frTxBx_Notes.SelectionStart = InsertText(
-                        frTxBx_Notes, Clipboard.GetText(), frTxBx_Notes.SelectionStart);
-                    bSavText = false;
-                }
-                else {
-                    frTxBx_Desc.SelectionStart = InsertText(
-                        frTxBx_Desc, Clipboard.GetText(), frTxBx_Desc.SelectionStart);
-                }
+                FixedRichTextBox frTxBx = sender as FixedRichTextBox;
+                frTxBx.SelectionStart = InsertText(
+                    frTxBx, Clipboard.GetText(), frTxBx.SelectionStart);
+                if (TabControl.SelectedIndex == 2) bSavText = false;
                 e.Handled = true;
             }
-            else if ((frTxBx_Notes.SelectionStart == frTxBx_Notes.TextLength && e.KeyCode == Keys.Right)
-                || (frTxBx_Notes.SelectionStart == 0 && e.KeyCode == Keys.Left)) e.Handled = true;
+            /* Prevent console beep when reaching start/end of txbx */
+            else if (e.KeyCode == Keys.Right || e.KeyCode == Keys.Left) {
+                FixedRichTextBox frTxBx = sender as FixedRichTextBox;
+                if ((e.KeyCode == Keys.Right && frTxBx.SelectionStart == frTxBx.TextLength) ||
+                    (e.KeyCode == Keys.Left && frTxBx.SelectionStart == 0))
+                    e.Handled = true;
+            }
         }
         #endregion
 
@@ -1719,8 +1689,7 @@ namespace Nagru___Manga_Organizer
         {
             string sAdd = (string)e.Data.GetData(DataFormats.Text);
 
-            switch ((sender as Control).Name)
-            {
+            switch ((sender as Control).Name) {
                 case "frTxBx_Desc":
                     frTxBx_Desc.SelectionStart = InsertText(
                         frTxBx_Desc, sAdd, frTxBx_Desc.SelectionStart);
@@ -1776,19 +1745,16 @@ namespace Nagru___Manga_Organizer
             string sError = "";
 
             //add all remaining folders
-            for (int i = 0; i < asDir.Length; i++)
-            {
+            for (int i = 0; i < asDir.Length; i++) {
                 if (asDir[i] == "") continue;
 
                 //add item
                 Main.csEntry en = new csEntry(asDir[i]);
-                if (!lData.Contains(en))
-                {
+                if (!lData.Contains(en)) {
                     lData.Add(en);
                     indx = (short)(lData.Count - 1);
 
-                    if (en.sArtist != "" 
-                        && !CmbBx_Artist.Items.Contains(en.sArtist))
+                    if (en.sArtist != "" && !CmbBx_Artist.Items.Contains(en.sArtist))
                         CmbBx_Artist.Items.Add(en.sArtist);
                 }
                 else sError += asDir[i] + '\n';

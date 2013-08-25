@@ -157,8 +157,7 @@ namespace Nagru___Manga_Organizer
             try {
                 if (bZip && !File.Exists(lFiles[i]))
                     zip[i].Extract(zip.TempFileFolder);
-                return ExtImage.Scale(
-                    new Bitmap(lFiles[i]), 
+                return ExtImage.Scale(new Bitmap(lFiles[i]), 
                     picBx.Width, picBx.Height);
             }
             catch { return null; }
