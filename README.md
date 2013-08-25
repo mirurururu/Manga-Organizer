@@ -7,7 +7,7 @@ Manga-Organizer
 
 If this sounds useful to you, please give it a shot: <a href="https://dl.dropboxusercontent.com/u/103899726/Manga%20Organizer.exe">Download</a>
 
-For examples of it running see: <a href="https://raw.github.com/Nagru/Manga-Organizer/master/Prv_Browse.jpg" target="_blank">Browse</a>, <a href="https://raw.github.com/Nagru/Manga-Organizer/master/Prv_View.jpg" target="_blank">View</a>, & <a href="https://raw.github.com/Nagru/Manga-Organizer/master/Prv_Notes.jpg" target="_blank">Notes</a>
+For examples of it running see: <a href="https://raw.github.com/Nagru/Manga-Organizer/master/Prv_Browse.png" target="_blank">Browse</a>, <a href="https://raw.github.com/Nagru/Manga-Organizer/master/Prv_View.jpg" target="_blank">View</a>, & <a href="https://raw.github.com/Nagru/Manga-Organizer/master/Prv_Notes.png" target="_blank">Notes</a>
 <br><br><hr><br>
 Notes:
 - no install required
