@@ -1,4 +1,4 @@
-#### September 01, 2013
+#### September 02, 2013
 	- Added tutorial screen for new users
 	- Added new Form to manage all settings
 	- Added automatic page flipper (no hands mode)
