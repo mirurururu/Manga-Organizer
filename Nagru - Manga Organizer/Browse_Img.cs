@@ -4,81 +4,110 @@ using System.Collections.Generic;
 using System.Drawing.Drawing2D;
 using System.Drawing;
 using System.IO;
-using Enc = System.Text.Encoding;
 
 namespace Nagru___Manga_Organizer
 {
     public partial class Browse_Img : Form
     {
-        public Ionic.Zip.ZipFile zip;
-        public List<string> lFiles;
-        public int iPage;
+        public List<string> Files { get; set; }
+        public Ionic.Zip.ZipFile ZipFile { get; set; }
+        public int Page { get; set; }
 
         Image imgR, imgL;
-        bool bWideL, bWideR, bNext, bZip;
+        bool bWideL, bWideR, bNext;
         float fWidth;
+
+        Timer tmr = new Timer();
+        bool bAuto = false;
 
         public Browse_Img()
         { InitializeComponent(); }
 
         private void Browse_Load(object sender, EventArgs e)
         {
-            Cursor.Hide();
+            tmr.Tick += tmr_Tick;
+            tmr.Interval = Properties.Settings.Default.Interval;
 
             picBx.BackColor = Properties.Settings.Default.DefColour;
             #if !DEBUG
+                Cursor.Hide();
                 Bounds = Screen.PrimaryScreen.Bounds;
                 FormBorderStyle = FormBorderStyle.None;
                 WindowState = FormWindowState.Maximized;
             #endif
 
             fWidth = (float)(Bounds.Width / 2.0);
-            if (zip != null) bZip = true;
-            if (iPage == -1) Next();
+            if (Page == -1) Next();
             else Prev();
         }
 
+        void tmr_Tick(object sender, EventArgs e)
+        { Next(); }
+
         private void Browse_KeyDown(object sender, KeyEventArgs e)
         {
+            if (e.Modifiers == Keys.Shift) {
+                if (!bAuto) return;
+                if (e.KeyCode == Keys.Oemplus) {
+                    bAuto = true;
+                    Console.Beep(700, 100);
+                    tmr.Interval += 500;
+                    Tmr_Reset();
+                }
+                else if (e.KeyCode == Keys.OemMinus) {
+                    if(tmr.Interval >= 1500) {
+                        bAuto = true;
+                        Console.Beep(100, 100);
+                        tmr.Interval -= 500;
+                        Tmr_Reset();
+                    }
+                }
+                return;
+            }
+
             switch (e.KeyCode)
             {
-                case Keys.Left:
+                #region Traversal
+                case Keys.Left: 
                     Next();
                     break;
                 case Keys.Right:
                     Prev();
                     break;
                 case Keys.Up:
-                    if ((iPage += 7) > lFiles.Count)
-                        iPage = iPage - lFiles.Count;
+                    if ((Page += 7) > Files.Count)
+                        Page = Page - Files.Count;
                     Next();
                     break;
                 case Keys.Down:
-                    if ((iPage -= 7) < 0)
-                        iPage = lFiles.Count + iPage;
+                    if ((Page -= 7) < 0)
+                        Page = Files.Count + Page;
                     Prev();
                     break;
                 case Keys.Home:
-                    iPage = -1;
+                    Page = -1;
                     Next();
                     break;
                 case Keys.End:
-                    iPage = lFiles.Count + 1;
+                    Page = Files.Count + 1;
                     Prev();
                     break;
+                #endregion
+                #region Special Functions
                 case Keys.F:
+                    if (bAuto) tmr.Stop();
                     Cursor.Show();
                     BrowseTo fmGoTo = new BrowseTo();
-                    fmGoTo.lFiles = lFiles;
+                    fmGoTo.lFiles = Files;
                     fmGoTo.bWL = bWideL;
                     fmGoTo.bWR = bWideR;
                     if (bWideR || bWideL) 
-                        fmGoTo.iPage = iPage;
-                    else fmGoTo.iPage = iPage - 1;
+                        fmGoTo.iPage = Page;
+                    else fmGoTo.iPage = Page - 1;
 
                     if (fmGoTo.ShowDialog() == DialogResult.OK) {
                         bNext = false;
-                        iPage = fmGoTo.iPage;
+                        Page = fmGoTo.iPage;
                         bWideL = fmGoTo.bWL;
                         bWideR = fmGoTo.bWR;
                         imgL = fmGoTo.imgL;
@@ -87,9 +116,17 @@ namespace Nagru___Manga_Organizer
                     }
 
                     fmGoTo.Dispose();
+                    if (bAuto) tmr.Start();
                     this.Select();
                     Cursor.Hide();
                     break;
+                case Keys.S:
+                    bAuto = !bAuto;
+                    if (bAuto) tmr.Start();
+                    else tmr.Stop();
+                    break;
+                #endregion
+                #region Ignored Keys
                 case Keys.PrintScreen:
                 case Keys.MediaNextTrack:
                 case Keys.MediaPreviousTrack:
@@ -101,6 +138,7 @@ namespace Nagru___Manga_Organizer
                 case Keys.LWin:
                 case Keys.RWin:
                     break;
+                #endregion
                 default: Close();
                     break;
             }
@@ -112,41 +150,41 @@ namespace Nagru___Manga_Organizer
             Reset();
 
             while (imgR == null) {
-                if (++iPage >= lFiles.Count) iPage = 0;
-                imgR = TrySet(iPage);
+                if (++Page >= Files.Count) Page = 0;
+                imgR = TrySet(Page);
             }
 
             if (!(bWideR = imgR.Height < imgR.Width)) {
                 while (imgL == null) {
-                    if (++iPage >= lFiles.Count) iPage = 0;
-                    imgL = TrySet(iPage);
+                    if (++Page >= Files.Count) Page = 0;
+                    imgL = TrySet(Page);
                 }
 
                 if (bWideL = imgL.Height < imgL.Width)
-                    iPage--;
+                    Page--;
             }
             picBx.Refresh();
         }
 
         private void Prev()
         {
-            if (iPage != 0 && !(bWideR || bWideL)) iPage--;
+            if (Page != 0 && !(bWideR || bWideL)) Page--;
             bNext = false;
             Reset();
 
             while (imgL == null) {
-                if (--iPage < 0) iPage = lFiles.Count - 1;
-                else if (iPage >= lFiles.Count) iPage = 0;
-                imgL = TrySet(iPage);
+                if (--Page < 0) Page = Files.Count - 1;
+                else if (Page >= Files.Count) Page = 0;
+                imgL = TrySet(Page);
             }
 
             if (!(bWideL = imgL.Height < imgL.Width)) {
                 while (imgR == null) {
-                    if (--iPage < 0) iPage = lFiles.Count - 1;
-                    imgR = TrySet(iPage);
+                    if (--Page < 0) Page = Files.Count - 1;
+                    imgR = TrySet(Page);
                 }
                 
-                iPage++;
+                Page++;
                 bWideR = imgR.Height < imgR.Width;
             }
             picBx.Refresh();
@@ -155,9 +193,10 @@ namespace Nagru___Manga_Organizer
         private Bitmap TrySet(int i)
         {
             try {
-                if (bZip && !File.Exists(lFiles[i]))
-                    zip[i].Extract(zip.TempFileFolder);
-                return ExtImage.Scale(new Bitmap(lFiles[i]), 
+                if (ZipFile != null && !File.Exists(Files[i]))
+                    ZipFile[i].Extract(ZipFile.TempFileFolder,
+                        Ionic.Zip.ExtractExistingFileAction.DoNotOverwrite);
+                return ExtImage.Scale(new Bitmap(Files[i]), 
                     picBx.Width, picBx.Height);
             }
             catch { return null; }
@@ -165,11 +204,17 @@ namespace Nagru___Manga_Organizer
 
         private void Reset()
         {
+            if (bAuto) Tmr_Reset();
             bWideL = false;
             bWideR = false;
             imgL = null;
             imgR = null;
-            GC.Collect();
+            GC.Collect(0);
+        }
+        private void Tmr_Reset()
+        {
+            tmr.Stop();
+            tmr.Start();
         }
 
         /* Process which images to draw & how */
@@ -183,11 +228,9 @@ namespace Nagru___Manga_Organizer
                 DrawImage_L(g, imgL);
                 DrawImage_R(g, imgR);
             }
-            else {
-                if (bNext)
-                    DrawImage_R(g, imgR);
-                else DrawImage_L(g, imgL);
-            }
+            else if (bNext)
+                DrawImage_R(g, imgR);
+            else DrawImage_L(g, imgL);
             picBx.ResumeLayout();
         }
 
@@ -213,8 +256,16 @@ namespace Nagru___Manga_Organizer
         {
             if(imgL != null) imgL.Dispose();
             if(imgR != null) imgR.Dispose();
+            if (bAuto) {
+                Properties.Settings.Default.Interval = tmr.Interval;
+                Properties.Settings.Default.Save();
+                tmr.Stop();
+            }
+            tmr.Dispose();
+            GC.Collect(0);
+
             Cursor.Show();
-            iPage += 2;
+            Page += 2;
         }
     }
 }

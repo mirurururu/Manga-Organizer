@@ -21,10 +21,10 @@ namespace Nagru___Manga_Organizer
                 for (int i = 0; i < sFilters.Length; i++)
                     lFiles.AddRange(System.IO.Directory.GetFiles(SourceFolder,
                         sFilters[i], SearchOption));
-            }
-            catch (UnauthorizedAccessException) {
-                Console.WriteLine("User does not have access to the (sub)directory:\n"
-                    + SourceFolder);
+            } catch(ArgumentException) {
+                Console.WriteLine("Invalid characters in path:\n" + SourceFolder);
+            } catch (UnauthorizedAccessException) {
+                Console.WriteLine("User does not have access to:\n" + SourceFolder);
             }
 
             lFiles.Sort(new TrueCompare());

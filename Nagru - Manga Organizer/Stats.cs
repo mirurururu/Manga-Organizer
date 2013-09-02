@@ -16,7 +16,10 @@ namespace Nagru___Manga_Organizer
         int iCount = 0;
 
         public Stats()
-        { InitializeComponent(); }
+        { 
+            InitializeComponent();
+            this.Icon = Properties.Resources.dbIcon;
+        }
 
         private void Stats_Load(object sender, EventArgs e)
         {

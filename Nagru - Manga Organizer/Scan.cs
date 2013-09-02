@@ -21,7 +21,10 @@ namespace Nagru___Manga_Organizer
 
         #region ScanOperation
         public Scan()
-        { InitializeComponent(); }
+        { 
+            InitializeComponent();
+            this.Icon = Properties.Resources.dbIcon;
+        }
 
         private void Scan_Load(object sender, EventArgs e)
         {
@@ -122,7 +125,7 @@ namespace Nagru___Manga_Organizer
             LV_Found.Sort();
             Alternate();
             Cursor = Cursors.Default;
-            Text = "Found " + LV_Found.Items.Count + " possible entries";
+            Text = "Scan: Found " + LV_Found.Items.Count + " possible entries";
         }
         #endregion
 

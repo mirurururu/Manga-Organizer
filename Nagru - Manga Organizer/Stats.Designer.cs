@@ -189,7 +189,6 @@
             this.MinimumSize = new System.Drawing.Size(200, 200);
             this.Name = "Stats";
             this.ShowIcon = false;
-            this.ShowInTaskbar = false;
             this.Text = "Stats";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Stats_FormClosing);
             this.Load += new System.EventHandler(this.Stats_Load);

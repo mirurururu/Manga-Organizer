@@ -7,10 +7,10 @@ namespace Nagru___Manga_Organizer
 {
     public partial class About : Form
     {
-        delegate void DelVoidInt(bool? bResult);
+        delegate void DelVoidInt(string sGet);
         DelVoidInt delFini = null;
 
-        string sVer = Properties.Settings.Default.Version;
+        int iVer = 0;
 
         public About()
         { InitializeComponent(); }
@@ -18,8 +18,9 @@ namespace Nagru___Manga_Organizer
         private void About_Load(object sender, EventArgs e)
         {
             delFini = Checked;
-            Text += string.Format("(v. {0}-{1}-20{2})", 
-                sVer.Substring(2, 2), sVer.Substring(4, 2), sVer.Substring(0, 2));
+            string sVer = Properties.Settings.Default.Version;
+            Text += string.Format("(v. {0})", sVer);
+            iVer = Convert.ToInt32(sVer.Replace(".", ""));
 
             Lbl_P1.Text = "This program provides tagging, searching and other basic management for a\n" +
             "folder directory. It is intended as a companion to the E-H website, and\n" +
@@ -46,48 +47,44 @@ namespace Nagru___Manga_Organizer
 
         private void CheckLatest(object Null)
         {
-            bool? bNew = null;
+            string sGet = "0";
 
             try
             {
                 ServicePointManager.DefaultConnectionLimit = 64;
-                HttpWebRequest rq = (HttpWebRequest)
-                    WebRequest.Create("http://dl.dropboxusercontent.com/u/103899726/Version.txt");
-                rq.UserAgent = "Mozilla/5.0 (Windows; U; MSIE 9.0; WIndows NT 9.0; en-US))";
+                HttpWebRequest rq = (HttpWebRequest)WebRequest.Create(
+                    "http://dl.dropboxusercontent.com/u/103899726/Version.txt");
+                rq.UserAgent = "Mozilla/5.0 (Windows; WIndows NT 9.0; en-US))";
                 rq.Method = "GET";
                 rq.Timeout = 5000;
                 rq.KeepAlive = false;
                 rq.Proxy = null;
                 
-                using (StreamReader sr = new StreamReader(rq.GetResponse().GetResponseStream()))
-                {
-                    if (sr.ReadToEnd().Contains(sVer))
-                        bNew = false;
-                    else bNew = true;
+                using (StreamReader sr = new StreamReader(
+                        rq.GetResponse().GetResponseStream())) {
+                    sGet = sr.ReadToEnd();
                 }
                 rq.Abort();
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 MessageBox.Show("A connection could not be established:\n" + e.Message,
                         Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            finally {
-                try { Invoke(delFini, bNew); } catch { }
+            } finally {
+                try { Invoke(delFini, sGet); } catch { }
             }
         }
 
-        private void Checked(bool? bNew)
+        private void Checked(string sGet)
         {
-            Text = Text.Substring(0, 21);
-            switch (bNew)
-            {
-                case null: Text += " - Could not establish a connection";
-                    break;
-                case false: Text += " - Latest version";
-                    break;
-                case true: Text += " - New version available";
-                    break;
-            }
+            int iGet = Convert.ToInt32(sGet.Replace(".",""));
+            Text = Text.Remove(Text.Length - 22);
+            if (iGet > iVer)
+                Text += string.Format(
+                    " - New version available (v. {0})", sGet);
+            else if (iGet == iVer)
+                Text += " - Latest version";
+            else if (iGet == 0)
+                Text += " - Could not establish a connection";
+            else Text += " - Debug version";
 
             this.Cursor = Cursors.Default;
         }

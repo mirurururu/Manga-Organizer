@@ -224,7 +224,6 @@
             this.MinimumSize = new System.Drawing.Size(300, 150);
             this.Name = "Scan";
             this.ShowIcon = false;
-            this.ShowInTaskbar = false;
             this.Text = "Scan";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Scan_FormClosing);
             this.Load += new System.EventHandler(this.Scan_Load);

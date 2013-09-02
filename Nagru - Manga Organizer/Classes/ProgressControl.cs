@@ -3,81 +3,89 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 
-namespace Nagru___Manga_Organizer
+namespace Nagru___Manga_Organizer.Classes
 {
-    /* Inspiration: Andrey Butov (Dec 20, 2004) */
-    public class StarRatingControl : Control
+    public class ProgressControl : Control
     {
         #region Properties
-        protected readonly Color cOutln = Color.DarkGray;
-        protected readonly Color cHover = Color.Yellow;
-        protected readonly Color cFill = Color.Goldenrod;
-        protected readonly GraphicsPath gpStar;
+        protected readonly GraphicsPath gpBlock;
         protected readonly Rectangle[] rcArea;
         protected readonly Pen pnOutln;
-        protected readonly int iPadding = 8;
-        protected const int iHeight = 14;
-        protected const int iWidth = 16;
-        protected int iOutThick = 1,
-            iHvrStar, iSelStar;
-        
-		protected bool IsHovering { get; private set; }
-        public int HoverStar {
-            get { return iHvrStar; }
-            set {
-                if (value > 0)
-                    iHvrStar = value;
-            }
+        readonly int iHeight = 20;
+        readonly int iWidth = 70;
+
+        protected Color cFill = SystemColors.MenuHighlight;
+        protected Color cOutln = Color.Black;
+        protected const int iOutlln = 1;
+        protected int iBlocks = 5;
+        protected int iStep = 0;
+        protected int iPad = 5;
+        protected int iHover = 0;
+
+        public bool Hovering { get; private set; }
+        public Color FillColor {
+            get { return cFill; }
+            set { cFill = value; }
         }
-        public int SelectedStar {
-            get { return iSelStar; }
-            set {
-                if (value >= 0) {
-                    iSelStar = value;
+        public Color Outline {
+            get { return cOutln; }
+            set { cOutln = value; }
+        }
+        public int Blocks {
+            get { return iBlocks; }
+            set { 
+                if(value > 0) {
+                    iBlocks = value;
                     Invalidate();
                 }
             }
         }
-        public int OutlineThickness {
-            get { return iOutThick; }
+        public int Step {
+            get { return iStep; }
             set {
-                if (value > 0) {
-                    iOutThick = value;
+                if (value >= 0) {
+                    iStep = value;
+                    Invalidate();
+                }
+            }
+        }
+        public int Buffer {
+            get { return iPad; }
+            set { 
+                if(value >= 0) {
+                    iPad = value;
                     Invalidate();
                 }
             }
         }
         #endregion
 
-        public StarRatingControl()
+        public ProgressControl()
         {
-            SetStyle(ControlStyles.AllPaintingInWmPaint, true);
             SetStyle(ControlStyles.UserPaint, true);
             SetStyle(ControlStyles.DoubleBuffer, true);
             SetStyle(ControlStyles.ResizeRedraw, true);
+            SetStyle(ControlStyles.AllPaintingInWmPaint, true);
 
-            pnOutln = new Pen(cOutln, iOutThick);
+            pnOutln = new Pen(cOutln, iOutlln);
             rcArea = new Rectangle[5];
             for (int i = 0; i < 5; ++i) {
-                rcArea[i].X = i * (iWidth + iPadding);
-                rcArea[i].Width = iWidth + iPadding;
+                rcArea[i].X = i * (iWidth + iPad);
+                rcArea[i].Width = iWidth + iPad;
                 rcArea[i].Height = iHeight;
             }
-
-            gpStar = new GraphicsPath();
-            gpStar.AddLines(new PointF[] {
-                new PointF(iWidth / 2, 0),
-                new PointF(42 * iWidth / 64, 19 * iHeight / 64),
-                new PointF(iWidth, 22 * iHeight / 64),
-                new PointF(48 * iWidth / 64, 38 * iHeight / 64),
-                new PointF(52 * iWidth / 64, iHeight),
-                new PointF(iWidth / 2, 52 * iHeight / 64),
-                new PointF(12 * iWidth / 64, iHeight),
-                new PointF(iWidth / 4, 38 * iHeight / 64),
-                new PointF(0, 22 * iHeight / 64),
-                new PointF(22 * iWidth / 64, 19 * iHeight / 64)
+            
+            //setup arrow shape
+            gpBlock = new GraphicsPath();
+            gpBlock.AddLines(new PointF[] {
+                new PointF(0, 0),                   //TL
+                new PointF(iWidth - iPad, 0),       //TR
+                new PointF(iWidth, iHeight / 2),    //MR
+                new PointF(iWidth - iPad, iHeight), //BR
+                new PointF(0, iHeight),             //BL
+                new PointF(iPad, iHeight / 2)       //ML
             });
-            gpStar.CloseFigure();
+            gpBlock.CloseFigure();
         }
 
         protected override void OnPaint(PaintEventArgs pe)
@@ -86,20 +94,19 @@ namespace Nagru___Manga_Organizer
 
             Brush brFill;
             Rectangle rcDraw = new Rectangle(0, 0, iWidth, iHeight);
-            for (int i = 0; i < 5; ++i) {
-                if (IsHovering && iHvrStar > i) {
-                    brFill = new LinearGradientBrush(rcDraw, cHover, BackColor,
-                        LinearGradientMode.ForwardDiagonal);
-                }
-                else if (!IsHovering && iSelStar > i) {
+            for (int i = 0; i < iBlocks; i++) {
+                if (Hovering && iHover > i) {
                     brFill = new LinearGradientBrush(rcDraw, cFill, BackColor,
                         LinearGradientMode.ForwardDiagonal);
                 }
+                else if (!Hovering && iStep > i) {
+                    brFill = new SolidBrush(cFill);
+                }
                 else brFill = new SolidBrush(BackColor);
-                
+
                 pe.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-                GraphicsPath gpTmp = GetPath(gpStar, rcDraw.X, rcDraw.Y);
-                rcDraw.X += rcDraw.Width + iPadding;
+                GraphicsPath gpTmp = GetPath(gpBlock, rcDraw.X, rcDraw.Y);
+                rcDraw.X += rcDraw.Width + iPad;
                 pe.Graphics.FillPath(brFill, gpTmp);
                 pe.Graphics.DrawPath(pnOutln, gpTmp);
                 gpTmp.Dispose();
@@ -118,14 +125,14 @@ namespace Nagru___Manga_Organizer
 
         protected override void OnMouseEnter(System.EventArgs ea)
         {
-            IsHovering = true;
+            Hovering = true;
             Invalidate();
             base.OnMouseEnter(ea);
         }
 
         protected override void OnMouseLeave(System.EventArgs ea)
         {
-            IsHovering = false;
+            Hovering = false;
             Invalidate();
             base.OnMouseLeave(ea);
         }
@@ -136,8 +143,8 @@ namespace Nagru___Manga_Organizer
 
             for (int i = 0; i < 5; ++i) {
                 if (rcArea[i].Contains(p)) {
-                    if (iHvrStar != i + 1) {
-                        iHvrStar = i + 1;
+                    if (iHover != i + 1) {
+                        iHover = i + 1;
                         Invalidate();
                     }
                     break;
@@ -153,8 +160,8 @@ namespace Nagru___Manga_Organizer
 
             for (int i = 0; i < 5; ++i) {
                 if (rcArea[i].Contains(p)) {
-                    iHvrStar = i + 1;
-                    iSelStar = (i == 0 && iSelStar == 1) ? 0 : i + 1;
+                    iHover = i + 1;
+                    iStep = i;
                     Invalidate();
                     break;
                 }

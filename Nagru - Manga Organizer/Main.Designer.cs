@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             this.TabControl = new System.Windows.Forms.TabControl();
             this.Tb_Browse = new System.Windows.Forms.TabPage();
             this.ChkBx_ShowFav = new System.Windows.Forms.CheckBox();
@@ -66,7 +65,6 @@
             this.Lbl_Artist = new System.Windows.Forms.Label();
             this.Lbl_Title = new System.Windows.Forms.Label();
             this.TxBx_Title = new System.Windows.Forms.TextBox();
-            this.PicBx_Cover = new System.Windows.Forms.PictureBox();
             this.Mn_EntryOps = new System.Windows.Forms.MenuStrip();
             this.MnTS_Menu = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTS_CopyTitle = new System.Windows.Forms.ToolStripMenuItem();
@@ -78,11 +76,7 @@
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.MnTS_Stats = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.MnTs_DefSav = new System.Windows.Forms.ToolStripMenuItem();
-            this.MnTs_DefRoot = new System.Windows.Forms.ToolStripMenuItem();
-            this.MnTs_DefZip = new System.Windows.Forms.ToolStripMenuItem();
-            this.MnTs_DefGrid = new System.Windows.Forms.ToolStripMenuItem();
-            this.MnTS_DefColour = new System.Windows.Forms.ToolStripMenuItem();
+            this.MnTS_Tutorial = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTS_About = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTs_Quit = new System.Windows.Forms.ToolStripMenuItem();
             this.MnTS_SecretSort = new System.Windows.Forms.ToolStripSeparator();
@@ -104,14 +98,15 @@
             this.srRating = new Nagru___Manga_Organizer.StarRatingControl();
             this.frTxBx_Desc = new Nagru___Manga_Organizer.FixedRichTextBox();
             this.frTxBx_Notes = new Nagru___Manga_Organizer.FixedRichTextBox();
+            this.PicBx_Cover = new System.Windows.Forms.PictureBox();
             this.TabControl.SuspendLayout();
             this.Tb_Browse.SuspendLayout();
             this.Mn_TxBx.SuspendLayout();
             this.Tb_View.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Nud_Pages)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.PicBx_Cover)).BeginInit();
             this.Mn_EntryOps.SuspendLayout();
             this.Tb_Notes.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.PicBx_Cover)).BeginInit();
             this.SuspendLayout();
             // 
             // TabControl
@@ -312,9 +307,9 @@
             this.Tb_View.Controls.Add(this.Lbl_Artist);
             this.Tb_View.Controls.Add(this.Lbl_Title);
             this.Tb_View.Controls.Add(this.TxBx_Title);
-            this.Tb_View.Controls.Add(this.PicBx_Cover);
             this.Tb_View.Controls.Add(this.Mn_EntryOps);
             this.Tb_View.Controls.Add(this.frTxBx_Desc);
+            this.Tb_View.Controls.Add(this.PicBx_Cover);
             this.Tb_View.Location = new System.Drawing.Point(4, 22);
             this.Tb_View.Name = "Tb_View";
             this.Tb_View.Padding = new System.Windows.Forms.Padding(3);
@@ -409,8 +404,8 @@
             this.TxBx_Loc.Size = new System.Drawing.Size(440, 21);
             this.TxBx_Loc.TabIndex = 3;
             this.TxBx_Loc.TextChanged += new System.EventHandler(this.TxBx_Loc_TextChanged);
-            this.TxBx_Loc.DragDrop += new System.Windows.Forms.DragEventHandler(this.DragDropTxBx);
-            this.TxBx_Loc.DragEnter += new System.Windows.Forms.DragEventHandler(this.DragEnterTxBx);
+            this.TxBx_Loc.DragDrop += new System.Windows.Forms.DragEventHandler(this.TxBx_Loc_DragDrop);
+            this.TxBx_Loc.DragEnter += new System.Windows.Forms.DragEventHandler(this.LV_Entries_DragEnter);
             this.TxBx_Loc.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TbPg_Click);
             // 
             // Lbl_Desc
@@ -574,21 +569,6 @@
             this.TxBx_Title.DragEnter += new System.Windows.Forms.DragEventHandler(this.DragEnterTxBx);
             this.TxBx_Title.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TbPg_Click);
             // 
-            // PicBx_Cover
-            // 
-            this.PicBx_Cover.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.PicBx_Cover.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(39)))), ((int)(((byte)(40)))), ((int)(((byte)(34)))));
-            this.PicBx_Cover.Location = new System.Drawing.Point(498, 9);
-            this.PicBx_Cover.Name = "PicBx_Cover";
-            this.PicBx_Cover.Size = new System.Drawing.Size(420, 533);
-            this.PicBx_Cover.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.PicBx_Cover.TabIndex = 0;
-            this.PicBx_Cover.TabStop = false;
-            this.PicBx_Cover.Click += new System.EventHandler(this.PicBx_Cover_Click);
-            this.PicBx_Cover.Resize += new System.EventHandler(this.PicBx_Cover_Resize);
-            // 
             // Mn_EntryOps
             // 
             this.Mn_EntryOps.AllowMerge = false;
@@ -621,6 +601,7 @@
             this.toolStripSeparator4,
             this.MnTS_Stats,
             this.settingsToolStripMenuItem,
+            this.MnTS_Tutorial,
             this.MnTS_About,
             this.MnTs_Quit});
             this.MnTS_Menu.Name = "MnTS_Menu";
@@ -699,52 +680,17 @@
             // 
             // settingsToolStripMenuItem
             // 
-            this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.MnTs_DefSav,
-            this.MnTs_DefRoot,
-            this.MnTs_DefZip,
-            this.MnTs_DefGrid,
-            this.MnTS_DefColour});
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
             this.settingsToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.settingsToolStripMenuItem.Text = "Settings";
+            this.settingsToolStripMenuItem.Click += new System.EventHandler(this.Mn_Settings_Click);
             // 
-            // MnTs_DefSav
+            // MnTS_Tutorial
             // 
-            this.MnTs_DefSav.Name = "MnTs_DefSav";
-            this.MnTs_DefSav.Size = new System.Drawing.Size(170, 22);
-            this.MnTs_DefSav.Text = "Save Location";
-            this.MnTs_DefSav.Click += new System.EventHandler(this.MnTs_DefSav_Click);
-            // 
-            // MnTs_DefRoot
-            // 
-            this.MnTs_DefRoot.Name = "MnTs_DefRoot";
-            this.MnTs_DefRoot.Size = new System.Drawing.Size(170, 22);
-            this.MnTs_DefRoot.Text = "Root Folder";
-            this.MnTs_DefRoot.Click += new System.EventHandler(this.MnTs_DefRoot_Click);
-            // 
-            // MnTs_DefZip
-            // 
-            this.MnTs_DefZip.Name = "MnTs_DefZip";
-            this.MnTs_DefZip.Size = new System.Drawing.Size(170, 22);
-            this.MnTs_DefZip.Text = "Default Zip";
-            this.MnTs_DefZip.Click += new System.EventHandler(this.MnTs_DefZip_Click);
-            // 
-            // MnTs_DefGrid
-            // 
-            this.MnTs_DefGrid.Name = "MnTs_DefGrid";
-            this.MnTs_DefGrid.Size = new System.Drawing.Size(170, 22);
-            this.MnTs_DefGrid.Text = "Draw Gridlines";
-            this.MnTs_DefGrid.Click += new System.EventHandler(this.MnTs_DefGrid_Click);
-            // 
-            // MnTS_DefColour
-            // 
-            this.MnTS_DefColour.Name = "MnTS_DefColour";
-            this.MnTS_DefColour.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
-            this.MnTS_DefColour.ShowShortcutKeys = false;
-            this.MnTS_DefColour.Size = new System.Drawing.Size(170, 22);
-            this.MnTS_DefColour.Text = "Background Colour";
-            this.MnTS_DefColour.Click += new System.EventHandler(this.MnTS_DefColour_Click);
+            this.MnTS_Tutorial.Name = "MnTS_Tutorial";
+            this.MnTS_Tutorial.Size = new System.Drawing.Size(183, 22);
+            this.MnTS_Tutorial.Text = "Tutorial";
+            this.MnTS_Tutorial.Click += new System.EventHandler(this.MnTS_Tutorial_Click);
             // 
             // MnTS_About
             // 
@@ -912,6 +858,7 @@
             // 
             // srRating
             // 
+            this.srRating.HoverStar = 0;
             this.srRating.Location = new System.Drawing.Point(372, 216);
             this.srRating.Name = "srRating";
             this.srRating.OutlineThickness = 1;
@@ -956,6 +903,21 @@
             this.frTxBx_Notes.KeyDown += new System.Windows.Forms.KeyEventHandler(this.frTxBx_KeyDown);
             this.frTxBx_Notes.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TbPg_Click);
             // 
+            // PicBx_Cover
+            // 
+            this.PicBx_Cover.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.PicBx_Cover.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(39)))), ((int)(((byte)(40)))), ((int)(((byte)(34)))));
+            this.PicBx_Cover.Location = new System.Drawing.Point(498, 9);
+            this.PicBx_Cover.Name = "PicBx_Cover";
+            this.PicBx_Cover.Size = new System.Drawing.Size(420, 533);
+            this.PicBx_Cover.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.PicBx_Cover.TabIndex = 0;
+            this.PicBx_Cover.TabStop = false;
+            this.PicBx_Cover.Click += new System.EventHandler(this.PicBx_Cover_Click);
+            this.PicBx_Cover.Resize += new System.EventHandler(this.PicBx_Cover_Resize);
+            // 
             // Main
             // 
             this.AcceptButton = this.Btn_Clear;
@@ -965,7 +927,6 @@
             this.ClientSize = new System.Drawing.Size(934, 575);
             this.Controls.Add(this.TabControl);
             this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MainMenuStrip = this.Mn_EntryOps;
             this.MinimumSize = new System.Drawing.Size(350, 150);
@@ -982,10 +943,10 @@
             this.Tb_View.ResumeLayout(false);
             this.Tb_View.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Nud_Pages)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.PicBx_Cover)).EndInit();
             this.Mn_EntryOps.ResumeLayout(false);
             this.Mn_EntryOps.PerformLayout();
             this.Tb_Notes.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.PicBx_Cover)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -1056,16 +1017,12 @@
         private System.Windows.Forms.HScrollBar ScrTags;
         private System.Windows.Forms.Button Btn_Rand;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem MnTs_DefZip;
-        private System.Windows.Forms.ToolStripMenuItem MnTs_DefSav;
-        private System.Windows.Forms.ToolStripMenuItem MnTs_DefRoot;
-        private System.Windows.Forms.ToolStripMenuItem MnTs_DefGrid;
         private System.Windows.Forms.ContextMenuStrip Mn_TxBx;
         private System.Windows.Forms.ColumnHeader ColPos;
         private System.Windows.Forms.ToolStripMenuItem MnTx_Delete;
-        private System.Windows.Forms.ToolStripMenuItem MnTS_DefColour;
         private StarRatingControl srRating;
         private System.Windows.Forms.ColumnHeader ColRating;
+        private System.Windows.Forms.ToolStripMenuItem MnTS_Tutorial;
     }
 }
 

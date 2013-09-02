@@ -1,3 +1,13 @@
+#### September 01, 2013
+	- Added tutorial screen for new users
+	- Added new Form to manage all settings
+	- Added automatic page flipper (no hands mode)
+	- Added auto-Artist/Title fill condition when setting location
+	- Changed versioning scheme to better reflect new changes
+	- Fixed drag/drop of folders marked as "Directory|Archive"
+	- Fixed Edit not updating Search result text
+	- Double-fix for zip file use
+
 #### August 25, 2013
 	- Fix for zip file browsing
 	- Improved entry deletion code
@@ -9,7 +19,7 @@
 
 #### August 10, 2013
 	- Added pie chart to statistics page
-	- Added &#039; condition to ReplaceHTML()
+	- Added "&#039;" condition to ReplaceHTML()
 	- Improved StarControl efficiency
 	- Suppress RichTextBox beeps on reaching start/end
 
