@@ -1,3 +1,12 @@
+#### v. 3.8.00 (Sep 04, 2013)
+	- Added ability to drag/drop date and page count
+	- Added better formatting for large values in title text
+	- Fixed auto-fill feature for artist/title
+	- Fixed image scaling when choosing new pages
+	- Fixed image traversal with zips when choosing new pages
+	- Fixed image traversal page value sometimes being one off
+	- Small adjustments to tutorial text
+
 #### v. 3.7.63 (Sep 02, 2013)
 	- Added tutorial screen for new users
 	- Added new Form to manage all settings

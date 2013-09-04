@@ -84,7 +84,7 @@ namespace Nagru___Manga_Organizer
                 Text += " - Latest version";
             else if (iGet == 0)
                 Text += " - Could not establish a connection";
-            else Text += " - Debug version";
+            else Text += " - Pre-release version";
 
             this.Cursor = Cursors.Default;
         }

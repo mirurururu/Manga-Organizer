@@ -98,20 +98,19 @@ namespace Nagru___Manga_Organizer
                     if (bAuto) tmr.Stop();
                     Cursor.Show();
                     BrowseTo fmGoTo = new BrowseTo();
+                    fmGoTo.Zip = ZipFile;
                     fmGoTo.lFiles = Files;
-                    fmGoTo.bWL = bWideL;
-                    fmGoTo.bWR = bWideR;
-                    if (bWideR || bWideL) 
-                        fmGoTo.iPage = Page;
-                    else fmGoTo.iPage = Page - 1;
+                    fmGoTo.iPage = (bWideR || bWideL) ? 
+                        Page : Page - 1;
 
                     if (fmGoTo.ShowDialog() == DialogResult.OK) {
-                        bNext = false;
+                        bNext = true;
                         Page = fmGoTo.iPage;
                         bWideL = fmGoTo.bWL;
                         bWideR = fmGoTo.bWR;
-                        imgL = fmGoTo.imgL;
-                        imgR = fmGoTo.imgR;
+                        imgR = ExtImage.Scale(fmGoTo.imgR, picBx.Width, picBx.Height);
+                        imgL = (fmGoTo.imgL != null) ? 
+                            ExtImage.Scale(fmGoTo.imgL, picBx.Width, picBx.Height) : null;
                         picBx.Refresh();
                     }
 

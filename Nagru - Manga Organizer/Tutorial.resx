@@ -119,20 +119,20 @@
   </resheader>
   <data name="lbl_Exp0.Text" xml:space="preserve">
     <value>New manga can be added in three ways:
-- Scanning: Press 'Scan' to check a directory for new items. Then highlight your choices and press 'Add'
-- Drag/Drop: Drop a selection of folders or zips onto the column view
-- Manually: Add manga individually from the 'View' tab, then press the 'New' button
+- Scanning: Press 'Scan' to check a directory for new items, then highlight your choices and press 'Add'
+- Drag/Drop: Drop a selection of folders, or zip files, onto the column view
+- Manually: Add them individually from the 'View' tab, then press the 'New' button
 	
-If your collection is mostly zipped, please check the 'Default zip files' setting in:
-'View &gt; Menu &gt; Settings'</value>
+If your collection is mostly zipped, please check the 'Default zip files' setting under:
+'View -&gt; Menu -&gt; Settings'</value>
   </data>
   <data name="lbl_Exp1.Text" xml:space="preserve">
     <value>The most important thing is the metadata
 
-Tags can be loaded more conveniently by:
-- An EH Gallery Address: Open 'Menu &gt; Get from URL', which will auto-load from your clipboard
+Tagging can be done more conveniently by:
+- An EH Gallery Address: Open 'Menu -&gt; Get from URL', which will auto-check your clipboard
 - Dragging text from the EH gallery page into the relevant local field
-- Setting the location will also set the Artist and Title fields</value>
+- Setting the location will also set the Artist and Title</value>
   </data>
   <data name="lbl_Exp2.Text" xml:space="preserve">
     <value>Searches work similarly to EH's:
@@ -140,14 +140,14 @@ Tags can be loaded more conveniently by:
 - Combine multiple terms with '_'
 - Prepend a term with '-' to filter
 - Limit search scale by setting a tag type:
-artist, title, tag, desc, type, date, and pages
+artist, title, tag, desc, type, date, or pages
 - Use '&lt;' or '&gt;'  with 'date' or 'pages' for range
 
 Example:
 title:celeb_wife date:&gt;01/01/12 -vanilla</value>
   </data>
   <data name="lbl_Exp3.Text" xml:space="preserve">
-    <value>This program has a built-in image-browser intended to mimic manga page layout and take advantage of wide-screen displays
+    <value>This program has a built-in image-browser intended to mimic manga page layout
 
 Click on the cover-image to use this browser
 
@@ -160,11 +160,11 @@ Keyboard Shortcuts:
 'S' - Start/stop auto-browse
 'Shift + Plus' - Increase auto-browse speed
 'Shift + Minus' - Decrease auto-browse speed
-'Default' - Close browser</value>
+All other keys close the browser</value>
   </data>
   <data name="lbl_Exp4.Text" xml:space="preserve">
-    <value>Updated versions of this program can be automatically checked for by visiting 
-'View &gt; Menu &gt; About'
+    <value>Updated versions of this program can be automatically checked for by visiting:
+'View -&gt; Menu -&gt; About'
 
 Thank you for reading this, I hope it was helpful and that this program proves useful for you
 

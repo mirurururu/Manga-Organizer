@@ -10,11 +10,12 @@ namespace Nagru___Manga_Organizer
     public partial class BrowseTo : Form
     {
         public List<string> lFiles { private get; set; }
+        public Ionic.Zip.ZipFile Zip { get; set; }
         public Image imgL { get; private set; }
         public Image imgR { get; private set; }
+        public bool bWL { get; private set;}
+        public bool bWR { get; private set; }
         public int iPage { get; set; }
-        public bool bWL { get; set;}
-        public bool bWR { get; set; }
         
         public BrowseTo()
         {
@@ -27,8 +28,10 @@ namespace Nagru___Manga_Organizer
             if (Properties.Settings.Default.DefGrid)
                 LV_Pages.GridLines = true;
 
-            for (int i = 0; i < lFiles.Count; i++)
-                LV_Pages.Items.Add(new ListViewItem(lFiles[i]));
+            for (int i = 0; i < lFiles.Count; i++) {
+                LV_Pages.Items.Add(new ListViewItem(
+                    Path.GetFileName(lFiles[i])));
+            }
             Col_Page.Width = LV_Pages.DisplayRectangle.Width;
             LV_SelectPages();
             
@@ -60,8 +63,7 @@ namespace Nagru___Manga_Organizer
 
         private void BrowseTo_KeyDown(object sender, KeyEventArgs e)
         {
-            switch (e.KeyCode)
-            {
+            switch (e.KeyCode) {
                 case Keys.Enter:
                     UpdatePage();
                     break;
@@ -78,22 +80,49 @@ namespace Nagru___Manga_Organizer
         /* Return selected pages to Browse_Img */
         private void UpdatePage()
         {
-            if (iPage == 0 && !(bWL || bWR))
-                if(++iPage >= lFiles.Count) iPage = 0;
-            using (FileStream fs = new FileStream(
-                lFiles[iPage], FileMode.Open, FileAccess.Read))
-                imgL = Image.FromStream(fs);
-            if (!(bWL = imgL.Height < imgL.Width))
-            {
-                if (iPage - 1 < 0) iPage = lFiles.Count;
-                using (FileStream fs = new FileStream(
-                    lFiles[iPage - 1], FileMode.Open, FileAccess.Read))
-                    imgR = Image.FromStream(fs);
-                bWR = imgR.Height < imgR.Width;
+            iPage--;
+            while (imgR == null) {
+                if (++iPage >= lFiles.Count) iPage = 0;
+                imgR = TrySet(iPage);
             }
+
+            if (!(bWR = imgR.Height < imgR.Width)) {
+                while (imgL == null) {
+                    if (++iPage >= lFiles.Count) iPage = 0;
+                    imgL = TrySet(iPage);
+                }
+
+                if (bWL = imgL.Height < imgL.Width)
+                    iPage--;
+            }
+
+            /* OLD CODE */
+            //if(++iPage >= lFiles.Count) iPage = 0;
+            //using (FileStream fs = new FileStream(
+            //    lFiles[iPage], FileMode.Open, FileAccess.Read))
+            //    imgL = Image.FromStream(fs);
+
+            //if (!(bWL = imgL.Height < imgL.Width)) {
+            //    if (iPage - 1 < 0) iPage = lFiles.Count;
+            //    using (FileStream fs = new FileStream(
+            //        lFiles[iPage - 1], FileMode.Open, FileAccess.Read))
+            //        imgR = Image.FromStream(fs);
+            //    bWR = imgR.Height < imgR.Width;
+            //}
 
             this.DialogResult = DialogResult.OK;
             this.Close();
+        }
+
+        private Bitmap TrySet(int i)
+        {
+            try {
+                if (Zip != null && !File.Exists(lFiles[i]))
+                    Zip[i].Extract(Zip.TempFileFolder,
+                        Ionic.Zip.ExtractExistingFileAction.DoNotOverwrite);
+                return new Bitmap(lFiles[i]);
+            }
+            catch { return null; }
         }
     }
 }
