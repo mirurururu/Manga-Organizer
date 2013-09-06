@@ -124,7 +124,7 @@ namespace Nagru___Manga_Organizer
             }
         }
         
-        private void ckLbx_Ign_Leave(object sender, EventArgs e)
+        private void ckLbx_Ign_SelectedIndexChanged(object sender, EventArgs e)
         {
             CheckListbox();
         }
@@ -169,8 +169,6 @@ namespace Nagru___Manga_Organizer
 
         private void Settings_FormClosing(object sender, FormClosingEventArgs e)
         {
-            CheckListbox();
-
             if(bNew && MessageBox.Show(
                     "Are you sure you want to exit wthout saving?",
                     Application.ProductName, MessageBoxButtons.YesNo,

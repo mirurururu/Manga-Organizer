@@ -1,3 +1,8 @@
+#### v. 3.8.12 (Sep 06, 2013)
+	- .cbz files now treated as .zip files
+	- Small bugfix for random manga chooser
+	- Small bugfix for page choosing
+
 #### v. 3.8.00 (Sep 04, 2013)
 	- Added ability to drag/drop date and page count
 	- Added better formatting for large values in title text

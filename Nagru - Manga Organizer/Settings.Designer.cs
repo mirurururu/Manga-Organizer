@@ -210,7 +210,7 @@
             this.ckLbx_Ign.Name = "ckLbx_Ign";
             this.ckLbx_Ign.Size = new System.Drawing.Size(146, 154);
             this.ckLbx_Ign.TabIndex = 16;
-            this.ckLbx_Ign.Leave += new System.EventHandler(this.ckLbx_Ign_Leave);
+            this.ckLbx_Ign.SelectedIndexChanged += new System.EventHandler(this.ckLbx_Ign_SelectedIndexChanged);
             // 
             // Btn_Save
             // 

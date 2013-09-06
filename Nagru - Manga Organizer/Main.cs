@@ -57,18 +57,17 @@ namespace Nagru___Manga_Organizer
                 byRat = Convert.ToByte(_Rating);
                 
                 //trim, clean, and format tags
-                sTags = "";
-                if (_Tags == "") return;
+                if (_Tags == "") {
+                    sTags = "";
+                    return;
+                }
                 string[] sRaw = _Tags.Split(',').Select(
                     x => x.Trim()).Distinct().ToArray<string>();
-                Array.Sort(sRaw);
-                sTags = String.Join(", ", sRaw);
+                sTags = String.Join(", ", sRaw.OrderBy(x => x));
             }
             public csEntry(string _Path)
             {
-                string sRaw = Path.GetFileName(_Path);
-                if (sRaw.EndsWith(".zip"))
-                    sRaw.Replace(".zip", "");
+                string sRaw = Path.GetFileNameWithoutExtension(_Path);
 
                 //Get formatted title
                 if (sRaw.StartsWith("(")) {
@@ -100,7 +99,7 @@ namespace Nagru___Manga_Organizer
                 if (File.Exists(_Path))
                     sFiles = new string[1] { _Path };
                 else sFiles = ExtDir.GetFiles(_Path,
-                    SearchOption.TopDirectoryOnly, "*.zip");
+                    SearchOption.TopDirectoryOnly, "*.zip|*.cbz");
 
                 if (sFiles.Length > 0) {
                     if(ZipFile.IsZipFile(sFiles[0])) {
@@ -556,15 +555,18 @@ namespace Nagru___Manga_Organizer
             {
                 //Try to auto-magically grab folder path
                 if (!(sPath != "" && File.Exists(sPath))) {
-                    sPath = string.Format("{0}\\[{1}] {2}.zip", Properties.Settings.Default.DefLoc,
+                    sPath = string.Format("{0}\\[{1}] {2}.zip",
+                        Properties.Settings.Default.DefLoc,
                         CmbBx_Artist.Text, TxBx_Title.Text);
+                    if (!File.Exists(sPath))
+                        sPath = sPath.Replace(".zip", ".cbz");
                     if (!File.Exists(sPath)) 
                         sPath = Properties.Settings.Default.DefLoc;
                 }
 
                 OpenFileDialog ofd = new OpenFileDialog();
                 ofd.InitialDirectory = sPath;
-                ofd.Filter = "Zip File (*.zip)|*.zip";
+                ofd.Filter = "Zip File (*.zip, *.cbz)|*.zip;*.cbz";
                 ofd.Title = "Select the location of the current entry:";
 
                 if(ofd.ShowDialog() == DialogResult.OK) {
@@ -621,7 +623,7 @@ namespace Nagru___Manga_Organizer
             string[] sFiles = new string[0];
             if (!File.Exists(TxBx_Loc.Text)) {
                 sFiles = ExtDir.GetFiles(TxBx_Loc.Text,
-                    SearchOption.TopDirectoryOnly, "*.zip");
+                    SearchOption.TopDirectoryOnly, "*.zip|*.cbz");
             }
             else sFiles = new string[1] { TxBx_Loc.Text };
 
@@ -681,8 +683,8 @@ namespace Nagru___Manga_Organizer
         {
             if (indx != -1) MnTS_Edit.Visible = true;
 
-            if (File.Exists(TxBx_Loc.Text)
-                    || Directory.Exists(TxBx_Loc.Text)) {
+            if (Directory.Exists(TxBx_Loc.Text)
+                    || File.Exists(TxBx_Loc.Text)) {
                 iPage = -1;
                 ThreadPool.QueueUserWorkItem(GetImage);
             }
@@ -698,7 +700,7 @@ namespace Nagru___Manga_Organizer
             if (LV_Entries.Items.Count == 0) return;
             int iPos = 0;
 
-            if (LV_Entries.SelectedItems.Count != 0) {
+            if (LV_Entries.SelectedItems.Count == 1) {
                 iPos = LV_Entries.SelectedItems[0].Index;
                 if (++iPos >= LV_Entries.Items.Count) iPos = 0;
             }
@@ -710,7 +712,7 @@ namespace Nagru___Manga_Organizer
             if (LV_Entries.Items.Count == 0) return;
             int iPos = LV_Entries.Items.Count - 1;
 
-            if (LV_Entries.SelectedItems.Count != 0) {
+            if (LV_Entries.SelectedItems.Count == 1) {
                 iPos = LV_Entries.SelectedItems[0].Index;
                 if (--iPos < 0) iPos = LV_Entries.Items.Count - 1;
             }
@@ -719,17 +721,22 @@ namespace Nagru___Manga_Organizer
         }
         private void Btn_Rand_Click(object sender, EventArgs e)
         {
-            if (LV_Entries.Items.Count == 0) return;
+            switch (LV_Entries.Items.Count) {
+                case 0: return;
+                case 1: if(indx != -1) return;
+                    break;
+                default: break;
+            }
+            
+            Random rnd = new Random();
             int iCur = LV_Entries.SelectedItems.Count == 1 ?
                 LV_Entries.SelectedItems[0].Index : -1;
-            int iPos = 0;
-
-            Random rnd = new Random();
+            int iNew = 0;
+            
             do {
-                iPos = rnd.Next(LV_Entries.Items.Count);
-            }
-            while (iPos == iCur);
-            ScrollTo(iPos);
+                iNew = rnd.Next(LV_Entries.Items.Count);
+            } while (iNew == iCur);
+            ScrollTo(iNew);
         }
 
         /* Move TxBx_Tags cursor pos. based on ScrTags value */
@@ -823,7 +830,7 @@ namespace Nagru___Manga_Organizer
             string[] sFiles = new string[0];
             if (!File.Exists(TxBx_Loc.Text)) {
                 sFiles = ExtDir.GetFiles(TxBx_Loc.Text,
-                    SearchOption.TopDirectoryOnly, "*.zip");
+                    SearchOption.TopDirectoryOnly, "*.zip|*.cbz");
             }
             else sFiles = new string[1] { TxBx_Loc.Text };
 
@@ -857,10 +864,11 @@ namespace Nagru___Manga_Organizer
         private static string JSON(string sURL)
         {
             string[] asChunk = sURL.Split('/');
-            if (asChunk.Length == 7)
+            if (asChunk.Length == 7) {
                 return string.Format(
                     "{{\"method\":\"gdata\",\"gidlist\":[[{0},\"{1}\"]]}}",
                     asChunk[4], asChunk[5]);
+            }
             return string.Empty;
         }
 
@@ -1069,39 +1077,22 @@ namespace Nagru___Manga_Organizer
 
         private void SetPicBxImage(string sPath)
         {
-            if (!sPath.EndsWith(".zip")) {
+            if(!ZipFile.IsZipFile(sPath)) {
                 TrySet(sPath);
                 return;
             }
             
             using (ZipFile zip = ZipFile.Read(sPath)) {
-                if(zip.Count > 0) {
-                    sPath = Path.GetDirectoryName(sPath);
-                    Directory.CreateDirectory(sPath += "\\!tmp");
-                    
-                    bool bError = false;
-                    do {
-                        try {
-                            zip[0].Extract(sPath, ExtractExistingFileAction.DoNotOverwrite);
-                            bError = false;
-                        } catch(IOException) {
-                            bError = true;
-                            Thread.Sleep(100);
-                        }
-                    }
-                    while (bError);
-
+                if (zip.Count == 0) return;
+                sPath = Path.GetDirectoryName(sPath);
+                Directory.CreateDirectory(sPath += "\\!tmp");
+                
+                try {
+                    zip[0].Extract(sPath, ExtractExistingFileAction.DoNotOverwrite);
                     TrySet(sPath + '\\' + zip[0].FileName);
-                    do {
-                        try {
-                            Directory.Delete(sPath, true);
-                            bError = false;
-                        } catch (IOException) {
-                            bError = true;
-                            Thread.Sleep(100);
-                        }
-                    }
-                    while (bError);
+                    Directory.Delete(sPath, true);
+                } catch (IOException exc) {
+                    Console.WriteLine(exc.Message);
                 }
             }
         }

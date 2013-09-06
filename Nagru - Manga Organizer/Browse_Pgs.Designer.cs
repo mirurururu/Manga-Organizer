@@ -42,7 +42,7 @@
             this.LV_Pages.HideSelection = false;
             this.LV_Pages.Location = new System.Drawing.Point(0, 0);
             this.LV_Pages.Name = "LV_Pages";
-            this.LV_Pages.Size = new System.Drawing.Size(410, 209);
+            this.LV_Pages.Size = new System.Drawing.Size(184, 216);
             this.LV_Pages.TabIndex = 0;
             this.LV_Pages.UseCompatibleStateImageBehavior = false;
             this.LV_Pages.View = System.Windows.Forms.View.Details;
@@ -59,7 +59,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(410, 209);
+            this.ClientSize = new System.Drawing.Size(184, 216);
             this.Controls.Add(this.LV_Pages);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.KeyPreview = true;

@@ -87,7 +87,7 @@ namespace Nagru___Manga_Organizer
         {
             List<string> lEns = new List<string>();
             lEns.AddRange(ExtDir.GetFiles(TxBx_Loc.Text, 
-                SearchOption.TopDirectoryOnly, "*.zip"));
+                SearchOption.TopDirectoryOnly, "*.zip|*.cbz"));
             lEns.AddRange(Directory.GetDirectories(TxBx_Loc.Text, 
                 "*", SearchOption.TopDirectoryOnly));
 
@@ -167,7 +167,7 @@ namespace Nagru___Manga_Organizer
 
         private void Alternate()
         {
-            if (Properties.Settings.Default.DefGrid) return;
+            if (LV_Found.GridLines) return;
             for (int i = 0; i < LV_Found.Items.Count; i++) {
                 if (LV_Found.Items[i].BackColor == System.Drawing.Color.MistyRose)
                     continue;

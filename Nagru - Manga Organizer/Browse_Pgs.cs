@@ -25,16 +25,20 @@ namespace Nagru___Manga_Organizer
 
         private void Browse_GoTo_Load(object sender, EventArgs e)
         {
+            //set grid on/off
             if (Properties.Settings.Default.DefGrid)
                 LV_Pages.GridLines = true;
-
+            
+            //add pages to listview
             for (int i = 0; i < lFiles.Count; i++) {
                 LV_Pages.Items.Add(new ListViewItem(
                     Path.GetFileName(lFiles[i])));
             }
             Col_Page.Width = LV_Pages.DisplayRectangle.Width;
             LV_SelectPages();
-            
+
+            //wrap page values & select pages
+            if (iPage < 0) iPage = lFiles.Count - 1;
             if (LV_Pages.Items.Count == 0) return;
             LV_Pages.TopItem = LV_Pages.Items[iPage];
             LV_Pages.TopItem = LV_Pages.Items[iPage];
@@ -81,34 +85,20 @@ namespace Nagru___Manga_Organizer
         private void UpdatePage()
         {
             iPage--;
-            while (imgR == null) {
+            do {
                 if (++iPage >= lFiles.Count) iPage = 0;
                 imgR = TrySet(iPage);
-            }
+            } while (imgR == null);
 
             if (!(bWR = imgR.Height < imgR.Width)) {
-                while (imgL == null) {
+                do {
                     if (++iPage >= lFiles.Count) iPage = 0;
                     imgL = TrySet(iPage);
-                }
+                } while (imgL == null);
 
                 if (bWL = imgL.Height < imgL.Width)
                     iPage--;
             }
-
-            /* OLD CODE */
-            //if(++iPage >= lFiles.Count) iPage = 0;
-            //using (FileStream fs = new FileStream(
-            //    lFiles[iPage], FileMode.Open, FileAccess.Read))
-            //    imgL = Image.FromStream(fs);
-
-            //if (!(bWL = imgL.Height < imgL.Width)) {
-            //    if (iPage - 1 < 0) iPage = lFiles.Count;
-            //    using (FileStream fs = new FileStream(
-            //        lFiles[iPage - 1], FileMode.Open, FileAccess.Read))
-            //        imgR = Image.FromStream(fs);
-            //    bWR = imgR.Height < imgR.Width;
-            //}
 
             this.DialogResult = DialogResult.OK;
             this.Close();
@@ -118,8 +108,7 @@ namespace Nagru___Manga_Organizer
         {
             try {
                 if (Zip != null && !File.Exists(lFiles[i]))
-                    Zip[i].Extract(Zip.TempFileFolder,
-                        Ionic.Zip.ExtractExistingFileAction.DoNotOverwrite);
+                    Zip[i].Extract(Zip.TempFileFolder);
                 return new Bitmap(lFiles[i]);
             }
             catch { return null; }

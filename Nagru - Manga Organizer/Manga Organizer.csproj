@@ -54,13 +54,11 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>SadPanda.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\SadPanda.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Ionic.Zip">
-      <HintPath>.\Ionic.Zip.dll</HintPath>
-      <Private>False</Private>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
+      <HintPath>Resources\Ionic.Zip.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -198,14 +196,12 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Ionic.Zip.dll" />
     <None Include="Resources\AddManga.png" />
     <None Include="Resources\Browse.png" />
     <None Include="Resources\Search.png" />
     <None Include="Resources\Tags.png" />
     <None Include="Resources\Update.png" />
     <None Include="Resources\dbIcon.ico" />
-    <Content Include="SadPanda.ico" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0,Profile=Client">

@@ -17,7 +17,7 @@ namespace Nagru___Manga_Organizer
         bool bWideL, bWideR, bNext;
         float fWidth;
 
-        Timer tmr = new Timer();
+        Timer trFlip;
         bool bAuto = false;
 
         public Browse_Img()
@@ -25,8 +25,10 @@ namespace Nagru___Manga_Organizer
 
         private void Browse_Load(object sender, EventArgs e)
         {
-            tmr.Tick += tmr_Tick;
-            tmr.Interval = Properties.Settings.Default.Interval;
+            //set up timer
+            trFlip = new Timer();
+            trFlip.Tick += trFlip_Tick;
+            trFlip.Interval = Properties.Settings.Default.Interval;
 
             picBx.BackColor = Properties.Settings.Default.DefColour;
             #if !DEBUG
@@ -41,24 +43,20 @@ namespace Nagru___Manga_Organizer
             else Prev();
         }
 
-        void tmr_Tick(object sender, EventArgs e)
-        { Next(); }
-
         private void Browse_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Modifiers == Keys.Shift) {
-                if (!bAuto) return;
+            if (bAuto && e.Modifiers == Keys.Shift) {
                 if (e.KeyCode == Keys.Oemplus) {
                     bAuto = true;
                     Console.Beep(700, 100);
-                    tmr.Interval += 500;
+                    trFlip.Interval += 500;
                     Tmr_Reset();
                 }
                 else if (e.KeyCode == Keys.OemMinus) {
-                    if(tmr.Interval >= 1500) {
+                    if (trFlip.Interval >= 1500) {
                         bAuto = true;
                         Console.Beep(100, 100);
-                        tmr.Interval -= 500;
+                        trFlip.Interval -= 500;
                         Tmr_Reset();
                     }
                 }
@@ -95,14 +93,14 @@ namespace Nagru___Manga_Organizer
                 #endregion
                 #region Special Functions
                 case Keys.F:
-                    if (bAuto) tmr.Stop();
+                    if (bAuto) trFlip.Stop();
                     Cursor.Show();
                     BrowseTo fmGoTo = new BrowseTo();
                     fmGoTo.Zip = ZipFile;
                     fmGoTo.lFiles = Files;
                     fmGoTo.iPage = (bWideR || bWideL) ? 
                         Page : Page - 1;
-
+                    Text = fmGoTo.iPage.ToString();
                     if (fmGoTo.ShowDialog() == DialogResult.OK) {
                         bNext = true;
                         Page = fmGoTo.iPage;
@@ -115,14 +113,20 @@ namespace Nagru___Manga_Organizer
                     }
 
                     fmGoTo.Dispose();
-                    if (bAuto) tmr.Start();
+                    if (bAuto) trFlip.Start();
                     this.Select();
                     Cursor.Hide();
                     break;
                 case Keys.S:
                     bAuto = !bAuto;
-                    if (bAuto) tmr.Start();
-                    else tmr.Stop();
+                    if (bAuto) {
+                        Console.Beep(500, 100);
+                        trFlip.Start();
+                    }
+                    else {
+                        Console.Beep(300, 100);
+                        trFlip.Stop();
+                    }
                     break;
                 #endregion
                 #region Ignored Keys
@@ -148,16 +152,16 @@ namespace Nagru___Manga_Organizer
             bNext = true;
             Reset();
 
-            while (imgR == null) {
+            do {
                 if (++Page >= Files.Count) Page = 0;
                 imgR = TrySet(Page);
-            }
+            } while (imgR == null);
 
             if (!(bWideR = imgR.Height < imgR.Width)) {
-                while (imgL == null) {
+                do {
                     if (++Page >= Files.Count) Page = 0;
                     imgL = TrySet(Page);
-                }
+                } while (imgL == null);
 
                 if (bWideL = imgL.Height < imgL.Width)
                     Page--;
@@ -171,17 +175,17 @@ namespace Nagru___Manga_Organizer
             bNext = false;
             Reset();
 
-            while (imgL == null) {
+            do {
                 if (--Page < 0) Page = Files.Count - 1;
                 else if (Page >= Files.Count) Page = 0;
                 imgL = TrySet(Page);
-            }
+            } while (imgL == null);
 
             if (!(bWideL = imgL.Height < imgL.Width)) {
-                while (imgR == null) {
+                do {
                     if (--Page < 0) Page = Files.Count - 1;
                     imgR = TrySet(Page);
-                }
+                } while (imgR == null);
                 
                 Page++;
                 bWideR = imgR.Height < imgR.Width;
@@ -193,8 +197,7 @@ namespace Nagru___Manga_Organizer
         {
             try {
                 if (ZipFile != null && !File.Exists(Files[i]))
-                    ZipFile[i].Extract(ZipFile.TempFileFolder,
-                        Ionic.Zip.ExtractExistingFileAction.DoNotOverwrite);
+                    ZipFile[i].Extract(ZipFile.TempFileFolder);
                 return ExtImage.Scale(new Bitmap(Files[i]), 
                     picBx.Width, picBx.Height);
             }
@@ -212,9 +215,12 @@ namespace Nagru___Manga_Organizer
         }
         private void Tmr_Reset()
         {
-            tmr.Stop();
-            tmr.Start();
+            trFlip.Stop();
+            trFlip.Start();
         }
+
+        void trFlip_Tick(object sender, EventArgs e)
+        { Next(); }
 
         /* Process which images to draw & how */
         private void picBx_Paint(object sender, PaintEventArgs e)
@@ -256,11 +262,11 @@ namespace Nagru___Manga_Organizer
             if(imgL != null) imgL.Dispose();
             if(imgR != null) imgR.Dispose();
             if (bAuto) {
-                Properties.Settings.Default.Interval = tmr.Interval;
+                Properties.Settings.Default.Interval = trFlip.Interval;
                 Properties.Settings.Default.Save();
-                tmr.Stop();
+                trFlip.Stop();
             }
-            tmr.Dispose();
+            trFlip.Dispose();
             GC.Collect(0);
 
             Cursor.Show();
