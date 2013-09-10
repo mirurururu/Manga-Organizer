@@ -339,7 +339,7 @@ namespace Nagru___Manga_Organizer
                 if (lData.Count == 0) {
                     lData = FileSerializer.ConvertDB(sPath);
                     if (lData == null) {
-                        MessageBox.Show("The database was invalid.", "Manga Organizer",
+                        MessageBox.Show("The database was invalid.", Application.ProductName,
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
@@ -366,7 +366,7 @@ namespace Nagru___Manga_Organizer
             //save changes to manga on request
             if (!bSavList)
             {
-                switch (MessageBox.Show("Save before exiting?", "Manga Organizer",
+                switch (MessageBox.Show("Save before exiting?", Application.ProductName,
                     MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
                 {
                     case DialogResult.Yes:
@@ -1086,10 +1086,21 @@ namespace Nagru___Manga_Organizer
                 if (zip.Count == 0) return;
                 sPath = Path.GetDirectoryName(sPath);
                 Directory.CreateDirectory(sPath += "\\!tmp");
+
+                List<string> ze = new List<string>();
+                ze.AddRange(zip.EntryFileNames);
+                ze.Sort(new TrueCompare());
+
+                int iTrueFirst = 0;
+                foreach (string sFileName in zip.EntryFileNames) {
+                    if (sFileName == ze[0]) break;
+                    iTrueFirst++;
+                }
                 
                 try {
-                    zip[0].Extract(sPath, ExtractExistingFileAction.DoNotOverwrite);
-                    TrySet(sPath + '\\' + zip[0].FileName);
+                    zip[iTrueFirst].Extract(sPath, 
+                        ExtractExistingFileAction.DoNotOverwrite);
+                    TrySet(sPath + '\\' + ze[0]);
                     Directory.Delete(sPath, true);
                 } catch (IOException exc) {
                     Console.WriteLine(exc.Message);
@@ -1132,10 +1143,9 @@ namespace Nagru___Manga_Organizer
                 TxBx_Title.Text = sName[1].Trim();
             }
             else {
-                int iNewStart = CmbBx_Artist.SelectionStart + sRaw.Length;
-                CmbBx_Artist.Text = CmbBx_Artist.Text.Insert(
-                    CmbBx_Artist.SelectionStart, sRaw);
-                CmbBx_Artist.SelectionStart = iNewStart;
+                TxBx_Title.Text = TxBx_Title.Text.Insert(
+                    TxBx_Title.SelectionStart, sRaw);
+                TxBx_Title.SelectionStart += sRaw.Length;
             }
         }
 
@@ -1181,7 +1191,7 @@ namespace Nagru___Manga_Organizer
         {
             //reject when title is unfilled
             if (TxBx_Title.Text == "") {
-                MessageBox.Show("Title cannot be empty.", "Manga Organizer",
+                MessageBox.Show("Title cannot be empty.", Application.ProductName,
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
@@ -1193,7 +1203,7 @@ namespace Nagru___Manga_Organizer
             if (!lData.Contains(en))
             {
                 if (MessageBox.Show("Are you sure you wish to add:\n\"" + en + "\"",
-                    "Manga Organizer", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+                    Application.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Question)
                     == DialogResult.Yes)
                 {
                     lData.Add(en);
@@ -1212,7 +1222,7 @@ namespace Nagru___Manga_Organizer
                 }
             }
             else MessageBox.Show("This item already exists in the database.",
-                "Manga Organizer", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
         }
 
         private void MnTS_Edit_Click(object sender, EventArgs e)
@@ -1281,7 +1291,7 @@ namespace Nagru___Manga_Organizer
             else if (bFile = File.Exists(lData[indx].sLoc))
                 msg = "Do you want to delete the source file as well?";
             else msg = "Are you sure you wish to delete this entry?";
-            DialogResult dResult = MessageBox.Show(msg, "Manga Organizer", 
+            DialogResult dResult = MessageBox.Show(msg, Application.ProductName, 
                 MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
             if ((bRst && !bFile) && dResult == DialogResult.No)
                 dResult = DialogResult.Cancel;
@@ -1293,8 +1303,8 @@ namespace Nagru___Manga_Organizer
                     int iNumDir = Directory.GetDirectories(lData[indx].sLoc).Length;
                     if (iNumDir > 0) {
                         dResult = MessageBox.Show(string.Format("This directory contains {0} subfolder(s),\n" +
-                            "are you sure you want to delete them?", iNumDir), "Manga Organizer",
-                            MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                            "are you sure you want to delete them?", iNumDir),
+                            Application.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
                     }
                     if (dResult == DialogResult.Yes) {
                         this.Cursor = Cursors.WaitCursor;
@@ -1329,7 +1339,7 @@ namespace Nagru___Manga_Organizer
         { Reset(); }
         #endregion
 
-        #region Menu
+        #region Menu_Main
         private void MnTS_CopyTitle_Click(object sender, EventArgs e)
         {
             if(TxBx_Title.Text == "") {
@@ -1391,18 +1401,29 @@ namespace Nagru___Manga_Organizer
                     bExc = true;
                 } finally {
                     //parse metadata
-                    if(!bExc && asResp.Length > 1) {
+                    if(!bExc && asResp.Length >= 11) {
                         Text = "Parsing metadata...";
+                        
+                        //set artist/title
                         string sRaw = asResp[2].Split(':')[1].Substring(1);
                         SplitTitle(ExtString.ReplaceHTML(sRaw));
+
+                        //set entry type
                         CmbBx_Type.Text = asResp[4].Split(':')[1].Substring(1);
+
+                        //set date
                         DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
                         sRaw = asResp[7].Split(':')[1].Substring(1);
                         Dt_Date.Value = dt.AddSeconds((long)Convert.ToDouble(sRaw));
-                        Nud_Pages.Value = Convert.ToInt32(asResp[8].Split(':')[1].Substring(1));
-                        sRaw = asResp[9].Split(':')[3].Substring(1);
-                        srRating.SelectedStar = Convert.ToInt16(Convert.ToDouble(sRaw));
 
+                        //set page count
+                        Nud_Pages.Value = Convert.ToInt32(asResp[8].Split(':')[1].Substring(1));
+
+                        //set star rating
+                        sRaw = asResp[9].Split(':')[3].Substring(1);
+                        srRating.SelectedStar = (int)Convert.ToDouble(sRaw);
+
+                        //set and formart tags
                         asResp[11] = asResp[11].Split(':')[1].Substring(2);
                         TxBx_Tags.Text = string.Join(", ", asResp, 11, asResp.Length - 11);
                         TxBx_Tags.Text = TxBx_Tags.Text.Substring(0, TxBx_Tags.Text.Length - 5);
@@ -1429,7 +1450,7 @@ namespace Nagru___Manga_Organizer
 
             if (Directory.Exists(sPath))
                 System.Diagnostics.Process.Start(sPath);
-            else MessageBox.Show("This directory no longer exists.", "Manga Organizer",
+            else MessageBox.Show("This directory no longer exists.", Application.ProductName,
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
@@ -1460,7 +1481,7 @@ namespace Nagru___Manga_Organizer
                     //move old save to new location
                     if (File.Exists(sNew)
                             && MessageBox.Show("Open existing database at:\n" + sNew,
-                            "Manga Organizer", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+                            Application.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Question)
                             == DialogResult.Yes)
                     {
                         lData = FileSerializer.Deserialize<List<csEntry>>(sNew);
@@ -1505,7 +1526,7 @@ namespace Nagru___Manga_Organizer
         { this.Close(); }
         #endregion
 
-        #region Menu_Text
+        #region Menu_Context
         private void MnTx_Undo_Click(object sender, EventArgs e)
         {
             switch (ActiveControl.GetType().Name) {
@@ -1752,7 +1773,7 @@ namespace Nagru___Manga_Organizer
                 Dt_Date.Value = dtDrop;
             }
             else MessageBox.Show("The dropped text was not a valid date.",
-                "Manga Organizer", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
         }
         private void Nud_Pages_DragDrop(object sender, DragEventArgs e)
         {
@@ -1763,7 +1784,7 @@ namespace Nagru___Manga_Organizer
                 Nud_Pages.Value = dcDrop;
             }
             else MessageBox.Show("The dropped text was not a valid value.",
-                "Manga Organizer", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
         }
 
         /* Allow dropping of folders/zips onto LV_Entries (& TxBx_Loc) */
@@ -1803,7 +1824,7 @@ namespace Nagru___Manga_Organizer
             }
             if (sError != "") {
                 MessageBox.Show("The following path(s) already exists in the database:" + sError,
-                    "Manga Organizer", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
 
             //Update LV

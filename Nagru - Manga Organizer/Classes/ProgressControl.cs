@@ -90,22 +90,20 @@ namespace Nagru___Manga_Organizer.Classes
 
         protected override void OnPaint(PaintEventArgs pe)
         {
+            pe.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
             pe.Graphics.Clear(BackColor);
 
             Brush brFill;
             Rectangle rcDraw = new Rectangle(0, 0, iWidth, iHeight);
             for (int i = 0; i < iBlocks; i++) {
-                if (Hovering && iHover > i) {
+                if (Hovering && iHover > i)
                     brFill = new LinearGradientBrush(rcDraw, cFill, BackColor,
                         LinearGradientMode.ForwardDiagonal);
-                }
-                else if (!Hovering && iStep > i) {
+                else if (!Hovering && iStep > i)
                     brFill = new SolidBrush(cFill);
-                }
                 else brFill = new SolidBrush(BackColor);
 
-                pe.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-                GraphicsPath gpTmp = GetPath(gpBlock, rcDraw.X, rcDraw.Y);
+                GraphicsPath gpTmp = GetPath(gpBlock, rcDraw.X, 0);
                 rcDraw.X += rcDraw.Width + iPad;
                 pe.Graphics.FillPath(brFill, gpTmp);
                 pe.Graphics.DrawPath(pnOutln, gpTmp);
@@ -114,7 +112,7 @@ namespace Nagru___Manga_Organizer.Classes
             base.OnPaint(pe);
         }
 
-        public static GraphicsPath GetPath(GraphicsPath gpObj, int iX, int iY)
+        protected static GraphicsPath GetPath(GraphicsPath gpObj, int iX, int iY)
         {
             GraphicsPath clone = (GraphicsPath)gpObj.Clone();
             Matrix mat = new Matrix();

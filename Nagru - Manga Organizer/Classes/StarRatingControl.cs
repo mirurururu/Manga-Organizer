@@ -64,41 +64,40 @@ namespace Nagru___Manga_Organizer
                 rcArea[i].Height = iHeight;
             }
 
+            //setup star shape (from top tip and in thirds)
             gpStar = new GraphicsPath();
             gpStar.AddLines(new PointF[] {
-                new PointF(iWidth / 2, 0),
-                new PointF(42 * iWidth / 64, 19 * iHeight / 64),
-                new PointF(iWidth, 22 * iHeight / 64),
-                new PointF(48 * iWidth / 64, 38 * iHeight / 64),
-                new PointF(52 * iWidth / 64, iHeight),
-                new PointF(iWidth / 2, 52 * iHeight / 64),
-                new PointF(12 * iWidth / 64, iHeight),
-                new PointF(iWidth / 4, 38 * iHeight / 64),
-                new PointF(0, 22 * iHeight / 64),
-                new PointF(22 * iWidth / 64, 19 * iHeight / 64)
+                new PointF(iWidth / 2, 0),                   //A
+                new PointF(2 * iWidth / 3, iHeight / 3),     //B
+                new PointF(iWidth, iHeight / 3),             //C
+                new PointF(4 * iWidth / 5, 4 * iHeight / 7), //D
+                new PointF(5 * iWidth / 6, iHeight),         //E
+                new PointF(iWidth / 2, 4 * iHeight / 5),     //F
+                new PointF(iWidth / 6, iHeight),             //G
+                new PointF(iWidth / 5, 4 * iHeight / 7),     //H
+                new PointF(0, iHeight / 3),                  //I
+                new PointF(iWidth / 3, iHeight / 3)          //J
             });
             gpStar.CloseFigure();
         }
 
         protected override void OnPaint(PaintEventArgs pe)
         {
+            pe.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
             pe.Graphics.Clear(BackColor);
 
             Brush brFill;
             Rectangle rcDraw = new Rectangle(0, 0, iWidth, iHeight);
             for (int i = 0; i < 5; ++i) {
-                if (IsHovering && iHvrStar > i) {
+                if (IsHovering && iHvrStar > i)
                     brFill = new LinearGradientBrush(rcDraw, cHover, BackColor,
                         LinearGradientMode.ForwardDiagonal);
-                }
-                else if (!IsHovering && iSelStar > i) {
+                else if (!IsHovering && iSelStar > i)
                     brFill = new LinearGradientBrush(rcDraw, cFill, BackColor,
                         LinearGradientMode.ForwardDiagonal);
-                }
                 else brFill = new SolidBrush(BackColor);
                 
-                pe.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-                GraphicsPath gpTmp = GetPath(gpStar, rcDraw.X, rcDraw.Y);
+                GraphicsPath gpTmp = GetPath(gpStar, rcDraw.X, 0);
                 rcDraw.X += rcDraw.Width + iPadding;
                 pe.Graphics.FillPath(brFill, gpTmp);
                 pe.Graphics.DrawPath(pnOutln, gpTmp);
@@ -107,7 +106,7 @@ namespace Nagru___Manga_Organizer
             base.OnPaint(pe);
         }
 
-        public static GraphicsPath GetPath(GraphicsPath gpObj, int iX, int iY)
+        protected static GraphicsPath GetPath(GraphicsPath gpObj, int iX, int iY)
         {
             GraphicsPath clone = (GraphicsPath)gpObj.Clone();
             Matrix mat = new Matrix();

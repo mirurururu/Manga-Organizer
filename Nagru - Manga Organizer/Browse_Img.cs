@@ -9,6 +9,7 @@ namespace Nagru___Manga_Organizer
 {
     public partial class Browse_Img : Form
     {
+        public Dictionary<int, int> Sort = new Dictionary<int, int>();
         public List<string> Files { get; set; }
         public Ionic.Zip.ZipFile ZipFile { get; set; }
         public int Page { get; set; }
@@ -25,6 +26,21 @@ namespace Nagru___Manga_Organizer
 
         private void Browse_Load(object sender, EventArgs e)
         {
+            //Compensate for zip files being improperly sorted
+            if (ZipFile != null) {
+                int i = 0;
+                Files.Sort(new TrueCompare());
+                ICollection<string> zeBase = ZipFile.EntryFileNames;
+                foreach(string sFileName in zeBase) {
+                    for (int b = 0; b < Files.Count; b++) {
+                        if (sFileName != Path.GetFileName(Files[b]))
+                            continue;
+                        Sort.Add(b, i++);
+                        break;
+                    }
+                }
+            }
+
             //set up timer
             trFlip = new Timer();
             trFlip.Tick += trFlip_Tick;
@@ -98,9 +114,10 @@ namespace Nagru___Manga_Organizer
                     BrowseTo fmGoTo = new BrowseTo();
                     fmGoTo.Zip = ZipFile;
                     fmGoTo.lFiles = Files;
+                    fmGoTo.dtSort = Sort;
                     fmGoTo.iPage = (bWideR || bWideL) ? 
                         Page : Page - 1;
-                    Text = fmGoTo.iPage.ToString();
+
                     if (fmGoTo.ShowDialog() == DialogResult.OK) {
                         bNext = true;
                         Page = fmGoTo.iPage;
@@ -197,7 +214,7 @@ namespace Nagru___Manga_Organizer
         {
             try {
                 if (ZipFile != null && !File.Exists(Files[i]))
-                    ZipFile[i].Extract(ZipFile.TempFileFolder);
+                    ZipFile[Sort[i]].Extract(ZipFile.TempFileFolder);
                 return ExtImage.Scale(new Bitmap(Files[i]), 
                     picBx.Width, picBx.Height);
             }

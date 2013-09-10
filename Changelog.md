@@ -1,3 +1,6 @@
+#### v. 3.8.22 (Sep 09, 2013)
+	- Improved zip file sorting (default was awful)
+
 #### v. 3.8.12 (Sep 06, 2013)
 	- .cbz files now treated as .zip files
 	- Small bugfix for random manga chooser

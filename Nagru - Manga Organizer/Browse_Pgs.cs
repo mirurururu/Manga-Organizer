@@ -9,6 +9,7 @@ namespace Nagru___Manga_Organizer
 {
     public partial class BrowseTo : Form
     {
+        public Dictionary<int, int> dtSort = new Dictionary<int, int>();
         public List<string> lFiles { private get; set; }
         public Ionic.Zip.ZipFile Zip { get; set; }
         public Image imgL { get; private set; }
@@ -108,7 +109,7 @@ namespace Nagru___Manga_Organizer
         {
             try {
                 if (Zip != null && !File.Exists(lFiles[i]))
-                    Zip[i].Extract(Zip.TempFileFolder);
+                    Zip[dtSort[i]].Extract(Zip.TempFileFolder);
                 return new Bitmap(lFiles[i]);
             }
             catch { return null; }
