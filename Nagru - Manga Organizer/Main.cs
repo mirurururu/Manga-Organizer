@@ -555,13 +555,14 @@ namespace Nagru___Manga_Organizer
             {
                 //Try to auto-magically grab folder path
                 if (!(sPath != "" && File.Exists(sPath))) {
-                    sPath = string.Format("{0}\\[{1}] {2}.zip",
+                    sPath = string.Format("{0}\\[{1}] {2}",
                         Properties.Settings.Default.DefLoc,
                         CmbBx_Artist.Text, TxBx_Title.Text);
-                    if (!File.Exists(sPath))
-                        sPath = sPath.Replace(".zip", ".cbz");
-                    if (!File.Exists(sPath)) 
-                        sPath = Properties.Settings.Default.DefLoc;
+                    if (File.Exists(sPath + ".zip"))
+                        sPath += ".zip";
+                    else if (File.Exists(sPath + ".cbz"))
+                        sPath += ".cbz";
+                    else sPath = Properties.Settings.Default.DefLoc;
                 }
 
                 OpenFileDialog ofd = new OpenFileDialog();
@@ -628,11 +629,10 @@ namespace Nagru___Manga_Organizer
             else sFiles = new string[1] { TxBx_Loc.Text };
 
             if (sFiles.Length > 0
-                && ZipFile.IsZipFile(sFiles[0]))
-            {
+                    && ZipFile.IsZipFile(sFiles[0])) {
                 string sDir = Path.GetDirectoryName(sFiles[0]) + "\\!tmp-mo";
                 fmBrowse.Files = new List<string>(25);
-                
+
                 DirectoryInfo di = Directory.CreateDirectory(sDir);
                 using (ZipFile zip = ZipFile.Read(sFiles[0])) {
                     for (int i = 0; i < zip.Count; i++) {
@@ -644,20 +644,25 @@ namespace Nagru___Manga_Organizer
                     fmBrowse.ShowDialog();
                     iPage = (short)fmBrowse.Page;
                 }
+                fmBrowse.Dispose();
+                GC.Collect(0);
+
                 try {
                     Directory.Delete(sDir, true);
-                } catch (IOException) {
+                }
+                catch (IOException) {
                     Console.WriteLine("Temp directory still in use.");
                 }
             }
-            else if ((sFiles = ExtDir.GetFiles(TxBx_Loc.Text,
-                SearchOption.TopDirectoryOnly)).Length > 0)
-            {
-                fmBrowse.Files = sFiles.ToList<string>();
-                fmBrowse.ShowDialog();
-                iPage = (short)fmBrowse.Page;
+            else {
+                if ((sFiles = ExtDir.GetFiles(TxBx_Loc.Text,
+                        SearchOption.TopDirectoryOnly)).Length > 0) {
+                    fmBrowse.Files = sFiles.ToList<string>();
+                    fmBrowse.ShowDialog();
+                    iPage = (short)fmBrowse.Page;
+                }
+                fmBrowse.Dispose();
             }
-            fmBrowse.Dispose();
         }
 
         /* Redraw cover image if size has changed */
@@ -1096,11 +1101,12 @@ namespace Nagru___Manga_Organizer
                     if (sFileName == ze[0]) break;
                     iTrueFirst++;
                 }
-                
+
+                zip[iTrueFirst].Extract(sPath,
+                    ExtractExistingFileAction.DoNotOverwrite);
+                TrySet(sPath + '\\' + ze[0]);
+
                 try {
-                    zip[iTrueFirst].Extract(sPath, 
-                        ExtractExistingFileAction.DoNotOverwrite);
-                    TrySet(sPath + '\\' + ze[0]);
                     Directory.Delete(sPath, true);
                 } catch (IOException exc) {
                     Console.WriteLine(exc.Message);
@@ -1117,6 +1123,8 @@ namespace Nagru___Manga_Organizer
             } catch {
                 MessageBox.Show("The following file could not be loaded:\n" + s,
                     Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            } finally {
+                GC.Collect(0);
             }
         }
 

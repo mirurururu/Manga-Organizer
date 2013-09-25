@@ -1,3 +1,7 @@
+#### v. 3.8.24 (Sep 24, 2013)
+	- Fixed bug with trying to overwrite existing image
+	- Fixed temp folder sometimes not being removed
+
 #### v. 3.8.22 (Sep 09, 2013)
 	- Improved zip file sorting (default was awful)
 
