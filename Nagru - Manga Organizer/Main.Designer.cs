@@ -493,11 +493,9 @@
             this.TxBx_Tags.Name = "TxBx_Tags";
             this.TxBx_Tags.Size = new System.Drawing.Size(440, 21);
             this.TxBx_Tags.TabIndex = 2;
-            this.TxBx_Tags.Click += new System.EventHandler(this.TxBx_Tags_Click);
             this.TxBx_Tags.TextChanged += new System.EventHandler(this.EntryAlt_Text);
             this.TxBx_Tags.DragDrop += new System.Windows.Forms.DragEventHandler(this.DragDropTxBx);
             this.TxBx_Tags.DragEnter += new System.Windows.Forms.DragEventHandler(this.DragEnterTxBx);
-            this.TxBx_Tags.Leave += new System.EventHandler(this.TxBx_Tags_Leave);
             this.TxBx_Tags.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TbPg_Click);
             // 
             // Lbl_Pages

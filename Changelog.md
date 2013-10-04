@@ -1,3 +1,7 @@
+#### v. 3.8.35 (Oct 03, 2013)
+	- Added term chaining (eg. tag:bride&vanilla)
+	- Better behaviour for overfull scrollbar
+
 #### v. 3.8.24 (Sep 24, 2013)
 	- Fixed bug with trying to overwrite existing image
 	- Fixed temp folder sometimes not being removed

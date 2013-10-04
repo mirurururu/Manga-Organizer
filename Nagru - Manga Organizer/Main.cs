@@ -167,94 +167,105 @@ namespace Nagru___Manga_Organizer
         /* Search term processing */
         private class csTerm
         {
-            readonly bool bAllow;
+            readonly bool[] bAllow;
+            readonly string[] sTerm;
             readonly string sType;
-            readonly string sTerm;
 
             public csTerm(string _Raw)
             {
+                //check for type limiter
+                sTerm = new string[1];
                 string[] sSplit = _Raw.Trim().Split(':');
-                if (sSplit.Length == 2 && sSplit[1] != "") {
+                if (sSplit.Length == 2) {
                     sType = sSplit[0];
-                    sTerm = sSplit[1];
+                    sTerm = sSplit[1].Split('&');
                 }
-                else sTerm = _Raw;
+                else sTerm = _Raw.Split('&');
 
-                sTerm = sTerm.Replace('_', ' ');
-                if (sTerm.StartsWith("-")) {
-                    sTerm = sTerm.Substring(1, sTerm.Length - 1);
-                    bAllow = false;
+                //check for chained terms
+                bAllow = new bool[sTerm.Length];
+                for(int i = 0; i < sTerm.Length; i++) {
+                    sTerm[i] = sTerm[i].Replace('_', ' ');
+                    if (sTerm[i].StartsWith("-")) {
+                        sTerm[i] = sTerm[i].Substring(1);
+                        bAllow[i] = false;
+                    }
+                    else bAllow[i] = true;
                 }
-                else bAllow = true;
             }
 
             public bool Equals(csEntry en)
             {
-                bool bMatch = false;
-                switch (sType) {
-                    case "artist":
-                        bMatch = ExtString.Contains(en.sArtist, sTerm);
-                        break;
-                    case "title":
-                        bMatch = ExtString.Contains(en.sTitle, sTerm);
-                        break;
-                    case "tag":
-                        bMatch = ExtString.Contains(en.sTags, sTerm);
-                        break;
-                    case "desc":
-                        bMatch = ExtString.Contains(en.sDesc, sTerm);
-                        break;
-                    case "type":
-                        bMatch = ExtString.Contains(en.sType, sTerm);
-                        break;
-                    case "date":
-                        DateTime dt = new DateTime();
-                        char c = sTerm[0];
+                for(int i = 0; i < sTerm.Length; i++) {
+                    bool bMatch = false;
+                    switch (sType) {
+                        case "artist":
+                            bMatch = ExtString.Contains(en.sArtist, sTerm[i]);
+                            break;
+                        case "title":
+                            bMatch = ExtString.Contains(en.sTitle, sTerm[i]);
+                            break;
+                        case "tag":
+                        case "tags":
+                            bMatch = ExtString.Contains(en.sTags, sTerm[i]);
+                            break;
+                        case "desc":
+                            bMatch = ExtString.Contains(en.sDesc, sTerm[i]);
+                            break;
+                        case "type":
+                            bMatch = ExtString.Contains(en.sType, sTerm[i]);
+                            break;
+                        case "date":
+                            DateTime dt = new DateTime();
+                            char c = sTerm[i] != "" ? sTerm[i][0] : ' ';
 
-                        switch (c) {
-                            case '<':
-                                if (DateTime.TryParse(sTerm.Substring(1), out dt))
-                                    bMatch = dt >= en.dtDate;
-                                break;
-                            case '>':
-                                if (DateTime.TryParse(sTerm.Substring(1), out dt))
-                                    bMatch = dt <= en.dtDate;
-                                break;
-                            default:
-                                if (DateTime.TryParse(sTerm, out dt))
-                                    bMatch = dt == en.dtDate;
-                                break;
-                        }
-                        break;
-                    case "pages":
-                        c = sTerm[0];
-                        int i;
+                            switch (c) {
+                                case '<':
+                                    if (DateTime.TryParse(sTerm[i].Substring(1), out dt))
+                                        bMatch = dt >= en.dtDate;
+                                    break;
+                                case '>':
+                                    if (DateTime.TryParse(sTerm[i].Substring(1), out dt))
+                                        bMatch = dt <= en.dtDate;
+                                    break;
+                                default:
+                                    if (DateTime.TryParse(sTerm[i], out dt))
+                                        bMatch = dt == en.dtDate;
+                                    break;
+                            }
+                            break;
+                        case "pages":
+                            c = sTerm[i] != "" ? sTerm[i][0] : ' ';
+                            int x;
 
-                        switch (c) {
-                            case '<':
-                                if (int.TryParse(sTerm.Substring(1), out i))
-                                    bMatch = en.iPages <= i;
-                                break;
-                            case '>':
-                                if (int.TryParse(sTerm.Substring(1), out i))
-                                    bMatch = en.iPages >= i;
-                                break;
-                            default:
-                                bMatch = en.iPages.ToString().Equals(sTerm);
-                                break;
-                        }
-                        break;
-                    default:
-                        bMatch = (ExtString.Contains(en.sTags, sTerm) ||
-                            ExtString.Contains(en.sTitle, sTerm) ||
-                            ExtString.Contains(en.sArtist, sTerm) ||
-                            ExtString.Contains(en.sDesc, sTerm) ||
-                            ExtString.Contains(en.dtDate.ToString(), sTerm) ||
-                            ExtString.Contains(en.sType, sTerm));
-                        break;
+                            switch (c) {
+                                case '<':
+                                    if (int.TryParse(sTerm[i].Substring(1), out x))
+                                        bMatch = en.iPages <= x;
+                                    break;
+                                case '>':
+                                    if (int.TryParse(sTerm[i].Substring(1), out x))
+                                        bMatch = en.iPages >= x;
+                                    break;
+                                default:
+                                    bMatch = en.iPages.ToString().Equals(sTerm[i]);
+                                    break;
+                            }
+                            break;
+                        default:
+                            bMatch = (ExtString.Contains(en.sTags, sTerm[i]) ||
+                                ExtString.Contains(en.sTitle, sTerm[i]) ||
+                                ExtString.Contains(en.sArtist, sTerm[i]) ||
+                                ExtString.Contains(en.sDesc, sTerm[i]) ||
+                                ExtString.Contains(en.dtDate.ToString(), sTerm[i]) ||
+                                ExtString.Contains(en.sType, sTerm[i]));
+                            break;
+                    }
+
+                    if (!(bAllow[i] ? bMatch : !bMatch))
+                        return false;
                 }
-
-                return bAllow ? bMatch : !bMatch;
+                return true;
             }
         }
 
@@ -628,7 +639,7 @@ namespace Nagru___Manga_Organizer
             }
             else sFiles = new string[1] { TxBx_Loc.Text };
 
-            if (sFiles.Length > 0
+            if (sFiles.Length > 0 
                     && ZipFile.IsZipFile(sFiles[0])) {
                 string sDir = Path.GetDirectoryName(sFiles[0]) + "\\!tmp-mo";
                 fmBrowse.Files = new List<string>(25);
@@ -750,10 +761,6 @@ namespace Nagru___Manga_Organizer
             TxBx_Tags.Select(ScrTags.Value, 0);
             TxBx_Tags.ScrollToCaret();
         }
-        private void TxBx_Tags_Leave(object sender, EventArgs e)
-        { ScrTags.Visible = false; }
-        private void TxBx_Tags_Click(object sender, EventArgs e)
-        { SetScroll(); }
         private void SetScroll()
         {
             int iWidth = TextRenderer.MeasureText(TxBx_Tags.Text, TxBx_Tags.Font).Width;
@@ -1059,7 +1066,8 @@ namespace Nagru___Manga_Organizer
             srRating.SelectedStar = lData[indx].byRat;
             Nud_Pages.Value = lData[indx].iPages;
             TxBx_Tags.Text = lData[indx].sTags;
-            
+
+            SetScroll();
             MnTS_New.Visible = false;
             MnTS_Edit.Visible = false;
             MnTS_Del.Visible = true;
@@ -1082,36 +1090,34 @@ namespace Nagru___Manga_Organizer
 
         private void SetPicBxImage(string sPath)
         {
-            if(!ZipFile.IsZipFile(sPath)) {
-                TrySet(sPath);
-                return;
-            }
-            
-            using (ZipFile zip = ZipFile.Read(sPath)) {
-                if (zip.Count == 0) return;
-                sPath = Path.GetDirectoryName(sPath);
-                Directory.CreateDirectory(sPath += "\\!tmp");
+            if (ZipFile.IsZipFile(sPath)) {
+                using (ZipFile zip = ZipFile.Read(sPath)) {
+                    if (zip.Count == 0) return;
+                    sPath = Path.GetDirectoryName(sPath);
+                    Directory.CreateDirectory(sPath += "\\!tmp-mo");
 
-                List<string> ze = new List<string>();
-                ze.AddRange(zip.EntryFileNames);
-                ze.Sort(new TrueCompare());
+                    List<string> ze = new List<string>();
+                    ze.AddRange(zip.EntryFileNames);
+                    ze.Sort(new TrueCompare());
 
-                int iTrueFirst = 0;
-                foreach (string sFileName in zip.EntryFileNames) {
-                    if (sFileName == ze[0]) break;
-                    iTrueFirst++;
-                }
+                    int iTrueFirst = 0;
+                    foreach (string sFileName in zip.EntryFileNames) {
+                        if (sFileName == ze[0]) break;
+                        iTrueFirst++;
+                    }
 
-                zip[iTrueFirst].Extract(sPath,
-                    ExtractExistingFileAction.DoNotOverwrite);
-                TrySet(sPath + '\\' + ze[0]);
+                    zip[iTrueFirst].Extract(sPath,
+                        ExtractExistingFileAction.DoNotOverwrite);
+                    TrySet(sPath + '\\' + ze[0]);
 
-                try {
-                    Directory.Delete(sPath, true);
-                } catch (IOException exc) {
-                    Console.WriteLine(exc.Message);
+                    try {
+                        Directory.Delete(sPath, true);
+                    } catch (IOException exc) {
+                        Console.WriteLine(exc.Message);
+                    }
                 }
             }
+            else TrySet(sPath);
         }
         private void TrySet(string s)
         {

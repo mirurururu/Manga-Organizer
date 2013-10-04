@@ -109,7 +109,8 @@ namespace Nagru___Manga_Organizer
         {
             try {
                 if (Zip != null && !File.Exists(lFiles[i]))
-                    Zip[dtSort[i]].Extract(Zip.TempFileFolder);
+                    Zip[dtSort[i]].Extract(Zip.TempFileFolder,
+                        Ionic.Zip.ExtractExistingFileAction.DoNotOverwrite);
                 return new Bitmap(lFiles[i]);
             }
             catch { return null; }

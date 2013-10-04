@@ -142,6 +142,7 @@ Tagging can be done more conveniently by:
 - Limit search scale by setting a tag type:
 artist, title, tag, desc, type, date, or pages
 - Use '&lt;' or '&gt;'  with 'date' or 'pages' for range
+- Chain terms by placing '&amp;&amp;' between them
 
 Example:
 title:celeb_wife date:&gt;01/01/12 -vanilla</value>
