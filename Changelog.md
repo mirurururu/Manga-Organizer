@@ -1,3 +1,6 @@
+#### v. 3.8.36 (Oct 04, 2013)
+	- Fixed bug when accessing zip non-explicitly
+
 #### v. 3.8.35 (Oct 03, 2013)
 	- Added term chaining (eg. tag:bride&vanilla)
 	- Better behaviour for overfull scrollbar

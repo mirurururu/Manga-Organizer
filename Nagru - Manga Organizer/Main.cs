@@ -847,8 +847,7 @@ namespace Nagru___Manga_Organizer
             else sFiles = new string[1] { TxBx_Loc.Text };
 
             if (sFiles.Length > 0
-                && ZipFile.IsZipFile(sFiles[0]))
-            {
+                    && ZipFile.IsZipFile(sFiles[0])) {
                 using (ZipFile zip = ZipFile.Read(sFiles[0])) {
                     if (zip.Count > 0) {
                         SetPicBxImage(sFiles[0]);
@@ -857,7 +856,7 @@ namespace Nagru___Manga_Organizer
                 }
             }
             else if ((sFiles = ExtDir.GetFiles(TxBx_Loc.Text,
-                SearchOption.TopDirectoryOnly)).Length > 0) {
+                    SearchOption.TopDirectoryOnly)).Length > 0) {
                 SetPicBxImage(sFiles[0]);
                 BeginInvoke(new DelInt(SetNudCount), sFiles.Length);
             }
@@ -1096,21 +1095,20 @@ namespace Nagru___Manga_Organizer
                     sPath = Path.GetDirectoryName(sPath);
                     Directory.CreateDirectory(sPath += "\\!tmp-mo");
 
+                    //account for terrible default zip-sorting
                     List<string> ze = new List<string>();
                     ze.AddRange(zip.EntryFileNames);
                     ze.Sort(new TrueCompare());
-
                     int iTrueFirst = 0;
                     foreach (string sFileName in zip.EntryFileNames) {
                         if (sFileName == ze[0]) break;
                         iTrueFirst++;
                     }
 
-                    zip[iTrueFirst].Extract(sPath,
-                        ExtractExistingFileAction.DoNotOverwrite);
-                    TrySet(sPath + '\\' + ze[0]);
-
                     try {
+                        zip[iTrueFirst].Extract(sPath,
+                            ExtractExistingFileAction.DoNotOverwrite);
+                        TrySet(sPath + '\\' + ze[0]);
                         Directory.Delete(sPath, true);
                     } catch (IOException exc) {
                         Console.WriteLine(exc.Message);
@@ -1126,9 +1124,10 @@ namespace Nagru___Manga_Organizer
                     PicBx_Cover.Image = ExtImage.Scale(bmpTmp,
                         PicBx_Cover.Width, PicBx_Cover.Height);
                 }
-            } catch {
+            } catch (Exception Exc) {
                 MessageBox.Show("The following file could not be loaded:\n" + s,
                     Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                Console.WriteLine(Exc.Message);
             } finally {
                 GC.Collect(0);
             }
