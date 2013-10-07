@@ -47,7 +47,6 @@
             this.MnTx_SelAll = new System.Windows.Forms.ToolStripMenuItem();
             this.Tb_View = new System.Windows.Forms.TabPage();
             this.Btn_Rand = new System.Windows.Forms.Button();
-            this.ScrTags = new System.Windows.Forms.HScrollBar();
             this.CmbBx_Artist = new System.Windows.Forms.ComboBox();
             this.Btn_GoUp = new System.Windows.Forms.Button();
             this.Btn_GoDn = new System.Windows.Forms.Button();
@@ -57,7 +56,6 @@
             this.CmbBx_Type = new System.Windows.Forms.ComboBox();
             this.Dt_Date = new System.Windows.Forms.DateTimePicker();
             this.Nud_Pages = new System.Windows.Forms.NumericUpDown();
-            this.TxBx_Tags = new System.Windows.Forms.TextBox();
             this.Lbl_Pages = new System.Windows.Forms.Label();
             this.Lbl_Date = new System.Windows.Forms.Label();
             this.Lbl_Type = new System.Windows.Forms.Label();
@@ -96,6 +94,7 @@
             this.ColType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ColPos = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ColRating = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.acTxBx_Tags = new Nagru___Manga_Organizer.Classes.AutoCompleteTagger();
             this.srRating = new Nagru___Manga_Organizer.StarRatingControl();
             this.frTxBx_Desc = new Nagru___Manga_Organizer.FixedRichTextBox();
             this.frTxBx_Notes = new Nagru___Manga_Organizer.FixedRichTextBox();
@@ -287,9 +286,9 @@
             // Tb_View
             // 
             this.Tb_View.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.Tb_View.Controls.Add(this.acTxBx_Tags);
             this.Tb_View.Controls.Add(this.srRating);
             this.Tb_View.Controls.Add(this.Btn_Rand);
-            this.Tb_View.Controls.Add(this.ScrTags);
             this.Tb_View.Controls.Add(this.CmbBx_Artist);
             this.Tb_View.Controls.Add(this.Btn_GoUp);
             this.Tb_View.Controls.Add(this.Btn_GoDn);
@@ -299,7 +298,6 @@
             this.Tb_View.Controls.Add(this.CmbBx_Type);
             this.Tb_View.Controls.Add(this.Dt_Date);
             this.Tb_View.Controls.Add(this.Nud_Pages);
-            this.Tb_View.Controls.Add(this.TxBx_Tags);
             this.Tb_View.Controls.Add(this.Lbl_Pages);
             this.Tb_View.Controls.Add(this.Lbl_Date);
             this.Tb_View.Controls.Add(this.Lbl_Type);
@@ -308,8 +306,8 @@
             this.Tb_View.Controls.Add(this.Lbl_Title);
             this.Tb_View.Controls.Add(this.TxBx_Title);
             this.Tb_View.Controls.Add(this.Mn_EntryOps);
-            this.Tb_View.Controls.Add(this.frTxBx_Desc);
             this.Tb_View.Controls.Add(this.PicBx_Cover);
+            this.Tb_View.Controls.Add(this.frTxBx_Desc);
             this.Tb_View.Location = new System.Drawing.Point(4, 22);
             this.Tb_View.Name = "Tb_View";
             this.Tb_View.Padding = new System.Windows.Forms.Padding(3);
@@ -329,15 +327,6 @@
             this.Btn_Rand.Text = "♣";
             this.Btn_Rand.UseVisualStyleBackColor = true;
             this.Btn_Rand.Click += new System.EventHandler(this.Btn_Rand_Click);
-            // 
-            // ScrTags
-            // 
-            this.ScrTags.Location = new System.Drawing.Point(52, 130);
-            this.ScrTags.Name = "ScrTags";
-            this.ScrTags.Size = new System.Drawing.Size(440, 16);
-            this.ScrTags.TabIndex = 26;
-            this.ScrTags.Visible = false;
-            this.ScrTags.Scroll += new System.Windows.Forms.ScrollEventHandler(this.ScrTags_Scroll);
             // 
             // CmbBx_Artist
             // 
@@ -456,10 +445,9 @@
             this.Dt_Date.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Dt_Date.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.Dt_Date.Location = new System.Drawing.Point(52, 181);
-            this.Dt_Date.MaxDate = new System.DateTime(2100, 1, 1, 0, 0, 0, 0);
             this.Dt_Date.MinDate = new System.DateTime(1972, 4, 12, 0, 0, 0, 0);
             this.Dt_Date.Name = "Dt_Date";
-            this.Dt_Date.Size = new System.Drawing.Size(200, 21);
+            this.Dt_Date.Size = new System.Drawing.Size(169, 21);
             this.Dt_Date.TabIndex = 4;
             this.Dt_Date.ValueChanged += new System.EventHandler(this.EntryAlt_DtNum);
             this.Dt_Date.DragDrop += new System.Windows.Forms.DragEventHandler(this.Dt_Date_DragDrop);
@@ -482,21 +470,6 @@
             this.Nud_Pages.ValueChanged += new System.EventHandler(this.EntryAlt_DtNum);
             this.Nud_Pages.DragDrop += new System.Windows.Forms.DragEventHandler(this.Nud_Pages_DragDrop);
             this.Nud_Pages.DragEnter += new System.Windows.Forms.DragEventHandler(this.DragEnterTxBx);
-            // 
-            // TxBx_Tags
-            // 
-            this.TxBx_Tags.AllowDrop = true;
-            this.TxBx_Tags.CharacterCasing = System.Windows.Forms.CharacterCasing.Lower;
-            this.TxBx_Tags.ContextMenuStrip = this.Mn_TxBx;
-            this.TxBx_Tags.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.TxBx_Tags.Location = new System.Drawing.Point(52, 111);
-            this.TxBx_Tags.Name = "TxBx_Tags";
-            this.TxBx_Tags.Size = new System.Drawing.Size(440, 21);
-            this.TxBx_Tags.TabIndex = 2;
-            this.TxBx_Tags.TextChanged += new System.EventHandler(this.EntryAlt_Text);
-            this.TxBx_Tags.DragDrop += new System.Windows.Forms.DragEventHandler(this.DragDropTxBx);
-            this.TxBx_Tags.DragEnter += new System.Windows.Forms.DragEventHandler(this.DragEnterTxBx);
-            this.TxBx_Tags.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TbPg_Click);
             // 
             // Lbl_Pages
             // 
@@ -875,6 +848,22 @@
             this.ColRating.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.ColRating.Width = 70;
             // 
+            // acTxBx_Tags
+            // 
+            this.acTxBx_Tags.AllowDrop = true;
+            this.acTxBx_Tags.CharacterCasing = System.Windows.Forms.CharacterCasing.Lower;
+            this.acTxBx_Tags.ContextMenuStrip = this.Mn_TxBx;
+            this.acTxBx_Tags.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.acTxBx_Tags.KeyWords = new string[0];
+            this.acTxBx_Tags.Location = new System.Drawing.Point(52, 111);
+            this.acTxBx_Tags.Name = "acTxBx_Tags";
+            this.acTxBx_Tags.Size = new System.Drawing.Size(440, 21);
+            this.acTxBx_Tags.TabIndex = 29;
+            this.acTxBx_Tags.TextChanged += new System.EventHandler(this.EntryAlt_Text);
+            this.acTxBx_Tags.DragDrop += new System.Windows.Forms.DragEventHandler(this.DragDropTxBx);
+            this.acTxBx_Tags.DragEnter += new System.Windows.Forms.DragEventHandler(this.DragEnterTxBx);
+            this.acTxBx_Tags.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TbPg_Click);
+            // 
             // srRating
             // 
             this.srRating.HoverStar = 0;
@@ -960,7 +949,6 @@
         private System.Windows.Forms.TabControl TabControl;
         private System.Windows.Forms.TabPage Tb_Browse;
         private System.Windows.Forms.TabPage Tb_View;
-        private System.Windows.Forms.TextBox TxBx_Tags;
         private System.Windows.Forms.Label Lbl_Pages;
         private System.Windows.Forms.Label Lbl_Date;
         private System.Windows.Forms.Label Lbl_Type;
@@ -1018,7 +1006,6 @@
         private System.Windows.Forms.Button Btn_GoDn;
         private System.Windows.Forms.ComboBox CmbBx_Artist;
         private System.Windows.Forms.ToolStripMenuItem MnTS_Stats;
-        private System.Windows.Forms.HScrollBar ScrTags;
         private System.Windows.Forms.Button Btn_Rand;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
         private System.Windows.Forms.ContextMenuStrip Mn_TxBx;
@@ -1027,6 +1014,7 @@
         private StarRatingControl srRating;
         private System.Windows.Forms.ColumnHeader ColRating;
         private System.Windows.Forms.ToolStripMenuItem MnTS_Tutorial;
+        private Classes.AutoCompleteTagger acTxBx_Tags;
     }
 }
 

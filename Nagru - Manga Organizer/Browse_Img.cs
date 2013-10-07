@@ -27,9 +27,9 @@ namespace Nagru___Manga_Organizer
         private void Browse_Load(object sender, EventArgs e)
         {
             //Compensate for zip files being improperly sorted
+            Files.Sort(new TrueCompare());
             if (ZipFile != null) {
                 int i = 0;
-                Files.Sort(new TrueCompare());
                 ICollection<string> zeBase = ZipFile.EntryFileNames;
                 foreach(string sFileName in zeBase) {
                     for (int b = 0; b < Files.Count; b++) {

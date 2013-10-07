@@ -1,3 +1,9 @@
+#### v. 3.9.47 (Oct 07, 2013)
+	- Added tag auto-completion
+	- Improved tag parsing code
+	- Improved raw title parsing
+	- Switched to .NET4 Client Profile
+
 #### v. 3.8.36 (Oct 04, 2013)
 	- Fixed bug when accessing zip non-explicitly
 
