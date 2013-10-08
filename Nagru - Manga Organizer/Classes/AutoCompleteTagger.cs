@@ -117,9 +117,6 @@ namespace Nagru___Manga_Organizer.Classes
                 }
             }
             
-            //show sbHorz if text width exceeds control width
-            SetScroll();
-            
             base.OnKeyUp(e);
         }
 
@@ -182,6 +179,12 @@ namespace Nagru___Manga_Organizer.Classes
                 sbHorz.Show();
             }
             else sbHorz.Hide();
+        }
+
+        protected override void OnTextChanged(EventArgs e)
+        {
+            SetScroll();
+            base.OnTextChanged(e);
         }
 
         /* Move TxBx_Tags cursor pos. based on ScrTags value */

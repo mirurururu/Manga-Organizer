@@ -198,6 +198,7 @@
             // 
             // TxBx_Search
             // 
+            this.TxBx_Search.AllowDrop = true;
             this.TxBx_Search.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TxBx_Search.CharacterCasing = System.Windows.Forms.CharacterCasing.Lower;
@@ -208,6 +209,8 @@
             this.TxBx_Search.Size = new System.Drawing.Size(728, 21);
             this.TxBx_Search.TabIndex = 1;
             this.TxBx_Search.TextChanged += new System.EventHandler(this.TxBx_Search_TextChanged);
+            this.TxBx_Search.DragDrop += new System.Windows.Forms.DragEventHandler(this.DragDropTxBx);
+            this.TxBx_Search.DragEnter += new System.Windows.Forms.DragEventHandler(this.DragEnterTxBx);
             this.TxBx_Search.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TbPg_Click);
             // 
             // Mn_TxBx

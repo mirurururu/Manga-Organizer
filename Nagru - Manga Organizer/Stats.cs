@@ -12,8 +12,8 @@ namespace Nagru___Manga_Organizer
         public List<Main.csEntry> lCurr { private get; set; }
         SortedDictionary<string, ushort> dtTags = new SortedDictionary<string, ushort>();
         LVsorter lvSortObj = new LVsorter();
-        bool bPrev = true;
-        int iCount = 0;
+        bool bPrevState = true;
+        uint iCount = 0;
 
         public Stats()
         { 
@@ -24,23 +24,42 @@ namespace Nagru___Manga_Organizer
         private void Stats_Load(object sender, EventArgs e)
         {
             lvStats.ListViewItemSorter = lvSortObj;
-            ShowStats(false);
+            SwitchView(0);
         }
+        
+        private void ChkBx_FavsOnly0_CheckedChanged(object sender, EventArgs e)
+        { ShowStats((pnlView0.ContainsFocus) ? 1 : 0); }
 
+        private void BtnSwitch_Click(object sender, EventArgs e)
+        { SwitchView((pnlView0.ContainsFocus) ? 1 : 0); }
+
+        /* Toggle visible panel (pie chart & listview) */
         private void SwitchView(int iView)
         {
             this.SuspendLayout();
-            pnlView0.Visible = false;
-            pnlView1.Visible = false;
-            Controls["pnlView" + iView].Visible = true;
-            this.ResumeLayout();
+            //move checkbox to new panel
+            ChkBx_FavsOnly.Parent = Controls["pnlView" + iView];
+            Controls["pnlView" + iView].BringToFront();
+            ChkBx_FavsOnly.BringToFront();
 
-            ShowStats(ChkBx_FavsOnly0.Checked);
+            //move button to new panel
+            if (iView == 1) BtnSwitch.Location = new System.Drawing.Point(82, 12);
+            else BtnSwitch.Location = new System.Drawing.Point(12, 41);
+            BtnSwitch.Parent = Controls["pnlView" + iView];
+            Controls["pnlView" + iView].BringToFront();
+            BtnSwitch.BringToFront();
+
+            //display stats
+            ShowStats(iView);
+            this.ResumeLayout();
         }
         
-        private void ShowStats(bool bFavsOnly)
+        private void ShowStats(int iPanel)
         {
-            if(bFavsOnly != bPrev) {
+            bool bFavsOnly = ChkBx_FavsOnly.Checked;
+
+            //get stats of tags
+            if(bFavsOnly != bPrevState) {
                 iCount = 0;
                 dtTags.Clear();
                 for (int i = 0; i < lCurr.Count; i++) {
@@ -54,7 +73,8 @@ namespace Nagru___Manga_Organizer
                 }
             }
 
-            if(pnlView0.Visible) {
+            if (iPanel == 0) {
+                //purge minority tags
                 SortedDictionary<string, ushort> dtPie = new SortedDictionary<string, ushort>();
                 dtPie.Add("_Other_", 0);
                 foreach (KeyValuePair<string, ushort> kvpItem in dtTags) {
@@ -63,9 +83,12 @@ namespace Nagru___Manga_Organizer
                     else dtPie.Add(kvpItem.Key, kvpItem.Value);
                 }
                 dtPie.Remove("_Other_");
+
+                //send tag data to pie chart
+                chtTags.Series[0].Points.Clear();
                 chtTags.Series[0].Points.DataBindXY(dtPie.Keys, dtPie.Values);
-            }
-            else {
+            } else {
+                //send stats to listview
                 lvStats.BeginUpdate();
                 lvStats.Items.Clear();
                 List<ListViewItem> lItems = new List<ListViewItem>(dtTags.Count + 1);
@@ -80,11 +103,10 @@ namespace Nagru___Manga_Organizer
                 lvSortObj.OrdOfSort = SortOrder.Descending;
                 lvStats.Sort();
                 lvStats.EndUpdate();
-                lvStats.Select();
             }
             
             Text = string.Format("Stats: {0} tags in {1} manga", dtTags.Count, iCount);
-            bPrev = bFavsOnly;
+            bPrevState = bFavsOnly;
         }
 
         private void lvStats_ColumnClick(object sender, ColumnClickEventArgs e)
@@ -96,8 +118,6 @@ namespace Nagru___Manga_Organizer
         }
 
         private void lvStats_Resize(object sender, EventArgs e)
-        { ResizeLV(); }
-        private void ResizeLV()
         {
             lvStats.BeginUpdate();
             int iColWidth = 0;
@@ -116,21 +136,5 @@ namespace Nagru___Manga_Organizer
         
         private void Stats_FormClosing(object sender, FormClosingEventArgs e)
         { this.DialogResult = DialogResult.OK; }
-
-        private void ChkBx_FavsOnly0_CheckedChanged(object sender, EventArgs e)
-        {
-            ChkBx_FavsOnly1.Checked = ChkBx_FavsOnly0.Checked;
-            ShowStats(ChkBx_FavsOnly0.Checked);
-        }
-        private void ChkBx_FavsOnly1_CheckedChanged(object sender, EventArgs e)
-        {
-            ChkBx_FavsOnly0.Checked = ChkBx_FavsOnly1.Checked;
-            ShowStats(ChkBx_FavsOnly1.Checked);
-        }
-
-        private void BtnSwitch_Click(object sender, EventArgs e)
-        {
-            SwitchView((pnlView0.Visible) ? 1 : 0);
-        }
     }
 }

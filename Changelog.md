@@ -1,3 +1,8 @@
+#### v. 3.9.59 (Oct 08, 2013)
+	- Added drag/drop to search bar & auto-formatting of titles
+	- Improved tag scrollbar behaviour
+	- Statistics code optimization
+ 
 #### v. 3.9.47 (Oct 07, 2013)
 	- Added tag auto-completion
 	- Improved tag parsing code

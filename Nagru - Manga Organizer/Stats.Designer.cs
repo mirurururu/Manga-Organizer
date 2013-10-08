@@ -32,12 +32,10 @@
             System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.chtTags = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.ChkBx_FavsOnly0 = new System.Windows.Forms.CheckBox();
+            this.ChkBx_FavsOnly = new System.Windows.Forms.CheckBox();
             this.pnlView0 = new System.Windows.Forms.Panel();
-            this.BtnSwitch0 = new System.Windows.Forms.Button();
+            this.BtnSwitch = new System.Windows.Forms.Button();
             this.pnlView1 = new System.Windows.Forms.Panel();
-            this.BtnSwitch1 = new System.Windows.Forms.Button();
-            this.ChkBx_FavsOnly1 = new System.Windows.Forms.CheckBox();
             this.lvStats = new Nagru___Manga_Organizer.ListViewNF();
             this.colTag = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colCount = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -69,24 +67,24 @@
             this.chtTags.Text = "chart1";
             this.chtTags.TextAntiAliasingQuality = System.Windows.Forms.DataVisualization.Charting.TextAntiAliasingQuality.SystemDefault;
             // 
-            // ChkBx_FavsOnly0
+            // ChkBx_FavsOnly
             // 
-            this.ChkBx_FavsOnly0.Appearance = System.Windows.Forms.Appearance.Button;
-            this.ChkBx_FavsOnly0.AutoSize = true;
-            this.ChkBx_FavsOnly0.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.ChkBx_FavsOnly0.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.ChkBx_FavsOnly0.Location = new System.Drawing.Point(12, 12);
-            this.ChkBx_FavsOnly0.Name = "ChkBx_FavsOnly0";
-            this.ChkBx_FavsOnly0.Size = new System.Drawing.Size(64, 23);
-            this.ChkBx_FavsOnly0.TabIndex = 4;
-            this.ChkBx_FavsOnly0.Text = "Favs Only";
-            this.ChkBx_FavsOnly0.UseVisualStyleBackColor = false;
-            this.ChkBx_FavsOnly0.CheckedChanged += new System.EventHandler(this.ChkBx_FavsOnly0_CheckedChanged);
+            this.ChkBx_FavsOnly.Appearance = System.Windows.Forms.Appearance.Button;
+            this.ChkBx_FavsOnly.AutoSize = true;
+            this.ChkBx_FavsOnly.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.ChkBx_FavsOnly.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.ChkBx_FavsOnly.Location = new System.Drawing.Point(12, 12);
+            this.ChkBx_FavsOnly.Name = "ChkBx_FavsOnly";
+            this.ChkBx_FavsOnly.Size = new System.Drawing.Size(64, 23);
+            this.ChkBx_FavsOnly.TabIndex = 4;
+            this.ChkBx_FavsOnly.Text = "Favs Only";
+            this.ChkBx_FavsOnly.UseVisualStyleBackColor = false;
+            this.ChkBx_FavsOnly.CheckedChanged += new System.EventHandler(this.ChkBx_FavsOnly0_CheckedChanged);
             // 
             // pnlView0
             // 
-            this.pnlView0.Controls.Add(this.BtnSwitch0);
-            this.pnlView0.Controls.Add(this.ChkBx_FavsOnly0);
+            this.pnlView0.Controls.Add(this.BtnSwitch);
+            this.pnlView0.Controls.Add(this.ChkBx_FavsOnly);
             this.pnlView0.Controls.Add(this.chtTags);
             this.pnlView0.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlView0.Location = new System.Drawing.Point(0, 0);
@@ -94,55 +92,26 @@
             this.pnlView0.Size = new System.Drawing.Size(647, 571);
             this.pnlView0.TabIndex = 5;
             // 
-            // BtnSwitch0
+            // BtnSwitch
             // 
-            this.BtnSwitch0.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.BtnSwitch0.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.BtnSwitch0.Location = new System.Drawing.Point(12, 41);
-            this.BtnSwitch0.Name = "BtnSwitch0";
-            this.BtnSwitch0.Size = new System.Drawing.Size(64, 23);
-            this.BtnSwitch0.TabIndex = 30;
-            this.BtnSwitch0.Text = "Switch";
-            this.BtnSwitch0.UseVisualStyleBackColor = false;
-            this.BtnSwitch0.Click += new System.EventHandler(this.BtnSwitch_Click);
+            this.BtnSwitch.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.BtnSwitch.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.BtnSwitch.Location = new System.Drawing.Point(12, 41);
+            this.BtnSwitch.Name = "BtnSwitch";
+            this.BtnSwitch.Size = new System.Drawing.Size(64, 23);
+            this.BtnSwitch.TabIndex = 30;
+            this.BtnSwitch.Text = "Switch";
+            this.BtnSwitch.UseVisualStyleBackColor = false;
+            this.BtnSwitch.Click += new System.EventHandler(this.BtnSwitch_Click);
             // 
             // pnlView1
             // 
-            this.pnlView1.Controls.Add(this.BtnSwitch1);
-            this.pnlView1.Controls.Add(this.ChkBx_FavsOnly1);
             this.pnlView1.Controls.Add(this.lvStats);
             this.pnlView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlView1.Location = new System.Drawing.Point(0, 0);
             this.pnlView1.Name = "pnlView1";
             this.pnlView1.Size = new System.Drawing.Size(647, 571);
             this.pnlView1.TabIndex = 6;
-            this.pnlView1.Visible = false;
-            // 
-            // BtnSwitch1
-            // 
-            this.BtnSwitch1.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.BtnSwitch1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.BtnSwitch1.Location = new System.Drawing.Point(82, 12);
-            this.BtnSwitch1.Name = "BtnSwitch1";
-            this.BtnSwitch1.Size = new System.Drawing.Size(75, 23);
-            this.BtnSwitch1.TabIndex = 29;
-            this.BtnSwitch1.Text = "Switch View";
-            this.BtnSwitch1.UseVisualStyleBackColor = false;
-            this.BtnSwitch1.Click += new System.EventHandler(this.BtnSwitch_Click);
-            // 
-            // ChkBx_FavsOnly1
-            // 
-            this.ChkBx_FavsOnly1.Appearance = System.Windows.Forms.Appearance.Button;
-            this.ChkBx_FavsOnly1.AutoSize = true;
-            this.ChkBx_FavsOnly1.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.ChkBx_FavsOnly1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.ChkBx_FavsOnly1.Location = new System.Drawing.Point(12, 12);
-            this.ChkBx_FavsOnly1.Name = "ChkBx_FavsOnly1";
-            this.ChkBx_FavsOnly1.Size = new System.Drawing.Size(64, 23);
-            this.ChkBx_FavsOnly1.TabIndex = 28;
-            this.ChkBx_FavsOnly1.Text = "Favs Only";
-            this.ChkBx_FavsOnly1.UseVisualStyleBackColor = false;
-            this.ChkBx_FavsOnly1.CheckedChanged += new System.EventHandler(this.ChkBx_FavsOnly1_CheckedChanged);
             // 
             // lvStats
             // 
@@ -168,10 +137,12 @@
             // colTag
             // 
             this.colTag.Text = "Tag";
+            this.colTag.Width = 169;
             // 
             // colCount
             // 
             this.colCount.Text = "Count";
+            this.colCount.Width = 79;
             // 
             // colPer
             // 
@@ -196,7 +167,6 @@
             this.pnlView0.ResumeLayout(false);
             this.pnlView0.PerformLayout();
             this.pnlView1.ResumeLayout(false);
-            this.pnlView1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -204,15 +174,13 @@
         #endregion
 
         private System.Windows.Forms.DataVisualization.Charting.Chart chtTags;
-        private System.Windows.Forms.CheckBox ChkBx_FavsOnly0;
+        private System.Windows.Forms.CheckBox ChkBx_FavsOnly;
         private System.Windows.Forms.Panel pnlView0;
         private System.Windows.Forms.Panel pnlView1;
-        private System.Windows.Forms.CheckBox ChkBx_FavsOnly1;
         private ListViewNF lvStats;
+        private System.Windows.Forms.Button BtnSwitch;
         private System.Windows.Forms.ColumnHeader colTag;
         private System.Windows.Forms.ColumnHeader colCount;
         private System.Windows.Forms.ColumnHeader colPer;
-        private System.Windows.Forms.Button BtnSwitch0;
-        private System.Windows.Forms.Button BtnSwitch1;
     }
 }

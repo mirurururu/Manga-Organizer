@@ -359,7 +359,7 @@ namespace Nagru___Manga_Organizer
                 }
                 UpdateLV();
 
-                //set up CmbBx autocomplete
+                //set up artist & tagautocomplete
                 List<string> lTags = new List<string>(lData.Count);
                 List<string> lArtists = new List<string>(lData.Count);
                 for (int i = 0; i < lData.Count; i++) {
@@ -367,10 +367,7 @@ namespace Nagru___Manga_Organizer
                     lTags.AddRange(lData[i].sTags.Split(','));
                 }
                 lArtists.Sort(new TrueCompare());
-                string[] sFinal = lArtists.Distinct().ToArray();
-                CmbBx_Artist.Items.AddRange(sFinal);
-
-                //set up tag autocomplete
+                CmbBx_Artist.Items.AddRange(lArtists.Distinct().ToArray());
                 acTxBx_Tags.KeyWords = lTags.Distinct().Select(x => x.Trim()).ToArray();
             }
         }
@@ -1137,7 +1134,7 @@ namespace Nagru___Manga_Organizer
             }
         }
 
-        private void SplitTitle(string sRaw)
+        private string SplitTitle(string sRaw)
         {
             //strip out comiket\circle\etc info
             if (sRaw.StartsWith("(")) {
@@ -1152,23 +1149,28 @@ namespace Nagru___Manga_Organizer
                 if (CmbBx_Artist.Text == "") {
                     //strip out scanlation info
                     if(sName[0].Contains('(')) {
-                        CmbBx_Artist.Text = sName[0].Substring(sName[0].IndexOf('(') + 1);
-                        CmbBx_Artist.Text = CmbBx_Artist.Text.Substring(0, CmbBx_Artist.Text.Length - 1);
+                        sName[0] = sName[0].Substring(sName[0].IndexOf('(') + 1);
+                        sName[0] = sName[0].Substring(0, sName[0].Length - 1);
+                        CmbBx_Artist.Text = sName[0].Trim();
                     }
                     else CmbBx_Artist.Text = sName[0].Trim();
                 }
                 if (TxBx_Title.Text == "") {
                     //strip out parody info
                     if (sName[1].Contains('(')) {
-                        TxBx_Title.Text = sName[1].Substring(0, sName[1].IndexOf('(')).Trim();
+                        sName[1] = sName[1].Substring(0, sName[1].IndexOf('(')).Trim();
+                        TxBx_Title.Text = sName[1];
                     }
                     else TxBx_Title.Text = sName[1].Trim();
                 }
+                return string.Format("artist:{0} title:{1}",
+                    sName[0].Trim().Replace(' ', '_'), sName[1].Trim().Replace(' ', '_'));
             }
             else {
                 TxBx_Title.Text = TxBx_Title.Text.Insert(
                     TxBx_Title.SelectionStart, sRaw);
                 TxBx_Title.SelectionStart += sRaw.Length;
+                return sRaw;
             }
         }
 
@@ -1613,32 +1615,33 @@ namespace Nagru___Manga_Organizer
             switch (ActiveControl.GetType().Name) {
                 case "FixedRichTextBox":
                     FixedRichTextBox fr = ((FixedRichTextBox)ActiveControl);
-                    fr.SelectedText = "";
-                    fr.SelectionStart = InsertText(fr, sAdd, fr.SelectionStart);
+                    fr.SelectedText = sAdd;
                     if (TabControl.SelectedIndex == 2) bSavText = false;
                     break;
                 case "TextBox":
                 case "AutoCompleteTagger":
+                    if(ActiveControl.Name == "TxBx_Search") {
+                        TxBx_Search.SelectionStart = InsertText(
+                            TxBx_Search, SplitTitle(sAdd), TxBx_Search.SelectionStart);
+                        Search();
+                        break;
+                    }
+
                     TextBox txt = (TextBox)ActiveControl;
-                    txt.SelectedText = "";
                     if (txt.Name == "acTxBx_Tags" && sAdd.Contains("\r")) {
                         IEnumerable<string> ie = sAdd.Split('(', '\n');
-                        ie = ie.Where(s => !s.EndsWith("\r") && !s.EndsWith(")") && !s.Equals(""));
+                        ie = ie.Where(s => !s.EndsWith("\r") 
+                            && !s.EndsWith(")") && !s.Equals(""));
                         ie = ie.Select(s => s.TrimEnd());
                         sAdd = string.Join(", ", ie.ToArray());
                     }
-                    txt.SelectionStart = InsertText(
-                        txt, sAdd, txt.SelectionStart);
-                    if(txt.Name == "TxBx_Search")
-                        TxBx_Search_TextChanged(new object(), new EventArgs());
+                    txt.SelectedText = sAdd;
                     break;
                 case "ComboBox":
                     ComboBox cb = (ComboBox)ActiveControl;
-                    cb.SelectedText = "";
-                    if (cb.Text == string.Empty
-                        && TxBx_Title.Text == string.Empty)
-                        SplitTitle(sAdd);
-                    else cb.SelectionStart = InsertText(cb, sAdd, cb.SelectionStart);
+                    
+                    if(sAdd.Contains('[')) SplitTitle(sAdd);
+                    else cb.SelectedText = sAdd;
                     break;
             }
         }
@@ -1773,6 +1776,11 @@ namespace Nagru___Manga_Organizer
                     }
                     acTxBx_Tags.SelectionStart = InsertText(
                         acTxBx_Tags, sAdd, acTxBx_Tags.SelectionStart);
+                    break;
+                case "TxBx_Search":
+                    TxBx_Search.SelectionStart = InsertText(
+                        TxBx_Search, SplitTitle(sAdd), TxBx_Search.SelectionStart);
+                    Search();
                     break;
             }
         }
