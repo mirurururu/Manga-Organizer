@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using System.Drawing;
 using System.Windows.Forms;
+using SCA = SharpCompress.Archive;
 
 namespace Nagru___Manga_Organizer
 {
@@ -11,7 +12,8 @@ namespace Nagru___Manga_Organizer
     {
         public Dictionary<int, int> dtSort = new Dictionary<int, int>();
         public List<string> lFiles { private get; set; }
-        public Ionic.Zip.ZipFile Zip { get; set; }
+        public SCA.IArchiveEntry[] Archive { get; set; }
+        public Rectangle rScale { private get; set; }
         public Image imgL { get; private set; }
         public Image imgR { get; private set; }
         public bool bWL { get; private set;}
@@ -85,17 +87,22 @@ namespace Nagru___Manga_Organizer
         /* Return selected pages to Browse_Img */
         private void UpdatePage()
         {
+            byte by = 0;
             iPage--;
+
             do {
+                by++;
                 if (++iPage >= lFiles.Count) iPage = 0;
                 imgR = TrySet(iPage);
-            } while (imgR == null);
+            } while (imgR == null && by < 10);
 
             if (!(bWR = imgR.Height < imgR.Width)) {
+                by = 0;
                 do {
+                    by++;
                     if (++iPage >= lFiles.Count) iPage = 0;
                     imgL = TrySet(iPage);
-                } while (imgL == null);
+                } while (imgL == null && by < 10);
 
                 if (bWL = imgL.Height < imgL.Width)
                     iPage--;
@@ -107,13 +114,27 @@ namespace Nagru___Manga_Organizer
 
         private Bitmap TrySet(int i)
         {
+            Bitmap bmpTmp = null;
+            MemoryStream ms = new MemoryStream();
+
             try {
-                if (Zip != null && !File.Exists(lFiles[i]))
-                    Zip[dtSort[i]].Extract(Zip.TempFileFolder,
-                        Ionic.Zip.ExtractExistingFileAction.DoNotOverwrite);
-                return new Bitmap(lFiles[i]);
+                if (Archive != null) {
+                    Archive[dtSort[i]].WriteTo(ms);
+                } else {
+                    FileStream fs = new FileStream(lFiles[i], FileMode.Open);
+                    fs.CopyTo(ms);
+                    fs.Dispose();
+                }
+
+                bmpTmp = ExtImage.Scale(new Bitmap(ms),
+                    rScale.Width, rScale.Height);
+            } catch (Exception Ex) {
+                Console.WriteLine(Ex.Message);
+            } finally {
+                ms.Dispose();
             }
-            catch { return null; }
+
+            return bmpTmp;
         }
     }
 }

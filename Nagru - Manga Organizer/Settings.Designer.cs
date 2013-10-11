@@ -196,9 +196,9 @@
             this.ChkBx_Zip.AutoSize = true;
             this.ChkBx_Zip.Location = new System.Drawing.Point(6, 30);
             this.ChkBx_Zip.Name = "ChkBx_Zip";
-            this.ChkBx_Zip.Size = new System.Drawing.Size(68, 17);
+            this.ChkBx_Zip.Size = new System.Drawing.Size(73, 17);
             this.ChkBx_Zip.TabIndex = 0;
-            this.ChkBx_Zip.Text = "Zip files?";
+            this.ChkBx_Zip.Text = "Archives?";
             this.ChkBx_Zip.UseVisualStyleBackColor = true;
             this.ChkBx_Zip.CheckedChanged += new System.EventHandler(this.ChkBx_Defaults_CheckedChanged);
             // 

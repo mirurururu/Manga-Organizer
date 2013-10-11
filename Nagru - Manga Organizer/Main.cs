@@ -4,10 +4,10 @@
  * Desc: Handles organization of manga library
  * 
  * This program is distributed under the
- * GNU General Public License v3
+ * GNU General Public License v3 (GPLv3)
  * 
- * Ionic.Zip.dll is distributed under the 
- * Microsoft Public License (Ms-PL)
+ * SharpCompress.dll is distributed under the 
+ * MIT\Expat License (MIT)
  */
 
 using System;
@@ -19,7 +19,7 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using Ionic.Zip;
+using SCA = SharpCompress.Archive;
 
 namespace Nagru___Manga_Organizer
 {
@@ -103,9 +103,10 @@ namespace Nagru___Manga_Organizer
                     SearchOption.TopDirectoryOnly, "*.zip|*.cbz");
 
                 if (sFiles.Length > 0) {
-                    if(ZipFile.IsZipFile(sFiles[0])) {
-                        using (ZipFile zip = ZipFile.Read(sFiles[0]))
-                            iPages = (ushort)zip.Count;
+                    if(Nagru___Manga_Organizer.Main.IsArchive(sFiles[0])) {
+                        SCA.IArchive scArchive = SCA.ArchiveFactory.Open(sFiles[0]);
+                        iPages = (ushort)scArchive.Entries.Count();
+                        scArchive.Dispose();
                     }
                 }
                 else iPages = (ushort)ExtDir.GetFiles(
@@ -297,9 +298,9 @@ namespace Nagru___Manga_Organizer
         System.Reflection.Assembly CurrentDomain_AssemblyResolve(
             object sender, ResolveEventArgs args)
         {
-            if (args.Name.Contains("Ionic.Zip"))
+            if (args.Name.Contains("SharpCompress"))
                 return (sender as AppDomain).Load(Nagru___Manga_Organizer.
-                    Properties.Resources.Ionic_Zip);
+                    Properties.Resources.SharpCompress);
             return null;
         }
 
@@ -563,50 +564,60 @@ namespace Nagru___Manga_Organizer
         #endregion
 
         #region Tab_View
-        /* Select location of manga entry   */
+        /* Select location of manga entry */
         private void Btn_Loc_Click(object sender, EventArgs e)
         {
             string sPath = TxBx_Loc.Text;
-            if(Properties.Settings.Default.DefZip)
-            {
-                //Try to auto-magically grab folder path
-                if (!(sPath != "" && File.Exists(sPath))) {
-                    sPath = string.Format("{0}\\[{1}] {2}",
-                        Properties.Settings.Default.DefLoc,
-                        CmbBx_Artist.Text, TxBx_Title.Text);
+            bool bFile = false, bDir = false;
+
+            //try to auto-magically grab folder\file path
+            if(File.Exists(sPath)) 
+                bFile = true;
+            else if(Directory.Exists(sPath)) 
+                bDir = true;
+            else {
+                sPath = string.Format("{0}\\[{1}] {2}",
+                    Properties.Settings.Default.DefLoc,
+                    CmbBx_Artist.Text, TxBx_Title.Text);
+                if (Directory.Exists(sPath)) bDir = true;
+                else {
+                    bFile = true;
                     if (File.Exists(sPath + ".zip"))
                         sPath += ".zip";
                     else if (File.Exists(sPath + ".cbz"))
                         sPath += ".cbz";
-                    else sPath = Properties.Settings.Default.DefLoc;
+                    else if (File.Exists(sPath + ".rar"))
+                        sPath += ".rar";
+                    else if (File.Exists(sPath + ".cbr"))
+                        sPath += ".cbr";
+                    else if (File.Exists(sPath + ".7z"))
+                        sPath += ".7z";
+                    else {
+                        sPath = Properties.Settings.Default.DefLoc;
+                        bFile = false;
+                    }
                 }
+            }
 
+            if(bFile || (!bDir && Properties.Settings.Default.DefZip)) {
+                //select file
                 OpenFileDialog ofd = new OpenFileDialog();
-                ofd.InitialDirectory = sPath;
-                ofd.Filter = "Zip File (*.zip, *.cbz)|*.zip;*.cbz";
+                ofd.InitialDirectory = (new FileInfo(sPath)).DirectoryName;
+                ofd.FileName = sPath;
+                ofd.Filter = "Archive (*.zip, *.rar, *.7z)|*.zip;*.cbz;*.rar;*.cbr;*.7z";
                 ofd.Title = "Select the location of the current entry:";
 
-                if(ofd.ShowDialog() == DialogResult.OK) {
+                if (ofd.ShowDialog() == DialogResult.OK) {
                     TxBx_Loc.Text = ofd.FileName;
                     ThreadPool.QueueUserWorkItem(GetImage);
 
-                    if(CmbBx_Artist.Text == "" && TxBx_Title.Text == "") {
-                        SplitTitle(Path.GetFileNameWithoutExtension(
-                            ofd.FileName));
-                    }
+                    if (CmbBx_Artist.Text == "" && TxBx_Title.Text == "")
+                        SplitTitle(Path.GetFileNameWithoutExtension(ofd.FileName));
                 }
                 ofd.Dispose();
             }
-            else
-            {
-                //Try to auto-magically grab folder path
-                if (!(sPath != "" && Directory.Exists(sPath))) {
-                    sPath = string.Format("{0}\\[{1}] {2}", Properties.Settings.Default.DefLoc,
-                        CmbBx_Artist.Text, TxBx_Title.Text);
-                    if (!Directory.Exists(sPath)) 
-                        sPath = Properties.Settings.Default.DefLoc;
-                }
-                
+            else {
+                //select directory
                 FolderBrowserDialog fbd = new FolderBrowserDialog();
                 fbd.RootFolder = Environment.SpecialFolder.Desktop;
                 fbd.Description = "Select the location of the current entry:";
@@ -616,9 +627,8 @@ namespace Nagru___Manga_Organizer
                     TxBx_Loc.Text = fbd.SelectedPath;
                     ThreadPool.QueueUserWorkItem(GetImage);
 
-                    if (CmbBx_Artist.Text == ""&& TxBx_Title.Text == "") {
+                    if (CmbBx_Artist.Text == "" && TxBx_Title.Text == "")
                         SplitTitle(Path.GetFileName(fbd.SelectedPath));
-                    }
                 }
                 fbd.Dispose();
             }
@@ -637,48 +647,34 @@ namespace Nagru___Manga_Organizer
             Browse_Img fmBrowse = new Browse_Img();
             fmBrowse.Page = iPage;
 
-            string[] sFiles = new string[0];
-            if (!File.Exists(TxBx_Loc.Text)) {
-                sFiles = ExtDir.GetFiles(TxBx_Loc.Text,
-                    SearchOption.TopDirectoryOnly, "*.zip|*.cbz");
-            }
-            else sFiles = new string[1] { TxBx_Loc.Text };
-
-            if (sFiles.Length > 0 
-                    && ZipFile.IsZipFile(sFiles[0])) {
-                string sDir = Path.GetDirectoryName(sFiles[0]) + "\\!tmp-mo";
-                fmBrowse.Files = new List<string>(25);
-
-                DirectoryInfo di = Directory.CreateDirectory(sDir);
-                using (ZipFile zip = ZipFile.Read(sFiles[0])) {
-                    for (int i = 0; i < zip.Count; i++) {
-                        fmBrowse.Files.Add(sDir + '\\' + zip[i].FileName);
-                    }
-
-                    zip.TempFileFolder = sDir;
-                    fmBrowse.ZipFile = zip;
-                    fmBrowse.ShowDialog();
-                    iPage = (short)fmBrowse.Page;
-                }
-                fmBrowse.Dispose();
-                GC.Collect(0);
-
-                try {
-                    Directory.Delete(sDir, true);
-                }
-                catch (IOException) {
-                    Console.WriteLine("Temp directory still in use.");
-                }
-            }
-            else {
+            if(Directory.Exists(TxBx_Loc.Text)) {
+                //process 'loose' images
+                string[] sFiles = new string[0];
                 if ((sFiles = ExtDir.GetFiles(TxBx_Loc.Text,
                         SearchOption.TopDirectoryOnly)).Length > 0) {
-                    fmBrowse.Files = sFiles.ToList<string>();
+                    fmBrowse.Files = new List<string>(sFiles.Length);
+                    fmBrowse.Files.AddRange(sFiles);
                     fmBrowse.ShowDialog();
                     iPage = (short)fmBrowse.Page;
                 }
-                fmBrowse.Dispose();
+            } else {
+                //process compressed images
+                SCA.IArchive scArchive = SCA.ArchiveFactory.Open(@TxBx_Loc.Text);
+                if (scArchive.Entries.Count() > 0) {
+                    SCA.IArchiveEntry[] scEntries = scArchive.Entries.ToArray();
+                    fmBrowse.Files = new List<string>(scEntries.Length);
+                    for (int i = 0; i < scEntries.Length; i++) {
+                        fmBrowse.Files.Add(scEntries[i].FilePath);
+                    }
+                    fmBrowse.Archive = scEntries;
+
+                    fmBrowse.ShowDialog();
+                    iPage = (short)fmBrowse.Page;
+                }
+                scArchive.Dispose();
             }
+            fmBrowse.Dispose();
+            GC.Collect(0);
         }
 
         /* Redraw cover image if size has changed */
@@ -828,28 +824,18 @@ namespace Nagru___Manga_Organizer
             BeginInvoke(new DelVoid(SetPicBxNull));
 
             //Get cover and filecount
-            string[] sFiles = new string[0];
-            if (!File.Exists(TxBx_Loc.Text)) {
-                sFiles = ExtDir.GetFiles(TxBx_Loc.Text,
-                    SearchOption.TopDirectoryOnly, "*.zip|*.cbz");
-            }
-            else sFiles = new string[1] { TxBx_Loc.Text };
-
-            if (sFiles.Length > 0
-                    && ZipFile.IsZipFile(sFiles[0])) {
-                using (ZipFile zip = ZipFile.Read(sFiles[0])) {
-                    if (zip.Count > 0) {
-                        SetPicBxImage(sFiles[0]);
-                        BeginInvoke(new DelInt(SetNudCount), zip.Count);
-                    }
+            if(File.Exists(TxBx_Loc.Text)) {
+                SetPicBxImage(TxBx_Loc.Text);
+            } else {
+                string[] sFiles = new string[0];
+                if ((sFiles = ExtDir.GetFiles(TxBx_Loc.Text,
+                    SearchOption.TopDirectoryOnly)).Length > 0) {
+                    SetPicBxImage(sFiles[0]);
+                    BeginInvoke(new DelInt(SetNudCount), sFiles.Length);
+                } else {
+                    BeginInvoke(new DelInt(SetOpenStatus), 0);
                 }
             }
-            else if ((sFiles = ExtDir.GetFiles(TxBx_Loc.Text,
-                    SearchOption.TopDirectoryOnly)).Length > 0) {
-                SetPicBxImage(sFiles[0]);
-                BeginInvoke(new DelInt(SetNudCount), sFiles.Length);
-            }
-            else BeginInvoke(new DelInt(SetOpenStatus), 0);
         }
 
         private static int InsertText(Control c, string sAdd, int iStart)
@@ -857,6 +843,18 @@ namespace Nagru___Manga_Organizer
             int iNewStart = iStart + sAdd.Length;
             c.Text = c.Text.Insert(iStart, sAdd);
             return iNewStart;
+        }
+
+        private static bool IsArchive(string sPath)
+        {
+            if (File.Exists(sPath)
+                    && (SCA.Rar.RarArchive.IsRarFile(sPath)
+                    || SCA.Zip.ZipArchive.IsZipFile(sPath)
+                    || SCA.SevenZip.SevenZipArchive.IsSevenZipFile(sPath))) {
+                return true;
+            } else {
+                return false;
+            }
         }
 
         /* Used to simulate JS Object Literal for JSON 
@@ -1081,33 +1079,55 @@ namespace Nagru___Manga_Organizer
 
         private void SetPicBxImage(string sPath)
         {
-            if (ZipFile.IsZipFile(sPath)) {
-                using (ZipFile zip = ZipFile.Read(sPath)) {
-                    if (zip.Count == 0) return;
-                    sPath = Path.GetDirectoryName(sPath);
-                    Directory.CreateDirectory(sPath += "\\!tmp-mo");
+            if(IsArchive(sPath)) {
+                SCA.IArchive scArch = SCA.ArchiveFactory.Open(sPath);
+                int iCount = scArch.Entries.Count();
+                BeginInvoke(new DelInt(SetNudCount), iCount);
 
+                if(iCount > 0) {
                     //account for terrible default zip-sorting
-                    List<string> ze = new List<string>();
-                    ze.AddRange(zip.EntryFileNames);
-                    ze.Sort(new TrueCompare());
-                    int iTrueFirst = 0;
-                    foreach (string sFileName in zip.EntryFileNames) {
-                        if (sFileName == ze[0]) break;
-                        iTrueFirst++;
+                    int iFirst = 0;
+                    SCA.IArchiveEntry[] scEntries = 
+                        scArch.Entries.ToArray();
+                    List<string> lEntries = new List<string>();
+                    for(int i = 0; i < iCount; i++) {
+                        if(scEntries[i].FilePath.EndsWith("jpg")
+                                || scEntries[i].FilePath.EndsWith("jpeg")
+                                || scEntries[i].FilePath.EndsWith("png")
+                                || scEntries[i].FilePath.EndsWith("bmp"))
+                            lEntries.Add(scEntries[i].FilePath);
+                    }
+                    if (lEntries.Count == 0) return;
+                    lEntries.Sort(new TrueCompare());
+                    for (int i = 0; i < iCount; i++) {
+                        if(scEntries[i].FilePath.Equals(lEntries[0]))
+                            break;
+                        iFirst++;
                     }
 
+                    //load image
                     try {
-                        zip[iTrueFirst].Extract(sPath,
-                            ExtractExistingFileAction.DoNotOverwrite);
-                        TrySet(sPath + '\\' + ze[0]);
-                        Directory.Delete(sPath, true);
-                    } catch (IOException exc) {
-                        Console.WriteLine(exc.Message);
+                        MemoryStream ms = new MemoryStream();
+                        scEntries[iFirst].WriteTo(ms);
+                        using (Bitmap bmpTmp = new Bitmap(ms)) {
+                            PicBx_Cover.Image = ExtImage.Scale(bmpTmp,
+                                PicBx_Cover.Width, PicBx_Cover.Height);
+                        }
+                        ms.Dispose();
+                    } catch (Exception Exc) {
+                        MessageBox.Show("The following file could not be loaded:\n" + 
+                            sPath + '\\' + scEntries[iFirst].FilePath,
+                            Application.ProductName, MessageBoxButtons.OK, 
+                            MessageBoxIcon.Exclamation);
+                        Console.WriteLine(Exc.Message);
+                    } finally {
+                        GC.Collect(0);
                     }
                 }
+                scArch.Dispose();
+            } else {
+                TrySet(sPath);
             }
-            else TrySet(sPath);
         }
         private void TrySet(string s)
         {
@@ -1796,7 +1816,7 @@ namespace Nagru___Manga_Organizer
                     ThreadPool.QueueUserWorkItem(GetImage);
                 }
             }
-            else if (File.Exists(asDir[0]) && ZipFile.IsZipFile(asDir[0])) {
+            else if (File.Exists(asDir[0]) && IsArchive(asDir[0])) {
                 if (CmbBx_Artist.Text == "" && TxBx_Title.Text == "") {
                     SplitTitle(Path.GetFileNameWithoutExtension(asDir[0]));
                     ThreadPool.QueueUserWorkItem(GetImage);
@@ -1834,7 +1854,7 @@ namespace Nagru___Manga_Organizer
             if (sTemp == null) return;
             
             FileAttributes fa = File.GetAttributes(sTemp[0]);Text = fa.ToString();
-            if (fa == FileAttributes.Directory || ZipFile.IsZipFile(sTemp[0])
+            if (fa == FileAttributes.Directory || IsArchive(sTemp[0])
                     || fa.ToString() == "Directory, Archive")
                 e.Effect = DragDropEffects.Copy;
             else e.Effect = DragDropEffects.None;

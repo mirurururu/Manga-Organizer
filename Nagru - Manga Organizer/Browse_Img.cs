@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Drawing.Drawing2D;
 using System.Drawing;
 using System.IO;
+using SCA = SharpCompress.Archive;
 
 namespace Nagru___Manga_Organizer
 {
@@ -11,7 +12,7 @@ namespace Nagru___Manga_Organizer
     {
         public Dictionary<int, int> Sort = new Dictionary<int, int>();
         public List<string> Files { get; set; }
-        public Ionic.Zip.ZipFile ZipFile { get; set; }
+        public SCA.IArchiveEntry[] Archive { get; set; }
         public int Page { get; set; }
 
         Image imgR, imgL;
@@ -28,19 +29,17 @@ namespace Nagru___Manga_Organizer
         {
             //Compensate for zip files being improperly sorted
             Files.Sort(new TrueCompare());
-            if (ZipFile != null) {
-                int i = 0;
-                ICollection<string> zeBase = ZipFile.EntryFileNames;
-                foreach(string sFileName in zeBase) {
-                    for (int b = 0; b < Files.Count; b++) {
-                        if (sFileName != Path.GetFileName(Files[b]))
-                            continue;
-                        Sort.Add(b, i++);
-                        break;
+            if (Archive != null) {
+                for (int x = 0; x < Archive.Length; x++) {
+                    for (int y = 0; y < Archive.Length; y++) {
+                        if (Archive[x].FilePath.Equals(Files[y])) {
+                            Sort.Add(y, x);
+                            break;
+                        }
                     }
                 }
             }
-
+            
             //set up timer
             trFlip = new Timer();
             trFlip.Tick += trFlip_Tick;
@@ -112,7 +111,8 @@ namespace Nagru___Manga_Organizer
                     if (bAuto) trFlip.Stop();
                     Cursor.Show();
                     BrowseTo fmGoTo = new BrowseTo();
-                    fmGoTo.Zip = ZipFile;
+                    fmGoTo.rScale = picBx.Bounds;
+                    fmGoTo.Archive = Archive;
                     fmGoTo.lFiles = Files;
                     fmGoTo.dtSort = Sort;
                     fmGoTo.iPage = (bWideR || bWideL) ? 
@@ -123,9 +123,9 @@ namespace Nagru___Manga_Organizer
                         Page = fmGoTo.iPage;
                         bWideL = fmGoTo.bWL;
                         bWideR = fmGoTo.bWR;
-                        imgR = ExtImage.Scale(fmGoTo.imgR, picBx.Width, picBx.Height);
+                        imgR = (fmGoTo.imgR.Clone() as Bitmap);
                         imgL = (fmGoTo.imgL != null) ? 
-                            ExtImage.Scale(fmGoTo.imgL, picBx.Width, picBx.Height) : null;
+                            (fmGoTo.imgL.Clone() as Bitmap) : null;
                         picBx.Refresh();
                     }
 
@@ -166,19 +166,23 @@ namespace Nagru___Manga_Organizer
 
         private void Next()
         {
+            byte by = 0;
             bNext = true;
             Reset();
 
             do {
+                by++;
                 if (++Page >= Files.Count) Page = 0;
                 imgR = TrySet(Page);
-            } while (imgR == null);
+            } while (imgR == null && by < 10);
 
             if (!(bWideR = imgR.Height < imgR.Width)) {
+                by = 0;
                 do {
+                    by++;
                     if (++Page >= Files.Count) Page = 0;
                     imgL = TrySet(Page);
-                } while (imgL == null);
+                } while (imgL == null && by < 10);
 
                 if (bWideL = imgL.Height < imgL.Width)
                     Page--;
@@ -189,20 +193,24 @@ namespace Nagru___Manga_Organizer
         private void Prev()
         {
             if (Page != 0 && !(bWideR || bWideL)) Page--;
+            byte by = 0;
             bNext = false;
             Reset();
 
             do {
+                by++;
                 if (--Page < 0) Page = Files.Count - 1;
                 else if (Page >= Files.Count) Page = 0;
                 imgL = TrySet(Page);
-            } while (imgL == null);
+            } while (imgL == null && by < 10);
 
             if (!(bWideL = imgL.Height < imgL.Width)) {
+                by = 0;
                 do {
+                    by++;
                     if (--Page < 0) Page = Files.Count - 1;
                     imgR = TrySet(Page);
-                } while (imgR == null);
+                } while (imgR == null && by < 10);
                 
                 Page++;
                 bWideR = imgR.Height < imgR.Width;
@@ -212,14 +220,27 @@ namespace Nagru___Manga_Organizer
 
         private Bitmap TrySet(int i)
         {
+            Bitmap bmpTmp = null;
+            MemoryStream ms = new MemoryStream();
+
             try {
-                if (ZipFile != null && !File.Exists(Files[i]))
-                    ZipFile[Sort[i]].Extract(ZipFile.TempFileFolder, 
-                        Ionic.Zip.ExtractExistingFileAction.DoNotOverwrite);
-                return ExtImage.Scale(new Bitmap(Files[i]), 
+                if (Archive != null) {
+                    Archive[Sort[i]].WriteTo(ms);
+                } else {
+                    FileStream fs = new FileStream(Files[i], FileMode.Open);
+                    fs.CopyTo(ms);
+                    fs.Dispose();
+                }
+
+                bmpTmp = ExtImage.Scale(new Bitmap(ms),
                     picBx.Width, picBx.Height);
+            } catch (Exception Ex) {
+                Console.WriteLine(Ex.Message);
+            } finally {
+                ms.Dispose();
             }
-            catch { return null; }
+            
+            return bmpTmp;
         }
 
         private void Reset()

@@ -1,3 +1,8 @@
+#### v. 4.0.00 (Oct 11, 2013)
+	- Replaced Ionic.Zip with SharpCompress
+	- Now has RAR & 7-zip support
+	- Improved auto-magic file/folder selection
+
 #### v. 3.9.59 (Oct 08, 2013)
 	- Added drag/drop to search bar & auto-formatting of titles
 	- Improved tag scrollbar behaviour
