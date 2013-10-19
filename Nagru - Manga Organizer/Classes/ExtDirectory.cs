@@ -37,7 +37,8 @@ namespace Nagru___Manga_Organizer
             if (!Directory.Exists(Path)) return true;
 
             try {
-                string[] asDirs = Directory.GetDirectories(Path, "*", SearchOption.TopDirectoryOnly);
+                string[] asDirs = Directory.GetDirectories(Path, "*", 
+                    SearchOption.TopDirectoryOnly);
                 FileIOPermission fp;
 
                 for (int i = 0; i < asDirs.Length; i++) {
@@ -45,8 +46,9 @@ namespace Nagru___Manga_Organizer
                         FileIOPermissionAccess.Write, asDirs[i]);
                     fp.Demand();
                 }
+            } catch (Exception) { 
+                return true;
             }
-            catch (Exception) { return true; }
             
             return false;
         }

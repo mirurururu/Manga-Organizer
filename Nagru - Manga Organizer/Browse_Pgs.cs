@@ -126,8 +126,9 @@ namespace Nagru___Manga_Organizer
                     fs.Dispose();
                 }
 
-                bmpTmp = ExtImage.Scale(new Bitmap(ms),
-                    rScale.Width, rScale.Height);
+                bmpTmp = new Bitmap(ms);
+                bmpTmp = ExtImage.Scale(bmpTmp,
+                    (bmpTmp.Width > bmpTmp.Height) ? rScale.Width : rScale.X, rScale.Height);
             } catch (Exception Ex) {
                 Console.WriteLine(Ex.Message);
             } finally {
@@ -135,6 +136,12 @@ namespace Nagru___Manga_Organizer
             }
 
             return bmpTmp;
+        }
+
+        ~BrowseTo()
+        {
+            imgL.Dispose();
+            imgR.Dispose();
         }
     }
 }

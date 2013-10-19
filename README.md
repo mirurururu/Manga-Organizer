@@ -16,7 +16,7 @@ Notes:
 - entry data can be automatically loaded from an EH gallery URL
 - 'auto-magic' also applies to copy/pasted tags, gallery titles, and folders or archives dropped onto the listview
 - browse images with your default image viewer (Menu -> Open) or with the built in one (click on the cover image)
-- the latter browser displays two images simultaneously and should be traversed from right to left (Also, hit 'f' to bring up a list of pages then double-click on a page to open it)
+- the latter browser displays two images simultaneously and should be traversed from right to left
 - to un-ignore an item in the scan operation, select it and press the ignore button again
 - if you set the root folder (Menu -> Settings -> Root Folder) to the root of your manga directory, the program will try to auto-find the correct path when new items are added.
 - open 'Menu -> About' to automatically check for an updated version

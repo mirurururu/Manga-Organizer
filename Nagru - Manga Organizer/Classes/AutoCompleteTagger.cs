@@ -153,6 +153,7 @@ namespace Nagru___Manga_Organizer.Classes
                             + lbSuggest.SelectedItem.ToString());
                         base.Select(getNextSepCharIndex(iEnd), 0);
                         lbSuggest.Hide();
+                        SetScroll();
                     }
                     e.Handled = e.SuppressKeyPress = true;
                     break;

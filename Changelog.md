@@ -1,3 +1,9 @@
+#### v. 4.1.12 (Oct 19, 2013)
+	- Added merged File/Folder browser
+	- Fixed drag/drop text into search bar adding text to artist/title fields
+	- Fixed tag field's scrollbar not updating when new term added
+	- Fixed image scaling when image is undersized
+
 #### v. 4.0.00 (Oct 11, 2013)
 	- Replaced Ionic.Zip with SharpCompress
 	- Now has RAR & 7-zip support

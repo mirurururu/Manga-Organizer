@@ -68,23 +68,13 @@ namespace Nagru___Manga_Organizer
             }
             public csEntry(string _Path)
             {
-                string sRaw = Path.GetFileNameWithoutExtension(_Path);
-
-                //Get formatted title
-                if (sRaw.StartsWith("(")) {
-                    int iPos = sRaw.IndexOf(')') + 2;
-                    if (sRaw.Length - 1 >= iPos)
-                        sRaw = sRaw.Remove(0, iPos);
-                }
-                string[] sName = ExtString.Split(sRaw, "[", "]");
-
-                //parse it out
-                if (sName.Length >= 2) {
-                    sArtist = sName[0].Trim();
-                    sTitle = sName[1].Trim();
-                }
-                else {
-                    sTitle = sRaw;
+                //Try to format raw title string
+                string[] asTitle = SplitTitle(Path.GetFileNameWithoutExtension(_Path));
+                if (asTitle.Length >= 2) {
+                    sArtist = asTitle[0];
+                    sTitle = asTitle[1];
+                } else {
+                    sTitle = asTitle[0];
                     sArtist = "";
                 }
 
@@ -122,13 +112,10 @@ namespace Nagru___Manga_Organizer
             }
 
             /* Override equals to compare entry titles */
-            public override bool Equals(object obj)
+            public bool Equals(csEntry en)
             {
-                csEntry en = obj as csEntry;
-                if (obj != null)
-                    return (en.sArtist + en.sTitle).Equals(
-                        sArtist + sTitle, StringComparison.OrdinalIgnoreCase);
-                return false;
+                return (en.sArtist + en.sTitle).Equals(
+                    sArtist + sTitle, StringComparison.OrdinalIgnoreCase);
             }
 
             /* 'Disable' hashtable */
@@ -279,12 +266,12 @@ namespace Nagru___Manga_Organizer
             this.Icon = Properties.Resources.dbIcon;
 
             //if database opened with "Shell->Open with..."
-            if (sFile.Length > 0 && sFile[0].EndsWith("\\MangaDatabase.bin") &&
-                Properties.Settings.Default.SavLoc != 
-                sFile[0].Substring(0, sFile[0].Length - iFileName))
-            {
+            if (sFile.Length > 0 
+                    && sFile[0].EndsWith("\\MangaDatabase.bin") 
+                    && Properties.Settings.Default.SavLoc 
+                    != sFile[0].Substring(0, sFile[0].Length - iFileName)) {
                 Properties.Settings.Default.SavLoc = sFile[0];
-                MessageBox.Show("Default database location changed to:\n\"" + sFile[0] + "\"",
+                MessageBox.Show("Default database location changed to:\n\"" + sFile[0] + '\"',
                     Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             
@@ -298,7 +285,7 @@ namespace Nagru___Manga_Organizer
         System.Reflection.Assembly CurrentDomain_AssemblyResolve(
             object sender, ResolveEventArgs args)
         {
-            if (args.Name.Contains("SharpCompress"))
+            if (args.Name.StartsWith("SharpCompress"))
                 return (sender as AppDomain).Load(Nagru___Manga_Organizer.
                     Properties.Resources.SharpCompress);
             return null;
@@ -315,6 +302,10 @@ namespace Nagru___Manga_Organizer
                 Tutorial fmTut = new Tutorial();
                 fmTut.ShowDialog();
                 fmTut.Dispose();
+
+                //set runtime sensitive default locations
+                Properties.Settings.Default.SavLoc = Environment.CurrentDirectory;
+                Properties.Settings.Default.DefLoc = Environment.CurrentDirectory;
             }
             #endif
 
@@ -360,15 +351,14 @@ namespace Nagru___Manga_Organizer
                 }
                 UpdateLV();
 
-                //set up artist & tagautocomplete
+                //set up artist & tag autocomplete
+                string[] asArtists = new string[lData.Count];
                 List<string> lTags = new List<string>(lData.Count);
-                List<string> lArtists = new List<string>(lData.Count);
                 for (int i = 0; i < lData.Count; i++) {
-                    lArtists.Add(lData[i].sArtist);
+                    asArtists[i] = lData[i].sArtist;
                     lTags.AddRange(lData[i].sTags.Split(','));
                 }
-                lArtists.Sort(new TrueCompare());
-                CmbBx_Artist.Items.AddRange(lArtists.Distinct().ToArray());
+                CmbBx_Artist.Items.AddRange(asArtists.Distinct().Select(x => x).ToArray());
                 acTxBx_Tags.KeyWords = lTags.Distinct().Select(x => x.Trim()).ToArray();
             }
         }
@@ -377,12 +367,13 @@ namespace Nagru___Manga_Organizer
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
         {
             //save changes to text automatically
-            if (!bSavText)
+            if (!bSavText) {
                 Properties.Settings.Default.Notes = frTxBx_Notes.Text;
+                bSavText = true;
+            }
 
             //save changes to manga on request
-            if (!bSavList)
-            {
+            if (!bSavList) {
                 switch (MessageBox.Show("Save before exiting?", Application.ProductName,
                     MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
                 {
@@ -432,6 +423,7 @@ namespace Nagru___Manga_Organizer
             this.ResumeLayout();
         }
 
+        /* Switch tabs with ctrl+n shortcuts */
         private void Main_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Control) {
@@ -545,9 +537,10 @@ namespace Nagru___Manga_Organizer
         private void LV_Entries_DoubleClick(object sender, EventArgs e)
         { OpenFile(); }
 
+        /* More convenient listview focusing */
         private void LV_Entries_MouseHover(object sender, EventArgs e)
         {
-            if (!LV_Entries.Focused)
+            if (!LV_Entries.Focused && !Delay.Enabled)
                 LV_Entries.Focus();
         }
 
@@ -568,20 +561,13 @@ namespace Nagru___Manga_Organizer
         private void Btn_Loc_Click(object sender, EventArgs e)
         {
             string sPath = TxBx_Loc.Text;
-            bool bFile = false, bDir = false;
 
             //try to auto-magically grab folder\file path
-            if(File.Exists(sPath)) 
-                bFile = true;
-            else if(Directory.Exists(sPath)) 
-                bDir = true;
-            else {
+            if (!File.Exists(sPath) && !Directory.Exists(sPath)) {
                 sPath = string.Format("{0}\\[{1}] {2}",
                     Properties.Settings.Default.DefLoc,
                     CmbBx_Artist.Text, TxBx_Title.Text);
-                if (Directory.Exists(sPath)) bDir = true;
-                else {
-                    bFile = true;
+                if (!Directory.Exists(sPath)) {
                     if (File.Exists(sPath + ".zip"))
                         sPath += ".zip";
                     else if (File.Exists(sPath + ".cbz"))
@@ -592,46 +578,23 @@ namespace Nagru___Manga_Organizer
                         sPath += ".cbr";
                     else if (File.Exists(sPath + ".7z"))
                         sPath += ".7z";
-                    else {
-                        sPath = Properties.Settings.Default.DefLoc;
-                        bFile = false;
-                    }
+                    else sPath = Properties.Settings.Default.DefLoc;
                 }
             }
 
-            if(bFile || (!bDir && Properties.Settings.Default.DefZip)) {
-                //select file
-                OpenFileDialog ofd = new OpenFileDialog();
-                ofd.InitialDirectory = (new FileInfo(sPath)).DirectoryName;
-                ofd.FileName = sPath;
-                ofd.Filter = "Archive (*.zip, *.rar, *.7z)|*.zip;*.cbz;*.rar;*.cbr;*.7z";
-                ofd.Title = "Select the location of the current entry:";
+            ExtFolderBrowserDialog xfbd = new ExtFolderBrowserDialog();
+            xfbd.ShowBothFilesAndFolders = true;
+            xfbd.RootFolder = Environment.SpecialFolder.MyComputer;
+            xfbd.SelectedPath = sPath;
 
-                if (ofd.ShowDialog() == DialogResult.OK) {
-                    TxBx_Loc.Text = ofd.FileName;
-                    ThreadPool.QueueUserWorkItem(GetImage);
+            if (xfbd.ShowDialog() == DialogResult.OK) {
+                TxBx_Loc.Text = xfbd.SelectedPath;
+                ThreadPool.QueueUserWorkItem(GetImage);
 
-                    if (CmbBx_Artist.Text == "" && TxBx_Title.Text == "")
-                        SplitTitle(Path.GetFileNameWithoutExtension(ofd.FileName));
-                }
-                ofd.Dispose();
+                if (CmbBx_Artist.Text == "" && TxBx_Title.Text == "")
+                    SplitTitleSet(SplitTitle(Path.GetFileName(xfbd.SelectedPath)));
             }
-            else {
-                //select directory
-                FolderBrowserDialog fbd = new FolderBrowserDialog();
-                fbd.RootFolder = Environment.SpecialFolder.Desktop;
-                fbd.Description = "Select the location of the current entry:";
-                fbd.SelectedPath = sPath;
-
-                if (fbd.ShowDialog() == DialogResult.OK) {
-                    TxBx_Loc.Text = fbd.SelectedPath;
-                    ThreadPool.QueueUserWorkItem(GetImage);
-
-                    if (CmbBx_Artist.Text == "" && TxBx_Title.Text == "")
-                        SplitTitle(Path.GetFileName(fbd.SelectedPath));
-                }
-                fbd.Dispose();
-            }
+            xfbd.Dispose();
         }
 
         /* Open URL in default Browser  */
@@ -1000,19 +963,23 @@ namespace Nagru___Manga_Organizer
             csTerm[] aTerms = new csTerm[sTags.Length];
             List<ListViewItem> lItems = new List<ListViewItem>(lData.Count);
 
+            //format text into search parameters
             for (int i = 0; i < sTags.Length; i++)
                 aTerms[i] = new csTerm(sTags[i]);
             
+            //compare entries to search parameters
             for (int i = 0; i < lData.Count; i++) {
-                bool bClash = true;
-                for (int y = 0; y < aTerms.Length; y++) {
-                    if (!aTerms[y].Equals(lData[i])) {
-                        bClash = false;
+                bool bInc = true;
+                for (int n = 0; n < aTerms.Length; n++) {
+                    if (!aTerms[n].Equals(lData[i])) {
+                        bInc = false;
                         break;
                     }
                 }
-                if (!bClash) continue;
+                //reject entry if no match (or filtered by param)
+                if (!bInc) continue;
 
+                //else add to list
                 ListViewItem lvi = new ListViewItem(lData[i].sArtist);
                 if (lData[i].byRat == 5) lvi.BackColor = Color.LightYellow;
                 lvi.SubItems.AddRange(new string[] {
@@ -1072,9 +1039,7 @@ namespace Nagru___Manga_Organizer
 
         private void SetOpenStatus(int iExists)
         {
-            if (iExists == 1)
-                MnTS_Open.Visible = true;
-            else MnTS_Open.Visible = false;
+            MnTS_Open.Visible = (iExists == 1);
         }
 
         private void SetPicBxImage(string sPath)
@@ -1154,7 +1119,7 @@ namespace Nagru___Manga_Organizer
             }
         }
 
-        private string SplitTitle(string sRaw)
+        private static string[] SplitTitle(string sRaw)
         {
             //strip out comiket\circle\etc info
             if (sRaw.StartsWith("(")) {
@@ -1166,31 +1131,33 @@ namespace Nagru___Manga_Organizer
             
             //Send to artist/title fields
             if (sName.Length >= 2) {
-                if (CmbBx_Artist.Text == "") {
-                    //strip out scanlation info
-                    if(sName[0].Contains('(')) {
-                        sName[0] = sName[0].Substring(sName[0].IndexOf('(') + 1);
-                        sName[0] = sName[0].Substring(0, sName[0].Length - 1);
-                        CmbBx_Artist.Text = sName[0].Trim();
-                    }
-                    else CmbBx_Artist.Text = sName[0].Trim();
+                //strip out scanlation info
+                if (sName[0].Contains('(')) {
+                    sName[0] = sName[0].Substring(sName[0].IndexOf('(') + 1);
+                    sName[0] = sName[0].Substring(0, sName[0].Length - 1);
                 }
-                if (TxBx_Title.Text == "") {
-                    //strip out parody info
-                    if (sName[1].Contains('(')) {
-                        sName[1] = sName[1].Substring(0, sName[1].IndexOf('(')).Trim();
-                        TxBx_Title.Text = sName[1];
-                    }
-                    else TxBx_Title.Text = sName[1].Trim();
+                sName[0] = sName[0].Trim();
+
+                //strip out parody info
+                if (sName[1].Contains('(')) {
+                    sName[1] = sName[1].Substring(0, sName[1].IndexOf('('));
                 }
-                return string.Format("artist:{0} title:{1}",
-                    sName[0].Trim().Replace(' ', '_'), sName[1].Trim().Replace(' ', '_'));
+                sName[1] = sName[1].Trim();
+            }
+            return sName;
+        }
+        private void SplitTitleSet(string[] asProc)
+        {
+            if(asProc.Length >= 2) {
+                if (CmbBx_Artist.Text == "")
+                    CmbBx_Artist.Text = asProc[0];
+                if (TxBx_Title.Text == "")
+                    TxBx_Title.Text = asProc[1];
             }
             else {
                 TxBx_Title.Text = TxBx_Title.Text.Insert(
-                    TxBx_Title.SelectionStart, sRaw);
-                TxBx_Title.SelectionStart += sRaw.Length;
-                return sRaw;
+                    TxBx_Title.SelectionStart, asProc[0]);
+                TxBx_Title.SelectionStart += asProc[0].Length;
             }
         }
 
@@ -1292,6 +1259,7 @@ namespace Nagru___Manga_Organizer
             lvi.SubItems[4].Text = lData[indx].sType;
             LV_Entries.Sort();
 
+            //check if entry should still be displayed
             int iPos = lvi.Index;
             if (ChkBx_ShowFav.Checked 
                     && !(lData[indx].byRat == 5))  {
@@ -1445,6 +1413,7 @@ namespace Nagru___Manga_Organizer
                     }
                 } catch {
                     bExc = true;
+                    Text = "The URL was invalid or the connection timed out.";
                 } finally {
                     //parse metadata
                     if(!bExc && asResp.Length >= 11) {
@@ -1452,7 +1421,7 @@ namespace Nagru___Manga_Organizer
                         
                         //set artist/title
                         string sRaw = asResp[2].Split(':')[1].Substring(1);
-                        SplitTitle(ExtString.ReplaceHTML(sRaw));
+                        SplitTitleSet(SplitTitle(ExtString.ReplaceHTML(sRaw)));
 
                         //set entry type
                         CmbBx_Type.Text = asResp[4].Split(':')[1].Substring(1);
@@ -1473,14 +1442,13 @@ namespace Nagru___Manga_Organizer
                         asResp[11] = asResp[11].Split(':')[1].Substring(2);
                         acTxBx_Tags.Text = string.Join(", ", asResp, 11, asResp.Length - 11);
                         acTxBx_Tags.Text = acTxBx_Tags.Text.Substring(0, acTxBx_Tags.Text.Length - 5);
-                    }
-                    else {
+                        
+                        Text = "Finished";
+                    } else {
                         MessageBox.Show("The URL was invalid or the connection timed out.",
                             Application.ProductName, MessageBoxButtons.OK, 
                             MessageBoxIcon.Exclamation);
                     }
-
-                    Text = "Finished";
                     this.Cursor = Cursors.Default;
                 }
             }
@@ -1641,8 +1609,11 @@ namespace Nagru___Manga_Organizer
                 case "TextBox":
                 case "AutoCompleteTagger":
                     if(ActiveControl.Name == "TxBx_Search") {
+                        string[] asTitle = SplitTitle(sAdd);
+                        sAdd = (asTitle.Length < 2) ? sAdd : string.Format("artist:{0} title:{1}",
+                            asTitle[0].Replace(' ', '_'), asTitle[1].Replace(' ', '_'));
                         TxBx_Search.SelectionStart = InsertText(
-                            TxBx_Search, SplitTitle(sAdd), TxBx_Search.SelectionStart);
+                            TxBx_Search, sAdd, TxBx_Search.SelectionStart);
                         Search();
                         break;
                     }
@@ -1660,7 +1631,7 @@ namespace Nagru___Manga_Organizer
                 case "ComboBox":
                     ComboBox cb = (ComboBox)ActiveControl;
                     
-                    if(sAdd.Contains('[')) SplitTitle(sAdd);
+                    if(sAdd.Contains('[')) SplitTitleSet(SplitTitle(sAdd));
                     else cb.SelectedText = sAdd;
                     break;
             }
@@ -1778,12 +1749,12 @@ namespace Nagru___Manga_Organizer
                         frTxBx_Notes, sAdd, frTxBx_Notes.SelectionStart);
                     break;
                 case "CmbBx_Artist":
-                    if (sAdd.Contains('[')) SplitTitle(sAdd);
+                    if (sAdd.Contains('[')) SplitTitleSet(SplitTitle(sAdd));
                     else CmbBx_Artist.SelectionStart = InsertText(
                         CmbBx_Artist, sAdd, CmbBx_Artist.SelectionStart);
                     break;
                 case "TxBx_Title":
-                    if (sAdd.Contains('[')) SplitTitle(sAdd);
+                    if (sAdd.Contains('[')) SplitTitleSet(SplitTitle(sAdd));
                     else TxBx_Title.SelectionStart = InsertText(
                         TxBx_Title, sAdd, TxBx_Title.SelectionStart);
                     break;
@@ -1798,8 +1769,11 @@ namespace Nagru___Manga_Organizer
                         acTxBx_Tags, sAdd, acTxBx_Tags.SelectionStart);
                     break;
                 case "TxBx_Search":
+                    string[] asTitle = SplitTitle(sAdd);
+                    sAdd = (asTitle.Length < 2) ? sAdd : string.Format("artist:{0} title:{1}", 
+                        asTitle[0].Replace(' ', '_'), asTitle[1].Replace(' ', '_'));
                     TxBx_Search.SelectionStart = InsertText(
-                        TxBx_Search, SplitTitle(sAdd), TxBx_Search.SelectionStart);
+                        TxBx_Search, sAdd, TxBx_Search.SelectionStart);
                     Search();
                     break;
             }
@@ -1812,13 +1786,13 @@ namespace Nagru___Manga_Organizer
 
             if(Directory.Exists(asDir[0])) {
                 if (CmbBx_Artist.Text == "" && TxBx_Title.Text == "") {
-                    SplitTitle(Path.GetDirectoryName(asDir[0]));
+                    SplitTitleSet(SplitTitle(Path.GetDirectoryName(asDir[0])));
                     ThreadPool.QueueUserWorkItem(GetImage);
                 }
             }
             else if (File.Exists(asDir[0]) && IsArchive(asDir[0])) {
                 if (CmbBx_Artist.Text == "" && TxBx_Title.Text == "") {
-                    SplitTitle(Path.GetFileNameWithoutExtension(asDir[0]));
+                    SplitTitleSet(SplitTitle(Path.GetFileNameWithoutExtension(asDir[0])));
                     ThreadPool.QueueUserWorkItem(GetImage);
                 }
             }

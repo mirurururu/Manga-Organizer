@@ -111,7 +111,8 @@ namespace Nagru___Manga_Organizer
                     if (bAuto) trFlip.Stop();
                     Cursor.Show();
                     BrowseTo fmGoTo = new BrowseTo();
-                    fmGoTo.rScale = picBx.Bounds;
+                    fmGoTo.rScale = new Rectangle((int)fWidth, 0,
+                         picBx.Width, picBx.Height);
                     fmGoTo.Archive = Archive;
                     fmGoTo.lFiles = Files;
                     fmGoTo.dtSort = Sort;
@@ -232,8 +233,9 @@ namespace Nagru___Manga_Organizer
                     fs.Dispose();
                 }
 
+                bmpTmp = new Bitmap(ms);
                 bmpTmp = ExtImage.Scale(new Bitmap(ms),
-                    picBx.Width, picBx.Height);
+                    (bmpTmp.Width > bmpTmp.Height) ?  picBx.Width:fWidth , picBx.Height);
             } catch (Exception Ex) {
                 Console.WriteLine(Ex.Message);
             } finally {
@@ -282,14 +284,14 @@ namespace Nagru___Manga_Organizer
         {
             g.DrawImage(img,
                 (bWideL) ? (int)(fWidth - img.Width / 2.0) : fWidth - img.Width - 5,
-                (bWideL) ? (int)(picBx.Height / 2.0 - img.Height / 2.0) : 0,
+                (int)(picBx.Height / 2.0 - img.Height / 2.0),
                 img.Width, img.Height);
         }
         private void DrawImage_R(Graphics g, Image img)
         {
             g.DrawImage(img,
                 (bWideR) ? (int)(fWidth - img.Width / 2.0) : fWidth + 5,
-                (bWideR) ? (int)(picBx.Height / 2.0 - img.Height / 2.0) : 0,
+                (int)(picBx.Height / 2.0 - img.Height / 2.0),
                 img.Width, img.Height);
         }
 
@@ -298,18 +300,21 @@ namespace Nagru___Manga_Organizer
 
         private void Browse_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if(imgL != null) imgL.Dispose();
-            if(imgR != null) imgR.Dispose();
             if (bAuto) {
                 Properties.Settings.Default.Interval = trFlip.Interval;
                 Properties.Settings.Default.Save();
                 trFlip.Stop();
             }
-            trFlip.Dispose();
-            GC.Collect(0);
 
             Cursor.Show();
             Page += 2;
+        }
+
+        ~Browse_Img()
+        {
+            imgL.Dispose();
+            imgR.Dispose();
+            trFlip.Dispose();
         }
     }
 }

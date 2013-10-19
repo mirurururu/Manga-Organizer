@@ -122,9 +122,12 @@
 - Scanning: Press 'Scan' to check a directory for new items, then highlight your choices and press 'Add'
 - Drag/Drop: Drop a selection of folders, or archives, onto the column view
 - Manually: Add them individually from the 'View' tab, then press the 'New' button
-	
-If your collection is mostly compressed, please check the 'Default archives' setting under:
-'View -&gt; Menu -&gt; Settings'</value>
+
+
+
+
+
+</value>
   </data>
   <data name="lbl_Exp1.Text" xml:space="preserve">
     <value>The most important thing is the metadata

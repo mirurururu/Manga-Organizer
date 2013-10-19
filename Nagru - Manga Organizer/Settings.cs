@@ -28,7 +28,6 @@ namespace Nagru___Manga_Organizer
             Nud_Intv.Value = Properties.Settings.Default.Interval;
             picBx_Colour.BackColor = Properties.Settings.Default.DefColour;
             ChkBx_Gridlines.Checked = Properties.Settings.Default.DefGrid;
-            ChkBx_Zip.Checked = Properties.Settings.Default.DefZip;
             string[] asIgn = Properties.Settings.Default.Ignore.Split('|');
             for (int i = 0; i < asIgn.Length; i++) {
                 if (asIgn[i] == "") continue;
@@ -160,7 +159,6 @@ namespace Nagru___Manga_Organizer
             Properties.Settings.Default.Interval = (int)Nud_Intv.Value;
             Properties.Settings.Default.DefColour = picBx_Colour.BackColor;
             Properties.Settings.Default.DefGrid = ChkBx_Gridlines.Checked;
-            Properties.Settings.Default.DefZip = ChkBx_Zip.Checked;
             Properties.Settings.Default.Ignore = sIgnored;
             Properties.Settings.Default.Save();
             bNew = false; bSave = true;

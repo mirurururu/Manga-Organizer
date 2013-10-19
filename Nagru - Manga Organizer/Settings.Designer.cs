@@ -41,7 +41,6 @@
             this.lblIgnored = new System.Windows.Forms.Label();
             this.grBxToggle = new System.Windows.Forms.GroupBox();
             this.ChkBx_Gridlines = new System.Windows.Forms.CheckBox();
-            this.ChkBx_Zip = new System.Windows.Forms.CheckBox();
             this.ckLbx_Ign = new System.Windows.Forms.CheckedListBox();
             this.Btn_Save = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.Nud_Intv)).BeginInit();
@@ -172,7 +171,6 @@
             // grBxToggle
             // 
             this.grBxToggle.Controls.Add(this.ChkBx_Gridlines);
-            this.grBxToggle.Controls.Add(this.ChkBx_Zip);
             this.grBxToggle.Location = new System.Drawing.Point(179, 196);
             this.grBxToggle.Name = "grBxToggle";
             this.grBxToggle.Size = new System.Drawing.Size(139, 84);
@@ -183,24 +181,13 @@
             // ChkBx_Gridlines
             // 
             this.ChkBx_Gridlines.AutoSize = true;
-            this.ChkBx_Gridlines.Location = new System.Drawing.Point(6, 53);
+            this.ChkBx_Gridlines.Location = new System.Drawing.Point(15, 36);
             this.ChkBx_Gridlines.Name = "ChkBx_Gridlines";
             this.ChkBx_Gridlines.Size = new System.Drawing.Size(101, 17);
             this.ChkBx_Gridlines.TabIndex = 1;
             this.ChkBx_Gridlines.Text = "Draw grid lines?";
             this.ChkBx_Gridlines.UseVisualStyleBackColor = true;
             this.ChkBx_Gridlines.CheckedChanged += new System.EventHandler(this.ChkBx_Defaults_CheckedChanged);
-            // 
-            // ChkBx_Zip
-            // 
-            this.ChkBx_Zip.AutoSize = true;
-            this.ChkBx_Zip.Location = new System.Drawing.Point(6, 30);
-            this.ChkBx_Zip.Name = "ChkBx_Zip";
-            this.ChkBx_Zip.Size = new System.Drawing.Size(73, 17);
-            this.ChkBx_Zip.TabIndex = 0;
-            this.ChkBx_Zip.Text = "Archives?";
-            this.ChkBx_Zip.UseVisualStyleBackColor = true;
-            this.ChkBx_Zip.CheckedChanged += new System.EventHandler(this.ChkBx_Defaults_CheckedChanged);
             // 
             // ckLbx_Ign
             // 
@@ -274,7 +261,6 @@
         private System.Windows.Forms.Label lblIgnored;
         private System.Windows.Forms.GroupBox grBxToggle;
         private System.Windows.Forms.CheckBox ChkBx_Gridlines;
-        private System.Windows.Forms.CheckBox ChkBx_Zip;
         private System.Windows.Forms.CheckedListBox ckLbx_Ign;
         private System.Windows.Forms.Button Btn_Save;
     }

@@ -22,8 +22,8 @@ namespace Nagru___Manga_Organizer
             Text += string.Format("(v. {0})", sVer);
             iVer = Convert.ToInt32(sVer.Replace(".", ""));
 
-            Lbl_P1.Text = "This program provides tagging, searching and other basic management for a\n" +
-            "folder directory. It is intended as a companion to the E-H website, and\n" +
+            Lbl_P1.Text = "This program provides tagging, searching and other basic management\n" +
+            "tools for manga. It is intended as a companion to the E-H website, and\n" +
             "optimally functions with directory names formatted as \"[Artist] Title\".\n" +
             "Copyright (C) 2012  Nagru\n\n\n" +
             "This program is free software; you can redistribute it and/or modify it\n" +
