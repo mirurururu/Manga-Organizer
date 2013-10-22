@@ -28,7 +28,7 @@ namespace Nagru___Manga_Organizer
         }
         
         private void ChkBx_FavsOnly0_CheckedChanged(object sender, EventArgs e)
-        { ShowStats((pnlView0.ContainsFocus) ? 1 : 0); }
+        { ShowStats((pnlView0.ContainsFocus) ? 0 : 1); }
 
         private void BtnSwitch_Click(object sender, EventArgs e)
         { SwitchView((pnlView0.ContainsFocus) ? 1 : 0); }

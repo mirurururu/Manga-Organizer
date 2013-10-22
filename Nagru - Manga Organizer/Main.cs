@@ -645,10 +645,14 @@ namespace Nagru___Manga_Organizer
         {
             if (PicBx_Cover.Image == null) return;
             SizeF sf = PicBx_Cover.Image.PhysicalDimension;
-            if (sf.Height < PicBx_Cover.Height)
-                bResize = true;
-            else if(sf.Width > PicBx_Cover.Width)
-                bResize = true;
+            if(sf.Width < sf.Height) {
+                if (PicBx_Cover.Height > sf.Height)
+                    bResize = true;
+            }
+            else /*if (sf.Width > sf.Height)*/ {
+                if (PicBx_Cover.Width - 1 > sf.Width)
+                    bResize = true;
+            }
         }
         private void Main_ResizeEnd(object sender, EventArgs e)
         {
@@ -1071,14 +1075,13 @@ namespace Nagru___Manga_Organizer
                     }
 
                     //load image
+                    MemoryStream ms = new MemoryStream();
                     try {
-                        MemoryStream ms = new MemoryStream();
                         scEntries[iFirst].WriteTo(ms);
                         using (Bitmap bmpTmp = new Bitmap(ms)) {
                             PicBx_Cover.Image = ExtImage.Scale(bmpTmp,
                                 PicBx_Cover.Width, PicBx_Cover.Height);
                         }
-                        ms.Dispose();
                     } catch (Exception Exc) {
                         MessageBox.Show("The following file could not be loaded:\n" + 
                             sPath + '\\' + scEntries[iFirst].FilePath,
@@ -1086,7 +1089,7 @@ namespace Nagru___Manga_Organizer
                             MessageBoxIcon.Exclamation);
                         Console.WriteLine(Exc.Message);
                     } finally {
-                        GC.Collect(0);
+                        ms.Dispose();
                     }
                 }
                 scArch.Dispose();

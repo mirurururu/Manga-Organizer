@@ -8,7 +8,7 @@ using SCA = SharpCompress.Archive;
 
 namespace Nagru___Manga_Organizer
 {
-    public partial class Browse_Img : Form
+    public partial class Browse_Img : Form, IDisposable
     {
         public Dictionary<int, int> Sort = new Dictionary<int, int>();
         public List<string> Files { get; set; }
@@ -312,9 +312,9 @@ namespace Nagru___Manga_Organizer
 
         ~Browse_Img()
         {
-            imgL.Dispose();
-            imgR.Dispose();
-            trFlip.Dispose();
+            if (imgL != null) imgL.Dispose();
+            if (imgR != null) imgR.Dispose();
+            if (trFlip != null) trFlip.Dispose();
         }
     }
 }

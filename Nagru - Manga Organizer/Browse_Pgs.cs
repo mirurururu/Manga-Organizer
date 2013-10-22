@@ -140,8 +140,8 @@ namespace Nagru___Manga_Organizer
 
         ~BrowseTo()
         {
-            imgL.Dispose();
-            imgR.Dispose();
+            if (imgL != null) imgL.Dispose();
+            if (imgR != null) imgR.Dispose();
         }
     }
 }

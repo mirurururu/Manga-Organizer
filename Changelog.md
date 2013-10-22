@@ -1,3 +1,6 @@
+#### v. 4.1.13 (Oct 21, 2013)
+	- Fixed broken Statistics page "Favs Only" function
+
 #### v. 4.1.12 (Oct 19, 2013)
 	- Added merged File/Folder browser
 	- Fixed drag/drop text into search bar adding text to artist/title fields
