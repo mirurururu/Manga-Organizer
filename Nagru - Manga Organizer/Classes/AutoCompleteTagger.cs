@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Drawing;
@@ -13,14 +14,23 @@ namespace Nagru___Manga_Organizer.Classes
         protected HScrollBar sbHorz;
         protected ListBox lbSuggest;
         protected List<string> lKeyWords;
-        protected readonly char cSep = ',';
+        protected char cSep = ',';
 
+        [DefaultValue(new string[0])]
+        [Description("Gets or sets the terms to be predicted.")]
         public string[] KeyWords {
             get { return lKeyWords.ToArray(); }
             set {
                 lKeyWords.Clear();
                 lKeyWords.AddRange(value);
             }
+        }
+
+        [DefaultValue(',')]
+        [Description("Gets or sets the delimeter character between tags.")]
+        public char Seperator {
+            get { return cSep; }
+            set { cSep = value; }
         }
         #endregion
 

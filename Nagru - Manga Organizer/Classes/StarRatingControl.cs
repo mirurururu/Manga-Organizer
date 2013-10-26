@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -9,19 +10,22 @@ namespace Nagru___Manga_Organizer
     public class StarRatingControl : Control
     {
         #region Properties
-        protected readonly Color cOutln = Color.DarkGray;
-        protected readonly Color cHover = Color.Yellow;
-        protected readonly Color cFill = Color.Goldenrod;
+        protected Color cOutln = Color.DarkGray;
+        protected Color cHover = Color.Yellow;
+        protected Color cFill = Color.Goldenrod;
         protected readonly GraphicsPath gpStar;
         protected readonly Rectangle[] rcArea;
         protected readonly Pen pnOutln;
-        protected readonly int iPadding = 8;
+        protected const int iPadding = 8;
         protected const int iHeight = 14;
         protected const int iWidth = 16;
         protected int iOutThick = 1,
             iHvrStar, iSelStar;
-        
+
 		protected bool IsHovering { get; private set; }
+
+        [DefaultValue(0)]
+        [Description("Gets or sets the currently hovered-over star.")]
         public int HoverStar {
             get { return iHvrStar; }
             set {
@@ -29,6 +33,9 @@ namespace Nagru___Manga_Organizer
                     iHvrStar = value;
             }
         }
+
+        [DefaultValue(0)]
+        [Description("Gets or sets the top currently selected star.")]
         public int SelectedStar {
             get { return iSelStar; }
             set {
@@ -38,6 +45,9 @@ namespace Nagru___Manga_Organizer
                 }
             }
         }
+
+        [DefaultValue(1)]
+        [Description("Gets or sets the stars outline thickness.")]
         public int OutlineThickness {
             get { return iOutThick; }
             set {
@@ -45,6 +55,35 @@ namespace Nagru___Manga_Organizer
                     iOutThick = value;
                     Invalidate();
                 }
+            }
+        }
+
+        [DefaultValue(typeof(Color), "DarkGray")]
+        [Description("Gets or sets the stars outline color.")]
+        public Color ColorOutline {
+            get { return cOutln; }
+            set {
+                cOutln = value;
+            }
+        }
+
+        [DefaultValue(typeof(Color), "Yellow")]
+        [Description("Gets or sets the stars hover color.")]
+        public Color ColorHover
+        {
+            get { return cHover; }
+            set {
+                cHover = value;
+            }
+        }
+
+        [DefaultValue(typeof(Color), "Goldenrod")]
+        [Description("Gets or sets the stars fill color.")]
+        public Color ColorFill
+        {
+            get { return cFill; }
+            set {
+                cFill = value;
             }
         }
         #endregion

@@ -860,6 +860,7 @@
             this.acTxBx_Tags.KeyWords = new string[0];
             this.acTxBx_Tags.Location = new System.Drawing.Point(52, 111);
             this.acTxBx_Tags.Name = "acTxBx_Tags";
+            this.acTxBx_Tags.Seperator = ',';
             this.acTxBx_Tags.Size = new System.Drawing.Size(440, 21);
             this.acTxBx_Tags.TabIndex = 2;
             this.acTxBx_Tags.TextChanged += new System.EventHandler(this.EntryAlt_Text);
