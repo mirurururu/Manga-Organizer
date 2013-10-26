@@ -1,5 +1,6 @@
-#### v. 4.1.23 (Oct 26, 2013)
+#### v. 4.1.24 (Oct 26, 2013)
 	- Added ability to select tag suggestions using the mouse
+	- Other small usability improvements to tag suggestions
 	
 #### v. 4.1.13 (Oct 21, 2013)
 	- Fixed broken Statistics page "Favs Only" function

@@ -258,7 +258,7 @@ namespace Nagru___Manga_Organizer
             }
         }
 
-        #region FormMethods
+        #region Form Methods
         public Main(string[] sFile)
         {
             InitializeComponent();
@@ -359,7 +359,8 @@ namespace Nagru___Manga_Organizer
                     lTags.AddRange(lData[i].sTags.Split(','));
                 }
                 CmbBx_Artist.Items.AddRange(asArtists.Distinct().Select(x => x).ToArray());
-                acTxBx_Tags.KeyWords = lTags.Distinct().Select(x => x.Trim()).ToArray();
+                acTxBx_Tags.KeyWords = lTags.Select(x => x.Trim()).OrderBy(
+                    x => x, new TrueCompare()).Distinct().ToArray();
             }
         }
 
@@ -764,7 +765,7 @@ namespace Nagru___Manga_Organizer
         { System.Diagnostics.Process.Start(e.LinkText); }
         #endregion
 
-        #region CustomMethods
+        #region Custom Methods
         private void AddEntries()
         {
             UpdateLV();
@@ -1202,7 +1203,7 @@ namespace Nagru___Manga_Organizer
         }
         #endregion
 
-        #region EntryOps
+        #region Menu: Entry Operations
         private void MnTS_New_Click(object sender, EventArgs e)
         {
             //reject when title is unfilled
@@ -1728,7 +1729,7 @@ namespace Nagru___Manga_Organizer
         }
         #endregion
 
-        #region DragDropEvents
+        #region Drag/Drop Events
         /* Show proper cursor when text is dragged over TxBx */
         private void DragEnterTxBx(object sender, DragEventArgs e)
         {

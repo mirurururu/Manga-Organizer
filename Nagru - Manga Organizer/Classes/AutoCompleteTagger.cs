@@ -13,8 +13,6 @@ namespace Nagru___Manga_Organizer.Classes
         protected HScrollBar sbHorz;
         protected ListBox lbSuggest;
         protected List<string> lKeyWords;
-        protected bool bListBoxAdded = false;
-        protected bool bHScrollAdded = false;
         protected readonly char cSep = ',';
 
         public string[] KeyWords {
@@ -29,79 +27,25 @@ namespace Nagru___Manga_Organizer.Classes
         public AutoCompleteTagger()
         {
             sbHorz = new HScrollBar();
+            sbHorz.Scroll += sbHorz_Scroll;
+            sbHorz.Height = 15;
+            sbHorz.Hide();
+
             lbSuggest = new ListBox();
             lKeyWords = new List<string>();
             lbSuggest.MouseUp += lbSuggest_MouseUp;
             lbSuggest.MouseMove += lbSuggest_MouseMove;
-
-            sbHorz.Scroll += sbHorz_Scroll;
-            sbHorz.Height = 15;
-        }
-        
-        void lbSuggest_MouseMove(object sender, MouseEventArgs e)
-        {
-            int indx = lbSuggest.IndexFromPoint(
-                lbSuggest.PointToClient(Cursor.Position));
-
-            if (indx >= 0)
-                lbSuggest.SelectedIndex = indx;
-        }
-        
-        /* Allow mouse clicks to select tags */
-        void lbSuggest_MouseUp(object sender, MouseEventArgs e)
-        {
-            int indx = lbSuggest.IndexFromPoint(
-                lbSuggest.PointToClient(Cursor.Position));
-            if (indx < 0) return;
-
-            lbSuggest.SelectedIndex = indx;
-            int iStart = getPrevSepCharIndex();
-            int iEnd = getNextSepCharIndex();
-            base.Text = base.Text.Remove(iStart, iEnd - iStart);
-            base.Text = base.Text.Insert(iStart, (iStart == 0 ? "" : " ")
-                + lbSuggest.SelectedItem.ToString());
-            base.Select(getNextSepCharIndex(iEnd), 0);
             lbSuggest.Hide();
-            SetScroll();
-            Select();
         }
-
-        /* Add new keywords if not contained */
-        public void UpdateAutoComplete()
+        
+        /* Hook child controls to parent (will be properly positioned later) */
+        protected override void InitLayout()
         {
-            bool bUnsorted = false;
-            string[] asTags = base.Text.Split(cSep);
-            for(int i = 0; i < asTags.Length; i++) {
-                asTags[i] = asTags[i].Trim();
-                if(!lKeyWords.Contains(asTags[i])) {
-                    lKeyWords.Add(asTags[i]);
-                    bUnsorted = true;
-                }
-            }
-
-            if (bUnsorted)
-                lKeyWords.Sort(new TrueCompare());
+            Parent.Controls.Add(lbSuggest);
+            Parent.Controls.Add(sbHorz);
+            base.InitLayout();
         }
-
-        /* Get bounds of keyword based on caret position */
-        private int getPrevSepCharIndex() {
-            int iPos = base.SelectionStart == base.Text.Length ? 
-                base.Text.Length - 1 : base.SelectionStart - 1;
-            for (int i = iPos; i > -1; i--) {
-                if (base.Text[i] == cSep)
-                    return i + 1;
-            }
-            return 0;
-        }
-        private int getNextSepCharIndex(int iStart = -1) {
-            if (iStart == -1) iStart = base.SelectionStart;
-            for (int i = iStart; i < base.Text.Length; i++) {
-                if (base.Text[i] == cSep)
-                    return i;
-            }
-            return base.Text.Length;
-        }
-
+        
         protected override void OnKeyUp(KeyEventArgs e)
         {
             //filter out listbox controls
@@ -118,35 +62,31 @@ namespace Nagru___Manga_Organizer.Classes
             int iEnd = getNextSepCharIndex();
             string sKey = base.Text.Substring(iStart, iEnd - iStart).Trim();
             
-            //hide & exit if empty
+            //hide & exit if empty, else show possible tags
+            lbSuggest.Items.Clear();
             if(sKey == string.Empty) {
                 lbSuggest.Hide();
             }
             else {
                 //re-pop suggestions
                 string[] asOpt = lKeyWords.Where(x => x.StartsWith(sKey)).ToArray();
-                if (asOpt.Length == 0) {
-                    lbSuggest.Hide();
-                }
-                else {
-                    asOpt = asOpt.Distinct().ToArray();
-                    Array.Sort(asOpt, new TrueCompare());
-                    lbSuggest.Items.Clear();
-                    lbSuggest.Items.AddRange(asOpt);
-                    
-                    //set lbSuggest location
-                    if (!bListBoxAdded) {
-                        Parent.Controls.Add(lbSuggest);
-                        bListBoxAdded = true;
-                    }
-                    lbSuggest.Width = Width;
-                    lbSuggest.Left = Left;
-                    lbSuggest.Top = Bottom;
-                    lbSuggest.Show();
-                    lbSuggest.BringToFront();
+                switch(asOpt.Length) {
+                    case 0: lbSuggest.Hide();
+                        break;
+                    case 1:
+                        if (asOpt[0] == sKey) lbSuggest.Hide();
+                        else {
+                            lbSuggest.Items.Add(asOpt[0]);
+                            SetListboxPosition();
+                        }
+                        break;
+                    default:
+                        lbSuggest.Items.AddRange(
+                            asOpt.OrderBy(x => x, new TrueCompare()).ToArray());
+                        SetListboxPosition();
+                        break;
                 }
             }
-            
             base.OnKeyUp(e);
         }
 
@@ -191,30 +131,12 @@ namespace Nagru___Manga_Organizer.Classes
 
             base.OnKeyDown(e);
         }
-
-        /* Show\Hide scrollbar as needed */
-        public void SetScroll()
-        {
-            int iWidth = TextRenderer.MeasureText(base.Text, base.Font).Width;
-            if (iWidth > base.Width) {
-                sbHorz.Maximum = iWidth / 5;
-                sbHorz.Value = base.SelectionStart;
-
-                if (!bHScrollAdded) {
-                    Parent.Controls.Add(sbHorz);
-                    bHScrollAdded = true;
-                }
-                sbHorz.Width = Width;
-                sbHorz.Left = Left;
-                sbHorz.Top = Bottom;
-                sbHorz.Show();
-            }
-            else sbHorz.Hide();
-        }
-
+        
+        /* Update scrollbar as user types */
         protected override void OnTextChanged(EventArgs e)
         {
             SetScroll();
+            if (this.Text == "") lbSuggest.Hide();
             base.OnTextChanged(e);
         }
 
@@ -235,6 +157,7 @@ namespace Nagru___Manga_Organizer.Classes
         /* Prevent listbox from showing when keyword changes */
         protected override void OnClick(EventArgs e)
         {
+            SetScroll();
             lbSuggest.Hide();
             base.OnClick(e);
         }
@@ -244,5 +167,100 @@ namespace Nagru___Manga_Organizer.Classes
             lbSuggest.Dispose();
             sbHorz.Dispose();
         }
+
+        #region Mouse Handling
+        /* Selects listbox item from mouse position */
+        private void lbSuggest_MouseMove(object sender, MouseEventArgs e)
+        {
+            int indx = lbSuggest.IndexFromPoint(
+                lbSuggest.PointToClient(Cursor.Position));
+
+            if (indx >= 0)
+                lbSuggest.SelectedIndex = indx;
+        }
+        
+        /* Allow mouse clicks to select tags */
+        private void lbSuggest_MouseUp(object sender, MouseEventArgs e)
+        {
+            int indx = lbSuggest.IndexFromPoint(
+                lbSuggest.PointToClient(Cursor.Position));
+            if (indx < 0) return;
+
+            lbSuggest.SelectedIndex = indx;
+            int iStart = getPrevSepCharIndex();
+            int iEnd = getNextSepCharIndex();
+            base.Text = base.Text.Remove(iStart, iEnd - iStart);
+            base.Text = base.Text.Insert(iStart, (iStart == 0 ? "" : " ")
+                + lbSuggest.SelectedItem.ToString());
+            base.Select(getNextSepCharIndex(iEnd), 0);
+            lbSuggest.Hide();
+            SetScroll();
+            Select();
+        }
+        #endregion
+
+        #region Custom Methods
+        /* Get bounds of keyword based on caret position */
+        private int getPrevSepCharIndex() {
+            int iPos = base.SelectionStart == base.Text.Length ? 
+                base.Text.Length - 1 : base.SelectionStart - 1;
+            for (int i = iPos; i > -1; i--) {
+                if (base.Text[i] == cSep)
+                    return i + 1;
+            }
+            return 0;
+        }
+        private int getNextSepCharIndex(int iStart = -1) {
+            if (iStart == -1) iStart = base.SelectionStart;
+            for (int i = iStart; i < base.Text.Length; i++) {
+                if (base.Text[i] == cSep)
+                    return i;
+            }
+            return base.Text.Length;
+        }
+
+        private void SetListboxPosition()
+        {
+            lbSuggest.Width = Width;
+            lbSuggest.Left = Left;
+            lbSuggest.Top = Bottom;
+            lbSuggest.Show();
+            lbSuggest.BringToFront();
+        }
+        
+        /* Show\Hide scrollbar as needed */
+        public void SetScroll()
+        {
+            int iWidth = TextRenderer.MeasureText(base.Text, base.Font).Width;
+            if (iWidth > base.Width) {
+                sbHorz.Maximum = iWidth / 5;
+                sbHorz.Value = base.SelectionStart;
+
+                //set sbHorz location
+                sbHorz.Width = Width;
+                sbHorz.Left = Left;
+                sbHorz.Top = Bottom;
+                sbHorz.Show();
+            }
+            else sbHorz.Hide();
+        }
+
+        /* Add new keywords if not contained */
+        public void UpdateAutoComplete()
+        {
+            bool bUnsorted = false;
+            string[] asTags = base.Text.Split(cSep);
+            for(int i = 0; i < asTags.Length; i++) {
+                asTags[i] = asTags[i].Trim();
+                if(!lKeyWords.Contains(asTags[i])) {
+                    lKeyWords.Add(asTags[i]);
+                    bUnsorted = true;
+                }
+            }
+
+            if (bUnsorted)
+                lKeyWords.Sort(new TrueCompare());
+        }
+        #endregion
     }
 }
