@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 
@@ -30,9 +31,39 @@ namespace Nagru___Manga_Organizer.Classes
             sbHorz = new HScrollBar();
             lbSuggest = new ListBox();
             lKeyWords = new List<string>();
+            lbSuggest.MouseUp += lbSuggest_MouseUp;
+            lbSuggest.MouseMove += lbSuggest_MouseMove;
 
             sbHorz.Scroll += sbHorz_Scroll;
             sbHorz.Height = 15;
+        }
+        
+        void lbSuggest_MouseMove(object sender, MouseEventArgs e)
+        {
+            int indx = lbSuggest.IndexFromPoint(
+                lbSuggest.PointToClient(Cursor.Position));
+
+            if (indx >= 0)
+                lbSuggest.SelectedIndex = indx;
+        }
+        
+        /* Allow mouse clicks to select tags */
+        void lbSuggest_MouseUp(object sender, MouseEventArgs e)
+        {
+            int indx = lbSuggest.IndexFromPoint(
+                lbSuggest.PointToClient(Cursor.Position));
+            if (indx < 0) return;
+
+            lbSuggest.SelectedIndex = indx;
+            int iStart = getPrevSepCharIndex();
+            int iEnd = getNextSepCharIndex();
+            base.Text = base.Text.Remove(iStart, iEnd - iStart);
+            base.Text = base.Text.Insert(iStart, (iStart == 0 ? "" : " ")
+                + lbSuggest.SelectedItem.ToString());
+            base.Select(getNextSepCharIndex(iEnd), 0);
+            lbSuggest.Hide();
+            SetScroll();
+            Select();
         }
 
         /* Add new keywords if not contained */
@@ -62,8 +93,7 @@ namespace Nagru___Manga_Organizer.Classes
             }
             return 0;
         }
-        private int getNextSepCharIndex(int iStart = -1)
-        {
+        private int getNextSepCharIndex(int iStart = -1) {
             if (iStart == -1) iStart = base.SelectionStart;
             for (int i = iStart; i < base.Text.Length; i++) {
                 if (base.Text[i] == cSep)
