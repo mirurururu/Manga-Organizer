@@ -243,7 +243,9 @@ namespace Nagru___Manga_Organizer.Classes
         {
             int iWidth = TextRenderer.MeasureText(base.Text, base.Font).Width;
             if (iWidth > base.Width) {
-                sbHorz.Maximum = iWidth / 5;
+                //scale scrollbar to more reflective size
+                const int iScale = 5;
+                sbHorz.Maximum = iWidth / iScale;
                 sbHorz.Value = base.SelectionStart;
 
                 //set sbHorz location

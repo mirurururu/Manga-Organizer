@@ -1,3 +1,6 @@
+#### v. 4.1.25 (Oct 27, 2013)
+	- Fixed FavsOnly bug where it wouldn't draw properly if the list was partially scrolled
+
 #### v. 4.1.24 (Oct 26, 2013)
 	- Added ability to select tag suggestions using the mouse
 	- Other small usability improvements to tag suggestions

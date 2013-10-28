@@ -830,12 +830,14 @@ namespace Nagru___Manga_Organizer
         private static string JSON(string sURL)
         {
             string[] asChunk = sURL.Split('/');
+
             if (asChunk.Length == 7) {
                 return string.Format(
                     "{{\"method\":\"gdata\",\"gidlist\":[[{0},\"{1}\"]]}}",
                     asChunk[4], asChunk[5]);
             }
             return string.Empty;
+            
         }
 
         /* Remove all entries less than 5 stars */
@@ -843,10 +845,15 @@ namespace Nagru___Manga_Organizer
         {
             Cursor = Cursors.WaitCursor;
             LV_Entries.BeginUpdate();
+
+            List<ListViewItem> lFavs = new List<ListViewItem>(100);
             for (int i = 0; i < LV_Entries.Items.Count; i++) {
-                if(LV_Entries.Items[i].BackColor != Color.LightYellow)
-                    LV_Entries.Items.RemoveAt(i--);
+                if (LV_Entries.Items[i].BackColor == Color.LightYellow)
+                    lFavs.Add(LV_Entries.Items[i]);
             }
+
+            LV_Entries.Items.Clear();
+            LV_Entries.Items.AddRange(lFavs.ToArray());
             LV_Entries.EndUpdate();
             Text = string.Format("Returned: {0:n0} entries", LV_Entries.Items.Count);
             Cursor = Cursors.Default;
@@ -1393,18 +1400,19 @@ namespace Nagru___Manga_Organizer
                 this.Cursor = Cursors.WaitCursor;
                 Text = "Sending request...";
 
+                //set up connection
+                ServicePointManager.DefaultConnectionLimit = 64;
+                HttpWebRequest rq = (HttpWebRequest)
+                    WebRequest.Create("http://g.e-hentai.org/api.php");
+                rq.ContentType = "application/json";
+                rq.Method = "POST";
+                rq.Timeout = 5000;
+                rq.KeepAlive = false;
+                rq.Proxy = null;
+
                 try
                 {
                     //send formatted request to EH API
-                    ServicePointManager.DefaultConnectionLimit = 64;
-                    HttpWebRequest rq = (HttpWebRequest)
-                        WebRequest.Create("http://g.e-hentai.org/api.php");
-                    rq.ContentType = "application/json";
-                    rq.Method = "POST";
-                    rq.Timeout = 5000;
-                    rq.KeepAlive = false;
-                    rq.Proxy = null;
-
                     using (Stream s = rq.GetRequestStream()) {
                         byte[] byContent = System.Text.Encoding.ASCII.GetBytes(JSON(fmGet.Url));
                         s.Write(byContent, 0, byContent.Length);
@@ -1449,6 +1457,7 @@ namespace Nagru___Manga_Organizer
                         
                         Text = "Finished";
                     } else {
+                        Text = "The URL was invalid or the connection timed out.";
                         MessageBox.Show("The URL was invalid or the connection timed out.",
                             Application.ProductName, MessageBoxButtons.OK, 
                             MessageBoxIcon.Exclamation);
