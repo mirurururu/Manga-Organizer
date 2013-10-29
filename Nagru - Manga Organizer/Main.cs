@@ -593,7 +593,7 @@ namespace Nagru___Manga_Organizer
                 ThreadPool.QueueUserWorkItem(GetImage);
 
                 if (CmbBx_Artist.Text == "" && TxBx_Title.Text == "")
-                    SplitTitleSet(SplitTitle(Path.GetFileName(xfbd.SelectedPath)));
+                    SetTitle(Path.GetFileName(xfbd.SelectedPath));
             }
             xfbd.Dispose();
         }
@@ -1130,36 +1130,11 @@ namespace Nagru___Manga_Organizer
             }
         }
 
-        private static string[] SplitTitle(string sRaw)
+        private void SetTitle(string sRaw)
         {
-            //strip out comiket\circle\etc info
-            if (sRaw.StartsWith("(")) {
-                int iPos = sRaw.IndexOf(')') + 2;
-                if (sRaw.Length - 1 >= iPos)
-                    sRaw = sRaw.Remove(0, iPos);
-            }
-            string[] sName = ExtString.Split(sRaw, "[", "]");
-            
-            //Send to artist/title fields
-            if (sName.Length >= 2) {
-                //strip out scanlation info
-                if (sName[0].Contains('(')) {
-                    sName[0] = sName[0].Substring(sName[0].IndexOf('(') + 1);
-                    sName[0] = sName[0].Substring(0, sName[0].Length - 1);
-                }
-                sName[0] = sName[0].Trim();
+            string[] asProc = SplitTitle(sRaw);
 
-                //strip out parody info
-                if (sName[1].Contains('(')) {
-                    sName[1] = sName[1].Substring(0, sName[1].IndexOf('('));
-                }
-                sName[1] = sName[1].Trim();
-            }
-            return sName;
-        }
-        private void SplitTitleSet(string[] asProc)
-        {
-            if(asProc.Length >= 2) {
+            if (asProc.Length >= 2) {
                 if (CmbBx_Artist.Text == "")
                     CmbBx_Artist.Text = asProc[0];
                 if (TxBx_Title.Text == "")
@@ -1170,6 +1145,78 @@ namespace Nagru___Manga_Organizer
                     TxBx_Title.SelectionStart, asProc[0]);
                 TxBx_Title.SelectionStart += asProc[0].Length;
             }
+        }
+
+        private static string[] SplitTitle(string sRaw)
+        {
+            //(Circle) [Artist, Collaborating Artist (Scanlator)] Title (Parody)(Comiket Number)[Language][Groups]
+            string[] asName;
+            string sCircle = "";
+
+            //strip out circle info & store
+            if (sRaw.StartsWith("(")) {
+                int iPos = sRaw.IndexOf(')') + 2;
+                if (sRaw.Length - 1 >= iPos) {
+                    sCircle = sRaw.Substring(0, iPos);
+                    sRaw = sRaw.Remove(0, iPos);
+                }
+            }
+            asName = ExtString.Split(sRaw, "[", "]");
+
+            //Re-format for Artist/Title fields
+            if (asName.Length >= 2) {
+                string sArtist = asName[0];
+                System.Text.StringBuilder sbTitle = 
+                    new System.Text.StringBuilder(asName[1].TrimStart());
+                System.Text.StringBuilder sbTerm =
+                    new System.Text.StringBuilder();
+                
+                //re-insert missing brackets
+                for (int i = 2; i < asName.Length; i++) {
+                    sbTerm.Append(asName[i]);
+                    if(!string.IsNullOrWhiteSpace(asName[i])
+                            && !asName[i].StartsWith("(")) {
+                        sbTerm.Insert(0, '[');
+                        sbTerm.Append(']');
+                    }
+                    sbTitle.Append(sbTerm);
+                    sbTerm.Clear();
+                }
+                if (sCircle != "") {
+                    sbTitle.AppendFormat(" {0}", sCircle);
+                }
+
+                asName = new string[2];
+                asName[0] = sArtist.Trim();
+                asName[1] = sbTitle.ToString().Trim();
+            }
+            return asName;
+
+            /*       OLD CODE
+            //strip out comiket\circle\etc info
+            if (sRaw.StartsWith("(")) {
+                int iPos = sRaw.IndexOf(')') + 2;
+                if (sRaw.Length - 1 >= iPos)
+                    sRaw = sRaw.Remove(0, iPos);
+            }
+            string[] asName = ExtString.Split(sRaw, "[", "]");
+            
+            //Send to artist/title fields
+            if (asName.Length >= 2) {
+                //strip out scanlation info
+                if (asName[0].Contains('(')) {
+                    asName[0] = asName[0].Substring(asName[0].IndexOf('(') + 1);
+                    asName[0] = asName[0].Substring(0, asName[0].Length - 1);
+                }
+                asName[0] = asName[0].Trim();
+
+                //strip out parody info
+                if (asName[1].Contains('(')) {
+                    asName[1] = asName[1].Substring(0, asName[1].IndexOf('('));
+                }
+                asName[1] = asName[1].Trim();
+            }
+             return asName*/
         }
 
         /* Refresh listview contents */
@@ -1433,7 +1480,7 @@ namespace Nagru___Manga_Organizer
                         
                         //set artist/title
                         string sRaw = asResp[2].Split(':')[1].Substring(1);
-                        SplitTitleSet(SplitTitle(ExtString.ReplaceHTML(sRaw)));
+                        SetTitle(ExtString.ReplaceHTML(sRaw));
 
                         //set entry type
                         CmbBx_Type.Text = asResp[4].Split(':')[1].Substring(1);
@@ -1644,7 +1691,7 @@ namespace Nagru___Manga_Organizer
                 case "ComboBox":
                     ComboBox cb = (ComboBox)ActiveControl;
                     
-                    if(sAdd.Contains('[')) SplitTitleSet(SplitTitle(sAdd));
+                    if(sAdd.Contains('[')) SetTitle(sAdd);
                     else cb.SelectedText = sAdd;
                     break;
             }
@@ -1762,12 +1809,12 @@ namespace Nagru___Manga_Organizer
                         frTxBx_Notes, sAdd, frTxBx_Notes.SelectionStart);
                     break;
                 case "CmbBx_Artist":
-                    if (sAdd.Contains('[')) SplitTitleSet(SplitTitle(sAdd));
+                    if (sAdd.Contains('[')) SetTitle(sAdd);
                     else CmbBx_Artist.SelectionStart = InsertText(
                         CmbBx_Artist, sAdd, CmbBx_Artist.SelectionStart);
                     break;
                 case "TxBx_Title":
-                    if (sAdd.Contains('[')) SplitTitleSet(SplitTitle(sAdd));
+                    if (sAdd.Contains('[')) SetTitle(sAdd);
                     else TxBx_Title.SelectionStart = InsertText(
                         TxBx_Title, sAdd, TxBx_Title.SelectionStart);
                     break;
@@ -1799,13 +1846,13 @@ namespace Nagru___Manga_Organizer
 
             if(Directory.Exists(asDir[0])) {
                 if (CmbBx_Artist.Text == "" && TxBx_Title.Text == "") {
-                    SplitTitleSet(SplitTitle(Path.GetDirectoryName(asDir[0])));
+                    SetTitle(Path.GetDirectoryName(asDir[0]));
                     ThreadPool.QueueUserWorkItem(GetImage);
                 }
             }
             else if (File.Exists(asDir[0]) && IsArchive(asDir[0])) {
                 if (CmbBx_Artist.Text == "" && TxBx_Title.Text == "") {
-                    SplitTitleSet(SplitTitle(Path.GetFileNameWithoutExtension(asDir[0])));
+                    SetTitle(Path.GetFileNameWithoutExtension(asDir[0]));
                     ThreadPool.QueueUserWorkItem(GetImage);
                 }
             }

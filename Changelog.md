@@ -1,3 +1,6 @@
+#### v. 4.1.36 (Oct 28, 2013)
+	- Updated artist/title formatting behaviour
+	
 #### v. 4.1.25 (Oct 27, 2013)
 	- Fixed FavsOnly bug where it wouldn't draw properly if the list was partially scrolled
 
