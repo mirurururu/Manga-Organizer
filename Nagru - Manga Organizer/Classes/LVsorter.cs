@@ -46,14 +46,17 @@ namespace Nagru___Manga_Organizer
                     sX = lviX.SubItems[1].Text + lviX.SubItems[0].Text;
                     sY = lviY.SubItems[1].Text + lviY.SubItems[0].Text;
                     break;
+                case 4:
+                    sX = Convert.ToDateTime(lviX.SubItems[4].Text).ToString("yyyy MM dd");
+                    sY = Convert.ToDateTime(lviY.SubItems[4].Text).ToString("yyyy MM dd");
+                    break;
                 default:
                     sX = lviX.SubItems[ColToSort].Text;
                     sY = lviY.SubItems[ColToSort].Text;
                     break;
             }
             int iResult = (new TrueCompare()).Compare(sX, sY);
-            if (OrdOfSort == SortOrder.Ascending) return iResult;
-            else return (-iResult);
+            return (OrdOfSort == SortOrder.Ascending) ? iResult : -iResult;
         }
     }
 }

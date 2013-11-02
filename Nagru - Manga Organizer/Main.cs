@@ -506,7 +506,7 @@ namespace Nagru___Manga_Organizer
         private void LV_Entries_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (LV_Entries.SelectedItems.Count > 0)
-                SetData(Convert.ToInt32(LV_Entries.FocusedItem.SubItems[5].Text));
+                SetData(Convert.ToInt32(LV_Entries.FocusedItem.SubItems[7].Text));
             else Reset();
         }
 
@@ -526,16 +526,17 @@ namespace Nagru___Manga_Organizer
         /* Proportionally-resizes columns   */
         private void LV_Entries_Resize(object sender, EventArgs e)
         {
-            const int iStatic = 200, iScroll = 20;
-            int iMod = LV_Entries.Width / 20;
+            const int iStatic = 270; //remaining combined column width
+            const int iScroll = 20;  //vertical scrollbar width
+            int iMod = (LV_Entries.Width - iStatic) / 10;
             LV_Entries.BeginUpdate();
-            LV_Entries.Columns[0].Width = iMod * 3;
-            LV_Entries.Columns[1].Width = iMod * 6;
-            LV_Entries.Columns[3].Width = iMod * 6;
+            LV_Entries.Columns[0].Width = iMod * 2; //artist
+            LV_Entries.Columns[1].Width = iMod * 4; //title
+            LV_Entries.Columns[3].Width = iMod * 4; //tags
 
-            /* set ColTags to remaining listview width  */
-            ColTags.Width += LV_Entries.Width - (iMod * 15) - iStatic;
-            if(LV_Entries.Items.Count > LV_Entries.Height / 20)
+            /* append remaining width to colTags & account for scrollbar */
+            ColTags.Width += (LV_Entries.Width - iStatic) - (iMod * 10);
+            if (LV_Entries.Items.Count > LV_Entries.Height / 20)
                 ColTags.Width -= iScroll;
             LV_Entries.EndUpdate();
         }
@@ -894,11 +895,12 @@ namespace Nagru___Manga_Organizer
             if (PicBx_Cover.Image == null)
                 return;
 
-            if(Directory.Exists(TxBx_Loc.Text)) {
-                string[] sFiles = ExtDir.GetFiles(@TxBx_Loc.Text);
-                if (sFiles.Length > 0) System.Diagnostics.Process.Start(sFiles[0]);
+            string sPath = TxBx_Loc.Text;
+            if(Directory.Exists(sPath)) {
+                string[] sFiles = ExtDir.GetFiles(sPath);
+                if (sFiles.Length > 0) sPath = sFiles[0];
             }
-            else System.Diagnostics.Process.Start(@TxBx_Loc.Text);
+            System.Diagnostics.Process.Start("\"" + sPath + "\"");
         }
 
         /* Convert number to string of stars */
@@ -1024,13 +1026,14 @@ namespace Nagru___Manga_Organizer
                 ListViewItem lvi = new ListViewItem(lData[i].sArtist);
                 if (lData[i].byRat == 5) lvi.BackColor = Color.LightYellow;
                 lvi.SubItems.AddRange(new string[] {
-                        lData[i].sTitle,
-                        lData[i].iPages.ToString(),
-                        lData[i].sTags,
-                        lData[i].sType,
-                        i.ToString(),
-                        RatingFormat(lData[i].byRat)
-                    });
+                    lData[i].sTitle,
+                    lData[i].iPages.ToString(),
+                    lData[i].sTags,
+                    lData[i].dtDate.ToShortDateString(),
+                    lData[i].sType,
+                    RatingFormat(lData[i].byRat),
+                    i.ToString()
+                });
                 lItems.Add(lvi);
             }
             
@@ -1239,9 +1242,10 @@ namespace Nagru___Manga_Organizer
                     lData[i].sTitle,
                     lData[i].iPages.ToString(),
                     lData[i].sTags,
+                    lData[i].dtDate.ToShortDateString(),
                     lData[i].sType,
-                    i.ToString(),
-                    RatingFormat(lData[i].byRat)
+                    RatingFormat(lData[i].byRat),
+                    i.ToString()
                 });
                 aItems[i] = lvi;
             }
@@ -1316,7 +1320,7 @@ namespace Nagru___Manga_Organizer
             lvi.SubItems[1].Text = lData[indx].sTitle;
             lvi.SubItems[2].Text = lData[indx].iPages.ToString();
             lvi.SubItems[3].Text = lData[indx].sTags;
-            lvi.SubItems[4].Text = lData[indx].sType;
+            lvi.SubItems[5].Text = lData[indx].sType;
             LV_Entries.Sort();
 
             //check if entry should still be displayed
@@ -1429,8 +1433,12 @@ namespace Nagru___Manga_Organizer
 
         private void MnTS_OpenSource_Click(object sender, EventArgs e)
         {
-            if (!ExtDir.Restricted(TxBx_Loc.Text))
-                System.Diagnostics.Process.Start(TxBx_Loc.Text);
+            if(Directory.Exists(TxBx_Loc.Text)) {
+                System.Diagnostics.Process.Start("explorer.exe", "\"" + TxBx_Loc.Text + "\"");
+            }
+            else if (File.Exists(TxBx_Loc.Text)) {
+                System.Diagnostics.Process.Start("\"" + TxBx_Loc.Text + "\"");
+            }
         }
 
         /* Uses EH API to get metadata from gallery URL */

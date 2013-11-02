@@ -1,3 +1,7 @@
+#### v. 4.1.51 (Nov 02, 2013)
+	- Added Date column (MM-DD-YY)
+	- Improved handling of opening files/folders with external programs
+
 #### v. 4.1.40 (Nov 01, 2013)
 	- Added (beta) relative file-paths
 	- Improved artist/title splitting code again
