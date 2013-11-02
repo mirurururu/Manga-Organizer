@@ -8,8 +8,8 @@ Manga-Organizer
 If this sounds useful to you, please give it a shot: <a href="https://dl.dropboxusercontent.com/u/103899726/Manga%20Organizer.exe">Download</a>
 
 For examples of it running see: <a href="https://raw.github.com/Nagru/Manga-Organizer/master/Nagru - Manga Organizer/Resources/Prv_Browse.png" target="_blank">Browse</a>, <a href="https://raw.github.com/Nagru/Manga-Organizer/master/Nagru - Manga Organizer/Resources/Prv_View.jpg" target="_blank">View</a>, & <a href="https://raw.github.com/Nagru/Manga-Organizer/master/Nagru - Manga Organizer/Resources/Prv_Notes.png" target="_blank">Notes</a>
-<br><br><hr><br>
-Notes:
+<br><br><hr>
+<h3>Notes:</h3>
 - no install required
 - searches function similarly to EH's<br />
   (eg. title:celeb_wife date:>01/01/12 -vanilla)
