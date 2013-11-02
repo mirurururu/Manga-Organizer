@@ -87,9 +87,9 @@ namespace Nagru___Manga_Organizer
         {
             List<string> lEns = new List<string>();
             lEns.AddRange(ExtDir.GetFiles(TxBx_Loc.Text, 
-                SearchOption.TopDirectoryOnly, "*.zip|*.cbz"));
+                SearchOption.AllDirectories, "*.zip|*.cbz|*.rar|*.cbr"));
             lEns.AddRange(Directory.GetDirectories(TxBx_Loc.Text, 
-                "*", SearchOption.TopDirectoryOnly));
+                "*", SearchOption.AllDirectories));
 
             for (int i = 0; i < lEns.Count; i++) {
                 if (!hsPaths.Contains(lEns[i]))

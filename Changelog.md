@@ -1,3 +1,10 @@
+#### v. 4.1.40 (Nov 01, 2013)
+	- Added (beta) relative file-paths
+	- Improved artist/title splitting code again
+	- Gave entry saving button more accurate title
+	- Fixed drag/drop allowing non-folders/archives when paired with them
+	- Fixed Scan not seeing rar/cbr and nested folders
+
 #### v. 4.1.26 (Oct 28, 2013)
 	- Updated artist/title formatting behaviour
 	

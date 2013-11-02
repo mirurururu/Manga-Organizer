@@ -69,7 +69,12 @@ namespace Nagru___Manga_Organizer
             public csEntry(string _Path)
             {
                 //Try to format raw title string
-                string[] asTitle = SplitTitle(Path.GetFileNameWithoutExtension(_Path));
+                string sRaw;
+                if (File.Exists(_Path))
+                    sRaw = Path.GetFileNameWithoutExtension(_Path);
+                else sRaw = Path.GetFileName(_Path);
+                string[] asTitle = SplitTitle(sRaw);
+
                 if (asTitle.Length >= 2) {
                     sArtist = asTitle[0];
                     sTitle = asTitle[1];
@@ -264,7 +269,7 @@ namespace Nagru___Manga_Organizer
             InitializeComponent();
             const int iFileName = 18;
             this.Icon = Properties.Resources.dbIcon;
-
+            
             //if database opened with "Shell->Open with..."
             if (sFile.Length > 0 
                     && sFile[0].EndsWith("\\MangaDatabase.bin") 
@@ -336,7 +341,15 @@ namespace Nagru___Manga_Organizer
                 Properties.Settings.Default.SavLoc : Environment.CurrentDirectory;
             sPath += "\\MangaDatabase.bin";
 
-            if (lData.Count == 0 && File.Exists(sPath)) {
+            //check existence
+            bool bExist = false;
+            if (File.Exists(sPath)) bExist = true;
+            else {
+                sPath = ExtString.RelativePath(sPath);
+                if (sPath != null && File.Exists(sPath)) bExist = true;
+            }
+            
+            if (bExist) {
                 lData = FileSerializer.Deserialize<List<csEntry>>(sPath) 
                     ?? new List<csEntry>(0);
 
@@ -561,27 +574,11 @@ namespace Nagru___Manga_Organizer
         /* Select location of manga entry */
         private void Btn_Loc_Click(object sender, EventArgs e)
         {
-            string sPath = TxBx_Loc.Text;
-
             //try to auto-magically grab folder\file path
-            if (!File.Exists(sPath) && !Directory.Exists(sPath)) {
-                sPath = string.Format("{0}\\[{1}] {2}",
-                    Properties.Settings.Default.DefLoc,
-                    CmbBx_Artist.Text, TxBx_Title.Text);
-                if (!Directory.Exists(sPath)) {
-                    if (File.Exists(sPath + ".zip"))
-                        sPath += ".zip";
-                    else if (File.Exists(sPath + ".cbz"))
-                        sPath += ".cbz";
-                    else if (File.Exists(sPath + ".rar"))
-                        sPath += ".rar";
-                    else if (File.Exists(sPath + ".cbr"))
-                        sPath += ".cbr";
-                    else if (File.Exists(sPath + ".7z"))
-                        sPath += ".7z";
-                    else sPath = Properties.Settings.Default.DefLoc;
-                }
-            }
+            string sPath = FindPath(TxBx_Loc.Text, CmbBx_Artist.Text, TxBx_Title.Text);
+            if (sPath == null) sPath = FindPath(
+                TxBx_Loc.Text, CmbBx_Artist.Text, TxBx_Title.Text, true);
+            if (sPath == null) sPath = Properties.Settings.Default.DefLoc;
 
             ExtFolderBrowserDialog xfbd = new ExtFolderBrowserDialog();
             xfbd.ShowBothFilesAndFolders = true;
@@ -596,6 +593,31 @@ namespace Nagru___Manga_Organizer
                     SetTitle(Path.GetFileName(xfbd.SelectedPath));
             }
             xfbd.Dispose();
+        }
+        private static string FindPath(
+            string sPath, string sArtist, string sTitle, bool bRecurse = false)
+        {
+            if (!File.Exists(sPath) && !Directory.Exists(sPath)) {
+                string sTemp= string.Format("{0}\\[{1}] {2}",
+                    Properties.Settings.Default.DefLoc, sArtist, sTitle);
+                if (bRecurse) sPath = sTemp;
+                else sPath = ExtString.RelativePath(sTemp);
+
+                if (!Directory.Exists(sPath)) {
+                    if (File.Exists(sPath + ".zip"))
+                        sPath += ".zip";
+                    else if (File.Exists(sPath + ".cbz"))
+                        sPath += ".cbz";
+                    else if (File.Exists(sPath + ".rar"))
+                        sPath += ".rar";
+                    else if (File.Exists(sPath + ".cbr"))
+                        sPath += ".cbr";
+                    else if (File.Exists(sPath + ".7z"))
+                        sPath += ".7z";
+                    else sPath = null;
+                }
+            }
+            return sPath;
         }
 
         /* Open URL in default Browser  */
@@ -650,7 +672,7 @@ namespace Nagru___Manga_Organizer
                 if (PicBx_Cover.Height > sf.Height)
                     bResize = true;
             }
-            else /*if (sf.Width > sf.Height)*/ {
+            else /*if (sf.Width >= sf.Height)*/ {
                 if (PicBx_Cover.Width - 1 > sf.Width)
                     bResize = true;
             }
@@ -660,6 +682,13 @@ namespace Nagru___Manga_Organizer
             if (bResize) {
                 ThreadPool.QueueUserWorkItem(GetImage);
                 bResize = false;
+            }
+        }
+        private void Main_Resize(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Maximized
+                && PicBx_Cover.Image != null) {
+                ThreadPool.QueueUserWorkItem(GetImage);
             }
         }
 
@@ -1040,6 +1069,14 @@ namespace Nagru___Manga_Organizer
             MnTS_Edit.Visible = false;
             MnTS_Del.Visible = true;
             Tb_View.ResumeLayout();
+
+            //check for relativity
+            if(TxBx_Loc.Text != ""
+                && (!Directory.Exists(TxBx_Loc.Text)
+                    && !File.Exists(TxBx_Loc.Text))) {
+                string sResult = ExtString.RelativePath(TxBx_Loc.Text);
+                if (sResult != null) TxBx_Loc.Text = sResult;
+            }
         }
 
         private void SetNudCount(int iNum)
@@ -1149,7 +1186,7 @@ namespace Nagru___Manga_Organizer
 
         private static string[] SplitTitle(string sRaw)
         {
-            //(Circle) [Artist, Collaborating Artist (Scanlator)] Title (Parody)(Comiket Number)[Language][Groups]
+            //(Circle) [Artist, Collaborating Artist (Scanlator)] Title (Parody)(Comiket Number)[Language][Groups] {Translator}
             string[] asName;
             string sCircle = "";
 
@@ -1161,62 +1198,27 @@ namespace Nagru___Manga_Organizer
                     sRaw = sRaw.Remove(0, iPos);
                 }
             }
-            asName = ExtString.Split(sRaw, "[", "]");
+
+            //split fields using EH format
+            int iA = sRaw.IndexOf('['), 
+                iB = sRaw.IndexOf(']');
+            if ((iA > -1 && iB > -1) && iA < iB) {
+                asName = new string[2] {
+                    sRaw.Substring(iA + 1, iB - 1),
+                    sRaw.Substring(iB + 1)
+                };
+            }
+            else asName = new string[1] { sRaw };
 
             //Re-format for Artist/Title fields
-            if (asName.Length >= 2) {
-                string sArtist = asName[0];
-                System.Text.StringBuilder sbTitle = 
-                    new System.Text.StringBuilder(asName[1].TrimStart());
-                System.Text.StringBuilder sbTerm =
-                    new System.Text.StringBuilder();
-                
-                //re-insert missing brackets
-                for (int i = 2; i < asName.Length; i++) {
-                    sbTerm.Append(asName[i]);
-                    if(!string.IsNullOrWhiteSpace(asName[i])
-                            && !asName[i].StartsWith("(")) {
-                        sbTerm.Insert(0, '[');
-                        sbTerm.Append(']');
-                    }
-                    sbTitle.Append(sbTerm);
-                    sbTerm.Clear();
-                }
-                if (sCircle != "") {
-                    sbTitle.AppendFormat(" {0}", sCircle);
-                }
+            if (asName.Length == 2) {
+                if (sCircle != "")
+                    asName[1] += " " + sCircle;
 
-                asName = new string[2];
-                asName[0] = sArtist.Trim();
-                asName[1] = sbTitle.ToString().Trim();
-            }
-            return asName;
-
-            /*       OLD CODE
-            //strip out comiket\circle\etc info
-            if (sRaw.StartsWith("(")) {
-                int iPos = sRaw.IndexOf(')') + 2;
-                if (sRaw.Length - 1 >= iPos)
-                    sRaw = sRaw.Remove(0, iPos);
-            }
-            string[] asName = ExtString.Split(sRaw, "[", "]");
-            
-            //Send to artist/title fields
-            if (asName.Length >= 2) {
-                //strip out scanlation info
-                if (asName[0].Contains('(')) {
-                    asName[0] = asName[0].Substring(asName[0].IndexOf('(') + 1);
-                    asName[0] = asName[0].Substring(0, asName[0].Length - 1);
-                }
                 asName[0] = asName[0].Trim();
-
-                //strip out parody info
-                if (asName[1].Contains('(')) {
-                    asName[1] = asName[1].Substring(0, asName[1].IndexOf('('));
-                }
                 asName[1] = asName[1].Trim();
             }
-             return asName*/
+            return asName;
         }
 
         /* Refresh listview contents */
@@ -1903,7 +1905,10 @@ namespace Nagru___Manga_Organizer
 
             //add all remaining folders
             for (int i = 0; i < asDir.Length; i++) {
-                if (asDir[i] == "") continue;
+                if (asDir[i] == ""
+                    || (!Directory.Exists(asDir[i])
+                        && !IsArchive(asDir[i]))) 
+                    continue;
 
                 //add item
                 Main.csEntry en = new csEntry(asDir[i]);

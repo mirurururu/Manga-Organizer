@@ -48,7 +48,7 @@ namespace Nagru___Manga_Organizer.Classes
             lbSuggest.Hide();
         }
         
-        /* Hook child controls to parent (will be properly positioned later) */
+        /* Hook child controls to parent */
         protected override void InitLayout()
         {
             Parent.Controls.Add(lbSuggest);
