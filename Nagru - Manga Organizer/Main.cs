@@ -1205,7 +1205,7 @@ namespace Nagru___Manga_Organizer
             //split fields using EH format
             int iA = sRaw.IndexOf('['), 
                 iB = sRaw.IndexOf(']');
-            if ((iA > -1 && iB > -1) && iA < iB) {
+            if ((iA > -1 && iB > -1) && iA < iB && (iB + 1) < sRaw.Length) {
                 asName = new string[2] {
                     sRaw.Substring(iA + 1, iB - 1),
                     sRaw.Substring(iB + 1)
