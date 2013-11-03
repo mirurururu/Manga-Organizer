@@ -9,6 +9,7 @@ namespace Nagru___Manga_Organizer
        Author: Microsoft (March 13, 2008)          */
     public class LVsorter : IComparer
     {
+        static TrueCompare tc = new TrueCompare();
         public int ColToSort;
         public SortOrder OrdOfSort;
 
@@ -36,8 +37,7 @@ namespace Nagru___Manga_Organizer
 
             //sort by art-tit, tit-art or custom-single
             string sX, sY;
-            switch (ColToSort)
-            {
+            switch (ColToSort) {
                 case 0:
                     sX = lviX.SubItems[0].Text + lviX.SubItems[1].Text;
                     sY = lviY.SubItems[0].Text + lviY.SubItems[1].Text;
@@ -55,7 +55,7 @@ namespace Nagru___Manga_Organizer
                     sY = lviY.SubItems[ColToSort].Text;
                     break;
             }
-            int iResult = (new TrueCompare()).Compare(sX, sY);
+            int iResult = tc.Compare(sX, sY);
             return (OrdOfSort == SortOrder.Ascending) ? iResult : -iResult;
         }
     }

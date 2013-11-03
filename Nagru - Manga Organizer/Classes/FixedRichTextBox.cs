@@ -10,8 +10,7 @@ namespace Nagru___Manga_Organizer
         protected override void OnHandleCreated(EventArgs e)
         {
             base.OnHandleCreated(e);
-            if (!base.AutoWordSelection)
-            {
+            if (!base.AutoWordSelection) {
                 base.AutoWordSelection = true;
                 base.AutoWordSelection = false;
             }

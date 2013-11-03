@@ -28,6 +28,7 @@ namespace Nagru___Manga_Organizer
             Nud_Intv.Value = Properties.Settings.Default.Interval;
             picBx_Colour.BackColor = Properties.Settings.Default.DefColour;
             ChkBx_Gridlines.Checked = Properties.Settings.Default.DefGrid;
+            ChkBx_Date.Checked = !Properties.Settings.Default.HideDate;
             string[] asIgn = Properties.Settings.Default.Ignore.Split('|');
             for (int i = 0; i < asIgn.Length; i++) {
                 if (asIgn[i] == "") continue;
@@ -151,6 +152,12 @@ namespace Nagru___Manga_Organizer
             bNew = true;
         }
 
+        private void ChkBx_Date_CheckedChanged(object sender, EventArgs e)
+        {
+            Btn_Save.FlatAppearance.BorderColor = Color.Red;
+            bNew = true;
+        }
+
         private void Btn_Save_Click(object sender, EventArgs e)
         {
             //only finalize settings when `Btn_Save_Click' triggered
@@ -159,10 +166,12 @@ namespace Nagru___Manga_Organizer
             Properties.Settings.Default.Interval = (int)Nud_Intv.Value;
             Properties.Settings.Default.DefColour = picBx_Colour.BackColor;
             Properties.Settings.Default.DefGrid = ChkBx_Gridlines.Checked;
+            Properties.Settings.Default.HideDate = !ChkBx_Date.Checked;
             Properties.Settings.Default.Ignore = sIgnored;
             Properties.Settings.Default.Save();
             bNew = false; bSave = true;
             Btn_Save.FlatAppearance.BorderColor = Color.Green;
+            this.Close();
         }
 
         private void Settings_FormClosing(object sender, FormClosingEventArgs e)

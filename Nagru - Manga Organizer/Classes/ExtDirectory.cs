@@ -46,7 +46,7 @@ namespace Nagru___Manga_Organizer
                         FileIOPermissionAccess.Write, asDirs[i]);
                     fp.Demand();
                 }
-            } catch (Exception) { 
+            } catch { 
                 return true;
             }
             

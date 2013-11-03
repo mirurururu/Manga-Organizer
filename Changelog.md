@@ -1,3 +1,7 @@
+#### v. 4.1.62 (Nov 03, 2013)
+	- Made Date column optional (check settings)
+	- Small code improvements
+
 #### v. 4.1.52 (Nov 02, 2013)
 	- Added Date column (MM-DD-YY)
 	- Improved handling of opening files/folders with external programs

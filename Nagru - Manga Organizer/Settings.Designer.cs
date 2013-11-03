@@ -43,6 +43,7 @@
             this.ChkBx_Gridlines = new System.Windows.Forms.CheckBox();
             this.ckLbx_Ign = new System.Windows.Forms.CheckedListBox();
             this.Btn_Save = new System.Windows.Forms.Button();
+            this.ChkBx_Date = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.Nud_Intv)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picBx_Colour)).BeginInit();
             this.grBxToggle.SuspendLayout();
@@ -170,6 +171,7 @@
             // 
             // grBxToggle
             // 
+            this.grBxToggle.Controls.Add(this.ChkBx_Date);
             this.grBxToggle.Controls.Add(this.ChkBx_Gridlines);
             this.grBxToggle.Location = new System.Drawing.Point(179, 196);
             this.grBxToggle.Name = "grBxToggle";
@@ -181,7 +183,7 @@
             // ChkBx_Gridlines
             // 
             this.ChkBx_Gridlines.AutoSize = true;
-            this.ChkBx_Gridlines.Location = new System.Drawing.Point(15, 36);
+            this.ChkBx_Gridlines.Location = new System.Drawing.Point(15, 19);
             this.ChkBx_Gridlines.Name = "ChkBx_Gridlines";
             this.ChkBx_Gridlines.Size = new System.Drawing.Size(101, 17);
             this.ChkBx_Gridlines.TabIndex = 1;
@@ -210,6 +212,17 @@
             this.Btn_Save.Text = "Save Settings";
             this.Btn_Save.UseVisualStyleBackColor = false;
             this.Btn_Save.Click += new System.EventHandler(this.Btn_Save_Click);
+            // 
+            // ChkBx_Date
+            // 
+            this.ChkBx_Date.AutoSize = true;
+            this.ChkBx_Date.Location = new System.Drawing.Point(15, 51);
+            this.ChkBx_Date.Name = "ChkBx_Date";
+            this.ChkBx_Date.Size = new System.Drawing.Size(122, 17);
+            this.ChkBx_Date.TabIndex = 2;
+            this.ChkBx_Date.Text = "Show Date column?";
+            this.ChkBx_Date.UseVisualStyleBackColor = true;
+            this.ChkBx_Date.CheckedChanged += new System.EventHandler(this.ChkBx_Date_CheckedChanged);
             // 
             // Settings
             // 
@@ -263,5 +276,6 @@
         private System.Windows.Forms.CheckBox ChkBx_Gridlines;
         private System.Windows.Forms.CheckedListBox ckLbx_Ign;
         private System.Windows.Forms.Button Btn_Save;
+        private System.Windows.Forms.CheckBox ChkBx_Date;
     }
 }

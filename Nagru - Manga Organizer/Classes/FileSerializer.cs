@@ -17,13 +17,14 @@ namespace Nagru___Manga_Organizer
                 throw new ArgumentNullException("Object cannot be null");
 
             Stream stream = null;
-            try
-            {
+            try {
                 stream = File.Open(sFilepath, FileMode.Create);
                 BinaryFormatter bFormatter = new BinaryFormatter();
                 bFormatter.Serialize(stream, obj);
+            } catch {
+            } finally { 
+                if (stream != null) stream.Close(); 
             }
-            finally { if (stream != null) stream.Close(); }
         }
 
         public static T Deserialize<T>(string sFilepath)
@@ -35,9 +36,8 @@ namespace Nagru___Manga_Organizer
                 stream = File.Open(sFilepath, FileMode.Open);
                 BinaryFormatter bFormatter = new BinaryFormatter();
                 obj = (T)bFormatter.Deserialize(stream);
-            }
-            catch { }
-            finally { 
+            } catch {
+            } finally { 
                 if (stream != null) 
                     stream.Close(); 
             }
@@ -57,8 +57,9 @@ namespace Nagru___Manga_Organizer
             List<Main.csEntry> lNew = new List<Main.csEntry>(lOld.Count);
             for(int i = 0; i < lOld.Count; i++) {
                 int iRating = lOld[i].bFav ? 5 : 3;
-                lNew.Add(new Main.csEntry(lOld[i].sArtist, lOld[i].sTitle, lOld[i].sLoc, lOld[i].sDesc, 
-                    lOld[i].sTags, lOld[i].sType, lOld[i].dtDate, lOld[i].iPages, iRating));
+                lNew.Add(new Main.csEntry(lOld[i].sArtist, lOld[i].sTitle, 
+                    lOld[i].sLoc, lOld[i].sDesc, lOld[i].sTags, lOld[i].sType, 
+                    lOld[i].dtDate, lOld[i].iPages, iRating));
             }
             return lNew;
         }

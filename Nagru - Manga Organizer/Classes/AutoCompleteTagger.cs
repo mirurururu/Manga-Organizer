@@ -87,6 +87,7 @@ namespace Nagru___Manga_Organizer.Classes
                         if (asOpt[0] == sKey) lbSuggest.Hide();
                         else {
                             lbSuggest.Items.Add(asOpt[0]);
+                            lbSuggest.SelectedIndex = 0;
                             SetListboxPosition();
                         }
                         break;

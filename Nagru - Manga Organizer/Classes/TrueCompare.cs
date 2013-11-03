@@ -24,8 +24,7 @@ namespace Nagru___Manga_Organizer
                 int iLocX = 0, iLocY = 0;
 
                 //walk through characters in both strings to fill char array
-                do
-                {
+                do {
                     acSpaceX[iLocX++] = cX;
                     iMarkX++;
 
@@ -34,8 +33,7 @@ namespace Nagru___Manga_Organizer
                 }
                 while (char.IsDigit(cX) == char.IsDigit(acSpaceX[0]));
 
-                do
-                {
+                do {
                     acSpaceY[iLocY++] = cY;
                     iMarkY++;
 
@@ -48,10 +46,11 @@ namespace Nagru___Manga_Organizer
                 string sCmpX = new string(acSpaceX), sCmpY = new string(acSpaceY);
                 int result;
 
-                if (char.IsDigit(acSpaceX[0]) && char.IsDigit(acSpaceY[0]))
-                {
+                if (char.IsDigit(acSpaceX[0]) 
+                        && char.IsDigit(acSpaceY[0])) {
                     int iNumChunkX = 0, iNumChunkY = 0;
-                    if(int.TryParse(sCmpX, out iNumChunkX) && int.TryParse(sCmpY, out iNumChunkY))
+                    if(int.TryParse(sCmpX, out iNumChunkX) 
+                            && int.TryParse(sCmpY, out iNumChunkY))
                         result = iNumChunkX.CompareTo(iNumChunkY);
                     else result = sCmpX.CompareTo(sCmpY);
                 }

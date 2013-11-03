@@ -69,19 +69,10 @@ namespace Nagru___Manga_Organizer
             public csEntry(string _Path)
             {
                 //Try to format raw title string
-                string sRaw;
-                if (File.Exists(_Path))
-                    sRaw = Path.GetFileNameWithoutExtension(_Path);
-                else sRaw = Path.GetFileName(_Path);
-                string[] asTitle = SplitTitle(sRaw);
-
-                if (asTitle.Length >= 2) {
-                    sArtist = asTitle[0];
-                    sTitle = asTitle[1];
-                } else {
-                    sTitle = asTitle[0];
-                    sArtist = "";
-                }
+                string[] asTitle = SplitTitle(
+                    Path.GetFileName(_Path));
+                sArtist = asTitle[0];
+                sTitle = asTitle[1];
 
                 sLoc = _Path;
                 sType = "Manga";
@@ -313,14 +304,11 @@ namespace Nagru___Manga_Organizer
                 Properties.Settings.Default.DefLoc = Environment.CurrentDirectory;
             }
             #endif
-
+            
             //disable ContextMenu in Nud_Pages
             Nud_Pages.ContextMenuStrip = new ContextMenuStrip();
             
-            LV_Entries.ListViewItemSorter = lvSortObj;
-            LV_Entries_Resize(sender, e);
-            LV_Entries.Select();
-            
+            //allow dragdrop in richtextbox
             frTxBx_Desc.AllowDrop = true;
             frTxBx_Notes.AllowDrop = true;
             frTxBx_Notes.DragDrop += new DragEventHandler(DragDropTxBx);
@@ -335,6 +323,13 @@ namespace Nagru___Manga_Organizer
             this.Height = Properties.Settings.Default.Position.Height;
             LV_Entries.GridLines = Properties.Settings.Default.DefGrid;
             PicBx_Cover.BackColor = Properties.Settings.Default.DefColour;
+            if (Properties.Settings.Default.HideDate)
+                LV_Entries.Columns[4].Width = 0;
+            
+            //set-up listview sorting & sizing
+            LV_Entries.ListViewItemSorter = lvSortObj;
+            LV_Entries.Select();
+            ResizeLV();
 
             //load database
             string sPath = Properties.Settings.Default.SavLoc != string.Empty ?
@@ -525,21 +520,7 @@ namespace Nagru___Manga_Organizer
 
         /* Proportionally-resizes columns   */
         private void LV_Entries_Resize(object sender, EventArgs e)
-        {
-            const int iStatic = 270; //remaining combined column width
-            const int iScroll = 20;  //vertical scrollbar width
-            int iMod = (LV_Entries.Width - iStatic) / 10;
-            LV_Entries.BeginUpdate();
-            LV_Entries.Columns[0].Width = iMod * 2; //artist
-            LV_Entries.Columns[1].Width = iMod * 4; //title
-            LV_Entries.Columns[3].Width = iMod * 4; //tags
-
-            /* append remaining width to colTags & account for scrollbar */
-            ColTags.Width += (LV_Entries.Width - iStatic) - (iMod * 10);
-            if (LV_Entries.Items.Count > LV_Entries.Height / 20)
-                ColTags.Width -= iScroll;
-            LV_Entries.EndUpdate();
-        }
+        { ResizeLV(); }
 
         /* Prevent user from changing column widths */
         private void LV_Entries_ColumnWidthChanging(
@@ -959,6 +940,26 @@ namespace Nagru___Manga_Organizer
             Tb_View.ResumeLayout();
         }
 
+        private void ResizeLV()
+        {
+            //remaining combined column width
+            int iStatic = LV_Entries.Columns[2].Width + LV_Entries.Columns[4].Width
+                + LV_Entries.Columns[5].Width + LV_Entries.Columns[6].Width;
+            const int iScroll = 20;  //vertical scrollbar width
+            int iMod = (LV_Entries.Width - iStatic) / 10;
+
+            LV_Entries.BeginUpdate();
+            LV_Entries.Columns[0].Width = iMod * 2; //artist
+            LV_Entries.Columns[1].Width = iMod * 4; //title
+            LV_Entries.Columns[3].Width = iMod * 4; //tags
+
+            /* append remaining width to colTags & account for scrollbar */
+            ColTags.Width += (LV_Entries.Width - iStatic) - (iMod * 10);
+            if (LV_Entries.Items.Count > LV_Entries.Height / 20)
+                ColTags.Width -= iScroll;
+            LV_Entries.EndUpdate();
+        }
+
         private void SaveData()
         {
             Cursor = Cursors.WaitCursor;
@@ -1174,23 +1175,20 @@ namespace Nagru___Manga_Organizer
         {
             string[] asProc = SplitTitle(sRaw);
 
-            if (asProc.Length >= 2) {
-                if (CmbBx_Artist.Text == "")
-                    CmbBx_Artist.Text = asProc[0];
-                if (TxBx_Title.Text == "")
-                    TxBx_Title.Text = asProc[1];
-            }
-            else {
-                TxBx_Title.Text = TxBx_Title.Text.Insert(
-                    TxBx_Title.SelectionStart, asProc[0]);
-                TxBx_Title.SelectionStart += asProc[0].Length;
-            }
+            Tb_View.SuspendLayout();
+            CmbBx_Artist.Text = CmbBx_Artist.Text.Insert(
+            CmbBx_Artist.SelectionStart, asProc[0]);
+            CmbBx_Artist.SelectionStart += asProc[0].Length;
+
+            TxBx_Title.Text = TxBx_Title.Text.Insert(
+                TxBx_Title.SelectionStart, asProc[1]);
+            TxBx_Title.SelectionStart += asProc[1].Length;
+            Tb_View.ResumeLayout();
         }
 
         private static string[] SplitTitle(string sRaw)
         {
-            //(Circle) [Artist, Collaborating Artist (Scanlator)] Title (Parody)(Comiket Number)[Language][Groups] {Translator}
-            string[] asName;
+            string[] asName = new string[2];
             string sCircle = "";
 
             //strip out circle info & store
@@ -1201,25 +1199,17 @@ namespace Nagru___Manga_Organizer
                     sRaw = sRaw.Remove(0, iPos);
                 }
             }
-
+            
             //split fields using EH format
             int iA = sRaw.IndexOf('['), 
                 iB = sRaw.IndexOf(']');
-            if ((iA > -1 && iB > -1) && iA < iB && (iB + 1) < sRaw.Length) {
-                asName = new string[2] {
-                    sRaw.Substring(iA + 1, iB - 1),
-                    sRaw.Substring(iB + 1)
-                };
-            }
-            else asName = new string[1] { sRaw };
-
-            //Re-format for Artist/Title fields
-            if (asName.Length == 2) {
-                if (sCircle != "")
-                    asName[1] += " " + sCircle;
-
-                asName[0] = asName[0].Trim();
-                asName[1] = asName[1].Trim();
+            if ((iA > -1 && iB > -1) && iA < iB && iB + 1 < sRaw.Length) {
+                //Re-format for Artist/Title fields
+                asName[0] = sRaw.Substring(iA + 1, iB - 1).Trim();
+                asName[1] = sRaw.Substring(iB + 1).Trim();
+                if (sCircle != "") asName[1] += " " + sCircle;
+            } else  {
+                asName[1] = sRaw;
             }
             return asName;
         }
@@ -1461,7 +1451,7 @@ namespace Nagru___Manga_Organizer
                 ServicePointManager.DefaultConnectionLimit = 64;
                 HttpWebRequest rq = (HttpWebRequest)
                     WebRequest.Create("http://g.e-hentai.org/api.php");
-                rq.ContentType = "application/json";
+                rq.ContentType = "application/json; charset=UTF-8";
                 rq.Method = "POST";
                 rq.Timeout = 5000;
                 rq.KeepAlive = false;
@@ -1480,9 +1470,10 @@ namespace Nagru___Manga_Organizer
                         asResp = ExtString.Split(sr.ReadToEnd(), "\",\"");
                         rq.Abort();
                     }
-                } catch {
+                } catch (Exception exc) {
                     bExc = true;
                     Text = "The URL was invalid or the connection timed out.";
+                    Console.WriteLine(exc.Message);
                 } finally {
                     //parse metadata
                     if(!bExc && asResp.Length >= 11) {
@@ -1514,8 +1505,7 @@ namespace Nagru___Manga_Organizer
                         
                         Text = "Finished";
                     } else {
-                        Text = "The URL was invalid or the connection timed out.";
-                        MessageBox.Show("The URL was invalid or the connection timed out.",
+                        MessageBox.Show(this.Text,
                             Application.ProductName, MessageBoxButtons.OK, 
                             MessageBoxIcon.Exclamation);
                     }
@@ -1556,6 +1546,10 @@ namespace Nagru___Manga_Organizer
             {
                 LV_Entries.GridLines = Properties.Settings.Default.DefGrid;
                 PicBx_Cover.BackColor = Properties.Settings.Default.DefColour;
+                if (Properties.Settings.Default.HideDate)
+                    LV_Entries.Columns[4].Width = 0;
+                else LV_Entries.Columns[4].Width = 70;
+                ResizeLV();
 
                 //Update new DB save location
                 if (sOld != Properties.Settings.Default.SavLoc)
@@ -1566,8 +1560,8 @@ namespace Nagru___Manga_Organizer
                     //move old save to new location
                     if (File.Exists(sNew)
                             && MessageBox.Show("Open existing database at:\n" + sNew,
-                            Application.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Question)
-                            == DialogResult.Yes)
+                            Application.ProductName, MessageBoxButtons.YesNo, 
+                            MessageBoxIcon.Question) == DialogResult.Yes)
                     {
                         lData = FileSerializer.Deserialize<List<csEntry>>(sNew);
 
@@ -1680,7 +1674,8 @@ namespace Nagru___Manga_Organizer
                 case "AutoCompleteTagger":
                     if(ActiveControl.Name == "TxBx_Search") {
                         string[] asTitle = SplitTitle(sAdd);
-                        sAdd = (asTitle.Length < 2) ? sAdd : string.Format("artist:{0} title:{1}",
+                        sAdd = (asTitle[0] == "") ? sAdd : 
+                            string.Format("artist:{0} title:{1}",
                             asTitle[0].Replace(' ', '_'), asTitle[1].Replace(' ', '_'));
                         TxBx_Search.SelectionStart = InsertText(
                             TxBx_Search, sAdd, TxBx_Search.SelectionStart);
@@ -1840,7 +1835,8 @@ namespace Nagru___Manga_Organizer
                     break;
                 case "TxBx_Search":
                     string[] asTitle = SplitTitle(sAdd);
-                    sAdd = (asTitle.Length < 2) ? sAdd : string.Format("artist:{0} title:{1}", 
+                    sAdd = (asTitle[0] == "") ? sAdd : 
+                        string.Format("artist:{0} title:{1}", 
                         asTitle[0].Replace(' ', '_'), asTitle[1].Replace(' ', '_'));
                     TxBx_Search.SelectionStart = InsertText(
                         TxBx_Search, sAdd, TxBx_Search.SelectionStart);

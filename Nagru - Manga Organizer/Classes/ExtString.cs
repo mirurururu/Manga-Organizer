@@ -9,8 +9,7 @@ namespace Nagru___Manga_Organizer
         public static bool Contains(this string sRaw, string sFind,
             StringComparison cComp = StringComparison.OrdinalIgnoreCase)
         {
-            if (sRaw.IndexOf(sFind, cComp) >= 0) return true;
-            return false;
+            return (sRaw.IndexOf(sFind, cComp) > -1) ? true : false;
         }
         
         /* Convert unicode to usable Ascii
@@ -60,15 +59,22 @@ namespace Nagru___Manga_Organizer
         
         public static string ReplaceHTML(string sRaw)
         {
-            return DecodeNonAscii(sRaw
-                .Replace("&amp;", "&")
-                .Replace("&quot;", "\"")
-                .Replace("&lt;", "<")
-                .Replace("&gt;", ">")
-                .Replace("&#039;", "'")
+            StringBuilder sbSwap = new StringBuilder(sRaw);
+            sbSwap.Replace("&amp;",  "&")
+                .Replace("&quot;",   "\"")
+                .Replace("&lt;",     "<")
+                .Replace("&gt;",     ">")
+                .Replace("&#039;",   "'")
                 .Replace("&frac14;", "¼")
                 .Replace("&frac12;", "½")
-                .Replace("&frac34;", "¾"));
+                .Replace("&frac34;", "¾")
+                .Replace("&deg;",    "°")
+                .Replace("&plusmn;", "±")
+                .Replace("&sup2;",   "²")
+                .Replace("&sup3;",   "³")
+                .Replace("&iquest;", "¿")
+                .Replace("&iexcl;",  "¡");
+            return DecodeNonAscii(sbSwap.ToString());
         }
 
         public static string[] Split(string sRaw, params string[] sFilter)
