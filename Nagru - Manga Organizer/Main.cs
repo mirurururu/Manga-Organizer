@@ -1188,7 +1188,7 @@ namespace Nagru___Manga_Organizer
 
         private static string[] SplitTitle(string sRaw)
         {
-            string[] asName = new string[2];
+            string[] asName = new string[2] { "", "" };
             string sCircle = "";
 
             //strip out circle info & store

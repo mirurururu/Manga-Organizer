@@ -1,5 +1,6 @@
-#### v. 4.1.62 (Nov 03, 2013)
+#### v. 4.1.63 (Nov 03, 2013)
 	- Made Date column optional (check settings)
+	- Small bugfix for title parsing (pre-fill array with empty strings)
 	- Small code improvements
 
 #### v. 4.1.52 (Nov 02, 2013)
