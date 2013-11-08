@@ -1,3 +1,7 @@
+#### v. 4.1.77 (Nov 08, 2013)
+	- Changed tag fetching to only set Artist/Title when the field is blank
+	- Also changed it to append, not overwrite, any existing tags on fetch
+	
 #### v. 4.1.75 (Nov 07, 2013)
 	- Added ability to choose external image viewer (check settings)
 	- Added ability to reset settings individually

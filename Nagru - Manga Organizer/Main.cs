@@ -1181,16 +1181,22 @@ namespace Nagru___Manga_Organizer
 
         private void SetTitle(string sRaw)
         {
+            Tb_View.SuspendLayout();
             string[] asProc = SplitTitle(sRaw);
 
-            Tb_View.SuspendLayout();
-            CmbBx_Artist.Text = CmbBx_Artist.Text.Insert(
-            CmbBx_Artist.SelectionStart, asProc[0]);
-            CmbBx_Artist.SelectionStart += asProc[0].Length;
-
-            acTxBx_Title.Text = acTxBx_Title.Text.Insert(
-                acTxBx_Title.SelectionStart, asProc[1]);
-            acTxBx_Title.SelectionStart += asProc[1].Length;
+            if(asProc[0] != string.Empty) {
+                if(CmbBx_Artist.Text == string.Empty) {
+                    CmbBx_Artist.Text = asProc[0];
+                }
+                if(acTxBx_Title.Text == string.Empty) {
+                    acTxBx_Title.Text = asProc[1];
+                }
+            }
+            else {
+                acTxBx_Title.Text = acTxBx_Title.Text.Insert(
+                    acTxBx_Title.SelectionStart, asProc[1]);
+                acTxBx_Title.SelectionStart += asProc[1].Length;
+            }
             Tb_View.ResumeLayout();
         }
 
@@ -1457,6 +1463,7 @@ namespace Nagru___Manga_Organizer
                 asResp = ExtString.ParseEH(fmGet.Url);
                 if(asResp.Length == 6) {
                     Text = "Parsing metadata...";
+                    Tb_View.SuspendLayout();
 
                     SetTitle(asResp[0]); //set artist/title
                     CmbBx_Type.Text = asResp[1]; //set entry type
@@ -1467,8 +1474,22 @@ namespace Nagru___Manga_Organizer
 
                     Nud_Pages.Value = Convert.ToInt32(asResp[3]); //set page count
                     srRating.SelectedStar = (int)Convert.ToDouble(asResp[4]); //set star rating
-                    acTxBx_Tags.Text = asResp[5]; //set and format tags
-                        
+                    
+                    //set tags
+                    if(acTxBx_Tags.Text == string.Empty) {
+                        acTxBx_Tags.Text = asResp[5]; 
+                    }
+                    else {
+                        List<string> lRaw = new List<string>(20);
+                        lRaw.AddRange(acTxBx_Tags.Text.Split(','));
+                        lRaw.AddRange(asResp[5].Split(','));
+                        string[] sRaw = lRaw.Select(
+                        x => x.Trim()).Distinct().Where(
+                        x => !string.IsNullOrEmpty(x)).ToArray<string>();
+                        acTxBx_Tags.Text = String.Join(", ", sRaw);
+                    }
+
+                    Tb_View.ResumeLayout();
                     Text = "Finished";
                 }
                 else {

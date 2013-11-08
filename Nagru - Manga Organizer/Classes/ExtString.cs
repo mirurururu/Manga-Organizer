@@ -102,8 +102,8 @@ namespace Nagru___Manga_Organizer
 
         public static string[] ParseEH(string sURL)
         {
-            List<string> lValues = new List<string>(10);
             const int iPreTag = 11;
+            string[] asParse = new string[6];
             string[] asResp = new string[0];
             bool bExc = false;
             
@@ -135,21 +135,21 @@ namespace Nagru___Manga_Organizer
 
             //parse returned string
             if (!bExc && asResp.Length >= 11) {
-                lValues.Add(ReplaceHTML(
-                    asResp[2].Split(':')[1].Substring(1)));        //set artist/title
-                lValues.Add(asResp[4].Split(':')[1].Substring(1)); //set entry type
-                lValues.Add(asResp[7].Split(':')[1].Substring(1)); //set date
-                lValues.Add(asResp[8].Split(':')[1].Substring(1)); //set page count
-                lValues.Add(asResp[9].Split(':')[3].Substring(1)); //set star rating
+                asParse[0] = ReplaceHTML(
+                    asResp[2].Split(':')[1].Substring(1));         //set artist/title
+                asParse[1] = asResp[4].Split(':')[1].Substring(1); //set entry type
+                asParse[2] = asResp[7].Split(':')[1].Substring(1); //set date
+                asParse[3] = asResp[8].Split(':')[1].Substring(1); //set page count
+                asParse[4] = asResp[9].Split(':')[3].Substring(1); //set star rating
 
                 //set and format tags
                 int iLast = asResp.Length - 1;
                 asResp[11] = asResp[11].Split(':')[1].Substring(2);
                 asResp[iLast] = asResp[iLast].Substring(0, asResp[iLast].Length - 5);
-                lValues.Add(string.Join(", ", asResp, iPreTag, asResp.Length - iPreTag));
+                asParse[5] = string.Join(", ", asResp, iPreTag, asResp.Length - iPreTag);
+                return asParse;
             }
-
-            return lValues.ToArray();
+            else return new string[0];
         }
     }
 }
