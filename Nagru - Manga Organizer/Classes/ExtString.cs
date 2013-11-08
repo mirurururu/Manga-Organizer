@@ -1,6 +1,9 @@
 ﻿using System;
+using System.IO;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
 
 namespace Nagru___Manga_Organizer
 {
@@ -80,6 +83,73 @@ namespace Nagru___Manga_Organizer
         public static string[] Split(string sRaw, params string[] sFilter)
         {
             return sRaw.Split(sFilter, StringSplitOptions.RemoveEmptyEntries);
+        }
+
+        /* Used to simulate JS Object Literal for JSON 
+           Based on Hupotronics' ExLinks   */
+        private static string JSON(string sURL)
+        {
+            string[] asChunk = sURL.Split('/');
+
+            if (asChunk.Length == 7) {
+                return string.Format(
+                    "{{\"method\":\"gdata\",\"gidlist\":[[{0},\"{1}\"]]}}",
+                    asChunk[4], asChunk[5]);
+            }
+            return string.Empty;
+
+        }
+
+        public static string[] ParseEH(string sURL)
+        {
+            List<string> lValues = new List<string>(10);
+            const int iPreTag = 11;
+            string[] asResp = new string[0];
+            bool bExc = false;
+            
+            //set up connection
+            ServicePointManager.DefaultConnectionLimit = 64;
+            HttpWebRequest rq = (HttpWebRequest)
+                WebRequest.Create("http://g.e-hentai.org/api.php");
+            rq.ContentType = "application/json; charset=UTF-8";
+            rq.Method = "POST";
+            rq.Timeout = 5000;
+            rq.KeepAlive = false;
+            rq.Proxy = null;
+
+            try {
+                //send formatted request to EH API
+                using (Stream s = rq.GetRequestStream()) {
+                    byte[] byContent = System.Text.Encoding.ASCII.GetBytes(JSON(sURL));
+                    s.Write(byContent, 0, byContent.Length);
+                }
+                using (StreamReader sr = new StreamReader((
+                    (HttpWebResponse)rq.GetResponse()).GetResponseStream())) {
+                    asResp = ExtString.Split(sr.ReadToEnd(), "\",\"");
+                    rq.Abort();
+                }
+            } catch (Exception exc) {
+                Console.WriteLine(exc.Message);
+                bExc = true;
+            }
+
+            //parse returned string
+            if (!bExc && asResp.Length >= 11) {
+                lValues.Add(ReplaceHTML(
+                    asResp[2].Split(':')[1].Substring(1)));        //set artist/title
+                lValues.Add(asResp[4].Split(':')[1].Substring(1)); //set entry type
+                lValues.Add(asResp[7].Split(':')[1].Substring(1)); //set date
+                lValues.Add(asResp[8].Split(':')[1].Substring(1)); //set page count
+                lValues.Add(asResp[9].Split(':')[3].Substring(1)); //set star rating
+
+                //set and format tags
+                int iLast = asResp.Length - 1;
+                asResp[11] = asResp[11].Split(':')[1].Substring(2);
+                asResp[iLast] = asResp[iLast].Substring(0, asResp[iLast].Length - 5);
+                lValues.Add(string.Join(", ", asResp, iPreTag, asResp.Length - iPreTag));
+            }
+
+            return lValues.ToArray();
         }
     }
 }

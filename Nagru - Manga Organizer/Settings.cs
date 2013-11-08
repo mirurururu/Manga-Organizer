@@ -11,6 +11,7 @@ namespace Nagru___Manga_Organizer
 {
     public partial class Settings : Form
     {
+        const string sDefProg = "System Default";
         string sIgnored = Properties.Settings.Default.Ignore;
         bool bNew, bSave = false;
 
@@ -23,8 +24,10 @@ namespace Nagru___Manga_Organizer
         private void Settings_Load(object sender, EventArgs e)
         {
             //initialize components
-            TxBx_Save.Text = Properties.Settings.Default.SavLoc;
-            TxBx_Root.Text = Properties.Settings.Default.DefLoc;
+            aTxBx_Save.Text = Properties.Settings.Default.SavLoc;
+            aTxBx_Root.Text = Properties.Settings.Default.DefLoc;
+            aTxBx_Prog.Text = Properties.Settings.Default.DefProg;
+            if (aTxBx_Prog.Text == "") aTxBx_Prog.Text = sDefProg;
             Nud_Intv.Value = Properties.Settings.Default.Interval;
             picBx_Colour.BackColor = Properties.Settings.Default.DefColour;
             ChkBx_Gridlines.Checked = Properties.Settings.Default.DefGrid;
@@ -36,67 +39,55 @@ namespace Nagru___Manga_Organizer
             }
             Btn_Save.FlatAppearance.BorderColor = Color.Green;
             bNew = false;
-
-            //Disable context menus and setup hScrollbars
-            TxBx_Save.ContextMenu = new ContextMenu();
-            TxBx_Root.ContextMenu = new ContextMenu();
-            SetScroll(TxBx_Save, ScrSave);
-            SetScroll(TxBx_Root, ScrRoot);
         }
-
-        private void TxBx_Save_Click(object sender, EventArgs e)
+        
+        private void aTxBx_Save_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog fbd = new FolderBrowserDialog();
-            string sPath = Properties.Settings.Default.SavLoc != "" ?
-                Properties.Settings.Default.SavLoc : Environment.CurrentDirectory;
+            string sPath = aTxBx_Save.Text != "" ?
+                aTxBx_Save.Text : Environment.CurrentDirectory;
             fbd.SelectedPath = sPath;
 
             if (fbd.ShowDialog() == DialogResult.OK 
                     && !ExtDir.Restricted(fbd.SelectedPath)) {
                 Btn_Save.FlatAppearance.BorderColor = Color.Red;
-                TxBx_Save.Text = fbd.SelectedPath;
-                SetScroll(TxBx_Save, ScrSave);
+                aTxBx_Save.Text = fbd.SelectedPath;
                 bNew = true;
             }
             fbd.Dispose();
         }
-        private void Scr_Save_Scroll(object sender, ScrollEventArgs e)
-        {
-            TxBx_Save.Select(ScrSave.Value, 0);
-            TxBx_Save.ScrollToCaret();
-        }
 
-        private void TxBx_Root_Click(object sender, EventArgs e)
+        private void aTxBx_Root_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog fbd = new FolderBrowserDialog();
-            string sPath = Properties.Settings.Default.DefLoc != "" ?
-                Properties.Settings.Default.DefLoc : Environment.CurrentDirectory;
+            string sPath = aTxBx_Root.Text != "" ?
+                aTxBx_Root.Text : Environment.CurrentDirectory;
             fbd.SelectedPath = sPath;
 
             if (fbd.ShowDialog() == DialogResult.OK
                     && !ExtDir.Restricted(fbd.SelectedPath)) {
                 Btn_Save.FlatAppearance.BorderColor = Color.Red;
-                TxBx_Root.Text = fbd.SelectedPath;
-                SetScroll(TxBx_Root, ScrRoot);
+                aTxBx_Root.Text = fbd.SelectedPath;
                 bNew = true;
             }
             fbd.Dispose();
         }
-        private void ScrRoot_Scroll(object sender, ScrollEventArgs e)
-        {
-            TxBx_Root.Select(ScrRoot.Value, 0);
-            TxBx_Root.ScrollToCaret();
-        }
 
-        private void SetScroll(TextBox cnt, HScrollBar hs)
+        private void aTxBx_Prog_Click(object sender, EventArgs e)
         {
-            int iWidth = TextRenderer.MeasureText(cnt.Text, cnt.Font).Width;
-            if (iWidth > cnt.Width) {
-                hs.Maximum = iWidth / 5;
-                hs.Value = cnt.SelectionStart;
-                hs.Visible = true;
+            OpenFileDialog ofd = new OpenFileDialog();
+            string sPath = aTxBx_Prog.Text != sDefProg ?
+                aTxBx_Prog.Text : Environment.CurrentDirectory;
+            ofd.Filter = "Executables (*.exe)|*.exe";
+            ofd.InitialDirectory = sPath;
+
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                Btn_Save.FlatAppearance.BorderColor = Color.Red;
+                aTxBx_Prog.Text = ofd.FileName;
+                bNew = true;
             }
-            else hs.Visible = false;
+            ofd.Dispose();
         }
 
         private void TxBx_KeyPress(object sender, KeyPressEventArgs e)
@@ -151,9 +142,36 @@ namespace Nagru___Manga_Organizer
             Btn_Save.FlatAppearance.BorderColor = Color.Red;
             bNew = true;
         }
-
-        private void ChkBx_Date_CheckedChanged(object sender, EventArgs e)
+        
+        private void MnAct_Reset_Click(object sender, EventArgs e)
         {
+            switch (MnAct.SourceControl.Name) {
+                case "aTxBx_Save":
+                    aTxBx_Save.Text = Environment.CurrentDirectory;
+                    break;
+                case "aTxBx_Root":
+                    aTxBx_Root.Text = Environment.CurrentDirectory;
+                    break;
+                case "aTxBx_Prog":
+                    aTxBx_Prog.Text = sDefProg;
+                    break;
+                case "Nud_Intv":
+                    Nud_Intv.Value = 20000;
+                    break;
+                case "picBx_Colour":
+                    picBx_Colour.BackColor = System.Drawing.Color.FromArgb(39, 40, 34);
+                    break;
+                case "ckLbx_Ign":
+                    ckLbx_Ign.Items.Clear();
+                    break;
+                case "ChkBx_Date":
+                    ChkBx_Date.Checked = true;
+                    break;
+                case "ChkBx_Gridlines":
+                    ChkBx_Gridlines.Checked = false;
+                    break;
+            }
+
             Btn_Save.FlatAppearance.BorderColor = Color.Red;
             bNew = true;
         }
@@ -161,8 +179,11 @@ namespace Nagru___Manga_Organizer
         private void Btn_Save_Click(object sender, EventArgs e)
         {
             //only finalize settings when `Btn_Save_Click' triggered
-            Properties.Settings.Default.SavLoc = TxBx_Save.Text;
-            Properties.Settings.Default.DefLoc = TxBx_Root.Text;
+            if (aTxBx_Prog.Text != sDefProg)
+                Properties.Settings.Default.DefProg = aTxBx_Prog.Text;
+            else Properties.Settings.Default.DefProg = "";
+            Properties.Settings.Default.SavLoc = aTxBx_Save.Text;
+            Properties.Settings.Default.DefLoc = aTxBx_Root.Text;
             Properties.Settings.Default.Interval = (int)Nud_Intv.Value;
             Properties.Settings.Default.DefColour = picBx_Colour.BackColor;
             Properties.Settings.Default.DefGrid = ChkBx_Gridlines.Checked;
@@ -170,7 +191,6 @@ namespace Nagru___Manga_Organizer
             Properties.Settings.Default.Ignore = sIgnored;
             Properties.Settings.Default.Save();
             bNew = false; bSave = true;
-            Btn_Save.FlatAppearance.BorderColor = Color.Green;
             this.Close();
         }
 

@@ -77,7 +77,7 @@ namespace Nagru___Manga_Organizer.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("4.1.63")]
+        [global::System.Configuration.DefaultSettingValueAttribute("4.1.75")]
         public string Version {
             get {
                 return ((string)(this["Version"]));
@@ -153,6 +153,18 @@ namespace Nagru___Manga_Organizer.Properties {
             }
             set {
                 this["HideDate"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string DefProg {
+            get {
+                return ((string)(this["DefProg"]));
+            }
+            set {
+                this["DefProg"] = value;
             }
         }
     }

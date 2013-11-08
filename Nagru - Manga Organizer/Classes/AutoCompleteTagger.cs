@@ -16,8 +16,7 @@ namespace Nagru___Manga_Organizer.Classes
         protected List<string> lKeyWords;
         protected char cSep = ',';
 
-        [DefaultValue(new string[0])]
-        [Description("Gets or sets the terms to be predicted.")]
+        [Description("Sets the terms to be predicted.")]
         public string[] KeyWords {
             get { return lKeyWords.ToArray(); }
             set {
@@ -26,11 +25,32 @@ namespace Nagru___Manga_Organizer.Classes
             }
         }
 
-        [DefaultValue(',')]
-        [Description("Gets or sets the delimeter character between tags.")]
+        [Description("Sets the delimeter character between tags.")]
         public char Seperator {
             get { return cSep; }
             set { cSep = value; }
+        }
+
+        //Hide relevant inherited properties
+        [Browsable(false)]
+        public new AutoCompleteStringCollection AutoCompleteCustomSource {
+            get { return base.AutoCompleteCustomSource; }
+            set { base.AutoCompleteCustomSource = value; }
+        }
+        [Browsable(false)]
+        public new AutoCompleteMode AutoCompleteMode {
+            get { return base.AutoCompleteMode; }
+            set { base.AutoCompleteMode = value; }
+        }
+        [Browsable(false)]
+        public new AutoCompleteSource AutoCompleteSource {
+            get { return base.AutoCompleteSource; }
+            set { base.AutoCompleteSource = value; }
+        }
+        [Browsable(false)]
+        public new ScrollBars ScrollBars {
+            get { return base.ScrollBars; }
+            set { base.ScrollBars = value; }
         }
         #endregion
 
@@ -38,7 +58,7 @@ namespace Nagru___Manga_Organizer.Classes
         {
             sbHorz = new HScrollBar();
             sbHorz.Scroll += sbHorz_Scroll;
-            sbHorz.Height = 15;
+            sbHorz.Height = 14;
             sbHorz.Hide();
 
             lbSuggest = new ListBox();
@@ -98,6 +118,7 @@ namespace Nagru___Manga_Organizer.Classes
                         break;
                 }
             }
+
             base.OnKeyUp(e);
         }
 
@@ -213,6 +234,7 @@ namespace Nagru___Manga_Organizer.Classes
         #region Custom Methods
         /* Get bounds of keyword based on caret position */
         private int getPrevSepCharIndex() {
+            if (!base.Text.Contains(cSep)) return 0;
             int iPos = base.SelectionStart == base.Text.Length ? 
                 base.Text.Length - 1 : base.SelectionStart - 1;
             for (int i = iPos; i > -1; i--) {
@@ -222,6 +244,7 @@ namespace Nagru___Manga_Organizer.Classes
             return 0;
         }
         private int getNextSepCharIndex(int iStart = -1) {
+            if (!base.Text.Contains(cSep)) return base.Text.Length;
             if (iStart == -1) iStart = base.SelectionStart;
             for (int i = iStart; i < base.Text.Length; i++) {
                 if (base.Text[i] == cSep)

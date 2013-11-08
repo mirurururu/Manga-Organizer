@@ -1,3 +1,8 @@
+#### v. 4.1.75 (Nov 07, 2013)
+	- Added ability to choose external image viewer (check settings)
+	- Added ability to reset settings individually
+	- Small bugfixes
+
 #### v. 4.1.63 (Nov 03, 2013)
 	- Made Date column optional (check settings)
 	- Small bugfix for title parsing (pre-fill array with empty strings)

@@ -32,7 +32,7 @@ namespace Nagru___Manga_Organizer
         List<csEntry> lData = new List<csEntry>(500);
         LVsorter lvSortObj = new LVsorter();
         bool bSavList = true, bSavText = true, bResize = false;
-        short indx = -1, iPage = -1;
+        int indx = -1, iPage = -1;
 
         /* Holds manga metadata */
         [Serializable]
@@ -52,19 +52,19 @@ namespace Nagru___Manga_Organizer
                 sLoc = _Loc;
                 sDesc = _Desc;
                 dtDate = _Date;
-                iPages = (ushort)_Pages;
+                iPages = (_Pages > ushort.MaxValue) ?
+                        ushort.MaxValue : (ushort)_Pages;
                 sType = _Type;
                 byRat = Convert.ToByte(_Rating);
+                sTags = "";
                 
                 //trim, clean, and format tags
-                if (_Tags == "") {
-                    sTags = "";
-                    return;
+                if (_Tags != "") {
+                    string[] sRaw = _Tags.Split(',').Select(
+                        x => x.Trim()).Distinct().Where(
+                        x => !string.IsNullOrEmpty(x)).ToArray<string>();
+                    sTags = String.Join(", ", sRaw.OrderBy(x => x));
                 }
-                string[] sRaw = _Tags.Split(',').Select(
-                    x => x.Trim()).Distinct().Where(
-                    x => !string.IsNullOrEmpty(x)).ToArray<string>();
-                sTags = String.Join(", ", sRaw.OrderBy(x => x));
             }
             public csEntry(string _Path)
             {
@@ -80,18 +80,20 @@ namespace Nagru___Manga_Organizer
                 sTags = "";
                 dtDate = DateTime.Now;
                 byRat = 0;
+                iPages = 0;
 
                 //Get filecount
                 string[] sFiles = new string[0];
                 if (File.Exists(_Path))
                     sFiles = new string[1] { _Path };
                 else sFiles = ExtDir.GetFiles(_Path,
-                    SearchOption.TopDirectoryOnly, "*.zip|*.cbz");
+                    SearchOption.TopDirectoryOnly, "*.zip|*.cbz|*.cbr|*.rar|*.7z");
 
                 if (sFiles.Length > 0) {
                     if(Nagru___Manga_Organizer.Main.IsArchive(sFiles[0])) {
                         SCA.IArchive scArchive = SCA.ArchiveFactory.Open(sFiles[0]);
-                        iPages = (ushort)scArchive.Entries.Count();
+                        iPages = (scArchive.Entries.Count() > ushort.MaxValue) ?
+                            ushort.MaxValue : (ushort)Math.Abs(scArchive.Entries.Count());
                         scArchive.Dispose();
                     }
                 }
@@ -358,7 +360,7 @@ namespace Nagru___Manga_Organizer
                     bSavList = false;
                 }
                 UpdateLV();
-
+                
                 //set up artist & tag autocomplete
                 string[] asArtists = new string[lData.Count];
                 List<string> lTags = new List<string>(lData.Count);
@@ -557,9 +559,9 @@ namespace Nagru___Manga_Organizer
         private void Btn_Loc_Click(object sender, EventArgs e)
         {
             //try to auto-magically grab folder\file path
-            string sPath = FindPath(TxBx_Loc.Text, CmbBx_Artist.Text, TxBx_Title.Text);
+            string sPath = FindPath(TxBx_Loc.Text, CmbBx_Artist.Text, acTxBx_Title.Text);
             if (sPath == null) sPath = FindPath(
-                TxBx_Loc.Text, CmbBx_Artist.Text, TxBx_Title.Text, true);
+                TxBx_Loc.Text, CmbBx_Artist.Text, acTxBx_Title.Text, true);
             if (sPath == null) sPath = Properties.Settings.Default.DefLoc;
 
             ExtFolderBrowserDialog xfbd = new ExtFolderBrowserDialog();
@@ -571,7 +573,7 @@ namespace Nagru___Manga_Organizer
                 TxBx_Loc.Text = xfbd.SelectedPath;
                 ThreadPool.QueueUserWorkItem(GetImage);
 
-                if (CmbBx_Artist.Text == "" && TxBx_Title.Text == "")
+                if (CmbBx_Artist.Text == "" && acTxBx_Title.Text == "")
                     SetTitle(Path.GetFileName(xfbd.SelectedPath));
             }
             xfbd.Dispose();
@@ -623,7 +625,8 @@ namespace Nagru___Manga_Organizer
                     fmBrowse.Files = new List<string>(sFiles.Length);
                     fmBrowse.Files.AddRange(sFiles);
                     fmBrowse.ShowDialog();
-                    iPage = (short)fmBrowse.Page;
+                    iPage = (fmBrowse.Page > int.MaxValue) ?
+                        int.MaxValue : Math.Abs(fmBrowse.Page);
                 }
             } else {
                 //process compressed images
@@ -637,7 +640,8 @@ namespace Nagru___Manga_Organizer
                     fmBrowse.Archive = scEntries;
 
                     fmBrowse.ShowDialog();
-                    iPage = (short)fmBrowse.Page;
+                    iPage = (fmBrowse.Page > int.MaxValue) ?
+                        int.MaxValue : Math.Abs(fmBrowse.Page);
                 }
                 scArchive.Dispose();
             }
@@ -881,7 +885,11 @@ namespace Nagru___Manga_Organizer
                 string[] sFiles = ExtDir.GetFiles(sPath);
                 if (sFiles.Length > 0) sPath = sFiles[0];
             }
-            System.Diagnostics.Process.Start("\"" + sPath + "\"");
+
+            string sProg = Properties.Settings.Default.DefProg;
+            if(sProg == "")
+                System.Diagnostics.Process.Start("\"" + sPath + "\"");
+            else System.Diagnostics.Process.Start(sProg, "\"" + sPath + "\"");
         }
 
         /* Convert number to string of stars */
@@ -922,7 +930,7 @@ namespace Nagru___Manga_Organizer
             //Tb_View
             TxBx_Loc.Clear();
             acTxBx_Tags.Clear();
-            TxBx_Title.Clear();
+            acTxBx_Title.Clear();
             frTxBx_Desc.Clear();
             Nud_Pages.Value = 0;
             CmbBx_Artist.Text = "";
@@ -1030,7 +1038,7 @@ namespace Nagru___Manga_Organizer
                     lData[i].sTitle,
                     lData[i].iPages.ToString(),
                     lData[i].sTags,
-                    lData[i].dtDate.ToShortDateString(),
+                    lData[i].dtDate.ToString("MM/dd/yy"),
                     lData[i].sType,
                     RatingFormat(lData[i].byRat),
                     i.ToString()
@@ -1053,12 +1061,12 @@ namespace Nagru___Manga_Organizer
 
         private void SetData(int iNewIndx)
         {
-            if ((indx = (short)iNewIndx) == -1)
+            if ((indx = iNewIndx) == -1)
             { Reset(); return; }
             
             Tb_View.SuspendLayout();
             Text = "Selected: " + lData[indx].ToString();
-            TxBx_Title.Text = lData[indx].sTitle;
+            acTxBx_Title.Text = lData[indx].sTitle;
             CmbBx_Artist.Text = lData[indx].sArtist;
             TxBx_Loc.Text = lData[indx].sLoc;
             frTxBx_Desc.Text = lData[indx].sDesc;
@@ -1180,23 +1188,24 @@ namespace Nagru___Manga_Organizer
             CmbBx_Artist.SelectionStart, asProc[0]);
             CmbBx_Artist.SelectionStart += asProc[0].Length;
 
-            TxBx_Title.Text = TxBx_Title.Text.Insert(
-                TxBx_Title.SelectionStart, asProc[1]);
-            TxBx_Title.SelectionStart += asProc[1].Length;
+            acTxBx_Title.Text = acTxBx_Title.Text.Insert(
+                acTxBx_Title.SelectionStart, asProc[1]);
+            acTxBx_Title.SelectionStart += asProc[1].Length;
             Tb_View.ResumeLayout();
         }
 
         private static string[] SplitTitle(string sRaw)
         {
+            //(Will it [break?])
             string[] asName = new string[2] { "", "" };
             string sCircle = "";
 
             //strip out circle info & store
             if (sRaw.StartsWith("(")) {
-                int iPos = sRaw.IndexOf(')') + 2;
-                if (sRaw.Length - 1 >= iPos) {
+                int iPos = sRaw.IndexOf(')');
+                if (iPos > -1 && ++iPos < sRaw.Length) {
                     sCircle = sRaw.Substring(0, iPos);
-                    sRaw = sRaw.Remove(0, iPos);
+                    sRaw = sRaw.Remove(0, iPos).TrimStart();
                 }
             }
             
@@ -1205,7 +1214,7 @@ namespace Nagru___Manga_Organizer
                 iB = sRaw.IndexOf(']');
             if ((iA > -1 && iB > -1) && iA < iB && iB + 1 < sRaw.Length) {
                 //Re-format for Artist/Title fields
-                asName[0] = sRaw.Substring(iA + 1, iB - 1).Trim();
+                asName[0] = sRaw.Substring(iA + 1, iB - iA - 1).Trim();
                 asName[1] = sRaw.Substring(iB + 1).Trim();
                 if (sCircle != "") asName[1] += " " + sCircle;
             } else  {
@@ -1232,7 +1241,7 @@ namespace Nagru___Manga_Organizer
                     lData[i].sTitle,
                     lData[i].iPages.ToString(),
                     lData[i].sTags,
-                    lData[i].dtDate.ToShortDateString(),
+                    lData[i].dtDate.ToString("MM/dd/yy"),
                     lData[i].sType,
                     RatingFormat(lData[i].byRat),
                     i.ToString()
@@ -1257,13 +1266,13 @@ namespace Nagru___Manga_Organizer
         private void MnTS_New_Click(object sender, EventArgs e)
         {
             //reject when title is unfilled
-            if (TxBx_Title.Text == "") {
+            if (acTxBx_Title.Text == "") {
                 MessageBox.Show("Title cannot be empty.", Application.ProductName,
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            csEntry en = new csEntry(CmbBx_Artist.Text, TxBx_Title.Text, 
+            csEntry en = new csEntry(CmbBx_Artist.Text, acTxBx_Title.Text, 
                 TxBx_Loc.Text, frTxBx_Desc.Text, acTxBx_Tags.Text, CmbBx_Type.Text,
                 Dt_Date.Value.Date, Nud_Pages.Value, srRating.SelectedStar);
 
@@ -1280,8 +1289,7 @@ namespace Nagru___Manga_Organizer
                     }
                     acTxBx_Tags.UpdateAutoComplete();
 
-                    //update LV_Entries & maintain scroll position
-                    int iPos = LV_Entries.TopItem == null ? -1 : LV_Entries.TopItem.Index;
+                    //update LV_Entries
                     AddEntries();
                     Reset();
                 }
@@ -1295,7 +1303,7 @@ namespace Nagru___Manga_Organizer
             if (indx == -1) return;
 
             //overwrite entry properties
-            lData[indx] = new csEntry(CmbBx_Artist.Text, TxBx_Title.Text, 
+            lData[indx] = new csEntry(CmbBx_Artist.Text, acTxBx_Title.Text, 
                 TxBx_Loc.Text, frTxBx_Desc.Text, acTxBx_Tags.Text, CmbBx_Type.Text,
                 Dt_Date.Value, Nud_Pages.Value, srRating.SelectedStar);
             Text = "Edited entry: " + lData[indx].ToString();
@@ -1310,6 +1318,7 @@ namespace Nagru___Manga_Organizer
             lvi.SubItems[1].Text = lData[indx].sTitle;
             lvi.SubItems[2].Text = lData[indx].iPages.ToString();
             lvi.SubItems[3].Text = lData[indx].sTags;
+            lvi.SubItems[4].Text = lData[indx].dtDate.ToString("MM/dd/yy");
             lvi.SubItems[5].Text = lData[indx].sType;
             LV_Entries.Sort();
 
@@ -1409,7 +1418,7 @@ namespace Nagru___Manga_Organizer
         #region Menu_Main
         private void MnTS_CopyTitle_Click(object sender, EventArgs e)
         {
-            if(TxBx_Title.Text == "") {
+            if(acTxBx_Title.Text == "") {
                 MessageBox.Show("The title field cannot be empty.",
                     Application.ProductName, MessageBoxButtons.OK, 
                     MessageBoxIcon.Exclamation);
@@ -1417,7 +1426,7 @@ namespace Nagru___Manga_Organizer
             }
 
             Clipboard.SetText(string.Format((CmbBx_Artist.Text != "") 
-                ? "[{0}] {1}" : "{1}", CmbBx_Artist.Text, TxBx_Title.Text));
+                ? "[{0}] {1}" : "{1}", CmbBx_Artist.Text, acTxBx_Title.Text));
             Text = "Name copied to clipboard";
         }
 
@@ -1439,78 +1448,36 @@ namespace Nagru___Manga_Organizer
             fmGet.Location = this.Location;
             fmGet.ShowDialog();
 
-            //process url
             if (fmGet.DialogResult == DialogResult.OK)
             {
-                bool bExc = false;
                 string[] asResp = new string[0];
                 this.Cursor = Cursors.WaitCursor;
                 Text = "Sending request...";
 
-                //set up connection
-                ServicePointManager.DefaultConnectionLimit = 64;
-                HttpWebRequest rq = (HttpWebRequest)
-                    WebRequest.Create("http://g.e-hentai.org/api.php");
-                rq.ContentType = "application/json; charset=UTF-8";
-                rq.Method = "POST";
-                rq.Timeout = 5000;
-                rq.KeepAlive = false;
-                rq.Proxy = null;
+                asResp = ExtString.ParseEH(fmGet.Url);
+                if(asResp.Length == 6) {
+                    Text = "Parsing metadata...";
 
-                try
-                {
-                    //send formatted request to EH API
-                    using (Stream s = rq.GetRequestStream()) {
-                        byte[] byContent = System.Text.Encoding.ASCII.GetBytes(JSON(fmGet.Url));
-                        s.Write(byContent, 0, byContent.Length);
-                    }
-                    using (StreamReader sr = new StreamReader((
-                        (HttpWebResponse)rq.GetResponse()).GetResponseStream())) {
-                        Text = "Downloading page...";
-                        asResp = ExtString.Split(sr.ReadToEnd(), "\",\"");
-                        rq.Abort();
-                    }
-                } catch (Exception exc) {
-                    bExc = true;
-                    Text = "The URL was invalid or the connection timed out.";
-                    Console.WriteLine(exc.Message);
-                } finally {
-                    //parse metadata
-                    if(!bExc && asResp.Length >= 11) {
-                        Text = "Parsing metadata...";
+                    SetTitle(asResp[0]); //set artist/title
+                    CmbBx_Type.Text = asResp[1]; //set entry type
+
+                    //set date
+                    DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+                    Dt_Date.Value = dt.AddSeconds((long)Convert.ToDouble(asResp[2]));
+
+                    Nud_Pages.Value = Convert.ToInt32(asResp[3]); //set page count
+                    srRating.SelectedStar = (int)Convert.ToDouble(asResp[4]); //set star rating
+                    acTxBx_Tags.Text = asResp[5]; //set and format tags
                         
-                        //set artist/title
-                        string sRaw = asResp[2].Split(':')[1].Substring(1);
-                        SetTitle(ExtString.ReplaceHTML(sRaw));
-
-                        //set entry type
-                        CmbBx_Type.Text = asResp[4].Split(':')[1].Substring(1);
-
-                        //set date
-                        DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-                        sRaw = asResp[7].Split(':')[1].Substring(1);
-                        Dt_Date.Value = dt.AddSeconds((long)Convert.ToDouble(sRaw));
-
-                        //set page count
-                        Nud_Pages.Value = Convert.ToInt32(asResp[8].Split(':')[1].Substring(1));
-
-                        //set star rating
-                        sRaw = asResp[9].Split(':')[3].Substring(1);
-                        srRating.SelectedStar = (int)Convert.ToDouble(sRaw);
-
-                        //set and formart tags
-                        asResp[11] = asResp[11].Split(':')[1].Substring(2);
-                        acTxBx_Tags.Text = string.Join(", ", asResp, 11, asResp.Length - 11);
-                        acTxBx_Tags.Text = acTxBx_Tags.Text.Substring(0, acTxBx_Tags.Text.Length - 5);
-                        
-                        Text = "Finished";
-                    } else {
-                        MessageBox.Show(this.Text,
-                            Application.ProductName, MessageBoxButtons.OK, 
-                            MessageBoxIcon.Exclamation);
-                    }
-                    this.Cursor = Cursors.Default;
+                    Text = "Finished";
                 }
+                else {
+                    Text = "The URL was invalid or the connection timed out.";
+                    MessageBox.Show(this.Text,
+                        Application.ProductName, MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
+                }
+                this.Cursor = Cursors.Default;
             }
             fmGet.Dispose();
         }
@@ -1608,7 +1575,7 @@ namespace Nagru___Manga_Organizer
         #region Menu_Context
         private void MnTx_Undo_Click(object sender, EventArgs e)
         {
-            switch (ActiveControl.GetType().Name) {
+            switch (Mn_TxBx.SourceControl.GetType().Name) {
                 case "FixedRichTextBox":
                     ((FixedRichTextBox)ActiveControl).Undo();
                     if (TabControl.SelectedIndex == 2 && !frTxBx_Notes.CanUndo) 
@@ -1626,7 +1593,7 @@ namespace Nagru___Manga_Organizer
 
         private void MnTx_Cut_Click(object sender, EventArgs e)
         {
-            switch (ActiveControl.GetType().Name) {
+            switch (Mn_TxBx.SourceControl.GetType().Name) {
                 case "FixedRichTextBox":
                     ((FixedRichTextBox)ActiveControl).Cut();
                     if (TabControl.SelectedIndex == 2) bSavText = false;
@@ -1647,7 +1614,7 @@ namespace Nagru___Manga_Organizer
 
         private void MnTx_Copy_Click(object sender, EventArgs e)
         {
-            switch (ActiveControl.GetType().Name) {
+            switch (Mn_TxBx.SourceControl.GetType().Name) {
                 case "FixedRichTextBox":
                     ((FixedRichTextBox)ActiveControl).Copy();
                     break;
@@ -1664,7 +1631,7 @@ namespace Nagru___Manga_Organizer
         private void MnTx_Paste_Click(object sender, EventArgs e)
         {
             string sAdd = Clipboard.GetText();
-            switch (ActiveControl.GetType().Name) {
+            switch (Mn_TxBx.SourceControl.GetType().Name) {
                 case "FixedRichTextBox":
                     FixedRichTextBox fr = ((FixedRichTextBox)ActiveControl);
                     fr.SelectedText = sAdd;
@@ -1704,7 +1671,7 @@ namespace Nagru___Manga_Organizer
 
         private void MnTx_Delete_Click(object sender, EventArgs e)
         {
-            switch (ActiveControl.GetType().Name) {
+            switch (Mn_TxBx.SourceControl.GetType().Name) {
                 case "FixedRichTextBox":
                     ((FixedRichTextBox)ActiveControl).SelectedText = "";
                     break;
@@ -1720,7 +1687,7 @@ namespace Nagru___Manga_Organizer
 
         private void MnTx_SelAll_Click(object sender, EventArgs e)
         {
-            switch (ActiveControl.GetType().Name) {
+            switch (Mn_TxBx.SourceControl.GetType().Name) {
                 case "FixedRichTextBox":
                     ((FixedRichTextBox)ActiveControl).SelectAll();
                     break;
@@ -1737,7 +1704,7 @@ namespace Nagru___Manga_Organizer
         private void Mn_TxBx_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
             bool bUndo = false, bSelect = false;
-            switch (ActiveControl.GetType().Name) {
+            switch (Mn_TxBx.SourceControl.GetType().Name) {
                 case "FixedRichTextBox":
                     FixedRichTextBox fr = ActiveControl as FixedRichTextBox;
                     if (fr.CanUndo) bUndo = true;
@@ -1818,10 +1785,10 @@ namespace Nagru___Manga_Organizer
                     else CmbBx_Artist.SelectionStart = InsertText(
                         CmbBx_Artist, sAdd, CmbBx_Artist.SelectionStart);
                     break;
-                case "TxBx_Title":
+                case "acTxBx_Title":
                     if (sAdd.Contains('[')) SetTitle(sAdd);
-                    else TxBx_Title.SelectionStart = InsertText(
-                        TxBx_Title, sAdd, TxBx_Title.SelectionStart);
+                    else acTxBx_Title.SelectionStart = InsertText(
+                        acTxBx_Title, sAdd, acTxBx_Title.SelectionStart);
                     break;
                 case "acTxBx_Tags":
                     if (sAdd.Contains("\r")) {
@@ -1851,13 +1818,13 @@ namespace Nagru___Manga_Organizer
             TxBx_Loc.Text = asDir[0];
 
             if(Directory.Exists(asDir[0])) {
-                if (CmbBx_Artist.Text == "" && TxBx_Title.Text == "") {
+                if (CmbBx_Artist.Text == "" && acTxBx_Title.Text == "") {
                     SetTitle(Path.GetDirectoryName(asDir[0]));
                     ThreadPool.QueueUserWorkItem(GetImage);
                 }
             }
             else if (File.Exists(asDir[0]) && IsArchive(asDir[0])) {
-                if (CmbBx_Artist.Text == "" && TxBx_Title.Text == "") {
+                if (CmbBx_Artist.Text == "" && acTxBx_Title.Text == "") {
                     SetTitle(Path.GetFileNameWithoutExtension(asDir[0]));
                     ThreadPool.QueueUserWorkItem(GetImage);
                 }
@@ -1904,8 +1871,8 @@ namespace Nagru___Manga_Organizer
         private void LV_Entries_DragDrop(object sender, DragEventArgs e)
         {
             string[] asDir = ((string[])e.Data.GetData(DataFormats.FileDrop, false));
-            short iTrack = indx;
             string sError = "";
+            int iTrack = indx;
 
             //add all remaining folders
             for (int i = 0; i < asDir.Length; i++) {
@@ -1918,7 +1885,7 @@ namespace Nagru___Manga_Organizer
                 Main.csEntry en = new csEntry(asDir[i]);
                 if (!lData.Contains(en)) {
                     lData.Add(en);
-                    indx = (short)(lData.Count - 1);
+                    indx = lData.Count - 1;
 
                     if (en.sArtist != "" && !CmbBx_Artist.Items.Contains(en.sArtist))
                         CmbBx_Artist.Items.Add(en.sArtist);
@@ -1956,7 +1923,8 @@ namespace Nagru___Manga_Organizer
                 sLoc = _Loc;
                 sDesc = _Desc;
                 dtDate = _Date;
-                iPages = (ushort)_Pages;
+                iPages = (_Pages > ushort.MaxValue) ?
+                        ushort.MaxValue : (ushort)_Pages;
                 sType = _Type;
                 bFav = _Fav;
                 sTags = _Tags;
