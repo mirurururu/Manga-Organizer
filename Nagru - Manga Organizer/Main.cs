@@ -70,7 +70,7 @@ namespace Nagru___Manga_Organizer
             {
                 //Try to format raw title string
                 string[] asTitle = SplitTitle(
-                    Path.GetFileName(_Path));
+                    ExtString.GetNameSansExtension(_Path));
                 sArtist = asTitle[0];
                 sTitle = asTitle[1];
 
@@ -372,6 +372,10 @@ namespace Nagru___Manga_Organizer
                 acTxBx_Tags.KeyWords = lTags.Select(x => x.Trim()).OrderBy(
                     x => x, new TrueCompare()).Distinct().ToArray();
             }
+
+            #if DEBUG
+            ExtString.SearchEH("Nitori's Ona-Hole Store", "110-GROOVE");
+            #endif
         }
 
         /* Prevent Form close if unsaved data present   */
@@ -574,7 +578,7 @@ namespace Nagru___Manga_Organizer
                 ThreadPool.QueueUserWorkItem(GetImage);
 
                 if (CmbBx_Artist.Text == "" && acTxBx_Title.Text == "")
-                    SetTitle(Path.GetFileName(xfbd.SelectedPath));
+                    SetTitle(ExtString.GetNameSansExtension(xfbd.SelectedPath));
             }
             xfbd.Dispose();
         }
@@ -830,29 +834,21 @@ namespace Nagru___Manga_Organizer
 
         private static bool IsArchive(string sPath)
         {
-            if (File.Exists(sPath)
-                    && (SCA.Rar.RarArchive.IsRarFile(sPath)
-                    || SCA.Zip.ZipArchive.IsZipFile(sPath)
-                    || SCA.SevenZip.SevenZipArchive.IsSevenZipFile(sPath))) {
-                return true;
-            } else {
-                return false;
+            bool bArchive = false;
+            if(File.Exists(sPath)) {
+                if(sPath.EndsWith(".zip")
+                        || sPath.EndsWith(".cbz")) {
+                    bArchive = SCA.Zip.ZipArchive.IsZipFile(sPath);
+                }
+                else if (sPath.EndsWith(".rar")
+                        || sPath.EndsWith(".cbr")) {
+                    bArchive = SCA.Rar.RarArchive.IsRarFile(sPath);
+                }
+                else if (sPath.EndsWith(".7z")) {
+                    bArchive = SCA.SevenZip.SevenZipArchive.IsSevenZipFile(sPath);
+                }
             }
-        }
-
-        /* Used to simulate JS Object Literal for JSON 
-           Based on Hupotronics' ExLinks   */
-        private static string JSON(string sURL)
-        {
-            string[] asChunk = sURL.Split('/');
-
-            if (asChunk.Length == 7) {
-                return string.Format(
-                    "{{\"method\":\"gdata\",\"gidlist\":[[{0},\"{1}\"]]}}",
-                    asChunk[4], asChunk[5]);
-            }
-            return string.Empty;
-            
+            return bArchive;
         }
 
         /* Remove all entries less than 5 stars */
@@ -953,7 +949,8 @@ namespace Nagru___Manga_Organizer
             //remaining combined column width
             int iStatic = LV_Entries.Columns[2].Width + LV_Entries.Columns[4].Width
                 + LV_Entries.Columns[5].Width + LV_Entries.Columns[6].Width;
-            const int iScroll = 20;  //vertical scrollbar width
+            const double dRow = 17.5; //approx height of each row
+            const int iScroll = 20;   //vertical scrollbar width
             int iMod = (LV_Entries.Width - iStatic) / 10;
 
             LV_Entries.BeginUpdate();
@@ -963,7 +960,7 @@ namespace Nagru___Manga_Organizer
 
             /* append remaining width to colTags & account for scrollbar */
             ColTags.Width += (LV_Entries.Width - iStatic) - (iMod * 10);
-            if (LV_Entries.Items.Count > LV_Entries.Height / 20)
+            if (LV_Entries.Items.Count > LV_Entries.Height / dRow)
                 ColTags.Width -= iScroll;
             LV_Entries.EndUpdate();
         }
@@ -1846,7 +1843,7 @@ namespace Nagru___Manga_Organizer
             }
             else if (File.Exists(asDir[0]) && IsArchive(asDir[0])) {
                 if (CmbBx_Artist.Text == "" && acTxBx_Title.Text == "") {
-                    SetTitle(Path.GetFileNameWithoutExtension(asDir[0]));
+                    SetTitle(ExtString.GetNameSansExtension(asDir[0]));
                     ThreadPool.QueueUserWorkItem(GetImage);
                 }
             }

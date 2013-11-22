@@ -1,3 +1,8 @@
+#### v. 4.1.88 (Nov 21, 2013)
+	- Improved performance of scanning
+	- Fixed file extension remaining in title
+	- Changed shortcut keys of menu items 
+
 #### v. 4.1.77 (Nov 08, 2013)
 	- Changed tag fetching to only set Artist/Title when the field is blank
 	- Also changed it to append, not overwrite, any existing tags on fetch

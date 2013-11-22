@@ -30,7 +30,7 @@ namespace Nagru___Manga_Organizer
         {
             if (Properties.Settings.Default.DefGrid)
                 LV_Found.GridLines = true;
-            LV_Found.ListViewItemSorter = lvSortObj;
+            LV_Found.ListViewItemSorter = null;
             LV_Found_Resize(sender, e);
 
             string[] sRaw = Properties.Settings.Default.Ignore.Split('|');
@@ -75,8 +75,9 @@ namespace Nagru___Manga_Organizer
             if (!ExtDir.Restricted(TxBx_Loc.Text)) {
                 lFound.Clear();
                 LV_Found.Items.Clear();
+                LV_Found.ListViewItemSorter = null;
                 Cursor = Cursors.WaitCursor;
-                System.Threading.ThreadPool.QueueUserWorkItem(ScanDir);
+                System.Threading.ThreadPool.QueueUserWorkItem(ScanDir, TxBx_Loc.Text);
             }
             else MessageBox.Show("Cannot read from the selected folder path.",
                 "Scan", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -86,11 +87,19 @@ namespace Nagru___Manga_Organizer
         private void ScanDir(Object obj)
         {
             List<string> lEns = new List<string>();
-            lEns.AddRange(ExtDir.GetFiles(TxBx_Loc.Text, 
+            lEns.AddRange(ExtDir.GetFiles(obj as string, 
                 SearchOption.AllDirectories, "*.zip|*.cbz|*.rar|*.cbr|*.7z"));
-            lEns.AddRange(Directory.GetDirectories(TxBx_Loc.Text, 
-                "*", SearchOption.AllDirectories));
 
+            try {
+                lEns.AddRange(Directory.GetDirectories(
+                    obj as string, "*", SearchOption.AllDirectories));
+            } catch (UnauthorizedAccessException ex) {
+                MessageBox.Show(ex.Message, Application.ProductName, 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            } catch (ArgumentException) {
+                Console.WriteLine("An invalid object got passed through!\n");
+            }
+            
             for (int i = 0; i < lEns.Count; i++) {
                 if (!hsPaths.Contains(lEns[i]))
                     BeginInvoke(new DelVoidEntry(AddItem),
@@ -102,6 +111,7 @@ namespace Nagru___Manga_Organizer
         /* Add new item to listview */
         private void AddItem(Main.csEntry en)
         {
+            if (en.iPages == 0) return;
             ListViewItem lvi = new ListViewItem(en.sArtist);
             lvi.SubItems.AddRange(new string[] { 
                 en.sTitle, 
@@ -117,15 +127,18 @@ namespace Nagru___Manga_Organizer
                 }
             }
             else LV_Found.Items.Add(lvi);
+
+            Text = "Scan: Found " + LV_Found.Items.Count + " possible entries";
         }
 
         /* Signal finished scan */
         private void SetFoundItems()
         {
+            LV_Found.ListViewItemSorter = lvSortObj;
             LV_Found.Sort();
             Alternate();
+
             Cursor = Cursors.Default;
-            Text = "Scan: Found " + LV_Found.Items.Count + " possible entries";
         }
         #endregion
 
@@ -168,6 +181,7 @@ namespace Nagru___Manga_Organizer
         private void Alternate()
         {
             if (LV_Found.GridLines) return;
+            LV_Found.BeginUpdate();
             for (int i = 0; i < LV_Found.Items.Count; i++) {
                 if (LV_Found.Items[i].BackColor == System.Drawing.Color.MistyRose)
                     continue;
@@ -175,6 +189,7 @@ namespace Nagru___Manga_Organizer
                     LV_Found.Items[i].BackColor = System.Drawing.Color.FromArgb(245, 245, 245);
                 else LV_Found.Items[i].BackColor = System.Drawing.SystemColors.Window;
             }
+            LV_Found.EndUpdate();
         }
 
         private void LV_Found_ColumnClick(object sender, ColumnClickEventArgs e)

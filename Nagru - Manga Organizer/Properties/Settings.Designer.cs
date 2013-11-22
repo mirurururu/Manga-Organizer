@@ -77,7 +77,7 @@ namespace Nagru___Manga_Organizer.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("4.1.77")]
+        [global::System.Configuration.DefaultSettingValueAttribute("4.1.88")]
         public string Version {
             get {
                 return ((string)(this["Version"]));
@@ -165,6 +165,30 @@ namespace Nagru___Manga_Organizer.Properties {
             }
             set {
                 this["DefProg"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string member_id {
+            get {
+                return ((string)(this["member_id"]));
+            }
+            set {
+                this["member_id"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string pass_hash {
+            get {
+                return ((string)(this["pass_hash"]));
+            }
+            set {
+                this["pass_hash"] = value;
             }
         }
     }

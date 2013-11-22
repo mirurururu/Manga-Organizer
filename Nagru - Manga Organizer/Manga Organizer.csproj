@@ -39,6 +39,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <GenerateSerializationAssemblies>On</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -48,12 +49,17 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <DebugSymbols>true</DebugSymbols>
     <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Resources\SadPanda.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Nagru___Manga_Organizer.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="SharpCompress">
@@ -68,6 +74,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Forms.DataVisualization" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="About.cs">
@@ -144,6 +151,12 @@
     <Compile Include="Stats.Designer.cs">
       <DependentUpon>Stats.cs</DependentUpon>
     </Compile>
+    <Compile Include="Suggest.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Suggest.Designer.cs">
+      <DependentUpon>Suggest.cs</DependentUpon>
+    </Compile>
     <Compile Include="Tutorial.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -183,6 +196,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Stats.resx">
       <DependentUpon>Stats.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Suggest.resx">
+      <DependentUpon>Suggest.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Tutorial.resx">
       <DependentUpon>Tutorial.cs</DependentUpon>
