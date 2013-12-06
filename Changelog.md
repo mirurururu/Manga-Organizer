@@ -1,3 +1,6 @@
+#### v. 4.1.89 (December 5, 2013)
+	- Fixed tag scrolling sometimes throwing an exception
+	
 #### v. 4.1.88 (Nov 21, 2013)
 	- Improved performance of scanning
 	- Fixed file extension remaining in title

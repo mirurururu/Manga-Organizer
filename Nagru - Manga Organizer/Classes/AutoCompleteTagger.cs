@@ -265,13 +265,11 @@ namespace Nagru___Manga_Organizer.Classes
         /* Show\Hide scrollbar as needed */
         public void SetScroll()
         {
-            int iWidth = TextRenderer.MeasureText(base.Text, base.Font).Width;
-            if (iWidth > base.Width) {
-                //scale scrollbar to more reflective size
-                const int iScale = 5;
-                sbHorz.Maximum = iWidth / iScale;
-                sbHorz.Value = base.SelectionStart;
-
+            int iWidth = TextRenderer.MeasureText(this.Text, this.Font).Width;
+            if (iWidth > this.Width) {
+                sbHorz.Maximum = this.Text.Length + 10;
+                sbHorz.Value = this.SelectionStart;
+                
                 //set sbHorz location
                 sbHorz.Width = Width;
                 sbHorz.Left = Left;

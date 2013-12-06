@@ -110,8 +110,10 @@ namespace Nagru___Manga_Organizer
             }
 
             /* Override equals to compare entry titles */
-            public bool Equals(csEntry en)
+            public override bool Equals(object obj)
             {
+                if (!(obj is csEntry)) return false;
+                csEntry en = obj as csEntry;
                 return (en.sArtist + en.sTitle).Equals(
                     sArtist + sTitle, StringComparison.OrdinalIgnoreCase);
             }
@@ -291,22 +293,6 @@ namespace Nagru___Manga_Organizer
 
         private void Main_Load(object sender, EventArgs e)
         {
-            #if !DEBUG
-            //Run tutorial on first execution
-            if (Properties.Settings.Default.FirstRun) {
-                Properties.Settings.Default.FirstRun = false;
-                Properties.Settings.Default.Save();
-
-                Tutorial fmTut = new Tutorial();
-                fmTut.ShowDialog();
-                fmTut.Dispose();
-
-                //set runtime sensitive default locations
-                Properties.Settings.Default.SavLoc = Environment.CurrentDirectory;
-                Properties.Settings.Default.DefLoc = Environment.CurrentDirectory;
-            }
-            #endif
-            
             //disable ContextMenu in Nud_Pages
             Nud_Pages.ContextMenuStrip = new ContextMenuStrip();
             
@@ -361,21 +347,40 @@ namespace Nagru___Manga_Organizer
                 }
                 UpdateLV();
                 
-                //set up artist & tag autocomplete
-                string[] asArtists = new string[lData.Count];
+                //set up artist, tag, and type autocomplete
                 List<string> lTags = new List<string>(lData.Count);
+                HashSet<string> hsArtists = new HashSet<string>();
+                HashSet<string> hsTypes = new HashSet<string>();
+                for (int i = 0; i < CmbBx_Type.Items.Count; i++) 
+                    hsTypes.Add(CmbBx_Type.Items[i].ToString());
+                
                 for (int i = 0; i < lData.Count; i++) {
-                    asArtists[i] = lData[i].sArtist;
+                    if (!hsTypes.Contains(lData[i].sType))
+                        hsTypes.Add(lData[i].sType);
+                    if (!hsArtists.Contains(lData[i].sArtist))
+                        hsArtists.Add(lData[i].sArtist);
                     lTags.AddRange(lData[i].sTags.Split(','));
                 }
-                CmbBx_Artist.Items.AddRange(asArtists.Distinct().Select(x => x).ToArray());
-                acTxBx_Tags.KeyWords = lTags.Select(x => x.Trim()).OrderBy(
-                    x => x, new TrueCompare()).Distinct().ToArray();
-            }
+                CmbBx_Artist.Items.AddRange(hsArtists.Select(x => x).ToArray());
+                acTxBx_Tags.KeyWords = lTags.Select(x => x.Trim()).Distinct()
+                    .OrderBy(x => x, new TrueCompare()).ToArray();
+            } else {
+                #if !DEBUG
+                //Run tutorial on first execution
+                if (Properties.Settings.Default.FirstRun) {
+                    Properties.Settings.Default.FirstRun = false;
+                    Properties.Settings.Default.Save();
 
-            #if DEBUG
-            ExtString.SearchEH("Nitori's Ona-Hole Store", "110-GROOVE");
-            #endif
+                    Tutorial fmTut = new Tutorial();
+                    fmTut.ShowDialog();
+                    fmTut.Dispose();
+
+                    //set runtime sensitive default locations
+                    Properties.Settings.Default.SavLoc = Environment.CurrentDirectory;
+                    Properties.Settings.Default.DefLoc = Environment.CurrentDirectory;
+                }
+                #endif
+            }
         }
 
         /* Prevent Form close if unsaved data present   */

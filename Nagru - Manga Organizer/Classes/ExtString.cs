@@ -105,10 +105,10 @@ namespace Nagru___Manga_Organizer
             } if (sPage == string.Empty) {
                 return new string[0];
             }
-            
+            File.WriteAllText("D:\\Temp.txt", sPage);
             //strip out all gallery results
-            MatchCollection mc = Regex.Matches(sPage, "<div class=");
-            foreach (Match x in mc) Console.WriteLine(x.Value);
+            //MatchCollection mc = Regex.Matches(sPage, "<div class=");
+            //foreach (Match x in mc) Console.WriteLine(x.Value);
             return lUrls.ToArray();
         }
         
