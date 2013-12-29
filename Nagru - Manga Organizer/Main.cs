@@ -856,6 +856,54 @@ namespace Nagru___Manga_Organizer
             return bArchive;
         }
 
+        /* Parse EH metadata into local fields */
+        private void LoadEH(string sURL)
+        {
+            string[] asResp = new string[0];
+            this.Cursor = Cursors.WaitCursor;
+            Text = "Sending request...";
+
+            asResp = ExtString.EHParse(sURL);
+            if (asResp.Length == 6) {
+                Text = "Parsing metadata...";
+                Tb_View.SuspendLayout();
+
+                SetTitle(asResp[0]); //set artist/title
+                CmbBx_Type.Text = asResp[1]; //set entry type
+
+                //set date
+                DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+                Dt_Date.Value = dt.AddSeconds((long)Convert.ToDouble(asResp[2]));
+
+                Nud_Pages.Value = Convert.ToInt32(asResp[3]); //set page count
+                srRating.SelectedStar = (int)Convert.ToDouble(asResp[4]); //set star rating
+
+                //set tags
+                if (acTxBx_Tags.Text == string.Empty) {
+                    acTxBx_Tags.Text = asResp[5];
+                }
+                else {
+                    List<string> lRaw = new List<string>(20);
+                    lRaw.AddRange(acTxBx_Tags.Text.Split(','));
+                    lRaw.AddRange(asResp[5].Split(','));
+                    string[] sRaw = lRaw.Select(
+                    x => x.Trim()).Distinct().Where(
+                    x => !string.IsNullOrEmpty(x)).ToArray<string>();
+                    acTxBx_Tags.Text = String.Join(", ", sRaw);
+                }
+
+                Tb_View.ResumeLayout();
+                Text = "Finished";
+            }
+            else {
+                Text = "The URL was invalid or the connection timed out.";
+                MessageBox.Show(this.Text,
+                    Application.ProductName, MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation);
+            }
+            this.Cursor = Cursors.Default;
+        }
+
         /* Remove all entries less than 5 stars */
         private void OnlyFavs()
         {
@@ -1202,9 +1250,8 @@ namespace Nagru___Manga_Organizer
             Tb_View.ResumeLayout();
         }
 
-        private static string[] SplitTitle(string sRaw)
+        public static string[] SplitTitle(string sRaw)
         {
-            //(Will it [break?])
             string[] asName = new string[2] { "", "" };
             string sCircle = "";
 
@@ -1456,53 +1503,21 @@ namespace Nagru___Manga_Organizer
             fmGet.Location = this.Location;
             fmGet.ShowDialog();
 
-            if (fmGet.DialogResult == DialogResult.OK)
-            {
-                string[] asResp = new string[0];
-                this.Cursor = Cursors.WaitCursor;
-                Text = "Sending request...";
-
-                asResp = ExtString.ParseEH(fmGet.Url);
-                if(asResp.Length == 6) {
-                    Text = "Parsing metadata...";
-                    Tb_View.SuspendLayout();
-
-                    SetTitle(asResp[0]); //set artist/title
-                    CmbBx_Type.Text = asResp[1]; //set entry type
-
-                    //set date
-                    DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-                    Dt_Date.Value = dt.AddSeconds((long)Convert.ToDouble(asResp[2]));
-
-                    Nud_Pages.Value = Convert.ToInt32(asResp[3]); //set page count
-                    srRating.SelectedStar = (int)Convert.ToDouble(asResp[4]); //set star rating
-                    
-                    //set tags
-                    if(acTxBx_Tags.Text == string.Empty) {
-                        acTxBx_Tags.Text = asResp[5]; 
-                    }
-                    else {
-                        List<string> lRaw = new List<string>(20);
-                        lRaw.AddRange(acTxBx_Tags.Text.Split(','));
-                        lRaw.AddRange(asResp[5].Split(','));
-                        string[] sRaw = lRaw.Select(
-                        x => x.Trim()).Distinct().Where(
-                        x => !string.IsNullOrEmpty(x)).ToArray<string>();
-                        acTxBx_Tags.Text = String.Join(", ", sRaw);
-                    }
-
-                    Tb_View.ResumeLayout();
-                    Text = "Finished";
-                }
-                else {
-                    Text = "The URL was invalid or the connection timed out.";
-                    MessageBox.Show(this.Text,
-                        Application.ProductName, MessageBoxButtons.OK,
-                        MessageBoxIcon.Exclamation);
-                }
-                this.Cursor = Cursors.Default;
+            if (fmGet.DialogResult == DialogResult.OK) {
+                LoadEH(fmGet.Url);
             }
             fmGet.Dispose();
+        }
+
+        private void MnTs_SearchEH_Click(object sender, EventArgs e)
+        {
+            Suggest fmSuggest = new Suggest();
+            fmSuggest.ShowDialog();
+
+            if(fmSuggest.DialogResult == DialogResult.OK) {
+                LoadEH(fmSuggest.sChoice);
+            }
+            fmSuggest.Dispose();
         }
 
         private void MnTS_Save_Click(object sender, EventArgs e)
@@ -1596,6 +1611,39 @@ namespace Nagru___Manga_Organizer
         #endregion
 
         #region Menu_Context
+        private void Mn_TxBx_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            //ensure element has focus
+            if (Mn_TxBx.SourceControl.CanFocus) Mn_TxBx.SourceControl.Focus();
+            if (Mn_TxBx.SourceControl.CanSelect) Mn_TxBx.SourceControl.Select();
+
+            //check what properties are available
+            bool bUndo = false, bSelect = false;
+            switch (Mn_TxBx.SourceControl.GetType().Name) {
+                case "FixedRichTextBox":
+                    FixedRichTextBox fr = ActiveControl as FixedRichTextBox;
+                    if (fr.CanUndo) bUndo = true;
+                    if (fr.SelectionLength > 0) bSelect = true;
+                    break;
+                case "TextBox":
+                case "AutoCompleteTagger":
+                    TextBox txt = ActiveControl as TextBox;
+                    if (txt.CanUndo) bUndo = true;
+                    if (txt.SelectionLength > 0) bSelect = true;
+                    break;
+                case "ComboBox":
+                    ComboBox cb = ActiveControl as ComboBox;
+                    if (cb.SelectionLength > 0) bSelect = true;
+                    bUndo = true;
+                    break;
+            }
+
+            MnTx_Undo.Enabled = bUndo;
+            MnTx_Cut.Enabled = bSelect;
+            MnTx_Copy.Enabled = bSelect;
+            MnTx_Delete.Enabled = bSelect;
+        }
+
         private void MnTx_Undo_Click(object sender, EventArgs e)
         {
             switch (Mn_TxBx.SourceControl.GetType().Name) {
@@ -1722,42 +1770,6 @@ namespace Nagru___Manga_Organizer
                     ((ComboBox)ActiveControl).SelectAll();
                     break;
             }
-        }
-
-        private void Mn_TxBx_Opening(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            bool bUndo = false, bSelect = false;
-            switch (Mn_TxBx.SourceControl.GetType().Name) {
-                case "FixedRichTextBox":
-                    FixedRichTextBox fr = ActiveControl as FixedRichTextBox;
-                    if (fr.CanUndo) bUndo = true;
-                    if (fr.SelectionLength > 0) bSelect = true;
-                    break;
-                case "TextBox":
-                case "AutoCompleteTagger":
-                    TextBox txt = ActiveControl as TextBox;
-                    if (txt.CanUndo) bUndo = true;
-                    if (txt.SelectionLength > 0) bSelect = true;
-                    break;
-                case "ComboBox":
-                    ComboBox cb = ActiveControl as ComboBox;
-                    if (cb.SelectionLength > 0) bSelect = true;
-                    bUndo = true;
-                    break;
-            }
-
-            MnTx_Undo.Enabled = bUndo;
-            MnTx_Cut.Enabled = bSelect;
-            MnTx_Copy.Enabled = bSelect;
-            MnTx_Delete.Enabled = bSelect;
-        }
-
-        /* Ensure element recieves focus when right-clicked */
-        private void TbPg_Click(object sender, MouseEventArgs e)
-        {
-            if (e.Button != MouseButtons.Right) return;
-            Control cnt = sender as Control;
-            if (cnt.CanSelect) cnt.Select();
         }
 
         private void frTxBx_KeyDown(object sender, KeyEventArgs e)

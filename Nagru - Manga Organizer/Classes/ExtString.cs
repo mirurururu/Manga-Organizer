@@ -3,20 +3,23 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace Nagru___Manga_Organizer
 {
     public static class ExtString
     {
-        static string sUserName;
-        static string sPassword;
-
-        static ExtString()
+        //hold results of e-hentai search (may expand to include img, etc)
+        public struct stEXH
         {
-            sUserName = Properties.Settings.Default.member_id;
-            sPassword = Properties.Settings.Default.pass_hash;
+            public string sURL, sTitle;
+
+            public stEXH(string _URL, string _Title)
+            {
+                sURL = _URL;
+                sTitle = _Title;
+            }
         }
 
         public static bool Contains(this string sRaw, string sFind,
@@ -35,62 +38,61 @@ namespace Nagru___Manga_Organizer
                         System.Globalization.NumberStyles.HexNumber)).ToString();
                 });
         }
-        
-        public static string GetNameSansExtension(string sName)
+
+        private static string EHConvert(string sRaw, string sSite)
         {
-            int indx = sName.LastIndexOf('\\');
-            if(indx > -1) {
-                sName = sName.Remove(0, indx + 1);
+            StringBuilder sb = new StringBuilder("");
+            string[] asSplit = Main.SplitTitle(sRaw);
+            
+            //check for artist/title fields and set formatting
+            if(!string.IsNullOrEmpty(asSplit[0])) {
+                sb.AppendFormat("artist%3A{0}+", asSplit[0]);
+                sb.Replace(' ', '_');
             }
-            indx = sName.LastIndexOf('.');
-            if(indx > -1) {
-                switch(sName.Length - indx) {
-                    case 3: return sName.Remove(indx, 3);
-                    case 4: return sName.Remove(indx, 4);
-                }
-            }
-            return sName;
+            sb.Append(asSplit[1]);
+            sb.Replace(' ', '+')
+                .Replace(":", "%3A")
+                .Replace("&", "%26");
+
+            //insert rest of search string
+            sb.Insert(0, string.Format("http://{0}.org/?f_doujinshi=1&f_manga=1&f_artistcg=0&f_gamecg=0&f_western=0&f_non-h=0&f_imageset=0&f_cosplay=0&f_asianporn=0&f_misc=0&f_search=", sSite));
+            sb.Append("&f_apply=Apply+Filter");
+
+            return sb.ToString();
         }
         
-        /* Used to simulate JS Object Literal for JSON 
-           Based on Hupotronics' ExLinks   */
-        private static string JSON(string sURL)
+        public static List<stEXH> EHSearch(string sRaw)
         {
-            string[] asChunk = sURL.Split('/');
+            List<stEXH> lDetails = new List<stEXH>(5);
+            string sSearch = "", sPage = "";
+            bool bXH = true;
 
-            if (asChunk.Length == 7) {
-                return string.Format(
-                    "{{\"method\":\"gdata\",\"gidlist\":[[{0},\"{1}\"]]}}",
-                    asChunk[4], asChunk[5]);
+            //determine if exhentai can be called
+            if(string.IsNullOrEmpty(Properties.Settings.Default.pass_hash)
+                || string.IsNullOrEmpty(Properties.Settings.Default.member_id)) {
+                bXH = false;
             }
-            return string.Empty;
-        }
 
-        public static string[] SearchEH(string sTitle, string sArtist = "")
-        {
-            List<string> lUrls = new List<string>(5);
-            string sPage = "";
-
-            //build query string
-            StringBuilder sb = new StringBuilder("http://exhentai.org/?f_doujinshi=1&f_manga=1&f_artistcg=0&f_gamecg=0&f_western=0&f_non-h=0&f_imageset=0&f_cosplay=0&f_asianporn=0&f_misc=0&f_search=");
-            if (sArtist != "") sb.AppendFormat("a%3A{0}+", sArtist);
-            sb.AppendFormat("{0}&f_apply=Apply+Filter", sTitle);
-            sb.Replace(' ', '+');
+            //convert raw search terms into web form
+            sSearch = EHConvert(sRaw, (bXH) ? "exhentai" : "g.e-hentai");
 
             //set up connection
             ServicePointManager.DefaultConnectionLimit = 64;
             HttpWebRequest rq = (HttpWebRequest)
-                WebRequest.Create(sb.ToString());
+                WebRequest.Create(sSearch);
             rq.ContentType = "text/html; charset=UTF-8";
             rq.Method = "GET";
             rq.Timeout = 5000;
             rq.KeepAlive = false;
             rq.Proxy = null;
-            rq.CookieContainer = new CookieContainer(4);
-            rq.CookieContainer.Add(new CookieCollection() {
-                new Cookie("ipb_member_id", sUserName) { Domain = "exhentai.org" },
-                new Cookie("ipb_pass_hash", sPassword) { Domain = "exhentai.org" }
-            });
+
+            if (bXH) {
+                rq.CookieContainer = new CookieContainer(4);
+                rq.CookieContainer.Add(new CookieCollection() {
+                    new Cookie("ipb_member_id", Properties.Settings.Default.member_id) { Domain = "exhentai.org" },
+                    new Cookie("ipb_pass_hash", Properties.Settings.Default.pass_hash) { Domain = "exhentai.org" }
+                });
+            }
             
             try {
                 //get webpage
@@ -101,18 +103,28 @@ namespace Nagru___Manga_Organizer
                 }
             } catch (Exception exc) {
                 Console.WriteLine(exc.Message);
-                return new string[0];
+                return null;
             } if (sPage == string.Empty) {
-                return new string[0];
+                return null;
             }
-            File.WriteAllText("D:\\Temp.txt", sPage);
-            //strip out all gallery results
-            //MatchCollection mc = Regex.Matches(sPage, "<div class=");
-            //foreach (Match x in mc) Console.WriteLine(x.Value);
-            return lUrls.ToArray();
+
+            //strip out usable details
+            string sPattern = ".*http://exhentai.org/g/[0-9]{6}/[a-zA-z0-9]{10}/.* onmouseover=.* onmouseout=.*>"
+                + "[ \\(\\)a-zA-z0-9.]{0,100}\\[[ \\(\\)a-zA-z0-9.]{1,100}\\][ \\(\\)a-zA-z0-9.]{1,100}.*";
+            string[] asplit = sPage.Split('<');
+            for (int i = 0; i < asplit.Length; i++) {
+                if (asplit[i].Length > 50 && Regex.IsMatch(asplit[i], sPattern)) {
+                    lDetails.Add(new stEXH(
+                        asplit[i].Substring(8, 39),
+                        asplit[i].Split('>')[1].Split('<')[0])
+                    );
+                }
+            }
+
+            return lDetails;
         }
         
-        public static string[] ParseEH(string sURL)
+        public static string[] EHParse(string sURL)
         {
             const int iPreTag = 11;
             string[] asParse = new string[6];
@@ -147,7 +159,7 @@ namespace Nagru___Manga_Organizer
 
             //parse returned string
             if (!bExc && asResp.Length >= 11) {
-                asParse[0] = ReplaceHTML(
+                asParse[0] = HTMLConvertFrom(
                     asResp[2].Split(':')[1].Substring(1));         //set artist/title
                 asParse[1] = asResp[4].Split(':')[1].Substring(1); //set entry type
                 asParse[2] = asResp[7].Split(':')[1].Substring(1); //set date
@@ -162,6 +174,56 @@ namespace Nagru___Manga_Organizer
                 return asParse;
             }
             else return new string[0];
+        }
+        
+        public static string GetNameSansExtension(string sName)
+        {
+            int indx = sName.LastIndexOf('\\');
+            if(indx > -1) {
+                sName = sName.Remove(0, indx + 1);
+            }
+            indx = sName.LastIndexOf('.');
+            if(indx > -1) {
+                switch(sName.Length - indx) {
+                    case 3: return sName.Remove(indx, 3);
+                    case 4: return sName.Remove(indx, 4);
+                }
+            }
+            return sName;
+        }
+
+        public static string HTMLConvertFrom(string sRaw)
+        {
+            StringBuilder sbSwap = new StringBuilder(sRaw);
+            sbSwap.Replace("&amp;", "&")
+                .Replace("&quot;", "\"")
+                .Replace("&lt;", "<")
+                .Replace("&gt;", ">")
+                .Replace("&#039;", "'")
+                .Replace("&frac14;", "¼")
+                .Replace("&frac12;", "½")
+                .Replace("&frac34;", "¾")
+                .Replace("&deg;", "°")
+                .Replace("&plusmn;", "±")
+                .Replace("&sup2;", "²")
+                .Replace("&sup3;", "³")
+                .Replace("&iquest;", "¿")
+                .Replace("&iexcl;", "¡");
+            return DecodeNonAscii(sbSwap.ToString());
+        }
+        
+        /* Used to simulate JS Object Literal for JSON 
+           Based on Hupotronics' ExLinks   */
+        private static string JSON(string sURL)
+        {
+            string[] asChunk = sURL.Split('/');
+
+            if (asChunk.Length >= 5) {
+                return string.Format(
+                    "{{\"method\":\"gdata\",\"gidlist\":[[{0},\"{1}\"]]}}",
+                    asChunk[4], asChunk[5]);
+            }
+            return string.Empty;
         }
 
         public static string RelativePath(string sRaw)
@@ -196,26 +258,6 @@ namespace Nagru___Manga_Organizer
                     || System.IO.File.Exists(sPath))
                 return sPath;
             else return null;
-        }
-        
-        public static string ReplaceHTML(string sRaw)
-        {
-            StringBuilder sbSwap = new StringBuilder(sRaw);
-            sbSwap.Replace("&amp;",  "&")
-                .Replace("&quot;",   "\"")
-                .Replace("&lt;",     "<")
-                .Replace("&gt;",     ">")
-                .Replace("&#039;",   "'")
-                .Replace("&frac14;", "¼")
-                .Replace("&frac12;", "½")
-                .Replace("&frac34;", "¾")
-                .Replace("&deg;",    "°")
-                .Replace("&plusmn;", "±")
-                .Replace("&sup2;",   "²")
-                .Replace("&sup3;",   "³")
-                .Replace("&iquest;", "¿")
-                .Replace("&iexcl;",  "¡");
-            return DecodeNonAscii(sbSwap.ToString());
         }
 
         public static string[] Split(string sRaw, params string[] sFilter)

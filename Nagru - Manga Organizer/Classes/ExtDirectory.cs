@@ -11,7 +11,7 @@ namespace Nagru___Manga_Organizer
            Inspiration: Bean Software (2002-2008)                            */
         public static string[] GetFiles(string SourceFolder,
             SearchOption SearchOption = SearchOption.AllDirectories,
-            string Filter = "*.jpg|*.png|*.jpeg")
+            string Filter = "*.jpg|*.png|*.jpeg|*.gif")
         {
             if (!Directory.Exists(SourceFolder)) return new string[0];
             List<string> lFiles = new List<string>();

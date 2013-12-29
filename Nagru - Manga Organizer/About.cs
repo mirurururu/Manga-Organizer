@@ -18,7 +18,8 @@ namespace Nagru___Manga_Organizer
         private void About_Load(object sender, EventArgs e)
         {
             delFini = Checked;
-            string sVer = Properties.Settings.Default.Version;
+            string sVer = Application.ProductVersion.Substring(
+                0, Application.ProductVersion.LastIndexOf('.'));
             Text += string.Format("(v. {0})", sVer);
             iVer = Convert.ToInt32(sVer.Replace(".", ""));
 
