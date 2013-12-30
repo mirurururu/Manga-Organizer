@@ -134,18 +134,18 @@
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(75, 23);
             this.btnOK.TabIndex = 14;
-            this.btnOK.Text = "OK";
+            this.btnOK.Text = "Select";
             this.btnOK.UseVisualStyleBackColor = false;
             this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
             // 
             // lblSearch
             // 
             this.lblSearch.AutoSize = true;
-            this.lblSearch.Location = new System.Drawing.Point(12, 17);
+            this.lblSearch.Location = new System.Drawing.Point(9, 17);
             this.lblSearch.Name = "lblSearch";
-            this.lblSearch.Size = new System.Drawing.Size(75, 13);
+            this.lblSearch.Size = new System.Drawing.Size(79, 13);
             this.lblSearch.TabIndex = 15;
-            this.lblSearch.Text = "Search string: ";
+            this.lblSearch.Text = "Search Terms: ";
             // 
             // lvDetails
             // 
@@ -163,6 +163,7 @@
             this.lvDetails.TabIndex = 10;
             this.lvDetails.UseCompatibleStateImageBehavior = false;
             this.lvDetails.View = System.Windows.Forms.View.Details;
+            this.lvDetails.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.lvDetails_ColumnClick);
             this.lvDetails.DoubleClick += new System.EventHandler(this.lvDetails_DoubleClick);
             this.lvDetails.Resize += new System.EventHandler(this.lvDetails_Resize);
             // 

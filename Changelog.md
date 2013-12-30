@@ -1,6 +1,6 @@
-#### v. 4.2.89 (December 29, 2013)
-	- Added ability to search exhentai (but not g.e yet) from within the application
-	(still fairly rough, but should be good enough for casual use)
+#### v. 4.3.00 (December 29, 2013)
+	- Added ability to search EH website from within the application
+	- Small bugfixes and improvements
 
 #### v. 4.1.89 (December 5, 2013)
 	- Fixed tag scrolling sometimes throwing an exception

@@ -12,6 +12,7 @@ namespace Nagru___Manga_Organizer
     {
         delegate void DelListStringVoid(List<ExtString.stEXH> lsPass);
         DelListStringVoid delResults = null;
+        LVsorter lvSortObj = new LVsorter();
         public string sChoice = "";
 
         public Suggest()
@@ -19,12 +20,18 @@ namespace Nagru___Manga_Organizer
         
         private void Suggest_Load(object sender, EventArgs e)
         {
+            lvDetails.ListViewItemSorter = lvSortObj;
             delResults = DisplayResults;
             txbxSearch.Select();
             ResizeLV();
 
+            //set-up user choices
+            if (Properties.Settings.Default.DefGrid)
+                lvDetails.GridLines = true;
+            else lvDetails.GridLines = false;
+
             //get system icon for help button
-            tsbtnHelp.Image = System.Drawing.SystemIcons.Information.ToBitmap();
+            tsbtnHelp.Image = SystemIcons.Information.ToBitmap();
             
             //input user credentials
             txbxPass.Text = Properties.Settings.Default.pass_hash;
@@ -33,20 +40,15 @@ namespace Nagru___Manga_Organizer
         
         private void tsbtn_Help_Clicked(object sender, EventArgs e)
         {
-            MessageBox.Show("These credentials are the 'content' parameters of the exhentai cookies. If not provided, this program will be unable to establish a connection.", 
+            MessageBox.Show("These credentials are the 'content' parameters of the exhentai cookies. If not provided, this program will use g.e-hentai instead.", 
                 Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void btnSearch_Click(object sender, EventArgs e)
         {
-            if(string.IsNullOrEmpty(txbxID.Text) || string.IsNullOrEmpty(txbxPass.Text)) {
-                MessageBox.Show("Please provide credentials for connecting.",
-                    Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
             btnSearch.Enabled = false;
             ThreadPool.QueueUserWorkItem(Search, txbxSearch.Text);
+            this.Cursor = Cursors.WaitCursor;
         }
 
         private void Search(object obj)
@@ -59,17 +61,21 @@ namespace Nagru___Manga_Organizer
         
         private void DisplayResults(List<ExtString.stEXH> lResults)
         {
+            this.Cursor = Cursors.Default;
+            btnSearch.Enabled = true;
+
             if(lResults != null) {
                 lvDetails.SuspendLayout();
-                btnSearch.Enabled = true;
+                lvDetails.Items.Clear();
 
                 for (int i = 0; i < lResults.Count; i++) {
                     lvDetails.Items.Add(new ListViewItem(new string[2] {
                         lResults[i].sURL,
-                        lResults[i].sTitle
+                        ExtString.HTMLConvertFrom(lResults[i].sTitle)
                     }));
                 }
 
+                Alternate();
                 lvDetails.ResumeLayout(); 
             }
             else {
@@ -107,6 +113,16 @@ namespace Nagru___Manga_Organizer
                 colTitle.Width -= iScroll;
             lvDetails.EndUpdate();
         }
+        
+        private void lvDetails_ColumnClick(object sender, ColumnClickEventArgs e)
+        {
+            if (e.Column != lvSortObj.ColToSort)
+                lvSortObj.NewColumn(e.Column, SortOrder.Ascending);
+            else lvSortObj.SwapOrder();
+
+            lvDetails.Sort();
+            Alternate();
+        }
 
         //open selected url in browser
         private void lvDetails_DoubleClick(object sender, EventArgs e)
@@ -114,6 +130,15 @@ namespace Nagru___Manga_Organizer
             if(lvDetails.SelectedItems.Count > 0) {
                 System.Diagnostics.Process.Start(
                     lvDetails.SelectedItems[0].SubItems[0].Text);
+            }
+        }
+
+        private void Alternate(int iStart = 0)
+        {
+            if (Properties.Settings.Default.DefGrid) return;
+            for (int i = iStart; i < lvDetails.Items.Count; i++) {
+                lvDetails.Items[i].BackColor = (i % 2 != 0) ? 
+                    Color.FromArgb(245, 245, 245) : SystemColors.Window;
             }
         }
         #endregion

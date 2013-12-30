@@ -724,6 +724,8 @@
             // MnTs_SearchEH
             // 
             this.MnTs_SearchEH.Name = "MnTs_SearchEH";
+            this.MnTs_SearchEH.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
+            this.MnTs_SearchEH.ShowShortcutKeys = false;
             this.MnTs_SearchEH.Size = new System.Drawing.Size(183, 22);
             this.MnTs_SearchEH.Text = "Search EH";
             this.MnTs_SearchEH.Click += new System.EventHandler(this.MnTs_SearchEH_Click);
