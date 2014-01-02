@@ -189,22 +189,29 @@ namespace Nagru___Manga_Organizer
                     bool bMatch = false;
                     switch (sType) {
                         case "artist":
+                        case "a":
                             bMatch = ExtString.Contains(en.sArtist, sTerm[i]);
                             break;
                         case "title":
+                        case "t":
                             bMatch = ExtString.Contains(en.sTitle, sTerm[i]);
                             break;
                         case "tag":
                         case "tags":
+                        case "g":
                             bMatch = ExtString.Contains(en.sTags, sTerm[i]);
                             break;
+                        case "description":
                         case "desc":
+                        case "s":
                             bMatch = ExtString.Contains(en.sDesc, sTerm[i]);
                             break;
                         case "type":
+                        case "y":
                             bMatch = ExtString.Contains(en.sType, sTerm[i]);
                             break;
                         case "date":
+                        case "d":
                             DateTime dt = new DateTime();
                             char c = sTerm[i] != "" ? sTerm[i][0] : ' ';
 
@@ -224,6 +231,8 @@ namespace Nagru___Manga_Organizer
                             }
                             break;
                         case "pages":
+                        case "page":
+                        case "p":
                             c = sTerm[i] != "" ? sTerm[i][0] : ' ';
                             int x;
 
@@ -1281,7 +1290,7 @@ namespace Nagru___Manga_Organizer
         /* Refresh listview contents */
         private void UpdateLV()
         {
-            if (TxBx_Search.Text != "") { 
+            if (!string.IsNullOrEmpty(TxBx_Search.Text)) { 
                 Search(); return;
             }
 
@@ -1292,7 +1301,7 @@ namespace Nagru___Manga_Organizer
             for (int i = 0; i < lData.Count; i++) {
                 ListViewItem lvi = new ListViewItem(lData[i].sArtist);
                 if (lData[i].byRat == 5) lvi.BackColor = Color.LightYellow;
-                lvi.SubItems.AddRange(new string[] {
+                lvi.SubItems.AddRange(new string[7] {
                     lData[i].sTitle,
                     lData[i].iPages.ToString(),
                     lData[i].sTags,

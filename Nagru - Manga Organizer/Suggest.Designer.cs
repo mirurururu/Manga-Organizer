@@ -37,12 +37,12 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.tsbtnHelp = new System.Windows.Forms.ToolStripButton();
             this.txbxSearch = new System.Windows.Forms.TextBox();
-            this.btnSearch = new System.Windows.Forms.Button();
             this.btnOK = new System.Windows.Forms.Button();
             this.lblSearch = new System.Windows.Forms.Label();
             this.lvDetails = new Nagru___Manga_Organizer.ListViewNF();
             this.colURL = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.btnSearch = new System.Windows.Forms.Button();
             this.lblID.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -112,19 +112,6 @@
             this.txbxSearch.Size = new System.Drawing.Size(317, 20);
             this.txbxSearch.TabIndex = 11;
             // 
-            // btnSearch
-            // 
-            this.btnSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSearch.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.btnSearch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSearch.Location = new System.Drawing.Point(416, 12);
-            this.btnSearch.Name = "btnSearch";
-            this.btnSearch.Size = new System.Drawing.Size(75, 23);
-            this.btnSearch.TabIndex = 13;
-            this.btnSearch.Text = "Search";
-            this.btnSearch.UseVisualStyleBackColor = false;
-            this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
-            // 
             // btnOK
             // 
             this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -164,6 +151,7 @@
             this.lvDetails.UseCompatibleStateImageBehavior = false;
             this.lvDetails.View = System.Windows.Forms.View.Details;
             this.lvDetails.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.lvDetails_ColumnClick);
+            this.lvDetails.SelectedIndexChanged += new System.EventHandler(this.lvDetails_SelectedIndexChanged);
             this.lvDetails.DoubleClick += new System.EventHandler(this.lvDetails_DoubleClick);
             this.lvDetails.Resize += new System.EventHandler(this.lvDetails_Resize);
             // 
@@ -177,6 +165,19 @@
             this.colTitle.Text = "Title";
             this.colTitle.Width = 260;
             // 
+            // btnSearch
+            // 
+            this.btnSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSearch.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.btnSearch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSearch.Location = new System.Drawing.Point(416, 12);
+            this.btnSearch.Name = "btnSearch";
+            this.btnSearch.Size = new System.Drawing.Size(75, 23);
+            this.btnSearch.TabIndex = 16;
+            this.btnSearch.Text = "Search";
+            this.btnSearch.UseVisualStyleBackColor = false;
+            this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
+            // 
             // Suggest
             // 
             this.AcceptButton = this.btnSearch;
@@ -184,9 +185,9 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.ClientSize = new System.Drawing.Size(584, 390);
+            this.Controls.Add(this.btnSearch);
             this.Controls.Add(this.lblSearch);
             this.Controls.Add(this.btnOK);
-            this.Controls.Add(this.btnSearch);
             this.Controls.Add(this.txbxSearch);
             this.Controls.Add(this.lvDetails);
             this.Controls.Add(this.lblID);
@@ -213,9 +214,9 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private ListViewNF lvDetails;
         private System.Windows.Forms.TextBox txbxSearch;
-        private System.Windows.Forms.Button btnSearch;
         private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.Label lblSearch;
+        private System.Windows.Forms.Button btnSearch;
         private System.Windows.Forms.ColumnHeader colURL;
         private System.Windows.Forms.ColumnHeader colTitle;
 

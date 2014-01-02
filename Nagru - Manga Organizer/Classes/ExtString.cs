@@ -18,7 +18,7 @@ namespace Nagru___Manga_Organizer
             public stEXH(string _URL, string _Title)
             {
                 sURL = _URL;
-                sTitle = _Title;
+                sTitle = HTMLConvertToPlainText(_Title);
             }
         }
 
@@ -26,6 +26,12 @@ namespace Nagru___Manga_Organizer
             StringComparison cComp = StringComparison.OrdinalIgnoreCase)
         {
             return (sRaw.IndexOf(sFind, cComp) > -1) ? true : false;
+        }
+
+        public static bool CaselessEquals(this string sA, string sB,
+            StringComparison cComp = StringComparison.OrdinalIgnoreCase)
+        {
+            return (sA.Equals(sB, cComp));
         }
         
         /* Convert unicode to usable Ascii
@@ -39,7 +45,7 @@ namespace Nagru___Manga_Organizer
                 });
         }
 
-        private static string EHConvert(string sRaw, string sSite)
+        private static string EHFormatSearch(string sRaw, string sSite)
         {
             StringBuilder sb = new StringBuilder("");
             string[] asSplit = Main.SplitTitle(sRaw);
@@ -55,7 +61,8 @@ namespace Nagru___Manga_Organizer
                 .Replace("&", "%26");
 
             //insert rest of search string
-            sb.Insert(0, string.Format("http://{0}.org/?f_doujinshi=1&f_manga=1&f_artistcg=0&f_gamecg=0&f_western=0&f_non-h=0&f_imageset=0&f_cosplay=0&f_asianporn=0&f_misc=0&f_search=", sSite));
+            sb.Insert(0, string.Format("http://{0}.org/?f_doujinshi=1&f_manga=1&f_artistcg=0&f_gamecg=0&"
+            + "f_western=0&f_non-h=0&f_imageset=0&f_cosplay=0&f_asianporn=0&f_misc=0&f_search=", sSite));
             sb.Append("&f_apply=Apply+Filter");
 
             return sb.ToString();
@@ -74,7 +81,7 @@ namespace Nagru___Manga_Organizer
             }
 
             //convert raw search terms into web form
-            sSearch = EHConvert(sRaw, (bXH) ? "exhentai" : "g.e-hentai");
+            sSearch = EHFormatSearch(sRaw, (bXH) ? "exhentai" : "g.e-hentai");
 
             //set up connection
             ServicePointManager.DefaultConnectionLimit = 64;
@@ -87,7 +94,7 @@ namespace Nagru___Manga_Organizer
             rq.Proxy = null;
 
             if (bXH) {
-                rq.CookieContainer = new CookieContainer(4);
+                rq.CookieContainer = new CookieContainer(2);
                 rq.CookieContainer.Add(new CookieCollection() {
                     new Cookie("ipb_member_id", Properties.Settings.Default.member_id) { Domain = "exhentai.org" },
                     new Cookie("ipb_pass_hash", Properties.Settings.Default.pass_hash) { Domain = "exhentai.org" }
@@ -104,16 +111,16 @@ namespace Nagru___Manga_Organizer
             } catch (Exception exc) {
                 Console.WriteLine(exc.Message);
                 return null;
-            } if (sPage == string.Empty) {
+            } if (string.IsNullOrEmpty(sPage)) {
                 return null;
             }
 
             //strip out usable details
-            string sPattern = ".*http://(ex|g.e-)hentai.org/g/[0-9]{6}/[a-zA-z0-9]{10}/.* onmouseover=.* onmouseout=.*>"
+            string sRegex = ".*http://(ex|g.e-)hentai.org/g/[0-9]{6}/[a-zA-z0-9]{10}/.* onmouseover=.* onmouseout=.*>"
                 + "[ \\(\\)a-zA-z0-9.]{0,100}\\[[ \\(\\)a-zA-z0-9.]{1,100}\\][ \\(\\)a-zA-z0-9.]{1,100}.*";
             string[] asplit = sPage.Split('<');
             for (int i = 0; i < asplit.Length; i++) {
-                if (asplit[i].Length > 50 && Regex.IsMatch(asplit[i], sPattern)) {
+                if (asplit[i].Length > 50 && Regex.IsMatch(asplit[i], sRegex)) {
                     lDetails.Add(new stEXH(
                         asplit[i].Split('"')[1],
                         asplit[i].Split('>')[1].Split('<')[0])
@@ -127,8 +134,8 @@ namespace Nagru___Manga_Organizer
         public static string[] EHParse(string sURL)
         {
             const int iPreTag = 11;
-            string[] asParse = new string[6];
-            string[] asResp = new string[0];
+            string[] asParse = new string[6]
+                ,asResp = new string[0];
             bool bExc = false;
             
             //set up connection
@@ -152,14 +159,14 @@ namespace Nagru___Manga_Organizer
                     asResp = ExtString.Split(sr.ReadToEnd(), "\",\"");
                     rq.Abort();
                 }
-            } catch (Exception exc) {
+            } catch (WebException exc) {
                 Console.WriteLine(exc.Message);
                 bExc = true;
             }
 
             //parse returned string
             if (!bExc && asResp.Length >= 11) {
-                asParse[0] = HTMLConvertFrom(
+                asParse[0] = HTMLConvertToPlainText(
                     asResp[2].Split(':')[1].Substring(1));         //set artist/title
                 asParse[1] = asResp[4].Split(':')[1].Substring(1); //set entry type
                 asParse[2] = asResp[7].Split(':')[1].Substring(1); //set date
@@ -178,21 +185,21 @@ namespace Nagru___Manga_Organizer
         
         public static string GetNameSansExtension(string sName)
         {
+            StringBuilder sb = new StringBuilder(sName);
             int indx = sName.LastIndexOf('\\');
+            if (indx > -1) sb.Remove(0, indx + 1);
+
+            indx = sb.ToString().LastIndexOf('.');
             if(indx > -1) {
-                sName = sName.Remove(0, indx + 1);
-            }
-            indx = sName.LastIndexOf('.');
-            if(indx > -1) {
-                switch(sName.Length - indx) {
-                    case 3: return sName.Remove(indx, 3);
-                    case 4: return sName.Remove(indx, 4);
+                switch(sb.Length - indx) {
+                    case 3: return sb.Remove(indx, 3).ToString();
+                    case 4: return sb.Remove(indx, 4).ToString();
                 }
             }
-            return sName;
+            return sb.ToString();
         }
 
-        public static string HTMLConvertFrom(string sRaw)
+        public static string HTMLConvertToPlainText(string sRaw)
         {
             StringBuilder sbSwap = new StringBuilder(sRaw);
             sbSwap.Replace("&amp;", "&")
@@ -228,36 +235,23 @@ namespace Nagru___Manga_Organizer
 
         public static string RelativePath(string sRaw)
         {
-            string sPath = Environment.CurrentDirectory;
-            string sCurr = System.IO.Path.GetFileName(sPath);
-            string[] sNodes = sRaw.Split('\\');
-            int iPos = -1;
+            string sPath = "";
+            string[] sOldNodes = Split(sRaw, "\\"),
+                sCurrNodes = Split(Environment.CurrentDirectory, "\\");
 
-            //find point of divergence
-            for (int i = 0; i < sNodes.Length; i++) {
-                if (sNodes[i].Length == sCurr.Length
-                        && sNodes[i].Equals(sCurr,
-                        StringComparison.OrdinalIgnoreCase)) {
-                    iPos = i + 1;
-                    break;
+            //swap out point of divergence
+            for (int i = 0; i < sOldNodes.Length; i++) {
+                if (i < sCurrNodes.Length
+                        && !(CaselessEquals(sOldNodes[i], sCurrNodes[i]))) {
+                    sPath += sCurrNodes[i] + "\\";
                 }
+                else sPath += sOldNodes[i] + "\\";
             }
-
-            //if no match, drive letter probably changed
-            if (iPos == -1) {
-                iPos = 1;
-                sPath = sPath.Remove(2);
-            }
-
-            //re-construct filepath
-            for (int i = iPos; i < sNodes.Length; i++)
-                sPath += string.Format("\\{0}", sNodes[i]);
+            sPath = sPath.Substring(0, sPath.Length - 1);
 
             //validate & re-assign to textbox
-            if (System.IO.Directory.Exists(sPath)
-                    || System.IO.File.Exists(sPath))
-                return sPath;
-            else return null;
+            return (Directory.Exists(sPath) || File.Exists(sPath))
+                ? sPath : null;
         }
 
         public static string[] Split(string sRaw, params string[] sFilter)

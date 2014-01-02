@@ -1,3 +1,8 @@
+#### v. 4.3.11 (January 1, 2014)
+	- Improved relative file-paths
+	- EH search Form 'select' button disabled when no item selected
+	- Added short-form tag aliases (ie "artist:" == "a:")
+
 #### v. 4.3.00 (December 29, 2013)
 	- Added ability to search EH website from within the application
 	- Small bugfixes and improvements
