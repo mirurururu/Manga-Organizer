@@ -1,5 +1,6 @@
-#### v. 4.3.11 (January 1, 2014)
+#### v. 4.3.12 (January 1, 2014)
 	- Improved relative file-paths
+	- Improved EH searching (should return *all* results now)
 	- EH search Form 'select' button disabled when no item selected
 	- Added short-form tag aliases (ie "artist:" == "a:")
 

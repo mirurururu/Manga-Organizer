@@ -116,8 +116,7 @@ namespace Nagru___Manga_Organizer
             }
 
             //strip out usable details
-            string sRegex = ".*http://(ex|g.e-)hentai.org/g/[0-9]{6}/[a-zA-z0-9]{10}/.* onmouseover=.* onmouseout=.*>"
-                + "[ \\(\\)a-zA-z0-9.]{0,100}\\[[ \\(\\)a-zA-z0-9.]{1,100}\\][ \\(\\)a-zA-z0-9.]{1,100}.*";
+            string sRegex = ".*http://(ex|g.e-)hentai.org/g/[0-9]{6}/[a-zA-z0-9]{10}/.* onmouseover=.* onmouseout=.*";
             string[] asplit = sPage.Split('<');
             for (int i = 0; i < asplit.Length; i++) {
                 if (asplit[i].Length > 50 && Regex.IsMatch(asplit[i], sRegex)) {
