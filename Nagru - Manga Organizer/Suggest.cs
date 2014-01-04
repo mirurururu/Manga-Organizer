@@ -22,18 +22,13 @@ namespace Nagru___Manga_Organizer
         {
             lvDetails.ListViewItemSorter = lvSortObj;
             delResults = DisplayResults;
-            txbxSearch.Select();
             ResizeLV();
-
-            ToggleButtonEnabled(btnOK, false);
 
             //remove active border on form acceptbutton
             this.AcceptButton.NotifyDefault(false);
 
             //set-up user choices
-            if (Properties.Settings.Default.DefGrid)
-                lvDetails.GridLines = true;
-            else lvDetails.GridLines = false;
+            lvDetails.GridLines = Properties.Settings.Default.DefGrid;
 
             //get system icon for help button
             tsbtnHelp.Image = SystemIcons.Information.ToBitmap();
@@ -41,6 +36,24 @@ namespace Nagru___Manga_Organizer
             //input user credentials
             txbxPass.Text = Properties.Settings.Default.pass_hash;
             txbxID.Text = Properties.Settings.Default.member_id;
+
+            //auto-format search terms where applicable
+            if(Clipboard.GetText().Contains("[")) {
+                StringBuilder sb = new StringBuilder("");
+                string[] asSplit = Main.SplitTitle(Clipboard.GetText());
+
+                //check for artist/title fields and set formatting
+                if (!string.IsNullOrEmpty(asSplit[0])) {
+                    sb.AppendFormat("{0}{1}", (asSplit[0].Contains("("))
+                        ? "" : "artist:", asSplit[0]);
+                    sb.Replace(' ', '_');
+                    
+                    sb.AppendFormat(" {0}", asSplit[1].Replace(' ', '_'));
+                    txbxSearch.Text = sb.ToString();
+                }
+            }
+            txbxSearch.Select();
+            txbxSearch.SelectionStart = txbxSearch.Text.Length;
         }
         
         private void tsbtn_Help_Clicked(object sender, EventArgs e)
@@ -52,7 +65,7 @@ namespace Nagru___Manga_Organizer
 
         private void btnSearch_Click(object sender, EventArgs e)
         {
-            ToggleButtonEnabled(btnSearch);
+            ToggleButtonEnabled(ref btnSearch);
             ThreadPool.QueueUserWorkItem(Search, txbxSearch.Text);
             this.Cursor = Cursors.WaitCursor;
         }
@@ -87,14 +100,20 @@ namespace Nagru___Manga_Organizer
             }
             
             this.Cursor = Cursors.Default;
-            ToggleButtonEnabled(btnSearch);
+            ToggleButtonEnabled(ref btnSearch);
         }
         
         private void lvDetails_SelectedIndexChanged(object sender, EventArgs e)
         {
             //en/disable button depending on whether an item is selected
-            ToggleButtonEnabled(btnOK,
-                lvDetails.SelectedItems.Count > 0);
+            ToggleButtonEnabled(ref btnOK, lvDetails.SelectedItems.Count > 0);
+        }
+        
+        private void ToggleButtonEnabled(ref Button btnRef, bool? bEnabled = null)
+        {
+            btnRef.Enabled = (bEnabled == null) ? !btnRef.Enabled : (bool)bEnabled;
+            if (btnRef.Enabled) btnRef.BackColor = SystemColors.ButtonFace;
+            else btnRef.BackColor = SystemColors.ScrollBar;
         }
 
         private void btnOK_Click(object sender, EventArgs e)
@@ -107,29 +126,22 @@ namespace Nagru___Manga_Organizer
             this.Close();
         }
 
-        private void ToggleButtonEnabled(Button bRef, bool? bEnabled = null)
-        {
-            bRef.Enabled = (bEnabled != null) ? (bool)bEnabled : !bRef.Enabled;
-            if (bRef.Enabled) bRef.BackColor = SystemColors.ButtonFace;
-            else bRef.BackColor = SystemColors.ScrollBar;
-        }
-
         #region listview methods
         private void lvDetails_Resize(object sender, EventArgs e)
         { ResizeLV(); }
 
         private void ResizeLV()
         {
-            const double dRow = 17.5; //approx height of each row
-            const int iScroll = 20;   //vertical scrollbar width
-
             lvDetails.BeginUpdate();
             colTitle.Width = lvDetails.DisplayRectangle.Width - colURL.Width;
-
-            /* account for scrollbar width */
-            if (lvDetails.Items.Count > lvDetails.Height / dRow)
-                colTitle.Width -= iScroll;
             lvDetails.EndUpdate();
+        }
+        
+        /* Prevent user changing column sizes */
+        private void lvDetails_ColumnWidthChanging(object sender, ColumnWidthChangingEventArgs e)
+        {
+            e.Cancel = true;
+            e.NewWidth = lvDetails.Columns[e.ColumnIndex].Width;
         }
         
         private void lvDetails_ColumnClick(object sender, ColumnClickEventArgs e)
@@ -178,6 +190,29 @@ namespace Nagru___Manga_Organizer
             Properties.Settings.Default.member_id = txbxID.Text;
             Properties.Settings.Default.Save();
         }
+        #endregion
+
+        #region Menu_Text
+        private void Mn_TxBx_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        { txbxSearch.Select(); }
+
+        private void MnTx_Undo_Click(object sender, EventArgs e)
+        { if (txbxSearch.CanUndo) txbxSearch.Undo(); }
+
+        private void MnTx_Cut_Click(object sender, EventArgs e)
+        { txbxSearch.Cut(); }
+
+        private void MnTx_Copy_Click(object sender, EventArgs e)
+        { txbxSearch.Copy(); }
+
+        private void MnTx_Paste_Click(object sender, EventArgs e)
+        { txbxSearch.Paste(); }
+
+        private void MnTx_Delete_Click(object sender, EventArgs e)
+        { txbxSearch.SelectedText = ""; }
+
+        private void MnTx_SelAll_Click(object sender, EventArgs e)
+        { txbxSearch.SelectAll(); }
         #endregion
     }
 }

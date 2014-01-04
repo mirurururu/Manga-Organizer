@@ -202,7 +202,7 @@
             // Btn_Save
             // 
             this.Btn_Save.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.Btn_Save.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.Btn_Save.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.Btn_Save.Location = new System.Drawing.Point(204, 306);
             this.Btn_Save.Name = "Btn_Save";
             this.Btn_Save.Size = new System.Drawing.Size(91, 23);

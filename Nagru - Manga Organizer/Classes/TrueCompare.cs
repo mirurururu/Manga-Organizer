@@ -11,16 +11,15 @@ namespace Nagru___Manga_Organizer
         public int Compare(string sX, string sY)
         {
             if (sX == null || sY == null) return 0;
-            int iLenX = sX.Length, iLenY = sY.Length;
             int iMarkX = 0, iMarkY = 0;
 
             //go through strings with two markers.
-            while (iMarkX < iLenX && iMarkY < iLenY)
+            while (iMarkX < sX.Length && iMarkY < sY.Length)
             {
                 char cX = sX[iMarkX], cY = sY[iMarkY];
 
                 //buffers for characters
-                char[] acSpaceX = new char[iLenX], acSpaceY = new char[iLenY];
+                char[] acSpaceX = new char[sX.Length], acSpaceY = new char[sY.Length];
                 int iLocX = 0, iLocY = 0;
 
                 //walk through characters in both strings to fill char array
@@ -28,7 +27,7 @@ namespace Nagru___Manga_Organizer
                     acSpaceX[iLocX++] = cX;
                     iMarkX++;
 
-                    if (iMarkX < iLenX) cX = sX[iMarkX];
+                    if (iMarkX < sX.Length) cX = sX[iMarkX];
                     else break;
                 }
                 while (char.IsDigit(cX) == char.IsDigit(acSpaceX[0]));
@@ -37,29 +36,29 @@ namespace Nagru___Manga_Organizer
                     acSpaceY[iLocY++] = cY;
                     iMarkY++;
 
-                    if (iMarkY < iLenY) cY = sY[iMarkY];
+                    if (iMarkY < sY.Length) cY = sY[iMarkY];
                     else break;
                 }
                 while (char.IsDigit(cY) == char.IsDigit(acSpaceY[0]));
 
-                //if numbers compare numerically, else compare alphabetically.
+                //if numbers then compare numerically, else compare alphabetically.
                 string sCmpX = new string(acSpaceX), sCmpY = new string(acSpaceY);
-                int result;
+                int iResult;
 
                 if (char.IsDigit(acSpaceX[0]) 
                         && char.IsDigit(acSpaceY[0])) {
                     int iNumChunkX = 0, iNumChunkY = 0;
                     if(int.TryParse(sCmpX, out iNumChunkX) 
                             && int.TryParse(sCmpY, out iNumChunkY))
-                        result = iNumChunkX.CompareTo(iNumChunkY);
-                    else result = sCmpX.CompareTo(sCmpY);
+                        iResult = iNumChunkX.CompareTo(iNumChunkY);
+                    else iResult = sCmpX.CompareTo(sCmpY);
                 }
-                else result = sCmpX.CompareTo(sCmpY);
+                else iResult = sCmpX.CompareTo(sCmpY);
 
-                if (result != 0) return result;
+                if (iResult != 0) return iResult;
             }
 
-            return iLenX - iLenY;
+            return sX.Length - sY.Length;
         }
     }
 }

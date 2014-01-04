@@ -39,6 +39,7 @@
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.MnTx_SelAll = new System.Windows.Forms.ToolStripMenuItem();
             this.Btn_Get = new System.Windows.Forms.Button();
+            this.MnTx_Delete = new System.Windows.Forms.ToolStripMenuItem();
             this.Mn_TxBx.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -61,29 +62,31 @@
             this.MnTx_Cut,
             this.MnTx_Copy,
             this.MnTx_Paste,
+            this.MnTx_Delete,
             this.toolStripSeparator3,
             this.MnTx_SelAll});
             this.Mn_TxBx.Name = "Mn_Context";
-            this.Mn_TxBx.Size = new System.Drawing.Size(116, 126);
+            this.Mn_TxBx.Size = new System.Drawing.Size(153, 170);
+            this.Mn_TxBx.Opening += new System.ComponentModel.CancelEventHandler(this.Mn_TxBx_Opening);
             // 
             // MnTx_Undo
             // 
             this.MnTx_Undo.Name = "MnTx_Undo";
             this.MnTx_Undo.ShowShortcutKeys = false;
-            this.MnTx_Undo.Size = new System.Drawing.Size(115, 22);
+            this.MnTx_Undo.Size = new System.Drawing.Size(152, 22);
             this.MnTx_Undo.Text = "Undo";
             this.MnTx_Undo.Click += new System.EventHandler(this.MnTx_Undo_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(112, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(149, 6);
             // 
             // MnTx_Cut
             // 
             this.MnTx_Cut.Name = "MnTx_Cut";
             this.MnTx_Cut.ShowShortcutKeys = false;
-            this.MnTx_Cut.Size = new System.Drawing.Size(115, 22);
+            this.MnTx_Cut.Size = new System.Drawing.Size(152, 22);
             this.MnTx_Cut.Text = "Cut";
             this.MnTx_Cut.Click += new System.EventHandler(this.MnTx_Cut_Click);
             // 
@@ -91,7 +94,7 @@
             // 
             this.MnTx_Copy.Name = "MnTx_Copy";
             this.MnTx_Copy.ShowShortcutKeys = false;
-            this.MnTx_Copy.Size = new System.Drawing.Size(115, 22);
+            this.MnTx_Copy.Size = new System.Drawing.Size(152, 22);
             this.MnTx_Copy.Text = "Copy";
             this.MnTx_Copy.Click += new System.EventHandler(this.MnTx_Copy_Click);
             // 
@@ -99,20 +102,20 @@
             // 
             this.MnTx_Paste.Name = "MnTx_Paste";
             this.MnTx_Paste.ShowShortcutKeys = false;
-            this.MnTx_Paste.Size = new System.Drawing.Size(115, 22);
+            this.MnTx_Paste.Size = new System.Drawing.Size(152, 22);
             this.MnTx_Paste.Text = "Paste";
             this.MnTx_Paste.Click += new System.EventHandler(this.MnTx_Paste_Click);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(112, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(149, 6);
             // 
             // MnTx_SelAll
             // 
             this.MnTx_SelAll.Name = "MnTx_SelAll";
             this.MnTx_SelAll.ShowShortcutKeys = false;
-            this.MnTx_SelAll.Size = new System.Drawing.Size(115, 22);
+            this.MnTx_SelAll.Size = new System.Drawing.Size(152, 22);
             this.MnTx_SelAll.Text = "Select All";
             this.MnTx_SelAll.Click += new System.EventHandler(this.MnTx_SelAll_Click);
             // 
@@ -127,6 +130,13 @@
             this.Btn_Get.Text = "GET";
             this.Btn_Get.UseVisualStyleBackColor = false;
             this.Btn_Get.Click += new System.EventHandler(this.Btn_Get_Click);
+            // 
+            // MnTx_Delete
+            // 
+            this.MnTx_Delete.Name = "MnTx_Delete";
+            this.MnTx_Delete.Size = new System.Drawing.Size(152, 22);
+            this.MnTx_Delete.Text = "Delete";
+            this.MnTx_Delete.Click += new System.EventHandler(this.MnTx_Delete_Click);
             // 
             // GetUrl
             // 
@@ -161,5 +171,6 @@
         private System.Windows.Forms.ToolStripMenuItem MnTx_Paste;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripMenuItem MnTx_SelAll;
+        private System.Windows.Forms.ToolStripMenuItem MnTx_Delete;
     }
 }

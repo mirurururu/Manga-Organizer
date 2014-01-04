@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
 
@@ -7,6 +8,8 @@ namespace Nagru___Manga_Organizer
 {
     public partial class Scan : Form
     {
+        const int iLightGray = -657931;
+
         private delegate void DelVoidEntry(Main.csEntry en);
         public delegate void DelVoid();
         public DelVoid delNewEntry;
@@ -122,7 +125,7 @@ namespace Nagru___Manga_Organizer
             
             if (hsIgnore.Contains(en.sArtist + en.sTitle)) {
                 if (ChkBx_All.Checked) {
-                    lvi.BackColor = System.Drawing.Color.MistyRose;
+                    lvi.BackColor = Color.MistyRose;
                     LV_Found.Items.Add(lvi);
                 }
             }
@@ -159,7 +162,7 @@ namespace Nagru___Manga_Organizer
 
                 if (hsIgnore.Contains(lvi.SubItems[0].Text + lvi.SubItems[1].Text)) {
                     if (ChkBx_All.Checked) {
-                        lvi.BackColor = System.Drawing.Color.MistyRose;
+                        lvi.BackColor = Color.MistyRose;
                         lItems.Add(lvi);
                     }
                 }
@@ -183,11 +186,10 @@ namespace Nagru___Manga_Organizer
             if (LV_Found.GridLines) return;
             LV_Found.BeginUpdate();
             for (int i = 0; i < LV_Found.Items.Count; i++) {
-                if (LV_Found.Items[i].BackColor == System.Drawing.Color.MistyRose)
+                if (LV_Found.Items[i].BackColor == Color.MistyRose)
                     continue;
-                if (i % 2 != 0)
-                    LV_Found.Items[i].BackColor = System.Drawing.Color.FromArgb(245, 245, 245);
-                else LV_Found.Items[i].BackColor = System.Drawing.SystemColors.Window;
+                LV_Found.Items[i].BackColor = (i % 2 != 0) ?
+                    Color.FromArgb(iLightGray) : SystemColors.Window;
             }
             LV_Found.EndUpdate();
         }
@@ -274,12 +276,12 @@ namespace Nagru___Manga_Organizer
 
                 if (hsIgnore.Contains(sItem)) {
                     hsIgnore.Remove(sItem);
-                    LV_Found.SelectedItems[i].BackColor = System.Drawing.SystemColors.Window;
+                    LV_Found.SelectedItems[i].BackColor = SystemColors.Window;
                 }
                 else {
                     hsIgnore.Add(sItem);
                     if (!ChkBx_All.Checked) LV_Found.SelectedItems[i--].Remove();
-                    else LV_Found.SelectedItems[i].BackColor = System.Drawing.Color.MistyRose;
+                    else LV_Found.SelectedItems[i].BackColor = Color.MistyRose;
                 }
             }
             LV_Found.EndUpdate();

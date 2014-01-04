@@ -25,13 +25,7 @@ namespace Nagru___Manga_Organizer
         public static bool Contains(this string sRaw, string sFind,
             StringComparison cComp = StringComparison.OrdinalIgnoreCase)
         {
-            return (sRaw.IndexOf(sFind, cComp) > -1) ? true : false;
-        }
-
-        public static bool CaselessEquals(this string sA, string sB,
-            StringComparison cComp = StringComparison.OrdinalIgnoreCase)
-        {
-            return (sA.Equals(sB, cComp));
+            return sRaw.IndexOf(sFind, cComp) > -1;
         }
         
         /* Convert unicode to usable Ascii
@@ -47,25 +41,9 @@ namespace Nagru___Manga_Organizer
 
         private static string EHFormatSearch(string sRaw, string sSite)
         {
-            StringBuilder sb = new StringBuilder("");
-            string[] asSplit = Main.SplitTitle(sRaw);
-            
-            //check for artist/title fields and set formatting
-            if(!string.IsNullOrEmpty(asSplit[0])) {
-                sb.AppendFormat("artist%3A{0}+", asSplit[0]);
-                sb.Replace(' ', '_');
-            }
-            sb.Append(asSplit[1]);
-            sb.Replace(' ', '+')
-                .Replace(":", "%3A")
-                .Replace("&", "%26");
-
-            //insert rest of search string
-            sb.Insert(0, string.Format("http://{0}.org/?f_doujinshi=1&f_manga=1&f_artistcg=0&f_gamecg=0&"
-            + "f_western=0&f_non-h=0&f_imageset=0&f_cosplay=0&f_asianporn=0&f_misc=0&f_search=", sSite));
-            sb.Append("&f_apply=Apply+Filter");
-
-            return sb.ToString();
+            return string.Format("http://{0}.org/?f_doujinshi=1&f_manga=1&f_artistcg=0&f_gamecg=0&"
+            + "f_western=0&f_non-h=0&f_imageset=0&f_cosplay=0&f_asianporn=0&f_misc=0"
+            + "&f_search={1}&f_apply=Apply+Filter", sSite, Uri.EscapeDataString(sRaw));
         }
         
         public static List<stEXH> EHSearch(string sRaw)
@@ -108,7 +86,7 @@ namespace Nagru___Manga_Organizer
                     sPage = sr.ReadToEnd();
                     rq.Abort();
                 }
-            } catch (Exception exc) {
+            } catch (WebException exc) {
                 Console.WriteLine(exc.Message);
                 return null;
             } if (string.IsNullOrEmpty(sPage)) {
@@ -116,10 +94,11 @@ namespace Nagru___Manga_Organizer
             }
 
             //strip out usable details
+            const int iMinLength = 125;
             string sRegex = ".*http://(ex|g.e-)hentai.org/g/[0-9]{6}/[a-zA-z0-9]{10}/.* onmouseover=.* onmouseout=.*";
             string[] asplit = sPage.Split('<');
             for (int i = 0; i < asplit.Length; i++) {
-                if (asplit[i].Length > 50 && Regex.IsMatch(asplit[i], sRegex)) {
+                if (asplit[i].Length > iMinLength && Regex.IsMatch(asplit[i], sRegex)) {
                     lDetails.Add(new stEXH(
                         asplit[i].Split('"')[1],
                         asplit[i].Split('>')[1].Split('<')[0])
@@ -241,16 +220,39 @@ namespace Nagru___Manga_Organizer
             //swap out point of divergence
             for (int i = 0; i < sOldNodes.Length; i++) {
                 if (i < sCurrNodes.Length
-                        && !(CaselessEquals(sOldNodes[i], sCurrNodes[i]))) {
+                        && !(sOldNodes[i].Equals(sCurrNodes[i], 
+                        StringComparison.OrdinalIgnoreCase))) {
                     sPath += sCurrNodes[i] + "\\";
                 }
                 else sPath += sOldNodes[i] + "\\";
             }
             sPath = sPath.Substring(0, sPath.Length - 1);
 
-            //validate & re-assign to textbox
             return (Directory.Exists(sPath) || File.Exists(sPath))
                 ? sPath : null;
+        }
+
+        public static double SoerensonDiceCoef(string sA, string sB, bool bIgnoreCase = true)
+        {
+            HashSet<string> hsA = new HashSet<string>(),
+                hsB = new HashSet<string>();
+
+            if(bIgnoreCase) {
+                sA = sA.ToLower();
+                sB = sB.ToLower();
+            }
+
+            //create paired char chunks from strings to compare
+            for (int i = 0; i < sA.Length - 1; ) {
+                hsA.Add(sA[i] + "" + sA[++i]);
+            }
+            for (int i = 0; i < sB.Length - 1; ) {
+                hsB.Add(sB[i] + "" + sB[++i]);
+            }
+            int iTotalElements = hsA.Count + hsB.Count;
+
+            hsA.IntersectWith(hsB);
+            return (double)(2 * hsA.Count) / iTotalElements;
         }
 
         public static string[] Split(string sRaw, params string[] sFilter)

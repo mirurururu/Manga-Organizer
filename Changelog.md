@@ -1,3 +1,9 @@
+#### v. 4.3.15 (January 4, 2014)
+	- Improved search listview resizing
+	- Made auto-search formatting visible and improved it
+	- Tweaked listview row colours
+	- Small code clean-up
+
 #### v. 4.3.12 (January 1, 2014)
 	- Improved relative file-paths
 	- Improved EH searching (should return *all* results now)

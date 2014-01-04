@@ -51,6 +51,9 @@ namespace Nagru___Manga_Organizer
         }
 
         #region Menu_Text
+        private void Mn_TxBx_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        { TxBx_Url.Select(); }
+
         private void MnTx_Undo_Click(object sender, EventArgs e)
         { if (TxBx_Url.CanUndo) TxBx_Url.Undo(); }
 
@@ -62,6 +65,9 @@ namespace Nagru___Manga_Organizer
 
         private void MnTx_Paste_Click(object sender, EventArgs e)
         { TxBx_Url.Paste(); }
+
+        private void MnTx_Delete_Click(object sender, EventArgs e)
+        { TxBx_Url.SelectedText = ""; }
 
         private void MnTx_SelAll_Click(object sender, EventArgs e)
         { TxBx_Url.SelectAll(); }

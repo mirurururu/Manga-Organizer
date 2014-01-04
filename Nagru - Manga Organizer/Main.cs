@@ -25,6 +25,9 @@ namespace Nagru___Manga_Organizer
 {
     public partial class Main : Form
     {
+        const int iLightGray = -657931;
+        const int iLightYellow = -20;
+
         delegate void DelVoid();
         delegate void DelInt(int iNum);
         delegate void DelString(string sMsg);
@@ -154,13 +157,13 @@ namespace Nagru___Manga_Organizer
         }
 
         /* Search term processing */
-        private class csTerm
+        private class csSearchTerm
         {
             readonly bool[] bAllow;
             readonly string[] sTerm;
             readonly string sType;
 
-            public csTerm(string _Raw)
+            public csSearchTerm(string _Raw)
             {
                 //check for type limiter
                 sTerm = new string[1];
@@ -271,14 +274,14 @@ namespace Nagru___Manga_Organizer
         public Main(string[] sFile)
         {
             InitializeComponent();
-            const int iFileName = 18;
             this.Icon = Properties.Resources.dbIcon;
-            
+            Console.WriteLine(Color.FromArgb(245, 245, 245).ToArgb());
             //if database opened with "Shell->Open with..."
             if (sFile.Length > 0 
                     && sFile[0].EndsWith("\\MangaDatabase.bin") 
-                    && Properties.Settings.Default.SavLoc 
-                    != sFile[0].Substring(0, sFile[0].Length - iFileName)) {
+                    && Properties.Settings.Default.SavLoc != sFile[0].Substring(
+                        0, sFile[0].Length - "\\MangaDatabase.bin".Length))
+            {
                 Properties.Settings.Default.SavLoc = sFile[0];
                 MessageBox.Show("Default database location changed to:\n\"" + sFile[0] + '\"',
                     Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -294,8 +297,9 @@ namespace Nagru___Manga_Organizer
         System.Reflection.Assembly CurrentDomain_AssemblyResolve(
             object sender, ResolveEventArgs args)
         {
-            if (args.Name.StartsWith("SharpCompress"))
-                return (sender as AppDomain).Load(Nagru___Manga_Organizer.
+            if(ExtString.Equals(args.Name, "SharpCompress, Version=0.10.1.0, "
+                + "Culture=neutral, PublicKeyToken=beaf6f427e128133"))
+                return (AppDomain.CurrentDomain).Load(
                     Properties.Resources.SharpCompress);
             return null;
         }
@@ -770,10 +774,10 @@ namespace Nagru___Manga_Organizer
 
             //set BackColor
             if (lData[indx].byRat == 5)
-                LV_Entries.FocusedItem.BackColor = Color.LightYellow;
+                LV_Entries.FocusedItem.BackColor = Color.FromArgb(iLightYellow);
             else {
                 if (LV_Entries.FocusedItem.Index % 2 == 0)
-                    LV_Entries.FocusedItem.BackColor = Color.FromArgb(245, 245, 245);
+                    LV_Entries.FocusedItem.BackColor = Color.FromArgb(iLightGray);
                 else LV_Entries.FocusedItem.BackColor = SystemColors.Window;
             }
         }
@@ -812,11 +816,10 @@ namespace Nagru___Manga_Organizer
         {
             if (Properties.Settings.Default.DefGrid) return;
             for (int i = iStart; i < LV_Entries.Items.Count; i++) {
-                if (LV_Entries.Items[i].BackColor == Color.LightYellow)
+                if (LV_Entries.Items[i].SubItems[6].Text.Length == 5)
                     continue;
-                if (i % 2 != 0)
-                    LV_Entries.Items[i].BackColor = Color.FromArgb(245, 245, 245);
-                else LV_Entries.Items[i].BackColor = SystemColors.Window;
+                LV_Entries.Items[i].BackColor = (i % 2 != 0) ?
+                    Color.FromArgb(iLightGray) : SystemColors.Window;
             }
         }
 
@@ -841,25 +844,26 @@ namespace Nagru___Manga_Organizer
 
         private static int InsertText(Control c, string sAdd, int iStart)
         {
-            int iNewStart = iStart + sAdd.Length;
             c.Text = c.Text.Insert(iStart, sAdd);
-            return iNewStart;
+            return iStart + sAdd.Length;
         }
 
         private static bool IsArchive(string sPath)
         {
             bool bArchive = false;
             if(File.Exists(sPath)) {
-                if(sPath.EndsWith(".zip")
-                        || sPath.EndsWith(".cbz")) {
-                    bArchive = SCA.Zip.ZipArchive.IsZipFile(sPath);
-                }
-                else if (sPath.EndsWith(".rar")
-                        || sPath.EndsWith(".cbr")) {
-                    bArchive = SCA.Rar.RarArchive.IsRarFile(sPath);
-                }
-                else if (sPath.EndsWith(".7z")) {
-                    bArchive = SCA.SevenZip.SevenZipArchive.IsSevenZipFile(sPath);
+                switch(Path.GetExtension(sPath)) {
+                    case ".zip":
+                    case ".cbz":
+                        bArchive = SCA.Zip.ZipArchive.IsZipFile(sPath);
+                        break;
+                    case ".rar":
+                    case ".cbr":
+                        bArchive = SCA.Rar.RarArchive.IsRarFile(sPath);
+                        break;
+                    case ".7z":
+                        bArchive = SCA.SevenZip.SevenZipArchive.IsSevenZipFile(sPath);
+                        break;
                 }
             }
             return bArchive;
@@ -896,8 +900,8 @@ namespace Nagru___Manga_Organizer
                     lRaw.AddRange(acTxBx_Tags.Text.Split(','));
                     lRaw.AddRange(asResp[5].Split(','));
                     string[] sRaw = lRaw.Select(
-                    x => x.Trim()).Distinct().Where(
-                    x => !string.IsNullOrEmpty(x)).ToArray<string>();
+                        x => x.Trim()).Distinct().Where(
+                        x => !string.IsNullOrEmpty(x)).ToArray<string>();
                     acTxBx_Tags.Text = String.Join(", ", sRaw);
                 }
 
@@ -921,7 +925,7 @@ namespace Nagru___Manga_Organizer
 
             List<ListViewItem> lFavs = new List<ListViewItem>(100);
             for (int i = 0; i < LV_Entries.Items.Count; i++) {
-                if (LV_Entries.Items[i].BackColor == Color.LightYellow)
+                if (LV_Entries.Items[i].SubItems[6].Text.Length == 5)
                     lFavs.Add(LV_Entries.Items[i]);
             }
 
@@ -1071,12 +1075,12 @@ namespace Nagru___Manga_Organizer
         {
             Cursor = Cursors.WaitCursor;
             string[] sTags = TxBx_Search.Text.Split(' ');
-            csTerm[] aTerms = new csTerm[sTags.Length];
+            csSearchTerm[] aTerms = new csSearchTerm[sTags.Length];
             List<ListViewItem> lItems = new List<ListViewItem>(lData.Count);
 
             //format text into search parameters
             for (int i = 0; i < sTags.Length; i++)
-                aTerms[i] = new csTerm(sTags[i]);
+                aTerms[i] = new csSearchTerm(sTags[i]);
             
             //compare entries to search parameters
             for (int i = 0; i < lData.Count; i++) {
@@ -1092,7 +1096,7 @@ namespace Nagru___Manga_Organizer
 
                 //else add to list
                 ListViewItem lvi = new ListViewItem(lData[i].sArtist);
-                if (lData[i].byRat == 5) lvi.BackColor = Color.LightYellow;
+                if (lData[i].byRat == 5) lvi.BackColor = Color.FromArgb(iLightYellow);
                 lvi.SubItems.AddRange(new string[] {
                     lData[i].sTitle,
                     lData[i].iPages.ToString(),
@@ -1297,10 +1301,10 @@ namespace Nagru___Manga_Organizer
             Cursor = Cursors.WaitCursor;
             Text = string.Format("Manga Organizer: {0:n0} entries", lData.Count);
             ListViewItem[] aItems = new ListViewItem[lData.Count];
-
+            
             for (int i = 0; i < lData.Count; i++) {
                 ListViewItem lvi = new ListViewItem(lData[i].sArtist);
-                if (lData[i].byRat == 5) lvi.BackColor = Color.LightYellow;
+                if (lData[i].byRat == 5) lvi.BackColor = Color.FromArgb(iLightYellow);
                 lvi.SubItems.AddRange(new string[7] {
                     lData[i].sTitle,
                     lData[i].iPages.ToString(),
@@ -1376,8 +1380,8 @@ namespace Nagru___Manga_Organizer
 
             //update LV_Entries & maintain selection
             ListViewItem lvi = LV_Entries.FocusedItem;
-            if (lData[indx].byRat == 5) 
-                lvi.BackColor = Color.LightYellow;
+            if (lData[indx].byRat == 5)
+                lvi.BackColor = Color.FromArgb(iLightYellow);
             lvi.SubItems[0].Text = lData[indx].sArtist;
             lvi.SubItems[1].Text = lData[indx].sTitle;
             lvi.SubItems[2].Text = lData[indx].iPages.ToString();
@@ -1394,10 +1398,10 @@ namespace Nagru___Manga_Organizer
             }
             else if (TxBx_Search.Text != "") {
                 string[] sTags = TxBx_Search.Text.Split(' ');
-                List<csTerm> lTerms = new List<csTerm>(5);
+                List<csSearchTerm> lTerms = new List<csSearchTerm>(5);
 
                 for (int i = 0; i < sTags.Length; i++)
-                    lTerms.Add(new csTerm(sTags[i]));
+                    lTerms.Add(new csSearchTerm(sTags[i]));
 
                 for (int y = 0; y < lTerms.Count; y++) {
                     if (!lTerms[y].Equals(lData[indx])) {
