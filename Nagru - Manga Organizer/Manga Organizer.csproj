@@ -108,6 +108,7 @@
     <Compile Include="Classes\FixedRichTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Classes\GlobalContainers.cs" />
     <Compile Include="Classes\ListViewNF.cs">
       <SubType>Component</SubType>
     </Compile>

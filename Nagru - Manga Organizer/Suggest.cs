@@ -10,9 +10,10 @@ namespace Nagru___Manga_Organizer
 {
     public partial class Suggest : Form
     {
-        delegate void DelListStringVoid(List<ExtString.stEXH> lsPass);
-        DelListStringVoid delResults = null;
+        delegate void DelClassVoid(csEHSearch csPass);
+        DelClassVoid delResults = null;
         LVsorter lvSortObj = new LVsorter();
+        csEHSearch csSearch = new csEHSearch();
         public string sChoice = "";
 
         public Suggest()
@@ -62,6 +63,19 @@ namespace Nagru___Manga_Organizer
             + "If not provided, this program will use g.e-hentai instead.", 
                 Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
+        
+        //update searched gallery types
+        private void GalleryCheckedChanged(object sender, EventArgs e)
+		{
+            csSearch.Options = new bool[10] {
+				ckbxDoujin.Checked,		ckbxManga.Checked,
+				ckbxArtist.Checked,		ckbxGame.Checked,
+				ckbxWestern.Checked,	ckbxNonH.Checked,
+				ckbxImage.Checked,		ckbxCosplay.Checked,
+				ckbxAsian.Checked,		ckbxMisc.Checked
+            };
+			ddmGallery.ShowDropDown();
+        }
 
         private void btnSearch_Click(object sender, EventArgs e)
         {
@@ -74,33 +88,34 @@ namespace Nagru___Manga_Organizer
         {
             if(!(obj is string)) return;
 
-            List<ExtString.stEXH> lresp = ExtString.EHSearch((string)obj);
-            this.Invoke(delResults, lresp);
+            csSearch.Search((string)obj);
+            this.Invoke(delResults, csSearch);
         }
         
-        private void DisplayResults(List<ExtString.stEXH> lResults)
+        private void DisplayResults(csEHSearch csResults)
         {
-            if(lResults != null) {
+            if(csResults.Count > 0) {
                 lvDetails.SuspendLayout();
                 lvDetails.Items.Clear();
 
-                for (int i = 0; i < lResults.Count; i++) {
+                for (int i = 0; i < csResults.Count; i++) {
                     lvDetails.Items.Add(new ListViewItem(new string[2] {
-                        lResults[i].sURL,
-                        lResults[i].sTitle
+                        csResults.URL(i),
+                        csResults.Title(i)
                     }));
                 }
 
                 Alternate();
                 lvDetails.ResumeLayout(); 
             }
-            else {
+            else if(csResults.Error) {
                 MessageBox.Show("A connection to EH could not be established.",
                     Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
-            
+
             this.Cursor = Cursors.Default;
             ToggleButtonEnabled(ref btnSearch);
+            this.Text = "Search found " + csResults.Count + " possible matchess";
         }
         
         private void lvDetails_SelectedIndexChanged(object sender, EventArgs e)
@@ -109,11 +124,11 @@ namespace Nagru___Manga_Organizer
             ToggleButtonEnabled(ref btnOK, lvDetails.SelectedItems.Count > 0);
         }
         
-        private void ToggleButtonEnabled(ref Button btnRef, bool? bEnabled = null)
+        private void ToggleButtonEnabled(ref Button btn, bool? bEnabled = null)
         {
-            btnRef.Enabled = (bEnabled == null) ? !btnRef.Enabled : (bool)bEnabled;
-            if (btnRef.Enabled) btnRef.BackColor = SystemColors.ButtonFace;
-            else btnRef.BackColor = SystemColors.ScrollBar;
+            btn.Enabled = (bEnabled == null) ? !btn.Enabled : (bool)bEnabled;
+            if (btn.Enabled) btn.BackColor = SystemColors.ButtonFace;
+            else btn.BackColor = SystemColors.ScrollBar;
         }
 
         private void btnOK_Click(object sender, EventArgs e)
@@ -214,5 +229,5 @@ namespace Nagru___Manga_Organizer
         private void MnTx_SelAll_Click(object sender, EventArgs e)
         { txbxSearch.SelectAll(); }
         #endregion
-    }
+	}
 }

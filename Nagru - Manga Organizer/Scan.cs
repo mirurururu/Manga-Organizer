@@ -12,14 +12,13 @@ namespace Nagru___Manga_Organizer
 
         private delegate void DelVoidEntry(Main.csEntry en);
         public delegate void DelVoid();
-        public DelVoid delNewEntry;
-        public DelVoid delDone;
+        public DelVoid delNewEntry, delDone;
 
         public List<Main.csEntry> lCurr { private get; set; }
 
         LVsorter lvSortObj = new LVsorter();
-        HashSet<string> hsPaths = new HashSet<string>();
-        HashSet<string> hsIgnore = new HashSet<string>();
+        HashSet<string> hsPaths = new HashSet<string>(),
+            hsIgnore = new HashSet<string>();
         List<Main.csEntry> lFound = new List<Main.csEntry>();
 
         #region ScanOperation

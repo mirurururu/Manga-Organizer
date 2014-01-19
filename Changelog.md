@@ -1,3 +1,7 @@
+#### v. 4.3.26 (January 18, 2014)
+	- Stopped EH search from treating no-results as an error (sorry about that)
+	- Added option to choose which gallery types EH-Search looks through
+
 #### v. 4.3.15 (January 4, 2014)
 	- Improved search listview resizing
 	- Made auto-search formatting visible and improved it

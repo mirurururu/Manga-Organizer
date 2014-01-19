@@ -276,7 +276,10 @@ namespace Nagru___Manga_Organizer.Classes
                 sbHorz.Top = Bottom;
                 sbHorz.Show();
             }
-            else sbHorz.Hide();
+            else if(sbHorz.Visible) {
+				this.SelectionStart = 0;
+				sbHorz.Hide();
+			}
         }
 
         /* Add new keywords if not contained */

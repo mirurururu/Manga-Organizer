@@ -11,9 +11,9 @@ namespace Nagru___Manga_Organizer
 {
     public partial class Settings : Form
     {
-        const string sDefProg = "System Default";
+        const string sDefProgram = "System Default";
         string sIgnored = Properties.Settings.Default.Ignore;
-        bool bNew, bSave = false;
+        bool bNew = false, bSave = false;
 
         public Settings()
         { 
@@ -27,16 +27,17 @@ namespace Nagru___Manga_Organizer
             aTxBx_Save.Text = Properties.Settings.Default.SavLoc;
             aTxBx_Root.Text = Properties.Settings.Default.DefLoc;
             aTxBx_Prog.Text = Properties.Settings.Default.DefProg;
-            if (aTxBx_Prog.Text == "") aTxBx_Prog.Text = sDefProg;
+            if (aTxBx_Prog.Text == "") aTxBx_Prog.Text = sDefProgram;
             Nud_Intv.Value = Properties.Settings.Default.Interval;
             picBx_Colour.BackColor = Properties.Settings.Default.DefColour;
             ChkBx_Gridlines.Checked = Properties.Settings.Default.DefGrid;
             ChkBx_Date.Checked = !Properties.Settings.Default.HideDate;
-            string[] asIgn = Properties.Settings.Default.Ignore.Split('|');
+
+            string[] asIgn = ExtString.Split(Properties.Settings.Default.Ignore, "|");
             for (int i = 0; i < asIgn.Length; i++) {
-                if (asIgn[i] == "") continue;
                 ckLbx_Ign.Items.Add(asIgn[i], true);
             }
+            
             Btn_Save.FlatAppearance.BorderColor = Color.Green;
             bNew = false;
         }
@@ -76,7 +77,7 @@ namespace Nagru___Manga_Organizer
         private void aTxBx_Prog_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
-            string sPath = aTxBx_Prog.Text != sDefProg ?
+            string sPath = aTxBx_Prog.Text != sDefProgram ?
                 aTxBx_Prog.Text : Environment.CurrentDirectory;
             ofd.Filter = "Executables (*.exe)|*.exe";
             ofd.InitialDirectory = sPath;
@@ -153,7 +154,7 @@ namespace Nagru___Manga_Organizer
                     aTxBx_Root.Text = Environment.CurrentDirectory;
                     break;
                 case "aTxBx_Prog":
-                    aTxBx_Prog.Text = sDefProg;
+                    aTxBx_Prog.Text = sDefProgram;
                     break;
                 case "Nud_Intv":
                     Nud_Intv.Value = 20000;
@@ -179,7 +180,7 @@ namespace Nagru___Manga_Organizer
         private void Btn_Save_Click(object sender, EventArgs e)
         {
             //only finalize settings when `Btn_Save_Click' triggered
-            if (aTxBx_Prog.Text != sDefProg)
+            if (aTxBx_Prog.Text != sDefProgram)
                 Properties.Settings.Default.DefProg = aTxBx_Prog.Text;
             else Properties.Settings.Default.DefProg = "";
             Properties.Settings.Default.SavLoc = aTxBx_Save.Text;
