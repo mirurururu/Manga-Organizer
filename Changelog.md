@@ -1,6 +1,8 @@
-#### v. 4.3.26 (January 18, 2014)
+#### v. 4.3.27 (January 18, 2014)
 	- Stopped EH search from treating no-results as an error (sorry about that)
 	- Added option to choose which gallery types EH-Search looks through
+	- Small behaviour change to textboxes with a scrollbar
+		(when switching from shown to hidden, the code will try to pull the full text into view)
 
 #### v. 4.3.15 (January 4, 2014)
 	- Improved search listview resizing

@@ -277,7 +277,9 @@ namespace Nagru___Manga_Organizer.Classes
                 sbHorz.Show();
             }
             else if(sbHorz.Visible) {
+				int iStart = this.SelectionStart;
 				this.SelectionStart = 0;
+				this.SelectionStart = iStart;
 				sbHorz.Hide();
 			}
         }

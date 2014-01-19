@@ -169,6 +169,7 @@ namespace Nagru___Manga_Organizer
             readonly bool[] bAllow;
             readonly string[] sTerm;
             readonly string sType;
+			readonly int iTypeID;
 
             public csSearchTerm(string _Raw)
             {
@@ -177,9 +178,11 @@ namespace Nagru___Manga_Organizer
                 string[] sSplit = _Raw.Trim().Split(':');
                 if (sSplit.Length == 2) {
                     sType = sSplit[0];
-                    sTerm = sSplit[1].Split('&');
+                    //sTerm = sSplit[1].Split('&');
+					sTerm = ExtString.Split(sSplit[1], "&", ",");
                 }
-                else sTerm = _Raw.Split('&');
+				else sTerm = ExtString.Split(_Raw, "&", ",");
+                //else sTerm = _Raw.Split('&');
 
                 //check for chained terms
                 bAllow = new bool[sTerm.Length];
@@ -190,38 +193,66 @@ namespace Nagru___Manga_Organizer
                         bAllow[i] = false;
                     }
                     else bAllow[i] = true;
-                }
-            }
+				}
+
+				#region Set TypeID
+				switch (sType) {
+					case "artist":
+					case "a":
+						iTypeID = 0;
+						break;
+					case "title":
+					case "t":
+						iTypeID = 1;
+						break;
+					case "tag":
+					case "tags":
+					case "g":
+						iTypeID = 2;
+						break;
+					case "description":
+					case "desc":
+					case "s":
+						iTypeID = 3;
+						break;
+					case "type":
+					case "y":
+						iTypeID = 4;
+						break;
+					case "date":
+					case "d":
+						iTypeID = 5;
+						break;
+					case "pages":
+					case "page":
+					case "p":
+						iTypeID = 6;
+						break;
+				}
+				#endregion
+			}
 
             public bool Equals(csEntry en)
             {
                 for(int i = 0; i < sTerm.Length; i++) {
                     bool bMatch = false;
-                    switch (sType) {
-                        case "artist":
-                        case "a":
+                    switch (iTypeID) {
+                        case 0:
                             bMatch = ExtString.Contains(en.sArtist, sTerm[i]);
                             break;
-                        case "title":
-                        case "t":
+                        case 1:
                             bMatch = ExtString.Contains(en.sTitle, sTerm[i]);
                             break;
-                        case "tag":
-                        case "tags":
-                        case "g":
+                        case 2:
                             bMatch = ExtString.Contains(en.sTags, sTerm[i]);
                             break;
-                        case "description":
-                        case "desc":
-                        case "s":
+                        case 3:
                             bMatch = ExtString.Contains(en.sDesc, sTerm[i]);
                             break;
-                        case "type":
-                        case "y":
+                        case 4:
                             bMatch = ExtString.Contains(en.sType, sTerm[i]);
                             break;
-                        case "date":
-                        case "d":
+                        case 5:
                             DateTime dt = new DateTime();
                             char c = sTerm[i] != "" ? sTerm[i][0] : ' ';
 
@@ -240,9 +271,7 @@ namespace Nagru___Manga_Organizer
                                     break;
                             }
                             break;
-                        case "pages":
-                        case "page":
-                        case "p":
+                        case 6:
                             c = sTerm[i] != "" ? sTerm[i][0] : ' ';
                             int x;
 
