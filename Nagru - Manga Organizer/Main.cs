@@ -178,11 +178,9 @@ namespace Nagru___Manga_Organizer
                 string[] sSplit = _Raw.Trim().Split(':');
                 if (sSplit.Length == 2) {
                     sType = sSplit[0];
-                    //sTerm = sSplit[1].Split('&');
 					sTerm = ExtString.Split(sSplit[1], "&", ",");
                 }
 				else sTerm = ExtString.Split(_Raw, "&", ",");
-                //else sTerm = _Raw.Split('&');
 
                 //check for chained terms
                 bAllow = new bool[sTerm.Length];
@@ -227,6 +225,9 @@ namespace Nagru___Manga_Organizer
 					case "page":
 					case "p":
 						iTypeID = 6;
+						break;
+					default:
+						iTypeID = -1;
 						break;
 				}
 				#endregion

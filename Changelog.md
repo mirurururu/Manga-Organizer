@@ -1,3 +1,6 @@
+#### v. 4.3.28 (January 24, 2014)
+	- Fix for searches not respecting generic parameters
+	
 #### v. 4.3.27 (January 18, 2014)
 	- Stopped EH search from treating no-results as an error (sorry about that)
 	- Added option to choose which gallery types EH-Search looks through
