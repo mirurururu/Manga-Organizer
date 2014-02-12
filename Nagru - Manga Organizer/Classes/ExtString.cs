@@ -15,6 +15,11 @@ namespace Nagru___Manga_Organizer
         {
             return sRaw.IndexOf(sFind, cComp) > -1;
         }
+
+		public static bool Equals(string sA, string sB)
+		{
+			return string.Equals(sA, sB, StringComparison.OrdinalIgnoreCase);
+		}
         
         /* Convert unicode to usable Ascii
            Author: Adam Sills (October 23, 2009)         */

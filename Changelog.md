@@ -1,3 +1,7 @@
+#### v. 4.3.30 (February 11, 2014)
+	- Fix for the program crashing when scanning a corrupted archive
+	- Added shortcut tooltip to 'Search EH' function
+
 #### v. 4.3.28 (January 24, 2014)
 	- Fix for searches not respecting generic parameters
 	

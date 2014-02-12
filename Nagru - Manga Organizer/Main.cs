@@ -6,8 +6,12 @@
  * This program is distributed under the
  * GNU General Public License v3 (GPLv3)
  * 
- * SharpCompress.dll is distributed under the 
+ * SharpCompress is distributed under the 
  * MIT\Expat License (MIT)
+ * 
+ * SQLite is in the public domain
+ * Ergo, it does not require any license
+ * 
  */
 
 using System;
@@ -20,14 +24,16 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using SCA = SharpCompress.Archive;
+using System.Data.SQLite;
+//using Finisar.SQLite;
 
 namespace Nagru___Manga_Organizer
 {
     public partial class Main : Form
     {
         #region Properties
-        const int iLightGray = -657931;
-        const int iLightYellow = -30;
+		const int iLightGray = -657931;
+        const int iLightYellow = -15;
 
         delegate void DelVoid();
         delegate void DelInt(int iNum);
@@ -295,8 +301,8 @@ namespace Nagru___Manga_Organizer
                                 ExtString.Contains(en.sTitle, sTerm[i]) ||
                                 ExtString.Contains(en.sArtist, sTerm[i]) ||
                                 ExtString.Contains(en.sDesc, sTerm[i]) ||
-                                ExtString.Contains(en.dtDate.ToString(), sTerm[i]) ||
-                                ExtString.Contains(en.sType, sTerm[i]));
+                                ExtString.Contains(en.sType, sTerm[i]) ||
+								ExtString.Contains(en.dtDate.ToString(), sTerm[i]));
                             break;
                     }
 
@@ -313,7 +319,7 @@ namespace Nagru___Manga_Organizer
         {
             InitializeComponent();
             this.Icon = Properties.Resources.dbIcon;
-            
+			
             //if database opened with "Shell->Open with..."
             if (sFile.Length > 0 
                     && sFile[0].EndsWith("\\MangaDatabase.bin") 
@@ -332,21 +338,27 @@ namespace Nagru___Manga_Organizer
 
         /* Load custom library 
            Author: Calle Mellergardh (March 1, 2010) */
-        System.Reflection.Assembly CurrentDomain_AssemblyResolve(
+        private System.Reflection.Assembly CurrentDomain_AssemblyResolve(
             object sender, ResolveEventArgs args)
         {
-            if(ExtString.Equals(args.Name, "SharpCompress, Version=0.10.1.0, "
+			System.Reflection.Assembly asm = null;
+            if(ExtString.Equals(args.Name, "SharpCompress, Version=0.10.3.0, "
                 + "Culture=neutral, PublicKeyToken=beaf6f427e128133"))
-                return (AppDomain.CurrentDomain).Load(
-                    Properties.Resources.SharpCompress);
-            return null;
+                asm = (AppDomain.CurrentDomain).Load(Properties.Resources.SharpCompress);
+			/*else if (ExtString.Equals(args.Name, "SQLite.NET, Version=0.21.1869.3794, "
+				+ "Culture=neutral, PublicKeyToken=c273bd375e695f9c"))
+				asm = (AppDomain.CurrentDomain).Load(Properties.Resources.SQLite_NET);
+			else if (ExtString.Equals(args.Name, "System.Data.SQLite, Version=1.0.90.0, "
+				+ "Culture=neutral, PublicKeyToken=db937bc2d44ff139"))
+				asm = (AppDomain.CurrentDomain).Load(Properties.Resources.System_Data_SQLite);*/
+            return asm;
         }
 
         private void Main_Load(object sender, EventArgs e)
         {
             //disable ContextMenu in Nud_Pages
             Nud_Pages.ContextMenuStrip = new ContextMenuStrip();
-            
+			
             //allow dragdrop in richtextbox
             frTxBx_Desc.AllowDrop = true;
             frTxBx_Notes.AllowDrop = true;
@@ -374,54 +386,67 @@ namespace Nagru___Manga_Organizer
                 Properties.Settings.Default.SavLoc : Environment.CurrentDirectory;
             sPath += "\\MangaDatabase.bin";
 
-            //check existence
-            bool bExist = false;
-            if (File.Exists(sPath)) bExist = true;
-            else {
-                sPath = ExtString.RelativePath(sPath);
-                if (sPath != null && File.Exists(sPath)) bExist = true;
-            }
-            
-            if (bExist) {
-                lData = FileSerializer.Deserialize<List<csEntry>>(sPath) 
-                    ?? new List<csEntry>(0);
-                UpdateLV();
-                
-                //set up artist, tag, and type autocomplete
-                List<string> lTags = new List<string>(lData.Count);
-                HashSet<string> hsArtists = new HashSet<string>();
-                HashSet<string> hsTypes = new HashSet<string>();
-                for (int i = 0; i < CmbBx_Type.Items.Count; i++) 
-                    hsTypes.Add(CmbBx_Type.Items[i].ToString());
-                
-                for (int i = 0; i < lData.Count; i++) {
-                    if (!hsTypes.Contains(lData[i].sType))
-                        hsTypes.Add(lData[i].sType);
-                    if (!hsArtists.Contains(lData[i].sArtist))
-                        hsArtists.Add(lData[i].sArtist);
-                    lTags.AddRange(lData[i].sTags.Split(','));
-                }
-                CmbBx_Artist.Items.AddRange(hsArtists.Select(x => x).ToArray());
-                acTxBx_Tags.KeyWords = lTags.Select(x => x.Trim()).Distinct()
-                    .OrderBy(x => x, new TrueCompare()).ToArray();
-            } else {
-                #if !DEBUG
+            //Load DB and run tutorial
+			#if !DEBUG
+			if (!ConvertCruft()
+					&& Properties.Settings.Default.FirstRun) {
                 //Run tutorial on first execution
-                if (Properties.Settings.Default.FirstRun) {
-                    Properties.Settings.Default.FirstRun = false;
-                    Properties.Settings.Default.Save();
+                Properties.Settings.Default.FirstRun = false;
+                Properties.Settings.Default.Save();
 
-                    Tutorial fmTut = new Tutorial();
-                    fmTut.ShowDialog();
-                    fmTut.Dispose();
+                Tutorial fmTut = new Tutorial();
+                fmTut.ShowDialog();
+                fmTut.Dispose();
 
-                    //set runtime sensitive default locations
-                    Properties.Settings.Default.SavLoc = Environment.CurrentDirectory;
-                    Properties.Settings.Default.DefLoc = Environment.CurrentDirectory;
-                }
-                #endif
+                //set runtime sensitive default locations
+                Properties.Settings.Default.SavLoc = Environment.CurrentDirectory;
+                Properties.Settings.Default.DefLoc = Environment.CurrentDirectory;
             }
+			#endif
         }
+
+		private bool ConvertCruft()
+		{
+			//load database
+			string sPath = Properties.Settings.Default.SavLoc != string.Empty ?
+				Properties.Settings.Default.SavLoc : Environment.CurrentDirectory;
+			sPath += "\\MangaDatabase.bin";
+			
+			//check existence
+			bool bExist = false;
+			if (File.Exists(sPath)) bExist = true;
+			else {
+				sPath = ExtString.RelativePath(sPath);
+				bExist = (sPath != null);
+			}
+
+			if (bExist) {
+				lData = FileSerializer.Deserialize<List<csEntry>>(sPath)
+					?? new List<csEntry>(0);
+				UpdateLV();
+
+				//set up artist, tag, and type autocomplete
+				List<string> lTags = new List<string>(lData.Count);
+				HashSet<string> hsArtists = new HashSet<string>();
+				HashSet<string> hsTypes = new HashSet<string>();
+				for (int i = 0; i < CmbBx_Type.Items.Count; i++)
+					hsTypes.Add(CmbBx_Type.Items[i].ToString());
+
+				for (int i = 0; i < lData.Count; i++)
+				{
+					if (!hsTypes.Contains(lData[i].sType))
+						hsTypes.Add(lData[i].sType);
+					if (!hsArtists.Contains(lData[i].sArtist))
+						hsArtists.Add(lData[i].sArtist);
+					lTags.AddRange(lData[i].sTags.Split(','));
+				}
+				CmbBx_Artist.Items.AddRange(hsArtists.Select(x => x).ToArray());
+				acTxBx_Tags.KeyWords = lTags.Select(x => x.Trim()).Distinct()
+					.OrderBy(x => x, new TrueCompare()).ToArray();
+				//csSQL.Import(sPath);
+			}
+			return bExist;
+		}
 
         /* Prevent Form close if unsaved data present   */
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
@@ -880,19 +905,25 @@ namespace Nagru___Manga_Organizer
         {
             bool bArchive = false;
             if(File.Exists(sPath)) {
-                switch(Path.GetExtension(sPath)) {
-                    case ".zip":
-                    case ".cbz":
-                        bArchive = SCA.Zip.ZipArchive.IsZipFile(sPath);
-                        break;
-                    case ".rar":
-                    case ".cbr":
-                        bArchive = SCA.Rar.RarArchive.IsRarFile(sPath);
-                        break;
-                    case ".7z":
-                        bArchive = SCA.SevenZip.SevenZipArchive.IsSevenZipFile(sPath);
-                        break;
-                }
+				try {
+					switch(Path.GetExtension(sPath)) {
+						case ".zip":
+						case ".cbz":
+							bArchive = SCA.Zip.ZipArchive.IsZipFile(sPath);
+							break;
+						case ".rar":
+						case ".cbr":
+							bArchive = SCA.Rar.RarArchive.IsRarFile(sPath);
+							break;
+						case ".7z":
+							bArchive = SCA.SevenZip.SevenZipArchive.IsSevenZipFile(sPath);
+							break;
+					}
+				} catch (IOException) {
+					MessageBox.Show("The following file is corrupted:\n" + sPath,
+						Application.ProductName, MessageBoxButtons.OK,
+						MessageBoxIcon.Error);
+				}
             }
             return bArchive;
         }
