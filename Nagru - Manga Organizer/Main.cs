@@ -358,7 +358,7 @@ namespace Nagru___Manga_Organizer
         {
             //disable ContextMenu in Nud_Pages
             Nud_Pages.ContextMenuStrip = new ContextMenuStrip();
-			
+
             //allow dragdrop in richtextbox
             frTxBx_Desc.AllowDrop = true;
             frTxBx_Notes.AllowDrop = true;
@@ -380,11 +380,6 @@ namespace Nagru___Manga_Organizer
             //set-up listview sorting & sizing
             LV_Entries.ListViewItemSorter = lvSortObj;
             LV_Entries.Select();
-
-            //load database
-            string sPath = Properties.Settings.Default.SavLoc != string.Empty ?
-                Properties.Settings.Default.SavLoc : Environment.CurrentDirectory;
-            sPath += "\\MangaDatabase.bin";
 
             //Load DB and run tutorial
 			#if !DEBUG
