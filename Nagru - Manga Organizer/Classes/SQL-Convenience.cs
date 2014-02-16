@@ -160,9 +160,9 @@ namespace Nagru___Manga_Organizer
 
 			List<Main.csEntry> lData = FileSerializer.Deserialize
 				<List<Main.csEntry>>(sPath) ?? new List<Main.csEntry>(0);
-			System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-			sw.Start(); double dAvg = 0;
+
 			//input into new DB
+			csSQL.BeginTransaction();
 			for (int i = 0; i < lData.Count; i++) {
 				//ensure sizes are valid
 				#region Force value sizes to be inside valid range
@@ -177,23 +177,13 @@ namespace Nagru___Manga_Organizer
 				#endregion
 
 				//add the entry
-				try{
 				Entry_Save(
 					ExtString.Split(lData[i].sArtist, ","),
 					ExtString.Split(lData[i].sTags, ","), lData[i].sType,
 					lData[i].sTitle, lData[i].iPages, lData[i].byRat, 
 					lData[i].sDesc, lData[i].sLoc, "", lData[i].dtDate);
-				}
-				catch (SQLiteException exc)
-				{
-					Console.WriteLine(exc.Message);
-				}
-				sw.Stop();
-				dAvg += (sw.ElapsedMilliseconds / 1000.0);
-				Console.WriteLine((sw.ElapsedMilliseconds / 1000.0) + "s, -- "
-					+ (double)(dAvg / i) + " average\n\n");
-				sw.Restart();
 			}
+			csSQL.EndTransaction();
 
 			//deprecate old serialized DB
 			File.Move(sPath + "\\MangaDatabase.bin", sPath + "\\MangaDatabase_Deprecated.bin");
@@ -204,17 +194,28 @@ namespace Nagru___Manga_Organizer
 		private static int ExecuteNonQuery(string sCommand)
 		{
 			int iRetVal = 0;
-			try {
-				using (SQLiteCommand sqCmd = sqConn.CreateCommand()) {
-					sqCmd.CommandType = CommandType.Text;
-					sqCmd.CommandText = sCommand;
-					sqCmd.ExecuteNonQuery();
-				}
-			} catch(SQLiteException exc){
-				Console.WriteLine(exc.Message);
-				iRetVal = -1;
+			using (SQLiteCommand sqCmd = sqConn.CreateCommand()) {
+				sqCmd.CommandType = CommandType.Text;
+				sqCmd.CommandText = sCommand;
+				sqCmd.ExecuteNonQuery();
 			}
 			return iRetVal;
+		}
+
+		private static void BeginTransaction()
+		{
+			using (SQLiteCommand sqCmd = new SQLiteCommand("begin", sqConn))
+			{
+				sqCmd.ExecuteNonQuery();
+			}
+		}
+
+		private static void EndTransaction()
+		{
+			using (SQLiteCommand sqCmd = new SQLiteCommand("end", sqConn))
+			{
+				sqCmd.ExecuteNonQuery();
+			}
 		}
 
 		public static int GetMangaID(string sTitle)
@@ -264,9 +265,6 @@ namespace Nagru___Manga_Organizer
 			string sTitle, int iPages, decimal dRating, string sDesc, string sLoc,
 			string sURL, DateTime dtPubDate)
 		{
-			System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-			sw.Start();
-			
 			//ensure key value exists
 			if (string.IsNullOrEmpty(sTitle))
 				throw new NoNullAllowedException();
@@ -312,8 +310,6 @@ namespace Nagru___Manga_Organizer
 				if (iMangaID == -1) iMangaID = GetMangaID(sTitle);
 				if (iMangaID == -1) throw new SQLiteException("Manga was not succesfully inserted or updated.");
 			}
-			sw.Stop();
-			Console.WriteLine("Manga: " + sw.ElapsedMilliseconds + "ms");
 
 			//insert artist
 			DB_UpdateArtist(iMangaID, asArtist);
@@ -327,9 +323,6 @@ namespace Nagru___Manga_Organizer
 
 		private static void DB_UpdateArtist(int iMangaID, string[] asArtists)
 		{
-			System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-			sw.Start();
-			
 			List<Int32> lArtistID = new List<int>(asArtists.Length);
 
 			for (int i = 0; i < asArtists.Length; i++)
@@ -386,14 +379,10 @@ namespace Nagru___Manga_Organizer
 				sqCmd.CommandText += string.Join(",", lArtistID) + ")";
 				sqCmd.ExecuteNonQuery();
 			}
-			sw.Stop();
-			Console.WriteLine("Artists (" + asArtists.Length + "): " + sw.ElapsedMilliseconds + "ms");
 		}
 
 		private static void DB_UpdateTag(int iMangaID, string[] asTags)
 		{
-			System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-			sw.Start();
 			List<Int32> lTagID = new List<int>(asTags.Length);
 
 			for (int i = 0; i < asTags.Length; i++)
@@ -448,61 +437,54 @@ namespace Nagru___Manga_Organizer
 				sqCmd.CommandText += string.Join(",", lTagID) + ")";
 				sqCmd.ExecuteNonQuery();
 			}
-			sw.Stop();
-			Console.WriteLine("Tags (" + asTags.Length + "): " + sw.ElapsedMilliseconds + "ms");
 		}
 
 		private static void DB_UpdateType(int iMangaID, string sType)
 		{
-			System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-			sw.Start();
+			if (string.IsNullOrEmpty(sType))
+				return;
 			
 			int iTypeID = 0;
 
 			//add type if it doesn't exist already
-			if (!string.IsNullOrEmpty(sType))
+			using (SQLiteCommand sqCmd = sqConn.CreateCommand())
 			{
-				using (SQLiteCommand sqCmd = sqConn.CreateCommand())
+				sqCmd.Parameters.Add(new SQLiteParameter("@type", DbType.String) { Value = sType });
+				sqCmd.CommandType = CommandType.Text;
+				sqCmd.CommandText = @"
+				insert into [Type](Type)
+				select @type
+				where not exists(select 1 from [Type] where Type = @type)";
+				sqCmd.ExecuteNonQuery();
+
+				//get typeID
+				sqCmd.CommandText = @"
+				select TypeID
+				from [Type]
+				where Type = @type";
+				sqCmd.ExecuteNonQuery();
+
+				using (SQLiteDataReader dr = sqCmd.ExecuteReader(CommandBehavior.SingleResult))
 				{
-					sqCmd.Parameters.Add(new SQLiteParameter("@type", DbType.String) { Value = sType });
-					sqCmd.CommandType = CommandType.Text;
-					sqCmd.CommandText = @"
-					insert into [Type](Type)
-					select @type
-					where not exists(select 1 from [Type] where Type = @type)";
-					sqCmd.ExecuteNonQuery();
-
-					//get typeID
-					sqCmd.CommandText = @"
-					select TypeID
-					from [Type]
-					where Type = @type";
-					sqCmd.ExecuteNonQuery();
-
-					using (SQLiteDataReader dr = sqCmd.ExecuteReader(CommandBehavior.SingleResult))
-					{
-						dr.Read();
-						if (dr.HasRows) iTypeID = dr.GetInt32(0);
-						else throw new SQLiteException("Type was not succesfully inserted or updated.");
-						dr.Close();
-					}
-				}
-
-				//set type
-				using (SQLiteCommand sqCmd = sqConn.CreateCommand())
-				{
-					sqCmd.Parameters.Add(new SQLiteParameter("@typeID", DbType.Int32) { Value = iTypeID });
-					sqCmd.Parameters.Add(new SQLiteParameter("@mangaID", DbType.Int32) { Value = iMangaID });
-					sqCmd.CommandType = CommandType.Text;
-					sqCmd.CommandText = @"
-					update [Manga]
-					set TypeID = @typeID, auditDBTime = CURRENT_DATE
-					where MangaID = @mangaID and TypeID != @typeID";
-					sqCmd.ExecuteNonQuery();
+					dr.Read();
+					if (dr.HasRows) iTypeID = dr.GetInt32(0);
+					else throw new SQLiteException("Type was not succesfully inserted or updated.");
+					dr.Close();
 				}
 			}
-			sw.Stop();
-			Console.WriteLine("Type: " + sw.ElapsedMilliseconds + "ms");
+
+			//set type
+			using (SQLiteCommand sqCmd = sqConn.CreateCommand())
+			{
+				sqCmd.Parameters.Add(new SQLiteParameter("@typeID", DbType.Int32) { Value = iTypeID });
+				sqCmd.Parameters.Add(new SQLiteParameter("@mangaID", DbType.Int32) { Value = iMangaID });
+				sqCmd.CommandType = CommandType.Text;
+				sqCmd.CommandText = @"
+				update [Manga]
+				set TypeID = @typeID, auditDBTime = CURRENT_DATE
+				where MangaID = @mangaID and TypeID != @typeID";
+				sqCmd.ExecuteNonQuery();
+			}
 		}
 		
 		public static void Entry_Delete(int iMangaID)
