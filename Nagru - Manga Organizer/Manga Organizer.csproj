@@ -261,7 +261,7 @@
     <None Include="Resources\System.Data.SQLite.dll" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Scripts\DBSchema.sql" />
+    <None Include="Scripts\DBSchema.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

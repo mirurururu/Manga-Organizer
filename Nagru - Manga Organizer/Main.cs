@@ -347,10 +347,10 @@ namespace Nagru___Manga_Organizer
                 asm = (AppDomain.CurrentDomain).Load(Properties.Resources.SharpCompress);
 			/*else if (ExtString.Equals(args.Name, "SQLite.NET, Version=0.21.1869.3794, "
 				+ "Culture=neutral, PublicKeyToken=c273bd375e695f9c"))
-				asm = (AppDomain.CurrentDomain).Load(Properties.Resources.SQLite_NET);
+				asm = (AppDomain.CurrentDomain).Load(Properties.Resources.SQLite_NET);*/
 			else if (ExtString.Equals(args.Name, "System.Data.SQLite, Version=1.0.90.0, "
 				+ "Culture=neutral, PublicKeyToken=db937bc2d44ff139"))
-				asm = (AppDomain.CurrentDomain).Load(Properties.Resources.System_Data_SQLite);*/
+				asm = (AppDomain.CurrentDomain).Load(Properties.Resources.System_Data_SQLite);
             return asm;
         }
 
@@ -416,7 +416,7 @@ namespace Nagru___Manga_Organizer
 			}
 
 			if (bExist) {
-				lData = FileSerializer.Deserialize<List<csEntry>>(sPath)
+				/*lData = FileSerializer.Deserialize<List<csEntry>>(sPath)
 					?? new List<csEntry>(0);
 				UpdateLV();
 
@@ -437,8 +437,8 @@ namespace Nagru___Manga_Organizer
 				}
 				CmbBx_Artist.Items.AddRange(hsArtists.Select(x => x).ToArray());
 				acTxBx_Tags.KeyWords = lTags.Select(x => x.Trim()).Distinct()
-					.OrderBy(x => x, new TrueCompare()).ToArray();
-				//csSQL.Import(sPath);
+					.OrderBy(x => x, new TrueCompare()).ToArray();*/
+				csSQL.Import(sPath);
 			}
 			return bExist;
 		}
