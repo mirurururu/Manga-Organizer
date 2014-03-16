@@ -14,12 +14,12 @@ namespace Nagru___Manga_Organizer
             string Filter = "*.jpg|*.png|*.jpeg|*.gif")
         {
             if (!Directory.Exists(SourceFolder)) return new string[0];
-            List<string> lFiles = new List<string>();
+            List<string> lFiles = new List<string>(10000);
             string[] sFilters = Filter.Split('|');
 
             try {
                 for (int i = 0; i < sFilters.Length; i++)
-                    lFiles.AddRange(System.IO.Directory.GetFiles(SourceFolder,
+                    lFiles.AddRange(Directory.EnumerateFiles(SourceFolder,
                         sFilters[i], SearchOption));
             } catch(ArgumentException) {
                 Console.WriteLine("Invalid characters in path:\n" + SourceFolder);

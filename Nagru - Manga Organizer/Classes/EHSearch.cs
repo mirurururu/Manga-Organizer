@@ -83,7 +83,7 @@ namespace Nagru___Manga_Organizer
 		#endregion
 
 		#region Properties
-		private HashSet<string> hsURL, hsTitle;
+		private List<string> hsURL, hsTitle;
 		private byte[] bOpt = new byte[10];
 		private string sSearchURL;
 		private int iCurrentPage = 0;
@@ -93,8 +93,8 @@ namespace Nagru___Manga_Organizer
 
 		public csEHSearch()
 		{
-			hsURL = new HashSet<string>();
-			hsTitle = new HashSet<string>();
+			hsURL = new List<string>();
+			hsTitle = new List<string>();
 
 			#region Gallery Options
 			bOpt = new byte[10] {
@@ -124,7 +124,7 @@ namespace Nagru___Manga_Organizer
 				+ "&f_gamecg={4}&f_western={5}&f_non-h={6}&f_imageset={7}&f_cosplay={8}"
 				+ "&f_asianporn={9}&f_misc={10}&f_search={11}&f_apply=Apply+Filter",
 				sSite, byOpt[0], byOpt[1], byOpt[2], byOpt[3], byOpt[4], byOpt[5],
-				byOpt[6], byOpt[7], byOpt[8], byOpt[9], Uri.EscapeDataString(sRaw));
+				byOpt[6], byOpt[7], byOpt[8], byOpt[9], Uri.EscapeDataString(sRaw).Replace("%20", "+"));
 		}
 
 		/* Used to simulate JS Object Literal for JSON 

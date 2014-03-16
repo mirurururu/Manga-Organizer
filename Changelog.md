@@ -1,3 +1,8 @@
+#### v. 4.3.33 (March 15, 2014)
+	- Bugfix for EH search when there are multiple results with the same title
+	- Newly added artists will now show up in future auto-completions without needing a reload
+	- Minor improvement to mass file scanning
+
 #### v. 4.3.30 (February 11, 2014)
 	- Fix for the program crashing when scanning a corrupted archive
 	- Added shortcut tooltip to 'Search EH' function

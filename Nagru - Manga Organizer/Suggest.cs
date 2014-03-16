@@ -47,9 +47,8 @@ namespace Nagru___Manga_Organizer
                 if (!string.IsNullOrEmpty(asSplit[0])) {
                     sb.AppendFormat("{0}{1}", (asSplit[0].Contains("("))
                         ? "" : "artist:", asSplit[0]);
-                    sb.Replace(' ', '_');
                     
-                    sb.AppendFormat(" {0}", asSplit[1].Replace(' ', '_'));
+                    sb.AppendFormat(" {0}", asSplit[1]);
                     txbxSearch.Text = sb.ToString();
                 }
             }
@@ -89,7 +88,14 @@ namespace Nagru___Manga_Organizer
             if(!(obj is string)) return;
 
             csSearch.Search((string)obj);
-            this.Invoke(delResults, csSearch);
+            if (delResults != null) {
+                this.Invoke(delResults, csSearch);
+            }
+            else {
+                MessageBox.Show("Search was invoked before the delegate was bound.",
+                    Application.ProductName, MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
         }
         
         private void DisplayResults(csEHSearch csResults)

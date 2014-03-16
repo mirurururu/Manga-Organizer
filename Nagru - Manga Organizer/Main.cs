@@ -416,7 +416,7 @@ namespace Nagru___Manga_Organizer
 			}
 
 			if (bExist) {
-				/*lData = FileSerializer.Deserialize<List<csEntry>>(sPath)
+				lData = FileSerializer.Deserialize<List<csEntry>>(sPath)
 					?? new List<csEntry>(0);
 				UpdateLV();
 
@@ -429,16 +429,14 @@ namespace Nagru___Manga_Organizer
 
 				for (int i = 0; i < lData.Count; i++)
 				{
-					if (!hsTypes.Contains(lData[i].sType))
-						hsTypes.Add(lData[i].sType);
-					if (!hsArtists.Contains(lData[i].sArtist))
-						hsArtists.Add(lData[i].sArtist);
+                    hsTypes.Add(lData[i].sType);
+                    hsArtists.Add(lData[i].sArtist);
 					lTags.AddRange(lData[i].sTags.Split(','));
 				}
 				CmbBx_Artist.Items.AddRange(hsArtists.Select(x => x).ToArray());
 				acTxBx_Tags.KeyWords = lTags.Select(x => x.Trim()).Distinct()
-					.OrderBy(x => x, new TrueCompare()).ToArray();*/
-				csSQL.Import(sPath);
+					.OrderBy(x => x, new TrueCompare()).ToArray();
+				//csSQL.Import(sPath);
 			}
 			return bExist;
 		}
@@ -651,12 +649,15 @@ namespace Nagru___Manga_Organizer
             string sPath, string sArtist, string sTitle, bool bRecurse = false)
         {
             if (!File.Exists(sPath) && !Directory.Exists(sPath)) {
-                string sTemp= string.Format("{0}\\[{1}] {2}",
-                    Properties.Settings.Default.DefLoc, sArtist, sTitle);
-                if (bRecurse) sPath = sTemp;
-                else sPath = ExtString.RelativePath(sTemp);
+                string sTemp = (!string.IsNullOrEmpty(sArtist)) ?
+                    string.Format("{0}\\[{1}] {2}", 
+                    (!string.IsNullOrEmpty(Properties.Settings.Default.DefLoc)) 
+                        ? Properties.Settings.Default.DefLoc : Environment.CurrentDirectory,
+                    sArtist, sTitle) : sTitle;
+                if (bRecurse) sPath = ExtString.RelativePath(sTemp);
+                else sPath = sTemp;
 
-                if (!Directory.Exists(sPath)) {
+                if (sPath != null && !Directory.Exists(sPath)) {
                     if (File.Exists(sPath + ".zip"))
                         sPath += ".zip";
                     else if (File.Exists(sPath + ".cbz"))
@@ -1394,8 +1395,15 @@ namespace Nagru___Manga_Organizer
 
                     //add artist to autocomplete
                     if (!CmbBx_Artist.Items.Contains(CmbBx_Artist.Text)) {
-                        CmbBx_Artist.AutoCompleteCustomSource.Add(CmbBx_Artist.Text);
-                        CmbBx_Artist.Items.Add(CmbBx_Artist.Text);
+                        HashSet<string> hsArtists = new HashSet<string>();
+                        hsArtists.Add(CmbBx_Artist.Text);
+
+                        for (int i = 0; i < lData.Count; i++) {
+                            hsArtists.Add(lData[i].sArtist);
+                        }
+
+                        CmbBx_Artist.Items.Clear();
+                        CmbBx_Artist.Items.AddRange(hsArtists.ToArray());
                     }
                     acTxBx_Tags.UpdateAutoComplete();
 

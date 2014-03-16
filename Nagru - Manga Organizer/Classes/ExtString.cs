@@ -71,8 +71,8 @@ namespace Nagru___Manga_Organizer
         public static string RelativePath(string sRaw)
         {
             string sPath = "";
-            string[] sOldNodes = Split(sRaw, "\\"),
-                sCurrNodes = Split(Environment.CurrentDirectory, "\\");
+            string[] sOldNodes = ExtString.Split(sRaw, "\\");
+            string[] sCurrNodes = ExtString.Split(Environment.CurrentDirectory, "\\");
 
             //swap out point of divergence
             for (int i = 0; i < sOldNodes.Length; i++) {
@@ -83,7 +83,7 @@ namespace Nagru___Manga_Organizer
                 }
                 else sPath += sOldNodes[i] + "\\";
             }
-            sPath = sPath.Substring(0, sPath.Length - 1);
+            sPath = (sPath.Length > 0) ? sPath.Substring(0,  sPath.Length - 1) : null;
 
             return (Directory.Exists(sPath) || File.Exists(sPath))
                 ? sPath : null;
@@ -114,7 +114,8 @@ namespace Nagru___Manga_Organizer
 
         public static string[] Split(string sRaw, params string[] sFilter)
         {
-            return sRaw.Split(sFilter, StringSplitOptions.RemoveEmptyEntries);
+            return sRaw.Split(sFilter, StringSplitOptions.RemoveEmptyEntries)
+				.Select(x => x.Trim()).ToArray<string>();
         }
     }
 }

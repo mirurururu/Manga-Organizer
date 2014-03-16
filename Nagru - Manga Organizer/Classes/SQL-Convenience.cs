@@ -20,9 +20,10 @@ namespace Nagru___Manga_Organizer
 
 		#endregion
 
+		#region Connect Database
 		static csSQL()
 		{
-			DB_Connect();
+			//DB_Connect();
 		}
 
 		private static void DB_Connect()
@@ -59,6 +60,20 @@ namespace Nagru___Manga_Organizer
 				DB_Create();
 			}
 		}
+		
+		private static void DB_Close()
+		{
+			if (sqConn != null
+					&& sqConn.State != ConnectionState.Closed) {
+				sqConn.Close();
+			}
+		}
+
+		~csSQL() {
+			DB_Close();
+			sqConn.Dispose();
+		}
+		#endregion
 
 		#region Create Database
 		private static void DB_Create()
@@ -241,22 +256,38 @@ namespace Nagru___Manga_Organizer
 			return iRetVal;
 		}
 
-		public static string[] Entry_Summary(int iMangaID)
+		public static SQLiteDataReader Entries()
 		{
-			List<string> lDetails = new List<string>(10);
+			SQLiteCommand sqCmd = sqConn.CreateCommand();
+			sqCmd.CommandType = CommandType.Text;
+			sqCmd.CommandText = @"
+select
+	group_concat(at.Name)		Artist
+	,mgx.Title
+	,mgx.Pages
+	,group_concat(tg.Tag)		Tags
+	,mgx.PublishedDate
+	,typ.Type
+	,mgx.Rating
+	,mgx.MangaID
+from
+	[Manga] mgx
+left outer join
+	[Type] typ on typ.TypeID = mgx.TypeID
+left outer join
+	[MangaArtist] mga on mga.MangaID = mgx.MangaID
+left outer join
+	[Artist] at on at.ArtistID = mga.ArtistID
+left outer join
+	[MangaTag] mgt on mgt.MangaID = mgx.MangaID
+left outer join
+	[Tag] tg on tg.TagID = mgt.TagID
+group by at.Name, tg.Tag
+order by at.Name asc
+			";
 
-			using (SQLiteCommand sqCmd = sqConn.CreateCommand())
-			{
-				sqCmd.Parameters.Add(new SQLiteParameter("MangaID", DbType.Int32) { Value = iMangaID });
-				sqCmd.CommandType = CommandType.Text;
-				sqCmd.CommandText = @"";
-
-				lDetails.Add("");
-				using (SQLiteDataReader dr = sqCmd.ExecuteReader())
-				{
-				}
-			}
-			return new string[0];
+			SQLiteDataReader dr = sqCmd.ExecuteReader();
+			return dr;
 		}
 		#endregion
 
@@ -327,8 +358,6 @@ namespace Nagru___Manga_Organizer
 
 			for (int i = 0; i < asArtists.Length; i++)
 			{
-				if (string.IsNullOrEmpty(asArtists[i].ToString())) continue;
-
 				//add artist if it doesn't exist already
 				using (SQLiteCommand sqCmd = sqConn.CreateCommand())
 				{
@@ -387,12 +416,10 @@ namespace Nagru___Manga_Organizer
 
 			for (int i = 0; i < asTags.Length; i++)
 			{
-				if (string.IsNullOrEmpty(asTags[i].ToString())) continue;
-
 				//add tag if it doesn't exist already
 				using (SQLiteCommand sqCmd = sqConn.CreateCommand())
 				{
-					sqCmd.Parameters.Add(new SQLiteParameter("@tag", DbType.String) { Value =  asTags[i].Trim() });
+					sqCmd.Parameters.Add(new SQLiteParameter("@tag", DbType.String) { Value =  asTags[i] });
 					sqCmd.CommandType = CommandType.Text;
 					sqCmd.CommandText = @"
 					insert into [Tag](Tag)
@@ -482,7 +509,7 @@ namespace Nagru___Manga_Organizer
 				sqCmd.CommandText = @"
 				update [Manga]
 				set TypeID = @typeID, auditDBTime = CURRENT_DATE
-				where MangaID = @mangaID and TypeID != @typeID";
+				where MangaID = @mangaID and (TypeID is null or TypeID != @typeID)";
 				sqCmd.ExecuteNonQuery();
 			}
 		}
@@ -491,18 +518,5 @@ namespace Nagru___Manga_Organizer
 		{
 		}
 		#endregion
-
-		private static void DB_Close()
-		{
-			if (sqConn != null
-					&& sqConn.State != ConnectionState.Closed) {
-				sqConn.Close();
-			}
-		}
-
-		~csSQL() {
-			DB_Close();
-			sqConn.Dispose();
-		}
 	}
 }

@@ -75,10 +75,13 @@ namespace Nagru___Manga_Organizer
         private void TryScan()
         {
             if (!ExtDir.Restricted(TxBx_Loc.Text)) {
+                Cursor = Cursors.WaitCursor;
+
                 lFound.Clear();
                 LV_Found.Items.Clear();
                 LV_Found.ListViewItemSorter = null;
-                Cursor = Cursors.WaitCursor;
+                this.Text = "Scan";
+                
                 System.Threading.ThreadPool.QueueUserWorkItem(ScanDir, TxBx_Loc.Text);
             }
             else MessageBox.Show("Cannot read from the selected folder path.",
@@ -91,9 +94,9 @@ namespace Nagru___Manga_Organizer
             List<string> lEns = new List<string>();
             lEns.AddRange(ExtDir.GetFiles(obj as string, 
                 SearchOption.AllDirectories, "*.zip|*.cbz|*.rar|*.cbr|*.7z"));
-
+            
             try {
-                lEns.AddRange(Directory.GetDirectories(
+                lEns.AddRange(Directory.EnumerateDirectories(
                     obj as string, "*", SearchOption.AllDirectories));
             } catch (UnauthorizedAccessException ex) {
                 MessageBox.Show(ex.Message, Application.ProductName, 
@@ -101,7 +104,7 @@ namespace Nagru___Manga_Organizer
             } catch (ArgumentException) {
                 Console.WriteLine("An invalid object got passed through!\n");
             }
-            
+
             for (int i = 0; i < lEns.Count; i++) {
                 if (!hsPaths.Contains(lEns[i]))
                     BeginInvoke(new DelVoidEntry(AddItem),
@@ -130,7 +133,9 @@ namespace Nagru___Manga_Organizer
             }
             else LV_Found.Items.Add(lvi);
 
+            this.SuspendLayout();
             Text = "Scan: Found " + LV_Found.Items.Count + " possible entries";
+            this.ResumeLayout();
         }
 
         /* Signal finished scan */
@@ -259,7 +264,9 @@ namespace Nagru___Manga_Organizer
                 lFound.RemoveAt(lRm[i]);
             }
             UpdateLV();
-            delNewEntry.Invoke();
+
+            if(delNewEntry != null)
+                delNewEntry.Invoke();
         }
 
         /* Add or remove item from ignored list based on context */
@@ -299,7 +306,8 @@ namespace Nagru___Manga_Organizer
             lFound.Clear();
 
             //update main form
-            delDone.Invoke();
+            if(delDone != null)
+                delDone.Invoke();
         }
         #endregion
 
