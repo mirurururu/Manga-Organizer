@@ -1,3 +1,8 @@
+#### v. 4.3.36 (March 30, 2014)
+	- Added multi-monitor support to the built-in imageviewer
+	- Gallery type selections are now saved for searches
+	- Minor improvements to auto-file finding
+
 #### v. 4.3.33 (March 15, 2014)
 	- Bugfix for EH search when there are multiple results with the same title
 	- Newly added artists will now show up in future auto-completions without needing a reload

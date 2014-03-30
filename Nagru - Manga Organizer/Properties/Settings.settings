@@ -41,5 +41,8 @@
     <Setting Name="pass_hash" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="GalleryTypes" Type="System.String" Scope="User">
+      <Value Profile="(Default)">1,1,0,0,0,0,0,0,0,0</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

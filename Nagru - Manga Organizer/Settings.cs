@@ -54,6 +54,9 @@ namespace Nagru___Manga_Organizer
                 Btn_Save.FlatAppearance.BorderColor = Color.Red;
                 aTxBx_Save.Text = fbd.SelectedPath;
                 bNew = true;
+
+                if (aTxBx_Root.Text == string.Empty)
+                    aTxBx_Root.Text = fbd.SelectedPath;
             }
             fbd.Dispose();
         }
@@ -70,6 +73,9 @@ namespace Nagru___Manga_Organizer
                 Btn_Save.FlatAppearance.BorderColor = Color.Red;
                 aTxBx_Root.Text = fbd.SelectedPath;
                 bNew = true;
+
+                if (aTxBx_Save.Text == string.Empty)
+                    aTxBx_Save.Text = fbd.SelectedPath;
             }
             fbd.Dispose();
         }

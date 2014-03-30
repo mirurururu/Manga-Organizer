@@ -626,10 +626,8 @@ namespace Nagru___Manga_Organizer
         private void Btn_Loc_Click(object sender, EventArgs e)
         {
             //try to auto-magically grab folder\file path
-            string sPath = FindPath(TxBx_Loc.Text, CmbBx_Artist.Text, acTxBx_Title.Text);
-            if (sPath == null) sPath = FindPath(
-                TxBx_Loc.Text, CmbBx_Artist.Text, acTxBx_Title.Text, true);
-            if (sPath == null) sPath = Properties.Settings.Default.DefLoc;
+            string sPath = FindPath(TxBx_Loc.Text, CmbBx_Artist.Text, acTxBx_Title.Text)
+                ?? Properties.Settings.Default.DefLoc;
 
             ExtFolderBrowserDialog xfbd = new ExtFolderBrowserDialog();
             xfbd.ShowBothFilesAndFolders = true;
@@ -645,35 +643,7 @@ namespace Nagru___Manga_Organizer
             }
             xfbd.Dispose();
         }
-        private static string FindPath(
-            string sPath, string sArtist, string sTitle, bool bRecurse = false)
-        {
-            if (!File.Exists(sPath) && !Directory.Exists(sPath)) {
-                string sTemp = (!string.IsNullOrEmpty(sArtist)) ?
-                    string.Format("{0}\\[{1}] {2}", 
-                    (!string.IsNullOrEmpty(Properties.Settings.Default.DefLoc)) 
-                        ? Properties.Settings.Default.DefLoc : Environment.CurrentDirectory,
-                    sArtist, sTitle) : sTitle;
-                if (bRecurse) sPath = ExtString.RelativePath(sTemp);
-                else sPath = sTemp;
-
-                if (sPath != null && !Directory.Exists(sPath)) {
-                    if (File.Exists(sPath + ".zip"))
-                        sPath += ".zip";
-                    else if (File.Exists(sPath + ".cbz"))
-                        sPath += ".cbz";
-                    else if (File.Exists(sPath + ".rar"))
-                        sPath += ".rar";
-                    else if (File.Exists(sPath + ".cbr"))
-                        sPath += ".cbr";
-                    else if (File.Exists(sPath + ".7z"))
-                        sPath += ".7z";
-                    else sPath = null;
-                }
-            }
-            return sPath;
-        }
-
+        
         /* Open URL in default Browser  */
         private void frTxBx_Desc_LinkClicked(object sender, LinkClickedEventArgs e)
         { System.Diagnostics.Process.Start(e.LinkText); }
@@ -869,6 +839,38 @@ namespace Nagru___Manga_Organizer
                 LV_Entries.Items[i].BackColor = (i % 2 != 0) ?
                     Color.FromArgb(iLightGray) : SystemColors.Window;
             }
+        }
+
+        private static string FindPath(
+            string sPath, string sArtist, string sTitle)
+        {
+            if (!File.Exists(sPath) && !Directory.Exists(sPath))
+            {
+                sPath = (!string.IsNullOrEmpty(sArtist)) ?
+                    string.Format("{0}\\[{1}] {2}",
+                        (!string.IsNullOrEmpty(Properties.Settings.Default.DefLoc)) ? 
+                            Properties.Settings.Default.DefLoc : Environment.CurrentDirectory,
+                    sArtist, sTitle) : sTitle;
+
+                if (!Directory.Exists(sPath))
+                {
+                    if (File.Exists(sPath + ".zip"))
+                        sPath += ".zip";
+                    else if (File.Exists(sPath + ".cbz"))
+                        sPath += ".cbz";
+                    else if (File.Exists(sPath + ".rar"))
+                        sPath += ".rar";
+                    else if (File.Exists(sPath + ".cbr"))
+                        sPath += ".cbr";
+                    else if (File.Exists(sPath + ".7z"))
+                        sPath += ".7z";
+                    else sPath = ExtString.RelativePath(sPath);
+
+                    if (!Directory.Exists(sPath) && !File.Exists(sPath))
+                        sPath = null;
+                }
+            }
+            return sPath;
         }
 
         private void GetImage(Object obj)
@@ -1189,10 +1191,9 @@ namespace Nagru___Manga_Organizer
             Tb_View.ResumeLayout();
 
             //check for relativity
-            if(TxBx_Loc.Text != ""
-                && (!Directory.Exists(TxBx_Loc.Text)
-                    && !File.Exists(TxBx_Loc.Text))) {
-                string sResult = ExtString.RelativePath(TxBx_Loc.Text);
+            if(TxBx_Loc.Text != "")
+            {
+                string sResult = FindPath(TxBx_Loc.Text, CmbBx_Artist.Text, acTxBx_Title.Text);
                 if (sResult != null) TxBx_Loc.Text = sResult;
             }
         }

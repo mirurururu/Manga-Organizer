@@ -24,7 +24,7 @@ namespace Nagru___Manga_Organizer
             lvDetails.ListViewItemSorter = lvSortObj;
             delResults = DisplayResults;
             ResizeLV();
-
+            
             //remove active border on form acceptbutton
             this.AcceptButton.NotifyDefault(false);
 
@@ -33,6 +33,9 @@ namespace Nagru___Manga_Organizer
 
             //get system icon for help button
             tsbtnHelp.Image = SystemIcons.Information.ToBitmap();
+            for (int i = 0; i < csSearch.Options.Length; i++) {
+                (ddmGallery.DropDownItems[i] as ToolStripMenuItem).Checked = csSearch.Options[i];
+            }
             
             //input user credentials
             txbxPass.Text = Properties.Settings.Default.pass_hash;
@@ -145,6 +148,11 @@ namespace Nagru___Manga_Organizer
             }
 
             this.Close();
+        }
+        
+        private void Suggest_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            csSearch.SaveOptions();
         }
 
         #region listview methods

@@ -95,20 +95,10 @@ namespace Nagru___Manga_Organizer
 		{
 			hsURL = new List<string>();
 			hsTitle = new List<string>();
-
-			#region Gallery Options
-			bOpt = new byte[10] {
-                1,		//doujinshi
-                1,		//manga
-                0,		//artistCG
-                0,		//gameCG
-                0,		//western
-                0,		//non-h
-                0,		//imageSet
-                0,		//cosplay
-                0,		//asian
-                0		//misc
-            };
+            
+            #region Gallery Options
+            bOpt = Properties.Settings.Default.GalleryTypes
+                .Split(',').Select(x => byte.Parse(x)).ToArray();
 			#endregion
 		}
 
@@ -260,5 +250,11 @@ namespace Nagru___Manga_Organizer
 				}
 			}
 		}
+
+        public void SaveOptions()
+        {
+            Properties.Settings.Default.GalleryTypes =
+                string.Join(",", bOpt.Select(x => x.ToString()));
+        }
 	}
 }

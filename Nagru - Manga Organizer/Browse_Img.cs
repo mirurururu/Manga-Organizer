@@ -27,6 +27,8 @@ namespace Nagru___Manga_Organizer
 
         private void Browse_Load(object sender, EventArgs e)
         {
+            this.Location = Main.ActiveForm.Location;
+
             //Compensate for zip files being improperly sorted
             Files.Sort(new TrueCompare());
             if (Archive != null) {
@@ -45,14 +47,14 @@ namespace Nagru___Manga_Organizer
             trFlip.Tick += trFlip_Tick;
             trFlip.Interval = Properties.Settings.Default.Interval;
 
-            picBx.BackColor = Properties.Settings.Default.DefColour;
             #if !DEBUG
-                Cursor.Hide();
-                Bounds = Screen.PrimaryScreen.Bounds;
-                FormBorderStyle = FormBorderStyle.None;
-                WindowState = FormWindowState.Maximized;
+            Cursor.Hide();
+            Bounds = Screen.GetWorkingArea(this.picBx);
+            FormBorderStyle = FormBorderStyle.None;
+            WindowState = FormWindowState.Maximized;
             #endif
-
+            
+            picBx.BackColor = Properties.Settings.Default.DefColour;
             fWidth = (float)(Bounds.Width / 2.0);
             if (Page == -1) Next();
             else Prev();
@@ -234,7 +236,7 @@ namespace Nagru___Manga_Organizer
                 }
 
                 bmpTmp = new Bitmap(ms);
-                bmpTmp = ExtImage.Scale(new Bitmap(ms),
+                bmpTmp = ExtImage.Scale(bmpTmp,
                     (bmpTmp.Width > bmpTmp.Height) ?  picBx.Width:fWidth , picBx.Height);
             } catch (Exception Ex) {
                 Console.WriteLine(Ex.Message);
@@ -271,28 +273,28 @@ namespace Nagru___Manga_Organizer
             g.InterpolationMode = InterpolationMode.HighQualityBicubic;
 
             if (!bWideL && !bWideR) {
-                DrawImage_L(g, imgL);
-                DrawImage_R(g, imgR);
+                DrawImage_L(g);
+                DrawImage_R(g);
             }
             else if (bNext)
-                DrawImage_R(g, imgR);
-            else DrawImage_L(g, imgL);
+                DrawImage_R(g);
+            else DrawImage_L(g);
             picBx.ResumeLayout();
         }
 
-        private void DrawImage_L(Graphics g, Image img)
+        private void DrawImage_L(Graphics g)
         {
-            g.DrawImage(img,
-                (bWideL) ? (int)(fWidth - img.Width / 2.0) : fWidth - img.Width - 5,
-                (int)(picBx.Height / 2.0 - img.Height / 2.0),
-                img.Width, img.Height);
+            g.DrawImage(imgL,
+                (bWideL) ? (int)(fWidth - imgL.Width / 2.0) : fWidth - imgL.Width - 5,
+                (int)(picBx.Height / 2.0 - imgL.Height / 2.0),
+                imgL.Width, imgL.Height);
         }
-        private void DrawImage_R(Graphics g, Image img)
+        private void DrawImage_R(Graphics g)
         {
-            g.DrawImage(img,
-                (bWideR) ? (int)(fWidth - img.Width / 2.0) : fWidth + 5,
-                (int)(picBx.Height / 2.0 - img.Height / 2.0),
-                img.Width, img.Height);
+            g.DrawImage(imgR,
+                (bWideR) ? (int)(fWidth - imgR.Width / 2.0) : fWidth + 5,
+                (int)(picBx.Height / 2.0 - imgR.Height / 2.0),
+                imgR.Width, imgR.Height);
         }
 
         private void Browse_MouseUp(object sender, MouseEventArgs e)
