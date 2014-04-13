@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Windows.Forms.DataVisualization.Charting;
@@ -24,7 +25,7 @@ namespace Nagru___Manga_Organizer
         private void Stats_Load(object sender, EventArgs e)
         {
             lvStats.ListViewItemSorter = lvSortObj;
-            SwitchView(0);
+            SwitchView(1);
         }
         
         private void ChkBx_FavsOnly0_CheckedChanged(object sender, EventArgs e)
@@ -42,9 +43,10 @@ namespace Nagru___Manga_Organizer
             Controls["pnlView" + iView].BringToFront();
             ChkBx_FavsOnly.BringToFront();
 
-            //move button to new panel
-            if (iView == 1) BtnSwitch.Location = new System.Drawing.Point(82, 12);
-            else BtnSwitch.Location = new System.Drawing.Point(12, 41);
+            //change button position & title depending on the panel shown
+            BtnSwitch.Location = (iView == 1) ? new Point(82, 12) : new Point(12, 41);
+            BtnSwitch.Text = (iView == 1) ? "Chart" : "List";
+
             BtnSwitch.Parent = Controls["pnlView" + iView];
             Controls["pnlView" + iView].BringToFront();
             BtnSwitch.BringToFront();
@@ -76,13 +78,13 @@ namespace Nagru___Manga_Organizer
             if (iPanel == 0) {
                 //purge minority tags
                 SortedDictionary<string, ushort> dtPie = new SortedDictionary<string, ushort>();
-                dtPie.Add("_Other_", 0);
+                dtPie.Add("_MO_Other_", 0);
                 foreach (KeyValuePair<string, ushort> kvpItem in dtTags) {
-                    if ((kvpItem.Value * 1.0 / iCount) < 0.025)
-                        dtPie["_Other_"] += kvpItem.Value;
+                    if ((kvpItem.Value * 1.0 / iCount) < 0.05)
+                        dtPie["_MO_Other_"] += kvpItem.Value;
                     else dtPie.Add(kvpItem.Key, kvpItem.Value);
                 }
-                dtPie.Remove("_Other_");
+                dtPie.Remove("_MO_Other_");
 
                 //send tag data to pie chart
                 chtTags.Series[0].Points.Clear();

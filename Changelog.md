@@ -1,3 +1,6 @@
+#### v. 4.4.36 (April 13, 2014)
+	- Added image previews to the built-in imageviewer's page-browser (press 'f')
+	
 #### v. 4.3.36 (March 30, 2014)
 	- Added multi-monitor support to the built-in imageviewer
 	- Gallery type selections are now saved for searches

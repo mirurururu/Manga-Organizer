@@ -24,7 +24,7 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using SCA = SharpCompress.Archive;
-using System.Data.SQLite;
+//using System.Data.SQLite;
 //using Finisar.SQLite;
 
 namespace Nagru___Manga_Organizer
@@ -348,9 +348,9 @@ namespace Nagru___Manga_Organizer
 			/*else if (ExtString.Equals(args.Name, "SQLite.NET, Version=0.21.1869.3794, "
 				+ "Culture=neutral, PublicKeyToken=c273bd375e695f9c"))
 				asm = (AppDomain.CurrentDomain).Load(Properties.Resources.SQLite_NET);*/
-			else if (ExtString.Equals(args.Name, "System.Data.SQLite, Version=1.0.90.0, "
+			/*else if (ExtString.Equals(args.Name, "System.Data.SQLite, Version=1.0.90.0, "
 				+ "Culture=neutral, PublicKeyToken=db937bc2d44ff139"))
-				asm = (AppDomain.CurrentDomain).Load(Properties.Resources.System_Data_SQLite);
+				asm = (AppDomain.CurrentDomain).Load(Properties.Resources.System_Data_SQLite);*/
             return asm;
         }
 
@@ -382,22 +382,22 @@ namespace Nagru___Manga_Organizer
             LV_Entries.Select();
 
             //Load DB and run tutorial
-			#if !DEBUG
 			if (!ConvertCruft()
 					&& Properties.Settings.Default.FirstRun) {
+                #if !DEBUG
                 //Run tutorial on first execution
                 Properties.Settings.Default.FirstRun = false;
                 Properties.Settings.Default.Save();
-
+                
                 Tutorial fmTut = new Tutorial();
                 fmTut.ShowDialog();
                 fmTut.Dispose();
+                #endif
 
                 //set runtime sensitive default locations
                 Properties.Settings.Default.SavLoc = Environment.CurrentDirectory;
                 Properties.Settings.Default.DefLoc = Environment.CurrentDirectory;
             }
-			#endif
         }
 
 		private bool ConvertCruft()

@@ -10,20 +10,17 @@ namespace Nagru___Manga_Organizer
 {
     public partial class BrowseTo : Form
     {
-        public Dictionary<int, int> dtSort = new Dictionary<int, int>();
-        public List<string> lFiles { private get; set; }
-        public SCA.IArchiveEntry[] Archive { get; set; }
-        public Rectangle rScale { private get; set; }
-        public Image imgL { get; private set; }
-        public Image imgR { get; private set; }
-        public bool bWL { get; private set;}
-        public bool bWR { get; private set; }
         public int iPage { get; set; }
+
+        Browse_Img fmSource = null;
+        bool bWideR, bWideL;
+        float fWidth;
         
-        public BrowseTo()
+        public BrowseTo(Browse_Img fm)
         {
             InitializeComponent();
             this.DialogResult = DialogResult.Abort;
+            fmSource = fm;
         }
 
         private void Browse_GoTo_Load(object sender, EventArgs e)
@@ -33,19 +30,27 @@ namespace Nagru___Manga_Organizer
                 LV_Pages.GridLines = true;
             
             //add pages to listview
-            for (int i = 0; i < lFiles.Count; i++) {
+            for (int i = 0; i < fmSource.Files.Count; i++) {
                 LV_Pages.Items.Add(new ListViewItem(
-                    Path.GetFileName(lFiles[i])));
+                    Path.GetFileName(fmSource.Files[i])));
             }
+            
+            if (iPage < 0) iPage = 0;
             Col_Page.Width = LV_Pages.DisplayRectangle.Width;
             LV_SelectPages();
 
-            //wrap page values & select pages
-            if (iPage < 0) iPage = lFiles.Count - 1;
-            if (LV_Pages.Items.Count == 0) return;
+            //set width of half-picbx
+            fWidth = (float)(picbxPreview.Bounds.Width / 2.0);
+
+            //show selected pages topmost
             LV_Pages.TopItem = LV_Pages.Items[iPage];
             LV_Pages.TopItem = LV_Pages.Items[iPage];
             LV_Pages.TopItem = LV_Pages.Items[iPage];
+        }
+
+        private void BrowseTo_Shown(object sender, EventArgs e)
+        {
+            Next(iPage);
         }
 
         private void LV_Pages_Resize(object sender, EventArgs e)
@@ -62,10 +67,13 @@ namespace Nagru___Manga_Organizer
             int iNext = iPage + 1;
             if (iNext > LV_Pages.Items.Count - 1) iNext = 0;
 
+            LV_Pages.BeginUpdate();
             LV_Pages.SelectedItems.Clear();
             LV_Pages.FocusedItem = LV_Pages.Items[iPage];
             LV_Pages.Items[iPage].Selected = true;
             LV_Pages.Items[iNext].Selected = true;
+            LV_Pages.EndUpdate();
+            Next(iPage);
         }
 
         private void BrowseTo_KeyDown(object sender, KeyEventArgs e)
@@ -87,48 +95,68 @@ namespace Nagru___Manga_Organizer
         /* Return selected pages to Browse_Img */
         private void UpdatePage()
         {
-            byte by = 0;
-            iPage--;
-
-            do {
-                by++;
-                if (++iPage >= lFiles.Count) iPage = 0;
-                imgR = TrySet(iPage);
-            } while (imgR == null && by < 10);
-
-            if (!(bWR = imgR.Height < imgR.Width)) {
-                by = 0;
-                do {
-                    by++;
-                    if (++iPage >= lFiles.Count) iPage = 0;
-                    imgL = TrySet(iPage);
-                } while (imgL == null && by < 10);
-
-                if (bWL = imgL.Height < imgL.Width)
-                    iPage--;
-            }
-
             this.DialogResult = DialogResult.OK;
             this.Close();
         }
 
+        #region SetImagePreview
+        
+        private void BrowseTo_ResizeEnd(object sender, EventArgs e)
+        {
+            //re-calculate width of half-picbx
+            fWidth = (float)(picbxPreview.Bounds.Width / 2.0);
+
+            Next(iPage);
+        }
+
+        private void Next(int Page)
+        {
+            Image imgL = null, imgR = null;
+            byte by = 0;
+            Page--;
+
+            do {
+                by++;
+                if (++Page >= fmSource.Files.Count) Page = 0;
+                imgR = TrySet(Page);
+            } while (imgR == null && by < 10);
+
+            if (!(bWideR = imgR.Height < imgR.Width)) {
+                by = 0;
+                do
+                {
+                    by++;
+                    if (++Page >= fmSource.Files.Count) Page = 0;
+                    imgL = TrySet(Page);
+                } while (imgL == null && by < 10);
+
+                if (bWideL = imgL.Height < imgL.Width)
+                    Page--;
+            }
+            Refresh(imgL, imgR);
+
+            if (imgL != null) imgL.Dispose();
+            if (imgR != null) imgR.Dispose();
+        }
+        
         private Bitmap TrySet(int i)
         {
             Bitmap bmpTmp = null;
             MemoryStream ms = new MemoryStream();
 
             try {
-                if (Archive != null) {
-                    Archive[dtSort[i]].WriteTo(ms);
+                if (fmSource.Archive != null) {
+                    fmSource.Archive[fmSource.Sort[i]].WriteTo(ms);
                 } else {
-                    FileStream fs = new FileStream(lFiles[i], FileMode.Open);
+                    FileStream fs = new FileStream(fmSource.Files[i], FileMode.Open);
                     fs.CopyTo(ms);
                     fs.Dispose();
                 }
 
                 bmpTmp = new Bitmap(ms);
                 bmpTmp = ExtImage.Scale(bmpTmp,
-                    (bmpTmp.Width > bmpTmp.Height) ? rScale.Width : rScale.X, rScale.Height);
+                    (bmpTmp.Width > bmpTmp.Height) ? picbxPreview.Bounds.Width : fWidth
+                    , picbxPreview.Bounds.Height);
             } catch (Exception Ex) {
                 Console.WriteLine(Ex.Message);
             } finally {
@@ -138,10 +166,37 @@ namespace Nagru___Manga_Organizer
             return bmpTmp;
         }
 
-        ~BrowseTo()
+        /* Process which images to draw & how */
+        private void Refresh(Image imgL, Image imgR)
         {
-            if (imgL != null) imgL.Dispose();
-            if (imgR != null) imgR.Dispose();
+            picbxPreview.Refresh();
+
+            picbxPreview.SuspendLayout();
+            Graphics g = picbxPreview.CreateGraphics();
+            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+
+            if (!bWideL && !bWideR) {
+                DrawImage_L(g, imgL);
+                DrawImage_R(g, imgR);
+            }
+            else DrawImage_R(g, imgR);
+            picbxPreview.ResumeLayout();
         }
+
+        private void DrawImage_L(Graphics g, Image imgL)
+        {
+            g.DrawImage(imgL,
+                (bWideL) ? (int)(fWidth - imgL.Width / 2.0) : fWidth - imgL.Width - 5,
+                (int)(picbxPreview.Height / 2.0 - imgL.Height / 2.0),
+                imgL.Width, imgL.Height);
+        }
+        private void DrawImage_R(Graphics g, Image imgR)
+        {
+            g.DrawImage(imgR,
+                (bWideR) ? (int)(fWidth - imgR.Width / 2.0) : fWidth + 5,
+                (int)(picbxPreview.Height / 2.0 - imgR.Height / 2.0),
+                imgR.Width, imgR.Height);
+        }
+        #endregion
     }
 }

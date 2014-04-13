@@ -41,7 +41,6 @@
             this.picBx.Size = new System.Drawing.Size(784, 562);
             this.picBx.TabIndex = 1;
             this.picBx.TabStop = false;
-            this.picBx.Paint += new System.Windows.Forms.PaintEventHandler(this.picBx_Paint);
             this.picBx.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Browse_MouseUp);
             // 
             // Browse_Img
@@ -60,6 +59,7 @@
             this.Text = "Browse";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Browse_FormClosing);
             this.Load += new System.EventHandler(this.Browse_Load);
+            this.Shown += new System.EventHandler(this.Browse_Shown);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Browse_KeyDown);
             this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Browse_MouseUp);
             ((System.ComponentModel.ISupportInitialize)(this.picBx)).EndInit();

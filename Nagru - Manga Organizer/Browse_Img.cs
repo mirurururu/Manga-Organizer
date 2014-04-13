@@ -15,7 +15,7 @@ namespace Nagru___Manga_Organizer
         public SCA.IArchiveEntry[] Archive { get; set; }
         public int Page { get; set; }
 
-        Image imgR, imgL;
+        //Image imgR, imgL;
         bool bWideL, bWideR, bNext;
         float fWidth;
 
@@ -41,7 +41,7 @@ namespace Nagru___Manga_Organizer
                     }
                 }
             }
-            
+
             //set up timer
             trFlip = new Timer();
             trFlip.Tick += trFlip_Tick;
@@ -56,6 +56,11 @@ namespace Nagru___Manga_Organizer
             
             picBx.BackColor = Properties.Settings.Default.DefColour;
             fWidth = (float)(Bounds.Width / 2.0);
+            
+        }
+
+        private void Browse_Shown(object sender, EventArgs e)
+        {
             if (Page == -1) Next();
             else Prev();
         }
@@ -112,24 +117,14 @@ namespace Nagru___Manga_Organizer
                 case Keys.F:
                     if (bAuto) trFlip.Stop();
                     Cursor.Show();
-                    BrowseTo fmGoTo = new BrowseTo();
-                    fmGoTo.rScale = new Rectangle((int)fWidth, 0,
-                         picBx.Width, picBx.Height);
-                    fmGoTo.Archive = Archive;
-                    fmGoTo.lFiles = Files;
-                    fmGoTo.dtSort = Sort;
+                    BrowseTo fmGoTo = new BrowseTo(this);
                     fmGoTo.iPage = (bWideR || bWideL) ? 
                         Page : Page - 1;
 
                     if (fmGoTo.ShowDialog() == DialogResult.OK) {
                         bNext = true;
-                        Page = fmGoTo.iPage;
-                        bWideL = fmGoTo.bWL;
-                        bWideR = fmGoTo.bWR;
-                        imgR = (fmGoTo.imgR.Clone() as Bitmap);
-                        imgL = (fmGoTo.imgL != null) ? 
-                            (fmGoTo.imgL.Clone() as Bitmap) : null;
-                        picBx.Refresh();
+                        Page = fmGoTo.iPage - 1;
+                        Next();
                     }
 
                     fmGoTo.Dispose();
@@ -169,9 +164,9 @@ namespace Nagru___Manga_Organizer
 
         private void Next()
         {
+            Image imgL = null, imgR = null;
             byte by = 0;
-            bNext = true;
-            Reset();
+            Reset(true);
 
             do {
                 by++;
@@ -179,7 +174,7 @@ namespace Nagru___Manga_Organizer
                 imgR = TrySet(Page);
             } while (imgR == null && by < 10);
 
-            if (!(bWideR = imgR.Height < imgR.Width)) {
+            if (imgR == null || !(bWideR = imgR.Height < imgR.Width)) {
                 by = 0;
                 do {
                     by++;
@@ -187,18 +182,21 @@ namespace Nagru___Manga_Organizer
                     imgL = TrySet(Page);
                 } while (imgL == null && by < 10);
 
-                if (bWideL = imgL.Height < imgL.Width)
+                if (imgL != null && (bWideL = imgL.Height < imgL.Width))
                     Page--;
             }
-            picBx.Refresh();
+
+            Refresh(imgL, imgR);
+            if (imgL != null) imgL.Dispose();
+            if (imgR != null) imgR.Dispose();
         }
 
         private void Prev()
         {
             if (Page != 0 && !(bWideR || bWideL)) Page--;
+            Image imgL = null, imgR = null;
             byte by = 0;
-            bNext = false;
-            Reset();
+            Reset(false);
 
             do {
                 by++;
@@ -207,7 +205,7 @@ namespace Nagru___Manga_Organizer
                 imgL = TrySet(Page);
             } while (imgL == null && by < 10);
 
-            if (!(bWideL = imgL.Height < imgL.Width)) {
+            if (imgL == null || !(bWideL = imgL.Height < imgL.Width)) {
                 by = 0;
                 do {
                     by++;
@@ -216,9 +214,12 @@ namespace Nagru___Manga_Organizer
                 } while (imgR == null && by < 10);
                 
                 Page++;
-                bWideR = imgR.Height < imgR.Width;
+                bWideR = (imgR != null) ? imgR.Height < imgR.Width : false;
             }
-            picBx.Refresh();
+
+            Refresh(imgL, imgR);
+            if (imgL != null) imgL.Dispose();
+            if (imgR != null) imgR.Dispose();
         }
 
         private Bitmap TrySet(int i)
@@ -237,9 +238,10 @@ namespace Nagru___Manga_Organizer
 
                 bmpTmp = new Bitmap(ms);
                 bmpTmp = ExtImage.Scale(bmpTmp,
-                    (bmpTmp.Width > bmpTmp.Height) ?  picBx.Width:fWidth , picBx.Height);
-            } catch (Exception Ex) {
-                Console.WriteLine(Ex.Message);
+                    (bmpTmp.Width > bmpTmp.Height) ?  picBx.Width : fWidth 
+                    ,picBx.Height);
+            } catch (Exception ex) {
+                Console.WriteLine(ex.Message);
             } finally {
                 ms.Dispose();
             }
@@ -247,13 +249,12 @@ namespace Nagru___Manga_Organizer
             return bmpTmp;
         }
 
-        private void Reset()
+        private void Reset(bool bSet)
         {
             if (bAuto) Tmr_Reset();
             bWideL = false;
             bWideR = false;
-            imgL = null;
-            imgR = null;
+            bNext = bSet;
             GC.Collect(0);
         }
         private void Tmr_Reset()
@@ -266,31 +267,36 @@ namespace Nagru___Manga_Organizer
         { Next(); }
 
         /* Process which images to draw & how */
-        private void picBx_Paint(object sender, PaintEventArgs e)
+        private void Refresh(Image imgL, Image imgR)
         {
+            picBx.Refresh();
+
             picBx.SuspendLayout();
-            Graphics g = e.Graphics;
+            Graphics g = picBx.CreateGraphics();
             g.InterpolationMode = InterpolationMode.HighQualityBicubic;
 
-            if (!bWideL && !bWideR) {
-                DrawImage_L(g);
-                DrawImage_R(g);
+            if (!bWideL && !bWideR)
+            {
+                DrawImage_L(g, imgL);
+                DrawImage_R(g, imgR);
             }
             else if (bNext)
-                DrawImage_R(g);
-            else DrawImage_L(g);
+                DrawImage_R(g, imgR);
+            else DrawImage_L(g, imgL);
             picBx.ResumeLayout();
         }
 
-        private void DrawImage_L(Graphics g)
+        private void DrawImage_L(Graphics g, Image imgL)
         {
+            if (imgL == null) return;
             g.DrawImage(imgL,
                 (bWideL) ? (int)(fWidth - imgL.Width / 2.0) : fWidth - imgL.Width - 5,
                 (int)(picBx.Height / 2.0 - imgL.Height / 2.0),
                 imgL.Width, imgL.Height);
         }
-        private void DrawImage_R(Graphics g)
+        private void DrawImage_R(Graphics g, Image imgR)
         {
+            if (imgR == null) return;
             g.DrawImage(imgR,
                 (bWideR) ? (int)(fWidth - imgR.Width / 2.0) : fWidth + 5,
                 (int)(picBx.Height / 2.0 - imgR.Height / 2.0),
@@ -314,9 +320,9 @@ namespace Nagru___Manga_Organizer
 
         ~Browse_Img()
         {
-            if (imgL != null) imgL.Dispose();
-            if (imgR != null) imgR.Dispose();
-            if (trFlip != null) trFlip.Dispose();
+            if (trFlip != null) {
+                trFlip.Dispose();
+            }
         }
     }
 }
