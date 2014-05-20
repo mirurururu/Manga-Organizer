@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Tutorial));
             this.pnl0 = new System.Windows.Forms.Panel();
             this.lbl_Exp0 = new System.Windows.Forms.Label();
             this.lblTitle_p0 = new System.Windows.Forms.Label();
@@ -68,7 +67,7 @@
             this.lbl_Exp0.Name = "lbl_Exp0";
             this.lbl_Exp0.Size = new System.Drawing.Size(327, 279);
             this.lbl_Exp0.TabIndex = 0;
-            this.lbl_Exp0.Text = resources.GetString("lbl_Exp0.Text");
+            this.lbl_Exp0.Text = "Mea ad iriure oportere urbanitas.";
             this.lbl_Exp0.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblTitle_p0
@@ -98,7 +97,7 @@
             this.lbl_Exp1.Name = "lbl_Exp1";
             this.lbl_Exp1.Size = new System.Drawing.Size(327, 279);
             this.lbl_Exp1.TabIndex = 1;
-            this.lbl_Exp1.Text = resources.GetString("lbl_Exp1.Text");
+            this.lbl_Exp1.Text = "Ea mea eirmod appellantur, nulla luptatum ad usu.";
             this.lbl_Exp1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // pnl2
@@ -117,7 +116,7 @@
             this.lbl_Exp2.Name = "lbl_Exp2";
             this.lbl_Exp2.Size = new System.Drawing.Size(327, 279);
             this.lbl_Exp2.TabIndex = 1;
-            this.lbl_Exp2.Text = resources.GetString("lbl_Exp2.Text");
+            this.lbl_Exp2.Text = "In solum graece vim, partem oportere ex mea.";
             this.lbl_Exp2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // pnl3
@@ -136,7 +135,8 @@
             this.lbl_Exp3.Name = "lbl_Exp3";
             this.lbl_Exp3.Size = new System.Drawing.Size(327, 279);
             this.lbl_Exp3.TabIndex = 1;
-            this.lbl_Exp3.Text = resources.GetString("lbl_Exp3.Text");
+            this.lbl_Exp3.Text = "Ea qui quod offendit. Sea in paulo legendos rationibus. Ius ei viris epicuri, quo" +
+    " ad sale sadipscing.";
             this.lbl_Exp3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // pnl4
@@ -155,7 +155,8 @@
             this.lbl_Exp4.Name = "lbl_Exp4";
             this.lbl_Exp4.Size = new System.Drawing.Size(327, 279);
             this.lbl_Exp4.TabIndex = 1;
-            this.lbl_Exp4.Text = resources.GetString("lbl_Exp4.Text");
+            this.lbl_Exp4.Text = "Corrumpit adversarium ut qui. Falli delicata iracundia usu no, graecis deleniti s" +
+    "caevola cum id.";
             this.lbl_Exp4.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // btnPrev

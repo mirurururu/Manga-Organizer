@@ -75,6 +75,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Resources\System.Data.SQLite.dll</HintPath>
       <Private>True</Private>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -114,7 +115,8 @@
     <Compile Include="Classes\FixedRichTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Classes\SQL-Convenience.cs" />
+    <Compile Include="Classes\SQL-DAL.cs" />
+    <Compile Include="Classes\SQL.cs" />
     <Compile Include="Classes\ListViewNF.cs">
       <SubType>Component</SubType>
     </Compile>

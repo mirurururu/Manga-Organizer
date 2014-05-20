@@ -1,10 +1,14 @@
 ﻿
+/*
 -- Create Table: Artist
 -------------------------------------------
 create table [Artist]
 (
-	ArtistID	integer			primary key		autoincrement
-	,Name		nvarchar(100)	not null		unique
+	ArtistID				integer			primary key		autoincrement
+	,Name						text				not null			unique
+	,Psuedonym			text				null
+	,CreatedDBTime	text				not null			default CURRENT_TIMESTAMP
+	,AuditDBTime		text				not null			default CURRENT_TIMESTAMP
 )
 
 
@@ -12,16 +16,21 @@ create table [Artist]
 -------------------------------------------
 create table [Tag]
 (
-	TagID		integer			primary key		autoincrement
-	,Tag		nvarchar(100)	not null		unique
+	TagID						integer			primary key		autoincrement
+	,Tag						text				not null			unique
+	,CreatedDBTime	text				not null			default CURRENT_TIMESTAMP
+	,AuditDBTime		text				not null			default CURRENT_TIMESTAMP
 )
 
 
 -- Create Table: Type
+-------------------------------------------
 create table [Type]
 (
-	TypeID		integer			primary key		autoincrement
-	,Type		nvarchar(100)	not null		unique
+	TypeID					integer		primary key		autoincrement
+	,Type						text			not null			unique
+	,CreatedDBTime	text			not null			default CURRENT_TIMESTAMP
+	,AuditDBTime		text			not null			default CURRENT_TIMESTAMP
 )
 
 
@@ -29,9 +38,11 @@ create table [Type]
 -------------------------------------------
 create table [MangaArtist]
 (
-	MangaArtistID	integer		primary key		autoincrement
-	,MangaID		int			not null
-	,ArtistID		int			not null
+	MangaArtistID		integer		primary key		autoincrement
+	,MangaID				integer		not null
+	,ArtistID				integer		not null
+	,CreatedDBTime	text			not null		default CURRENT_TIMESTAMP
+	,AuditDBTime		text			not null		default CURRENT_TIMESTAMP
 	,constraint [fk_mangaID] foreign key ([MangaID]) references [Manga] ([MangaID])
 	,constraint [fk_artistID] foreign key ([ArtistID]) references [Artist] ([ArtistID])
 )
@@ -41,9 +52,11 @@ create table [MangaArtist]
 -------------------------------------------
 create table [MangaTag]
 (
-	MangaTagID		integer		primary key		autoincrement
-	,MangaID		int			not null
-	,TagID			int			not null
+	MangaTagID			integer		primary key		autoincrement
+	,MangaID				integer		not null
+	,TagID					integer		not null
+	,CreatedDBTime	text			not null		default CURRENT_TIMESTAMP
+	,AuditDBTime		text			not null		default CURRENT_TIMESTAMP
 	,constraint [fk_mangaID] foreign key ([MangaID]) references [Manga] ([MangaID])
 	,constraint [fk_tagID] foreign key ([TagID]) references [Tag] ([TagID])
 )
@@ -53,16 +66,17 @@ create table [MangaTag]
 -------------------------------------------
 create table [Manga]
 (
-	MangaID			integer			primary key		autoincrement
-	,TypeID			int				null
-	,Title			nvarchar(250)	not null		unique
-	,Pages			int				not null
-	,Rating			decimal(1,1)	not null
-	,Description	nvarchar(4000)	null
-	,Location		nvarchar(260)	null			-- MAX_PATH Windows API value
-	,GalleryURL		nvarchar(40)	null
-	,PublishedDate	date			null
-	,CreatedDBTime	datetime		not null		default CURRENT_DATE
-	,AuditDBTime	datetime		not null		default CURRENT_DATE
+	MangaID					integer			primary key		autoincrement
+	,TypeID					integer			null
+	,Title					text				not null
+	,Pages					integer			not null			default		0
+	,Rating					numeric			not null			default		0
+	,Description		text				null
+	,Location				text				null
+	,GalleryURL			text				null
+	,PublishedDate	text				null
+	,CreatedDBTime	text				not null			default CURRENT_TIMESTAMP
+	,AuditDBTime		text				not null			default CURRENT_TIMESTAMP
 	,constraint [fk_typeID] foreign key ([TypeID]) references [Type] ([TypeID])
 )
+*/

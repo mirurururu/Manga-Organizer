@@ -13,46 +13,58 @@ namespace Nagru___Manga_Organizer
 	{
 		#region Interface
 		//returns searched URL
-		public string SearchURL {
-			get {
+		public string SearchURL
+		{
+			get
+			{
 				return sSearchURL;
 			}
 		}
 
 		//returns current result page
-		public int CurrentPage {
-			get {
+		public int CurrentPage
+		{
+			get
+			{
 				return iCurrentPage + 1;
 			}
 		}
 
 		//returns number of result pages
-		public int Pages {
-			get {
+		public int Pages
+		{
+			get
+			{
 				return iPages + 1;
 			}
 		}
 
 		//returns number of sets
-		public int Count {
-			get {
+		public int Count
+		{
+			get
+			{
 				return hsURL.Count;
 			}
 		}
 
 		//returns URL element
-		public string URL(int i) {
+		public string URL(int i)
+		{
 			return hsURL.ElementAt(i);
 		}
 
 		//returns Title element
-		public string Title(int i) {
+		public string Title(int i)
+		{
 			return hsTitle.ElementAt(i);
 		}
 
 		//set gallery type search options
-		public bool[] Options {
-			get {
+		public bool[] Options
+		{
+			get
+			{
 				return new bool[10] {
                     (bOpt[0] == 1), (bOpt[1] == 1),
                     (bOpt[2] == 1), (bOpt[3] == 1),
@@ -61,7 +73,8 @@ namespace Nagru___Manga_Organizer
                     (bOpt[8] == 1), (bOpt[9] == 1),
                 };
 			}
-			set {
+			set
+			{
 				if (value.Length != 10) {
 					throw new ArgumentOutOfRangeException();
 				}
@@ -77,8 +90,12 @@ namespace Nagru___Manga_Organizer
 		}
 
 		//returns error state
-		public bool Error {
-			get { return bConnError; }
+		public bool Error
+		{
+			get
+			{
+				return bConnError;
+			}
 		}
 		#endregion
 
@@ -95,10 +112,10 @@ namespace Nagru___Manga_Organizer
 		{
 			hsURL = new List<string>();
 			hsTitle = new List<string>();
-            
-            #region Gallery Options
-            bOpt = Properties.Settings.Default.GalleryTypes
-                .Split(',').Select(x => byte.Parse(x)).ToArray();
+
+			#region Gallery Options
+			bOpt = Properties.Settings.Default.GalleryTypes
+					.Split(',').Select(x => byte.Parse(x)).ToArray();
 			#endregion
 		}
 
@@ -150,14 +167,12 @@ namespace Nagru___Manga_Organizer
 
 			try {
 				//send formatted request to EH API
-				using (Stream s = rq.GetRequestStream()) 
-				{
+				using (Stream s = rq.GetRequestStream()) {
 					byte[] byContent = Encoding.ASCII.GetBytes(JSON(sAddress));
 					s.Write(byContent, 0, byContent.Length);
 				}
 				using (StreamReader sr = new StreamReader((
-					(HttpWebResponse)rq.GetResponse()).GetResponseStream()))
-				{
+					(HttpWebResponse)rq.GetResponse()).GetResponseStream())) {
 					asResp = ExtString.Split(sr.ReadToEnd(), "\",\"");
 					rq.Abort();
 				}
@@ -167,8 +182,7 @@ namespace Nagru___Manga_Organizer
 			}
 
 			//parse returned string
-			if (!bExc && asResp.Length >= 11)
-			{
+			if (!bExc && asResp.Length >= 11) {
 				asParse[0] = ExtString.HTMLConvertToPlainText(
 					asResp[2].Split(':')[1].Substring(1));         //set artist/title
 				asParse[1] = asResp[4].Split(':')[1].Substring(1); //set entry type
@@ -183,7 +197,8 @@ namespace Nagru___Manga_Organizer
 				asParse[5] = string.Join(", ", asResp, iPreTag, asResp.Length - iPreTag);
 				return asParse;
 			}
-			else return new string[0];
+			else
+				return new string[0];
 		}
 
 		public void Search(string sRaw)
@@ -218,8 +233,7 @@ namespace Nagru___Manga_Organizer
 			try {
 				//get webpage
 				using (StreamReader sr = new StreamReader(((HttpWebResponse)
-						rq.GetResponse()).GetResponseStream()))
-				{
+						rq.GetResponse()).GetResponseStream())) {
 					sPage = sr.ReadToEnd();
 				}
 				rq.Abort();
@@ -229,8 +243,7 @@ namespace Nagru___Manga_Organizer
 			}
 
 			//find all gallery results
-			if (!bConnError && !string.IsNullOrEmpty(sPage))
-			{
+			if (!bConnError && !string.IsNullOrEmpty(sPage)) {
 				string sRegexGallery = ".*http://(ex|g.e-)hentai.org/g/[0-9]{6}/[a-zA-z0-9]{10}/.*"
 					+ "onmouseover=.* onmouseout=.*";
 				//string sRegexPage = "td onclick=\"sp\\([0-9]*\\)\">";
@@ -240,8 +253,7 @@ namespace Nagru___Manga_Organizer
 				string[] asplit = sPage.Split('<');
 				for (int i = 0; i < asplit.Length; i++) {
 					if (asplit[i].Length >= iMinGallery
-							&& Regex.IsMatch(asplit[i], sRegexGallery))
-					{
+							&& Regex.IsMatch(asplit[i], sRegexGallery)) {
 						this.Add(
 							asplit[i].Split('"')[1],
 							asplit[i].Split('>')[1].Split('<')[0]
@@ -251,10 +263,10 @@ namespace Nagru___Manga_Organizer
 			}
 		}
 
-        public void SaveOptions()
-        {
-            Properties.Settings.Default.GalleryTypes =
-                string.Join(",", bOpt.Select(x => x.ToString()));
-        }
+		public void SaveOptions()
+		{
+			Properties.Settings.Default.GalleryTypes =
+					string.Join(",", bOpt.Select(x => x.ToString()));
+		}
 	}
 }

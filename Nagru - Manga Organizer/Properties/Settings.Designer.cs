@@ -194,5 +194,23 @@ namespace Nagru___Manga_Organizer.Properties {
                 this["GalleryTypes"] = value;
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("-15")]
+        public int RowColorHighlight {
+            get {
+                return ((int)(this["RowColorHighlight"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("-657931")]
+        public int RowColorAlt {
+            get {
+                return ((int)(this["RowColorAlt"]));
+            }
+        }
     }
 }

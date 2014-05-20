@@ -44,5 +44,11 @@
     <Setting Name="GalleryTypes" Type="System.String" Scope="User">
       <Value Profile="(Default)">1,1,0,0,0,0,0,0,0,0</Value>
     </Setting>
+    <Setting Name="RowColorHighlight" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">-15</Value>
+    </Setting>
+    <Setting Name="RowColorAlt" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">-657931</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
