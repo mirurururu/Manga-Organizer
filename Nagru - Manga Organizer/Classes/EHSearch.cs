@@ -125,6 +125,12 @@ namespace Nagru___Manga_Organizer
 			hsTitle.Add(ExtString.HTMLConvertToPlainText(sTitle));
 		}
 
+		public void Clear()
+		{
+			hsURL.Clear();
+			hsTitle.Clear();
+		}
+
 		private static string FormatSearch(string sRaw, string sSite, byte[] byOpt)
 		{
 			return string.Format("http://{0}.org/?f_doujinshi={1}&f_manga={2}&f_artistcg={3}"
@@ -203,6 +209,12 @@ namespace Nagru___Manga_Organizer
 
 		public void Search(string sRaw)
 		{
+			this.Clear();
+
+			//exit if there (probably) isn't an internet connection
+			if (!System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable())
+				return;
+
 			string sPage = "";
 
 			//determine if exhentai can be called

@@ -52,6 +52,12 @@ namespace Nagru___Manga_Organizer
 		{
 			string sGet = "0";
 
+			//exit if there (probably) isn't an internet connection
+			if (!System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable()) {
+				Invoke(delFini, sGet);
+				return;
+			}
+
 			try {
 				ServicePointManager.DefaultConnectionLimit = 64;
 				HttpWebRequest rq = (HttpWebRequest)WebRequest.Create(
@@ -71,10 +77,7 @@ namespace Nagru___Manga_Organizer
 				MessageBox.Show("A connection could not be established:\n" + e.Message,
 								Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			} finally {
-				try {
 					Invoke(delFini, sGet);
-				} catch {
-				}
 			}
 		}
 

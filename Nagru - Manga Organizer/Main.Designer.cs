@@ -553,7 +553,7 @@
 			this.Mn_EntryOps.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
 			this.Mn_EntryOps.Location = new System.Drawing.Point(3, 3);
 			this.Mn_EntryOps.Name = "Mn_EntryOps";
-			this.Mn_EntryOps.Size = new System.Drawing.Size(388, 27);
+			this.Mn_EntryOps.Size = new System.Drawing.Size(153, 27);
 			this.Mn_EntryOps.TabIndex = 21;
 			this.Mn_EntryOps.Text = "menuStrip";
 			// 
@@ -1034,7 +1034,7 @@
         private Classes.AutoCompleteTagger acTxBx_Tags;
         private System.Windows.Forms.ColumnHeader colDate;
         private Classes.AutoCompleteTagger acTxBx_Title;
-        private System.Windows.Forms.ToolStripMenuItem MnTs_SearchEH;
+				private System.Windows.Forms.ToolStripMenuItem MnTs_SearchEH;
     }
 }
 

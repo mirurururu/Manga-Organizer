@@ -1,3 +1,7 @@
+#### v.4.4.37 (April 27, 2014)
+	- Maintains manga selection, if applicable, when adding new entries
+	- Remapped 'search EH' shortcut to Alt+X
+	
 #### v. 4.4.36 (April 13, 2014)
 	- Added image previews to the built-in imageviewer's page-browser (press 'f')
 	

@@ -151,6 +151,10 @@ namespace Nagru___Manga_Organizer
 
 		private void Stats_FormClosing(object sender, FormClosingEventArgs e)
 		{
+			if (dt != null) {
+				dt.Dispose();
+			}
+
 			this.DialogResult = DialogResult.OK;
 		}
 	}

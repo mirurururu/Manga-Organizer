@@ -36,9 +36,10 @@ namespace Nagru___Manga_Organizer
 			for (int i = 0; i < sRaw.Length - 1; i++)
 				hsIgnore.Add(sRaw[i]);
 
-			DataTable dt = SQL.GetAllEntries();
-			for (int i = 0; i < dt.Rows.Count; i++)
-				hsPaths.Add(dt.Rows[i]["Location"].ToString());
+			using (DataTable dt = SQL.GetAllEntries()) {
+				for (int i = 0; i < dt.Rows.Count; i++)
+					hsPaths.Add(dt.Rows[i]["Location"].ToString());
+			}
 
 			//auto-scan at load
 			string sPath = Properties.Settings.Default.DefLoc;
