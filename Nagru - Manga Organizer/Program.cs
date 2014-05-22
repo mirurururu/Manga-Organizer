@@ -10,12 +10,15 @@ namespace Nagru___Manga_Organizer
 		[STAThread]
 		static void Main(string[] args)
 		{
-			string resx = "Nagru___Manga_Organizer.Resources.System.Data.SQLite.dll";
-			EmbeddedAssembly.Load(resx, "System.Data.SQLite.dll");
-			resx = "Nagru___Manga_Organizer.Resources.SharpCompress.dll";
-			EmbeddedAssembly.Load(resx, "SharpCompress.dll");
+			EmbeddedAssembly.Load(
+				"Nagru___Manga_Organizer.Resources.System.Data.SQLite.dll"
+				, "System.Data.SQLite.dll");
+			EmbeddedAssembly.Load(
+				"Nagru___Manga_Organizer.Resources.SharpCompress.dll"
+				, "SharpCompress.dll");
 
-			AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve);
+			AppDomain.CurrentDomain.AssemblyResolve 
+				+= new ResolveEventHandler(CurrentDomain_AssemblyResolve);
 
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);

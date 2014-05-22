@@ -1190,8 +1190,9 @@ namespace Nagru___Manga_Organizer
 					AddEntries();
 
 					//re-select the added item if applicable
-					if (SQL.Search(TxBx_Search.Text, mangaID).Rows.Count > 0) {
-						ScrollTo(mangaID);
+					if (string.IsNullOrWhiteSpace(TxBx_Search.Text) 
+							|| SQL.Search(TxBx_Search.Text, mangaID).Rows.Count > 0) {
+						ReFocus();
 					}
 					else {
 						Reset();

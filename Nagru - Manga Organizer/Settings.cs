@@ -33,6 +33,7 @@ namespace Nagru___Manga_Organizer
 			picBx_Colour.BackColor = Properties.Settings.Default.DefColour;
 			ChkBx_Gridlines.Checked = Properties.Settings.Default.DefGrid;
 			ChkBx_Date.Checked = !Properties.Settings.Default.HideDate;
+			ChkBx_Email.Checked = Properties.Settings.Default.SendReports;
 
 			string[] asIgn = ExtString.Split(Properties.Settings.Default.Ignore, "|");
 			for (int i = 0; i < asIgn.Length; i++) {
@@ -198,6 +199,7 @@ namespace Nagru___Manga_Organizer
 			Properties.Settings.Default.DefColour = picBx_Colour.BackColor;
 			Properties.Settings.Default.DefGrid = ChkBx_Gridlines.Checked;
 			Properties.Settings.Default.HideDate = !ChkBx_Date.Checked;
+			Properties.Settings.Default.SendReports = ChkBx_Email.Checked;
 			Properties.Settings.Default.Ignore = sIgnored;
 			Properties.Settings.Default.Save();
 			bNew = false;

@@ -815,8 +815,8 @@ namespace Nagru___Manga_Organizer
 			";
 
 			using(DataTable dt = ExecuteQuery(sCommandText, CommandBehavior.SingleRow
-					, new SQLiteParameter("@artist", DbType.Int32) { Value = sArtist }
-					, new SQLiteParameter("@title", DbType.Int32) { Value = sTitle })) {
+					, new SQLiteParameter("@artist", DbType.String) { Value = sArtist }
+					, new SQLiteParameter("@title", DbType.String) { Value = sTitle })) {
 				bExists = dt.Rows.Count > 0;
 				}
 			
