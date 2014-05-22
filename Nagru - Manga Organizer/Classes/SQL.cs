@@ -7,7 +7,6 @@ using System.Data;
 using System.Data.Common;
 using System.Collections.Generic;
 using System.Data.SQLite;
-//using Finisar.SQLite;
 
 namespace Nagru___Manga_Organizer
 {
@@ -33,8 +32,41 @@ namespace Nagru___Manga_Organizer
 		#region Variables
 
 		private static SQLiteConnection sqConn;
-		private const int SQLITE_MAX_LENGTH = 1000000;
 		private static bool bConverting = false;
+		private const int SQLITE_MAX_LENGTH = 1000000;
+
+		//prevents having to write alter statements 
+		//if I need to make changes to them later
+		#region Views
+		private const string vsManga = @"
+				select
+					mgx.MangaID
+					,ifnull(at.Name, '')    Artist
+					,mgx.Title
+					,mgx.Pages
+					,group_concat(tg.Tag)		Tags
+					,mgx.Description
+					,mgx.PublishedDate
+					,mgx.Location
+					,tp.Type
+					,mgx.Rating
+				from
+					[Manga] mgx
+				left outer join
+					[Type] tp on tp.TypeID = mgx.TypeID
+				left outer join
+					[MangaArtist] mga on mga.MangaID = mgx.MangaID
+				left outer join
+					[Artist] at on at.ArtistID = mga.ArtistID
+				left outer join
+					[MangaTag] mgt on mgt.MangaID = mgx.MangaID
+				left outer join
+				(
+					 select tx.TagID, tx.Tag
+					 from [Tag] tx
+					 order by tx.Tag
+				) tg on tg.TagID = mgt.TagID";
+		#endregion
 
 		#endregion
 
@@ -175,21 +207,6 @@ namespace Nagru___Manga_Organizer
 		}
 		
 		/// <summary>
-		/// Gets the rating of the indicated manga
-		/// </summary>
-		/// <param name="mangaID"></param>
-		/// <returns>Returns the decimal value of the rating</returns>
-		public static decimal GetMangaRating(int mangaID)
-		{
-			decimal dcRating = 0;
-			using (DataTable dt = DB_GetEntryDetails(mangaID)) {
-				dcRating = Convert.ToDecimal(dt.Rows[0]["Rating"].ToString());
-			}
-
-			return dcRating;
-		}
-		
-		/// <summary>
 		/// Returns the full details of a specified manga
 		/// </summary>
 		/// <param name="mangaID">The ID of the record</param>
@@ -216,14 +233,16 @@ namespace Nagru___Manga_Organizer
 		/// <returns></returns>
 		public static DataTable GetAllEntries()
 		{
-			return Entries();
+			return GetEntries();
 		}
 
 		#region Search Database
 
 		/// <summary>
-		/// 
+		/// Returns whether the entry exists in the DB
 		/// </summary>
+		/// <param name="Artist">The artist's name</param>
+		/// <param name="Title">The title of the maga</param>
 		/// <returns></returns>
 		public static bool ContainsEntry(string Artist, string Title)
 		{
@@ -320,12 +339,6 @@ namespace Nagru___Manga_Organizer
 			bool bExist = false;
 			if (File.Exists(sPath))
 				bExist = true;
-			//else
-			//{
-			//    string sRelPath = ExtString.RelativePath(sPath);
-			//    bExist = (sRelPath != null);
-			//    if (bExist) sPath = sRelPath;
-			//}
 
 			//create connection
 			sqConn = new SQLiteConnection();
@@ -641,7 +654,7 @@ namespace Nagru___Manga_Organizer
 		private static DataTable DB_Search(string sTerms, int iMangaID = -1)
 		{
 			if (string.IsNullOrWhiteSpace(sTerms)) {
-				return Entries();
+				return GetEntries();
 			}
 
 			//Set up variables
@@ -685,33 +698,11 @@ namespace Nagru___Manga_Organizer
 			#region Convert to SQL
 
 			#region Data setup
-			sbCmd.Append(@"
-				select
-					mgx.MangaID
-					,ifnull(at.Name, '')    Artist
-					,mgx.Title
-					,mgx.Pages
-					,group_concat(tg.Tag)		Tags
-					,mgx.PublishedDate
-					,tp.Type
-					,mgx.Rating
-				from
-					[Manga] mgx
-				left outer join
-					[Type] tp on tp.TypeID = mgx.TypeID
-				left outer join
-					[MangaArtist] mga on mga.MangaID = mgx.MangaID
-				left outer join
-					[Artist] at on at.ArtistID = mga.ArtistID
-				left outer join
-					[MangaTag] mgt on mgt.MangaID = mgx.MangaID
-				left outer join
-					[Tag] tg on tg.TagID = mgt.TagID 
-			");
+			sbCmd.Append(vsManga);
 			#endregion
 
 			#region Where-clause setup
-			sbCmd.AppendFormat("where ({0} in (mgx.MangaID, -1)) "
+			sbCmd.AppendFormat(" where ({0} in (mgx.MangaID, -1)) "
 				,iMangaID);
 
 			for (int i = 0; i < lTerms.Count; i++) {
@@ -770,9 +761,7 @@ namespace Nagru___Manga_Organizer
 			}
 
 			//append final syntax
-			sbCmd.Append(@"
-				group by mgx.MangaID
-				order by at.Name asc");
+			sbCmd.Append("group by mgx.MangaID");
 
 			#endregion
 
@@ -784,36 +773,25 @@ namespace Nagru___Manga_Organizer
 
 		#region Query Database
 
-		private static DataTable Entries()
+		private static DataTable GetEntries()
 		{
-			string sCommandText = @"
-				select
-						mgx.MangaID
-					,ifnull(at.Name, '')    Artist
-					,mgx.Title
-					,mgx.Pages
-					,group_concat(tg.Tag)		Tags
-					,mgx.PublishedDate
-					,typ.Type
-					,mgx.Rating
-					,mgx.Location
-				from
-					[Manga] mgx
-				left outer join
-					[Type] typ on typ.TypeID = mgx.TypeID
-				left outer join
-					[MangaArtist] mga on mga.MangaID = mgx.MangaID
-				left outer join
-					[Artist] at on at.ArtistID = mga.ArtistID
-				left outer join
-					[MangaTag] mgt on mgt.MangaID = mgx.MangaID
-				left outer join
-					[Tag] tg on tg.TagID = mgt.TagID
-				group by mgx.MangaID
-				order by at.Name asc
-			";
+			string sCommandText = vsManga + " group by mgx.MangaID";
 
 			return ExecuteQuery(sCommandText);
+		}
+
+		private static DataTable DB_GetEntryDetails(int mangaID)
+		{
+			string sCommandText = vsManga + @" 
+				where mgx.MangaID = @mangaID
+				group by mgx.MangaID
+			";
+
+			return ExecuteQuery(sCommandText, CommandBehavior.SingleRow
+				, new SQLiteParameter("@mangaID", DbType.Int32) {
+					Value = mangaID
+				}
+			);
 		}
 
 		private static bool EntryExists(string sArtist, string sTitle)
@@ -829,7 +807,7 @@ namespace Nagru___Manga_Organizer
 				left outer join
 					[Artist] at on at.ArtistID = mga.ArtistID
 				where
-					at.Artist = @artist
+					at.Name = @artist
 				and
 					mgx.Title = @title
 				group by mgx.MangaID
@@ -843,42 +821,6 @@ namespace Nagru___Manga_Organizer
 				}
 			
 			return bExists;
-		}
-
-		private static DataTable DB_GetEntryDetails(int mangaID)
-		{
-			string sCommandText = @"
-				select
-						mgx.MangaID
-					,ifnull(at.Name, '')		Artist
-					,mgx.Title
-					,mgx.Location
-					,mgx.Pages
-					,group_concat(tg.Tag)		Tags
-					,mgx.PublishedDate
-					,typ.Type
-					,mgx.Rating
-					,mgx.Description
-				from
-					[Manga] mgx
-				left outer join
-					[Type] typ on typ.TypeID = mgx.TypeID
-				left outer join
-					[MangaArtist] mga on mga.MangaID = mgx.MangaID
-				left outer join
-					[Artist] at on at.ArtistID = mga.ArtistID
-				left outer join
-					[MangaTag] mgt on mgt.MangaID = mgx.MangaID
-				left outer join
-					[Tag] tg on tg.TagID = mgt.TagID
-				where mgx.MangaID = @mangaID
-				group by mgx.MangaID
-				order by at.Name asc
-			";
-
-			return ExecuteQuery(sCommandText, CommandBehavior.SingleRow
-				, new SQLiteParameter("@mangaID", DbType.Int32) { Value = mangaID }
-			);
 		}
 
 		#endregion

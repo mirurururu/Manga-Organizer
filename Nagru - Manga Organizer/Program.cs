@@ -1,29 +1,30 @@
 ﻿using System;
 using System.Windows.Forms;
 using System.Threading;
+using System.Reflection;
 
 namespace Nagru___Manga_Organizer
 {
-    static class Program
-    {
-        [STAThread]
-        static void Main(string[] args)
-        {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+	static class Program
+	{
+		[STAThread]
+		static void Main(string[] args)
+		{
+			string resx = "Nagru___Manga_Organizer.Resources.System.Data.SQLite.dll";
+			EmbeddedAssembly.Load(resx, "System.Data.SQLite.dll");
+			resx = "Nagru___Manga_Organizer.Resources.SharpCompress.dll";
+			EmbeddedAssembly.Load(resx, "SharpCompress.dll");
 
-            /* Checks for already running instance
-               Author: K. Scott Allen (August 20, 2004) */
-            using (Mutex mutex = new Mutex(false, @"Global\" + Application.ProductName))
-            {
-                if (!mutex.WaitOne(0, false)) {
-                    MessageBox.Show("Another instance is already running.", 
-                        Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
+			AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve);
 
-                Application.Run(new Main(args));
-            }
-        }
-    }
+			Application.EnableVisualStyles();
+			Application.SetCompatibleTextRenderingDefault(false);
+			Application.Run(new Main(args));
+		}
+
+		static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+		{
+			return EmbeddedAssembly.Get(args.Name);
+		}
+	}
 }

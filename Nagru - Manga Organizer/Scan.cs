@@ -121,10 +121,10 @@ namespace Nagru___Manga_Organizer
 				return;
 			ListViewItem lvi = new ListViewItem(en.sArtist);
 			lvi.SubItems.AddRange(new string[] { 
-                en.sTitle, 
-                en.iPages.ToString(),
-                lFound.Count.ToString()
-            });
+          en.sTitle, 
+          en.iPages.ToString(),
+          lFound.Count.ToString()
+      });
 			lFound.Add(en);
 
 			if (hsIgnore.Contains(en.sArtist + en.sTitle)) {

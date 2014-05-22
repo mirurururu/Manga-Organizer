@@ -18,15 +18,13 @@ using System;
 using System.IO;
 using System.Net;
 using System.Linq;
+using System.Data;
 using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using SCA = SharpCompress.Archive;
-using System.Data.SQLite;
-using System.Data;
-//using Finisar.SQLite;
 
 namespace Nagru___Manga_Organizer
 {
@@ -58,29 +56,6 @@ namespace Nagru___Manga_Organizer
 				MessageBox.Show("Default database location changed to:\n\"" + sFile[0] + '\"',
 						Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
 			}
-
-			//manually handle AssemblyResolve event
-			AppDomain.CurrentDomain.AssemblyResolve +=
-					new ResolveEventHandler(CurrentDomain_AssemblyResolve);
-		}
-
-		/* Load custom library 
-			 Author: Calle Mellergardh (March 1, 2010) */
-		private System.Reflection.Assembly CurrentDomain_AssemblyResolve(
-				object sender, ResolveEventArgs args)
-		{
-			System.Reflection.Assembly asm = null;
-			if (ExtString.Equals(args.Name, "SharpCompress, Version=0.10.3.0, "
-					+ "Culture=neutral, PublicKeyToken=beaf6f427e128133"))
-				asm = (AppDomain.CurrentDomain).Load(Properties.Resources.SharpCompress);
-			/*else if (ExtString.Equals(args.Name, "SQLite.NET, Version=0.21.1869.3794, "
-				+ "Culture=neutral, PublicKeyToken=c273bd375e695f9c"))
-				asm = (AppDomain.CurrentDomain).Load(Properties.Resources.SQLite_NET);*/
-			/*else if (ExtString.Equals(args.Name, "System.Data.SQLite, Version=1.0.90.0, "
-				+ "Culture=neutral, PublicKeyToken=db937bc2d44ff139"))
-				asm = (AppDomain.CurrentDomain).Load(Properties.Resources.System_Data_SQLite);*/
-			
-			return asm;
 		}
 
 		private void Main_Load(object sender, EventArgs e)
@@ -88,7 +63,7 @@ namespace Nagru___Manga_Organizer
 			//disable ContextMenu in Nud_Pages
 			Nud_Pages.ContextMenuStrip = new ContextMenuStrip();
 
-			//set up catch for exceptions
+			//set up global event catch for exceptions
 			Application.ThreadException += Application_ThreadException;
 			
 			//allow dragdrop in richtextbox
@@ -358,7 +333,7 @@ namespace Nagru___Manga_Organizer
 			else
 				UpdateLV();
 
-			if (mangaID != -1 && SQL.GetMangaRating(mangaID) < 5)
+			if (mangaID != -1 && SQL.GetMangaDetail(mangaID, "Rating") == "5")
 				ReFocus();
 			else
 				Reset();
@@ -540,7 +515,7 @@ namespace Nagru___Manga_Organizer
 
 		private void srRating_Click(object sender, EventArgs e)
 		{
-			if (mangaID == -1 || SQL.GetMangaRating(mangaID) == srRating.SelectedStar)
+			if (mangaID == -1 || SQL.GetMangaDetail(mangaID, "Rating") == srRating.SelectedStar.ToString())
 				return;
 
 			//update rating
@@ -549,7 +524,7 @@ namespace Nagru___Manga_Organizer
 					RatingFormat(srRating.SelectedStar);
 
 			//set BackColor
-			if (SQL.GetMangaRating(mangaID) == 5)
+			if (SQL.GetMangaDetail(mangaID, "Rating") == "5")
 				LV_Entries.FocusedItem.BackColor = Color.FromArgb(
 						Properties.Settings.Default.RowColorHighlight);
 			else {
