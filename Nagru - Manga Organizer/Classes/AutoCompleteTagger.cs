@@ -30,7 +30,7 @@ namespace Nagru___Manga_Organizer.Classes
 			}
 		}
 
-		[Description("Sets the delimeter character between tags.")]
+		[Description("Sets the delimiter character between tags.")]
 		public char Seperator
 		{
 			get
@@ -105,15 +105,25 @@ namespace Nagru___Manga_Organizer.Classes
 			lKeyWords = new List<string>();
 			lbSuggest.MouseUp += lbSuggest_MouseUp;
 			lbSuggest.MouseMove += lbSuggest_MouseMove;
+			lbSuggest.VisibleChanged += lbSuggest_VisibleChanged;
 			lbSuggest.Hide();
 		}
 
-		/* Hook child controls to parent */
+		/// <summary>
+		/// Hook child controls to parent
+		/// </summary>
 		protected override void InitLayout()
 		{
 			Parent.Controls.Add(lbSuggest);
 			Parent.Controls.Add(sbHorz);
 			base.InitLayout();
+		}
+		
+		protected void lbSuggest_VisibleChanged(object sender, EventArgs e)
+		{
+			if (lbSuggest.Visible) {
+				SetListboxPosition();
+			}
 		}
 
 		protected override void OnKeyUp(KeyEventArgs e)
@@ -150,13 +160,13 @@ namespace Nagru___Manga_Organizer.Classes
 						else {
 							lbSuggest.Items.Add(asOpt[0]);
 							lbSuggest.SelectedIndex = 0;
-							SetListboxPosition();
+							lbSuggest.Show();
 						}
 						break;
 					default:
 						lbSuggest.Items.AddRange(
 								asOpt.OrderBy(x => x, new TrueCompare()).ToArray());
-						SetListboxPosition();
+						lbSuggest.Show();
 						break;
 				}
 			}
@@ -208,7 +218,9 @@ namespace Nagru___Manga_Organizer.Classes
 			base.OnKeyDown(e);
 		}
 
-		/* Update scrollbar as user types */
+		/// <summary>
+		/// Update scrollbar as the user types
+		/// </summary>
 		protected override void OnTextChanged(EventArgs e)
 		{
 			SetScroll();
@@ -217,21 +229,27 @@ namespace Nagru___Manga_Organizer.Classes
 			base.OnTextChanged(e);
 		}
 
-		/* Move TxBx_Tags cursor pos. based on ScrTags value */
+		/// <summary>
+		/// Move TxBx_Tags cursor pos. based on ScrTags value
+		/// </summary>
 		protected void sbHorz_Scroll(object sender, ScrollEventArgs e)
 		{
 			base.Select(sbHorz.Value, 0);
 			base.ScrollToCaret();
 		}
 
-		/* Prevent autosuggest from blocking other inputs */
+		/// <summary>
+		/// Prevent autosuggest from blocking other inputs
+		/// </summary>
 		protected override void OnLostFocus(EventArgs e)
 		{
 			lbSuggest.Hide();
 			base.OnLostFocus(e);
 		}
 
-		/* Prevent listbox from showing when keyword changes */
+		/// <summary>
+		/// Prevent listbox from showing when keyword changes
+		/// </summary>
 		protected override void OnClick(EventArgs e)
 		{
 			SetScroll();
@@ -246,7 +264,10 @@ namespace Nagru___Manga_Organizer.Classes
 		}
 
 		#region Mouse Handling
-		/* Selects listbox item from mouse position */
+
+		/// <summary>
+		/// Highlights listbox item from mouse position
+		/// </summary>
 		private void lbSuggest_MouseMove(object sender, MouseEventArgs e)
 		{
 			int indx = lbSuggest.IndexFromPoint(
@@ -256,7 +277,9 @@ namespace Nagru___Manga_Organizer.Classes
 				lbSuggest.SelectedIndex = indx;
 		}
 
-		/* Allow mouse clicks to select tags */
+		/// <summary>
+		/// Allow mouse clicks to select tags
+		/// </summary>
 		private void lbSuggest_MouseUp(object sender, MouseEventArgs e)
 		{
 			int indx = lbSuggest.IndexFromPoint(
@@ -275,10 +298,15 @@ namespace Nagru___Manga_Organizer.Classes
 			SetScroll();
 			Select();
 		}
+
 		#endregion
 
 		#region Custom Methods
-		/* Get bounds of keyword based on caret position */
+
+		/// <summary>
+		/// Get leftmost bounds of keyword based on caret position
+		/// </summary>
+		/// <returns>First instance of the seperator char, left from the current pos</returns>
 		private int getPrevSepCharIndex()
 		{
 			if (!base.Text.Contains(cSep))
@@ -291,6 +319,12 @@ namespace Nagru___Manga_Organizer.Classes
 			}
 			return 0;
 		}
+
+		/// <summary>
+		/// Get rightmost bounds of keyword based on caret position
+		/// </summary>
+		/// <param name="iStart">Can override search position</param>
+		/// <returns>First instance of the seperator char, right from the current pos</returns>
 		private int getNextSepCharIndex(int iStart = -1)
 		{
 			if (!base.Text.Contains(cSep))
@@ -304,16 +338,20 @@ namespace Nagru___Manga_Organizer.Classes
 			return base.Text.Length;
 		}
 
+		/// <summary>
+		/// Updates display position of the suggestions listbox
+		/// </summary>
 		private void SetListboxPosition()
 		{
 			lbSuggest.Width = Width;
 			lbSuggest.Left = Left;
 			lbSuggest.Top = Bottom;
-			lbSuggest.Show();
 			lbSuggest.BringToFront();
 		}
 
-		/* Show\Hide scrollbar as needed */
+		/// <summary>
+		/// Show\Hide scrollbar as needed
+		/// </summary>
 		public void SetScroll()
 		{
 			int iWidth = TextRenderer.MeasureText(this.Text, this.Font).Width;
@@ -335,22 +373,6 @@ namespace Nagru___Manga_Organizer.Classes
 			}
 		}
 
-		/* Add new keywords if not contained */
-		public void UpdateAutoComplete()
-		{
-			bool bUnsorted = false;
-			string[] asTags = base.Text.Split(cSep);
-			for (int i = 0; i < asTags.Length; i++) {
-				asTags[i] = asTags[i].Trim();
-				if (!lKeyWords.Contains(asTags[i])) {
-					lKeyWords.Add(asTags[i]);
-					bUnsorted = true;
-				}
-			}
-
-			if (bUnsorted)
-				lKeyWords.Sort(new TrueCompare());
-		}
 		#endregion
 	}
 }

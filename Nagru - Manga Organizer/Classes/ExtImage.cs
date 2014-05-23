@@ -6,8 +6,14 @@ namespace Nagru___Manga_Organizer
 {
 	public static class ExtImage
 	{
-		/* Proper image scaling   
-			 based on: Alex Aza (Jun 28, 2011) */
+		/// <summary>
+		/// Proper image scaling
+		/// </summary>
+		/// <remarks>based on: Alex Aza (Jun 28, 2011)</remarks>
+		/// <param name="img"></param>
+		/// <param name="fMaxWidth"></param>
+		/// <param name="fMaxHeight"></param>
+		/// <returns></returns>
 		public static Bitmap Scale(Image img, float fMaxWidth, float fMaxHeight)
 		{
 			int iWidth = img.Width;

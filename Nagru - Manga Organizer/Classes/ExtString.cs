@@ -10,35 +10,63 @@ namespace Nagru___Manga_Organizer
 {
 	public static class ExtString
 	{
+		/// <summary>
+		/// Simple string comparison
+		/// </summary>
+		/// <param name="sRaw">The base string</param>
+		/// <param name="sFind">The string to search for</param>
+		/// <param name="cComp">Overrideable comparison type</param>
+		/// <returns>Returns true if sRaw contains sFind</returns>
 		public static bool Contains(this string sRaw, string sFind,
 				StringComparison cComp = StringComparison.OrdinalIgnoreCase)
 		{
 			return sRaw.IndexOf(sFind, cComp) > -1;
 		}
 
+		/// <summary>
+		/// Simple string equivalence check
+		/// </summary>
+		/// <param name="sA"></param>
+		/// <param name="sB"></param>
+		/// <returns>Whether the strings are identical</returns>
 		public static bool Equals(string sA, string sB)
 		{
 			return string.Equals(sA, sB, StringComparison.OrdinalIgnoreCase);
 		}
 
-		/* Convert unicode to usable Ascii
-			 Author: Adam Sills (October 23, 2009)         */
-		public static string DecodeNonAscii(string sRaw)
+		/// <summary>
+		/// Convert unicode to usable Ascii
+		/// </summary>
+		/// <remarks>Author: Adam Sills (October 23, 2009)</remarks>
+		/// <param name="sRaw">The string to decode</param>
+		/// <returns>Ascii version of the input</returns>
+		public static string DecodeNonAscii(string sUnicode)
 		{
-			return Regex.Replace(sRaw, @"\\u(?<Value>[a-zA-Z0-9]{4})",
-					m =>
-					{
+			return Regex.Replace(sUnicode, @"\\u(?<Value>[a-zA-Z0-9]{4})",
+					m => {
 						return ((char)int.Parse(m.Groups["Value"].Value,
 								System.Globalization.NumberStyles.HexNumber)).ToString();
 					});
 		}
 
+		/// <summary>
+		/// Turns Artist and Title fields into their EH format
+		/// </summary>
+		/// <param name="Artist"></param>
+		/// <param name="Title"></param>
+		/// <returns></returns>
 		public static string GetFormattedTitle(string Artist, string Title)
 		{
 			return string.Format((!string.IsNullOrEmpty(Artist))
 					? "[{0}] {1}" : "{1}", Artist, Title);
 		}
 
+		/// <summary>
+		/// Return a filename without its extension
+		/// Overcomes Microsoft not handling periods in filenames
+		/// </summary>
+		/// <param name="sName"></param>
+		/// <returns></returns>
 		public static string GetNameSansExtension(string sName)
 		{
 			StringBuilder sb = new StringBuilder(sName);
@@ -58,6 +86,11 @@ namespace Nagru___Manga_Organizer
 			return sb.ToString();
 		}
 
+		/// <summary>
+		/// Converts HTML to Ascii
+		/// </summary>
+		/// <param name="sRaw"></param>
+		/// <returns></returns>
 		public static string HTMLConvertToPlainText(string sRaw)
 		{
 			StringBuilder sbSwap = new StringBuilder(sRaw);
@@ -78,6 +111,11 @@ namespace Nagru___Manga_Organizer
 			return DecodeNonAscii(sbSwap.ToString());
 		}
 
+		/// <summary>
+		/// Tries to find an incorrect filepath relative to the executable
+		/// </summary>
+		/// <param name="sRaw"></param>
+		/// <returns></returns>
 		public static string RelativePath(string sRaw)
 		{
 			bool bDiverged = false;
@@ -103,6 +141,13 @@ namespace Nagru___Manga_Organizer
 					? sPath : null;
 		}
 
+		/// <summary>
+		/// Finds the value of divergence between two strings
+		/// </summary>
+		/// <param name="sA"></param>
+		/// <param name="sB"></param>
+		/// <param name="bIgnoreCase"></param>
+		/// <returns></returns>
 		public static double SoerensonDiceCoef(string sA, string sB, bool bIgnoreCase = true)
 		{
 			HashSet<string> hsA = new HashSet<string>(),
@@ -126,10 +171,17 @@ namespace Nagru___Manga_Organizer
 			return (double)(2 * hsA.Count) / iTotalElements;
 		}
 
+		/// <summary>
+		/// Splits string using multiple filter terms
+		/// Also removes empty entries from the results
+		/// </summary>
+		/// <param name="sRaw"></param>
+		/// <param name="sFilter"></param>
+		/// <returns></returns>
 		public static string[] Split(string sRaw, params string[] sFilter)
 		{
 			return sRaw.Split(sFilter, StringSplitOptions.RemoveEmptyEntries)
-	.Select(x => x.Trim()).ToArray<string>();
+				.Select(x => x.Trim()).ToArray<string>();
 		}
 	}
 }

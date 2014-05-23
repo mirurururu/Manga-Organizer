@@ -5,8 +5,10 @@ using System.Collections.Generic;
 
 namespace Nagru___Manga_Organizer
 {
-	/* Handles sorting of ListView columns
-		 Author: Microsoft (March 13, 2008)          */
+	/// <summary>
+	/// Handles sorting of ListView columns
+	/// </summary>
+	/// <remarks>Author: Microsoft (March 13, 2008)</remarks>
 	public class LVsorter : IComparer
 	{
 		static TrueCompare tc = new TrueCompare();

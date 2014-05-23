@@ -7,8 +7,10 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Nagru___Manga_Organizer
 {
-	/* Implementation of custom serialization method
-		 Author: sdktsg, (Jan 9, 2008)                         */
+	/// <summary>
+	/// Implementation of custom serialization method
+	/// </summary>
+	/// <remarks>Author: sdktsg, (Jan 9, 2008)</remarks>
 	public static class FileSerializer
 	{
 		public static void Serialize(string sFilepath, object obj)

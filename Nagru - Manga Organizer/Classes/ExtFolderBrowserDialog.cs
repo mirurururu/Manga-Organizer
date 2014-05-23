@@ -431,8 +431,6 @@ namespace Nagru___Manga_Organizer
 		}
 	}
 
-
-
 	internal static class PInvoke
 	{
 		static PInvoke()

@@ -52,7 +52,7 @@ namespace Nagru___Manga_Organizer
 			fbd.SelectedPath = sPath;
 
 			if (fbd.ShowDialog() == DialogResult.OK
-							&& !ExtDir.Restricted(fbd.SelectedPath)) {
+							&& ExtDir.Accessible(fbd.SelectedPath)) {
 				Btn_Save.FlatAppearance.BorderColor = Color.Red;
 				aTxBx_Save.Text = fbd.SelectedPath;
 				bNew = true;
@@ -71,7 +71,7 @@ namespace Nagru___Manga_Organizer
 			fbd.SelectedPath = sPath;
 
 			if (fbd.ShowDialog() == DialogResult.OK
-							&& !ExtDir.Restricted(fbd.SelectedPath)) {
+							&& ExtDir.Accessible(fbd.SelectedPath)) {
 				Btn_Save.FlatAppearance.BorderColor = Color.Red;
 				aTxBx_Root.Text = fbd.SelectedPath;
 				bNew = true;

@@ -1,5 +1,5 @@
-#### v.4.4.37 (April 27, 2014)
-	- Maintains manga selection, if applicable, when adding new entries
+#### v.4.5.00 (May 22, 2014)
+	- Switched data storage from serialization to Sqlite
 	- Remapped 'search EH' shortcut to Alt+X
 	
 #### v. 4.4.36 (April 13, 2014)

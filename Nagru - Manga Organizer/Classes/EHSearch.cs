@@ -8,11 +8,15 @@ using System.Text.RegularExpressions;
 
 namespace Nagru___Manga_Organizer
 {
-	/* Hold results of e-hentai search */
+	/// <summary>
+	/// Hold results of e-hentai search
+	/// </summary>
 	public class csEHSearch
 	{
 		#region Interface
-		//returns searched URL
+		/// <summary>
+		/// The URL that was searched
+		/// </summary>
 		public string SearchURL
 		{
 			get
@@ -21,7 +25,9 @@ namespace Nagru___Manga_Organizer
 			}
 		}
 
-		//returns current result page
+		/// <summary>
+		/// The current result page
+		/// </summary>
 		public int CurrentPage
 		{
 			get
@@ -30,7 +36,9 @@ namespace Nagru___Manga_Organizer
 			}
 		}
 
-		//returns number of result pages
+		/// <summary>
+		/// total number of result pages
+		/// </summary>
 		public int Pages
 		{
 			get
@@ -39,7 +47,9 @@ namespace Nagru___Manga_Organizer
 			}
 		}
 
-		//returns number of sets
+		/// <summary>
+		/// The number of matching manga returned
+		/// </summary>
 		public int Count
 		{
 			get
@@ -48,19 +58,29 @@ namespace Nagru___Manga_Organizer
 			}
 		}
 
-		//returns URL element
-		public string URL(int i)
+		/// <summary>
+		/// Returns the url at the specified index
+		/// </summary>
+		/// <param name="index"></param>
+		/// <returns></returns>
+		public string URL(int index)
 		{
-			return hsURL.ElementAt(i);
+			return hsURL.ElementAt(index);
 		}
 
-		//returns Title element
-		public string Title(int i)
+		/// <summary>
+		/// Returns the title at the specified index
+		/// </summary>
+		/// <param name="index"></param>
+		/// <returns></returns>
+		public string Title(int index)
 		{
-			return hsTitle.ElementAt(i);
+			return hsTitle.ElementAt(index);
 		}
 
-		//set gallery type search options
+		/// <summary>
+		/// set gallery type search options
+		/// </summary>
 		public bool[] Options
 		{
 			get
@@ -89,7 +109,9 @@ namespace Nagru___Manga_Organizer
 			}
 		}
 
-		//returns error state
+		/// <summary>
+		/// Returns whether an error has ocurred
+		/// </summary>
 		public bool Error
 		{
 			get
@@ -140,8 +162,12 @@ namespace Nagru___Manga_Organizer
 				byOpt[6], byOpt[7], byOpt[8], byOpt[9], Uri.EscapeDataString(sRaw).Replace("%20", "+"));
 		}
 
-		/* Used to simulate JS Object Literal for JSON 
-		   Based on Hupotronics' ExLinks   */
+		/// <summary>
+		/// Used to simulate JS Object Literal for JSON 
+		/// </summary>
+		/// <remarks>Based on Hupotronics' ExLinks</remarks>
+		/// <param name="sURL"></param>
+		/// <returns></returns>
 		private static string JSON(string sURL)
 		{
 			string[] asChunk = sURL.Split('/');
@@ -275,6 +301,9 @@ namespace Nagru___Manga_Organizer
 			}
 		}
 
+		/// <summary>
+		/// Save the gallery type settings
+		/// </summary>
 		public void SaveOptions()
 		{
 			Properties.Settings.Default.GalleryTypes =

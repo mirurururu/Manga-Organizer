@@ -74,7 +74,7 @@ namespace Nagru___Manga_Organizer
 		/* Start scan op in new thread */
 		private void TryScan()
 		{
-			if (!ExtDir.Restricted(TxBx_Loc.Text)) {
+			if (ExtDir.Accessible(TxBx_Loc.Text)) {
 				Cursor = Cursors.WaitCursor;
 
 				lFound.Clear();

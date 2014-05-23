@@ -7,8 +7,14 @@ namespace Nagru___Manga_Organizer
 {
 	public static class ExtDir
 	{
-		/* Extends Directory.GetFiles to support multiple filters
-			 Inspiration: Bean Software (2002-2008)                            */
+		/// <summary>
+		/// Extends Directory.GetFiles to support multiple filters
+		/// </summary>
+		/// <remarks>Inspiration: Bean Software (2002-2008)</remarks>
+		/// <param name="SourceFolder"></param>
+		/// <param name="SearchOption"></param>
+		/// <param name="Filter"></param>
+		/// <returns></returns>
 		public static string[] GetFiles(string SourceFolder,
 				SearchOption SearchOption = SearchOption.AllDirectories,
 				string Filter = "*.jpg|*.png|*.jpeg|*.gif")
@@ -32,11 +38,15 @@ namespace Nagru___Manga_Organizer
 			return lFiles.ToArray();
 		}
 
-		/* Ensure chosen folder is not protected before operating */
-		public static bool Restricted(string Path)
+		/// <summary>
+		/// Ensure chosen folder is not protected before operating
+		/// </summary>
+		/// <param name="Path"></param>
+		/// <returns></returns>
+		public static bool Accessible(string Path)
 		{
 			if (!Directory.Exists(Path))
-				return true;
+				return false;
 
 			try {
 				string[] asDirs = Directory.GetDirectories(Path, "*",
@@ -49,10 +59,10 @@ namespace Nagru___Manga_Organizer
 					fp.Demand();
 				}
 			} catch {
-				return true;
+				return false;
 			}
 
-			return false;
+			return true;
 		}
 	}
 }

@@ -32,6 +32,15 @@
 			this.TabControl = new System.Windows.Forms.TabControl();
 			this.Tb_Browse = new System.Windows.Forms.TabPage();
 			this.ChkBx_ShowFav = new System.Windows.Forms.CheckBox();
+			this.LV_Entries = new Nagru___Manga_Organizer.ListViewNF();
+			this.ColArtist = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.ColTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.ColPages = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.ColTags = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.colDate = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.ColType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.ColRating = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.colID = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.Btn_Scan = new System.Windows.Forms.Button();
 			this.Btn_Clear = new System.Windows.Forms.Button();
 			this.Lbl_Search = new System.Windows.Forms.Label();
@@ -46,6 +55,9 @@
 			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			this.MnTx_SelAll = new System.Windows.Forms.ToolStripMenuItem();
 			this.Tb_View = new System.Windows.Forms.TabPage();
+			this.acTxBx_Title = new Nagru___Manga_Organizer.Classes.AutoCompleteTagger();
+			this.acTxBx_Tags = new Nagru___Manga_Organizer.Classes.AutoCompleteTagger();
+			this.srRating = new Nagru___Manga_Organizer.StarRatingControl();
 			this.Btn_Rand = new System.Windows.Forms.Button();
 			this.CmbBx_Artist = new System.Windows.Forms.ComboBox();
 			this.Btn_GoUp = new System.Windows.Forms.Button();
@@ -83,22 +95,11 @@
 			this.MnTS_Del = new System.Windows.Forms.ToolStripMenuItem();
 			this.MnTS_Clear = new System.Windows.Forms.ToolStripMenuItem();
 			this.PicBx_Cover = new System.Windows.Forms.PictureBox();
-			this.Tb_Notes = new System.Windows.Forms.TabPage();
-			this.Delay = new System.Windows.Forms.Timer(this.components);
-			this.LV_Entries = new Nagru___Manga_Organizer.ListViewNF();
-			this.ColArtist = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.ColTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.ColPages = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.ColTags = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.colDate = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.ColType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.ColRating = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.colID = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.acTxBx_Title = new Nagru___Manga_Organizer.Classes.AutoCompleteTagger();
-			this.acTxBx_Tags = new Nagru___Manga_Organizer.Classes.AutoCompleteTagger();
-			this.srRating = new Nagru___Manga_Organizer.StarRatingControl();
 			this.frTxBx_Desc = new Nagru___Manga_Organizer.FixedRichTextBox();
+			this.Tb_Notes = new System.Windows.Forms.TabPage();
 			this.frTxBx_Notes = new Nagru___Manga_Organizer.FixedRichTextBox();
+			this.Delay = new System.Windows.Forms.Timer(this.components);
+			this.lblURL = new System.Windows.Forms.Label();
 			this.TabControl.SuspendLayout();
 			this.Tb_Browse.SuspendLayout();
 			this.Mn_TxBx.SuspendLayout();
@@ -157,6 +158,84 @@
 			this.ChkBx_ShowFav.Text = "Favs Only";
 			this.ChkBx_ShowFav.UseVisualStyleBackColor = false;
 			this.ChkBx_ShowFav.CheckedChanged += new System.EventHandler(this.ChkBx_ShowFav_CheckedChanged);
+			// 
+			// LV_Entries
+			// 
+			this.LV_Entries.AllowDrop = true;
+			this.LV_Entries.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.LV_Entries.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.LV_Entries.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.ColArtist,
+            this.ColTitle,
+            this.ColPages,
+            this.ColTags,
+            this.colDate,
+            this.ColType,
+            this.ColRating,
+            this.colID});
+			this.LV_Entries.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.LV_Entries.FullRowSelect = true;
+			this.LV_Entries.HideSelection = false;
+			this.LV_Entries.LabelWrap = false;
+			this.LV_Entries.Location = new System.Drawing.Point(0, 32);
+			this.LV_Entries.MultiSelect = false;
+			this.LV_Entries.Name = "LV_Entries";
+			this.LV_Entries.Size = new System.Drawing.Size(923, 517);
+			this.LV_Entries.TabIndex = 0;
+			this.LV_Entries.UseCompatibleStateImageBehavior = false;
+			this.LV_Entries.View = System.Windows.Forms.View.Details;
+			this.LV_Entries.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.LV_Entries_ColumnClick);
+			this.LV_Entries.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.LV_Entries_ColumnWidthChanging);
+			this.LV_Entries.SelectedIndexChanged += new System.EventHandler(this.LV_Entries_SelectedIndexChanged);
+			this.LV_Entries.DragDrop += new System.Windows.Forms.DragEventHandler(this.LV_Entries_DragDrop);
+			this.LV_Entries.DragEnter += new System.Windows.Forms.DragEventHandler(this.LV_Entries_DragEnter);
+			this.LV_Entries.DoubleClick += new System.EventHandler(this.LV_Entries_DoubleClick);
+			this.LV_Entries.MouseHover += new System.EventHandler(this.LV_Entries_MouseHover);
+			this.LV_Entries.Resize += new System.EventHandler(this.LV_Entries_Resize);
+			// 
+			// ColArtist
+			// 
+			this.ColArtist.Text = "Artist";
+			this.ColArtist.Width = 190;
+			// 
+			// ColTitle
+			// 
+			this.ColTitle.Text = "Title";
+			this.ColTitle.Width = 240;
+			// 
+			// ColPages
+			// 
+			this.ColPages.Text = "Pages";
+			this.ColPages.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.ColPages.Width = 50;
+			// 
+			// ColTags
+			// 
+			this.ColTags.Text = "Tags";
+			this.ColTags.Width = 210;
+			// 
+			// colDate
+			// 
+			this.colDate.Text = "Date";
+			this.colDate.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.colDate.Width = 70;
+			// 
+			// ColType
+			// 
+			this.ColType.Text = "Type";
+			this.ColType.Width = 80;
+			// 
+			// ColRating
+			// 
+			this.ColRating.Text = "Rating";
+			this.ColRating.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.ColRating.Width = 70;
+			// 
+			// colID
+			// 
+			this.colID.Width = 0;
 			// 
 			// Btn_Scan
 			// 
@@ -289,6 +368,7 @@
 			// Tb_View
 			// 
 			this.Tb_View.BackColor = System.Drawing.SystemColors.ControlLightLight;
+			this.Tb_View.Controls.Add(this.lblURL);
 			this.Tb_View.Controls.Add(this.acTxBx_Title);
 			this.Tb_View.Controls.Add(this.acTxBx_Tags);
 			this.Tb_View.Controls.Add(this.srRating);
@@ -317,6 +397,48 @@
 			this.Tb_View.Size = new System.Drawing.Size(926, 549);
 			this.Tb_View.TabIndex = 1;
 			this.Tb_View.Text = "View";
+			// 
+			// acTxBx_Title
+			// 
+			this.acTxBx_Title.AllowDrop = true;
+			this.acTxBx_Title.ContextMenuStrip = this.Mn_TxBx;
+			this.acTxBx_Title.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.acTxBx_Title.KeyWords = new string[0];
+			this.acTxBx_Title.Location = new System.Drawing.Point(52, 75);
+			this.acTxBx_Title.MaxLength = 1000000;
+			this.acTxBx_Title.Name = "acTxBx_Title";
+			this.acTxBx_Title.Seperator = '\0';
+			this.acTxBx_Title.Size = new System.Drawing.Size(440, 21);
+			this.acTxBx_Title.TabIndex = 1;
+			this.acTxBx_Title.TextChanged += new System.EventHandler(this.EntryAlt_Text);
+			this.acTxBx_Title.DragDrop += new System.Windows.Forms.DragEventHandler(this.DragDropTxBx);
+			this.acTxBx_Title.DragEnter += new System.Windows.Forms.DragEventHandler(this.DragEnterTxBx);
+			// 
+			// acTxBx_Tags
+			// 
+			this.acTxBx_Tags.AllowDrop = true;
+			this.acTxBx_Tags.CharacterCasing = System.Windows.Forms.CharacterCasing.Lower;
+			this.acTxBx_Tags.ContextMenuStrip = this.Mn_TxBx;
+			this.acTxBx_Tags.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.acTxBx_Tags.KeyWords = new string[0];
+			this.acTxBx_Tags.Location = new System.Drawing.Point(52, 111);
+			this.acTxBx_Tags.MaxLength = 1000000;
+			this.acTxBx_Tags.Name = "acTxBx_Tags";
+			this.acTxBx_Tags.Seperator = ',';
+			this.acTxBx_Tags.Size = new System.Drawing.Size(440, 21);
+			this.acTxBx_Tags.TabIndex = 2;
+			this.acTxBx_Tags.TextChanged += new System.EventHandler(this.EntryAlt_Text);
+			this.acTxBx_Tags.DragDrop += new System.Windows.Forms.DragEventHandler(this.DragDropTxBx);
+			this.acTxBx_Tags.DragEnter += new System.Windows.Forms.DragEventHandler(this.DragEnterTxBx);
+			// 
+			// srRating
+			// 
+			this.srRating.Location = new System.Drawing.Point(372, 216);
+			this.srRating.Name = "srRating";
+			this.srRating.Size = new System.Drawing.Size(120, 18);
+			this.srRating.TabIndex = 28;
+			this.srRating.Text = "starRatingControl1";
+			this.srRating.Click += new System.EventHandler(this.srRating_Click);
 			// 
 			// Btn_Rand
 			// 
@@ -760,141 +882,6 @@
 			this.PicBx_Cover.Click += new System.EventHandler(this.PicBx_Cover_Click);
 			this.PicBx_Cover.Resize += new System.EventHandler(this.PicBx_Cover_Resize);
 			// 
-			// Tb_Notes
-			// 
-			this.Tb_Notes.Controls.Add(this.frTxBx_Notes);
-			this.Tb_Notes.Location = new System.Drawing.Point(4, 22);
-			this.Tb_Notes.Name = "Tb_Notes";
-			this.Tb_Notes.Size = new System.Drawing.Size(926, 549);
-			this.Tb_Notes.TabIndex = 2;
-			this.Tb_Notes.Text = "Notes";
-			this.Tb_Notes.UseVisualStyleBackColor = true;
-			// 
-			// Delay
-			// 
-			this.Delay.Interval = 400;
-			this.Delay.Tick += new System.EventHandler(this.Delay_Tick);
-			// 
-			// LV_Entries
-			// 
-			this.LV_Entries.AllowDrop = true;
-			this.LV_Entries.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.LV_Entries.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.LV_Entries.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.ColArtist,
-            this.ColTitle,
-            this.ColPages,
-            this.ColTags,
-            this.colDate,
-            this.ColType,
-            this.ColRating,
-            this.colID});
-			this.LV_Entries.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.LV_Entries.FullRowSelect = true;
-			this.LV_Entries.HideSelection = false;
-			this.LV_Entries.LabelWrap = false;
-			this.LV_Entries.Location = new System.Drawing.Point(0, 32);
-			this.LV_Entries.MultiSelect = false;
-			this.LV_Entries.Name = "LV_Entries";
-			this.LV_Entries.Size = new System.Drawing.Size(923, 517);
-			this.LV_Entries.TabIndex = 0;
-			this.LV_Entries.UseCompatibleStateImageBehavior = false;
-			this.LV_Entries.View = System.Windows.Forms.View.Details;
-			this.LV_Entries.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.LV_Entries_ColumnClick);
-			this.LV_Entries.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.LV_Entries_ColumnWidthChanging);
-			this.LV_Entries.SelectedIndexChanged += new System.EventHandler(this.LV_Entries_SelectedIndexChanged);
-			this.LV_Entries.DragDrop += new System.Windows.Forms.DragEventHandler(this.LV_Entries_DragDrop);
-			this.LV_Entries.DragEnter += new System.Windows.Forms.DragEventHandler(this.LV_Entries_DragEnter);
-			this.LV_Entries.DoubleClick += new System.EventHandler(this.LV_Entries_DoubleClick);
-			this.LV_Entries.MouseHover += new System.EventHandler(this.LV_Entries_MouseHover);
-			this.LV_Entries.Resize += new System.EventHandler(this.LV_Entries_Resize);
-			// 
-			// ColArtist
-			// 
-			this.ColArtist.Text = "Artist";
-			this.ColArtist.Width = 190;
-			// 
-			// ColTitle
-			// 
-			this.ColTitle.Text = "Title";
-			this.ColTitle.Width = 240;
-			// 
-			// ColPages
-			// 
-			this.ColPages.Text = "Pages";
-			this.ColPages.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.ColPages.Width = 50;
-			// 
-			// ColTags
-			// 
-			this.ColTags.Text = "Tags";
-			this.ColTags.Width = 210;
-			// 
-			// colDate
-			// 
-			this.colDate.Text = "Date";
-			this.colDate.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.colDate.Width = 70;
-			// 
-			// ColType
-			// 
-			this.ColType.Text = "Type";
-			this.ColType.Width = 80;
-			// 
-			// ColRating
-			// 
-			this.ColRating.Text = "Rating";
-			this.ColRating.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.ColRating.Width = 70;
-			// 
-			// colID
-			// 
-			this.colID.Width = 0;
-			// 
-			// acTxBx_Title
-			// 
-			this.acTxBx_Title.AllowDrop = true;
-			this.acTxBx_Title.ContextMenuStrip = this.Mn_TxBx;
-			this.acTxBx_Title.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.acTxBx_Title.KeyWords = new string[0];
-			this.acTxBx_Title.Location = new System.Drawing.Point(52, 75);
-			this.acTxBx_Title.MaxLength = 1000000;
-			this.acTxBx_Title.Name = "acTxBx_Title";
-			this.acTxBx_Title.Seperator = '\0';
-			this.acTxBx_Title.Size = new System.Drawing.Size(440, 21);
-			this.acTxBx_Title.TabIndex = 1;
-			this.acTxBx_Title.TextChanged += new System.EventHandler(this.EntryAlt_Text);
-			this.acTxBx_Title.DragDrop += new System.Windows.Forms.DragEventHandler(this.DragDropTxBx);
-			this.acTxBx_Title.DragEnter += new System.Windows.Forms.DragEventHandler(this.DragEnterTxBx);
-			// 
-			// acTxBx_Tags
-			// 
-			this.acTxBx_Tags.AllowDrop = true;
-			this.acTxBx_Tags.CharacterCasing = System.Windows.Forms.CharacterCasing.Lower;
-			this.acTxBx_Tags.ContextMenuStrip = this.Mn_TxBx;
-			this.acTxBx_Tags.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.acTxBx_Tags.KeyWords = new string[0];
-			this.acTxBx_Tags.Location = new System.Drawing.Point(52, 111);
-			this.acTxBx_Tags.MaxLength = 1000000;
-			this.acTxBx_Tags.Name = "acTxBx_Tags";
-			this.acTxBx_Tags.Seperator = ',';
-			this.acTxBx_Tags.Size = new System.Drawing.Size(440, 21);
-			this.acTxBx_Tags.TabIndex = 2;
-			this.acTxBx_Tags.TextChanged += new System.EventHandler(this.EntryAlt_Text);
-			this.acTxBx_Tags.DragDrop += new System.Windows.Forms.DragEventHandler(this.DragDropTxBx);
-			this.acTxBx_Tags.DragEnter += new System.Windows.Forms.DragEventHandler(this.DragEnterTxBx);
-			// 
-			// srRating
-			// 
-			this.srRating.Location = new System.Drawing.Point(372, 216);
-			this.srRating.Name = "srRating";
-			this.srRating.Size = new System.Drawing.Size(120, 18);
-			this.srRating.TabIndex = 28;
-			this.srRating.Text = "starRatingControl1";
-			this.srRating.Click += new System.EventHandler(this.srRating_Click);
-			// 
 			// frTxBx_Desc
 			// 
 			this.frTxBx_Desc.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -910,6 +897,16 @@
 			this.frTxBx_Desc.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.frTxBx_Desc_LinkClicked);
 			this.frTxBx_Desc.TextChanged += new System.EventHandler(this.EntryAlt_Text);
 			this.frTxBx_Desc.KeyDown += new System.Windows.Forms.KeyEventHandler(this.frTxBx_KeyDown);
+			// 
+			// Tb_Notes
+			// 
+			this.Tb_Notes.Controls.Add(this.frTxBx_Notes);
+			this.Tb_Notes.Location = new System.Drawing.Point(4, 22);
+			this.Tb_Notes.Name = "Tb_Notes";
+			this.Tb_Notes.Size = new System.Drawing.Size(926, 549);
+			this.Tb_Notes.TabIndex = 2;
+			this.Tb_Notes.Text = "Notes";
+			this.Tb_Notes.UseVisualStyleBackColor = true;
 			// 
 			// frTxBx_Notes
 			// 
@@ -928,6 +925,21 @@
 			this.frTxBx_Notes.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.frTxBx_Notes_LinkClicked);
 			this.frTxBx_Notes.TextChanged += new System.EventHandler(this.frTxBx_Notes_TextChanged);
 			this.frTxBx_Notes.KeyDown += new System.Windows.Forms.KeyEventHandler(this.frTxBx_KeyDown);
+			// 
+			// Delay
+			// 
+			this.Delay.Interval = 400;
+			this.Delay.Tick += new System.EventHandler(this.Delay_Tick);
+			// 
+			// lblURL
+			// 
+			this.lblURL.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.lblURL.BackColor = System.Drawing.SystemColors.ControlLight;
+			this.lblURL.Location = new System.Drawing.Point(427, 260);
+			this.lblURL.Name = "lblURL";
+			this.lblURL.Size = new System.Drawing.Size(65, 15);
+			this.lblURL.TabIndex = 29;
+			this.lblURL.Visible = false;
 			// 
 			// Main
 			// 
@@ -1035,6 +1047,7 @@
         private System.Windows.Forms.ColumnHeader colDate;
         private Classes.AutoCompleteTagger acTxBx_Title;
 				private System.Windows.Forms.ToolStripMenuItem MnTs_SearchEH;
+				private System.Windows.Forms.Label lblURL;
     }
 }
 

@@ -48,6 +48,7 @@ namespace Nagru___Manga_Organizer
 					,mgx.Description
 					,mgx.PublishedDate
 					,mgx.Location
+					,mgx.GalleryURL
 					,tp.Type
 					,mgx.Rating
 				from
@@ -736,18 +737,18 @@ namespace Nagru___Manga_Organizer
 							DateTime date = new DateTime();
 							char c = !string.IsNullOrEmpty(lTerms[i][x]) ? lTerms[i][x][0] : ' ';
 							
-							if (DateTime.TryParse(lTerms[i][x].Substring(1), out date))
-								sbCmd.AppendFormat("and date(mgx.PublishedDate) {0}= date({1}) "
+							if (DateTime.TryParse(lTerms[i][x].Substring(c != '<' && c != '>' ? 0 : 1), out date))
+								sbCmd.AppendFormat("and date(mgx.PublishedDate) {0}= date('{1}') "
 									, (c == '<' || c == '>') ? c : ' '
-									, Cleanse(lTerms[i][x]));
+									, date.ToString("yyyy-MM-dd"));
 							break;
 						case "pages":
 						case "page":
 						case "p":
 							c = !string.IsNullOrEmpty(lTerms[i][x]) ? lTerms[i][x][0] : ' ';
 							int pg;
-							
-							if (int.TryParse(lTerms[i][x].Substring(1), out pg))
+
+							if (int.TryParse(lTerms[i][x].Substring(c != '<' && c != '>' ? 0 : 1), out pg))
 								sbCmd.AppendFormat("and mgx.Pages {0}= {1} "
 									, (c == '<' || c == '>') ? c : ' '
 									, Cleanse(lTerms[i][x]));
@@ -843,7 +844,7 @@ namespace Nagru___Manga_Organizer
 			sqParam[4] = new SQLiteParameter("@description", DbType.String) { Value = sDesc };
 			sqParam[5] = new SQLiteParameter("@location", DbType.String) { Value = sLoc };
 			sqParam[6] = new SQLiteParameter("@URL", DbType.String) { Value = sURL };
-			sqParam[7] = new SQLiteParameter("@pubDate", DbType.Date) { Value = dtPubDate };
+			sqParam[7] = new SQLiteParameter("@pubDate", DbType.String) { Value = dtPubDate.ToString("yyyy-MM-dd") };
 
 			//determine whether to insert or update
 			string sCommandText;

@@ -713,10 +713,11 @@ namespace Nagru___Manga_Organizer
 		/// <param name="sURL">URL of the EH gallery</param>
 		private void LoadEH(string sURL)
 		{
-			string[] asResp = new string[0];
 			this.Cursor = Cursors.WaitCursor;
+			string[] asResp = new string[0];
+			lblURL.Text = sURL;
 			Text = "Sending request...";
-
+			
 			asResp = csEHSearch.LoadMetadata(sURL);
 			if (asResp.Length == 6) {
 				Text = "Parsing metadata...";
@@ -847,6 +848,7 @@ namespace Nagru___Manga_Organizer
 			acTxBx_Title.Clear();
 			frTxBx_Desc.Clear();
 			Nud_Pages.Value = 0;
+			lblURL.Text = string.Empty;
 			CmbBx_Artist.Text = "";
 			CmbBx_Type.Text = "Manga";
 			Dt_Date.Value = DateTime.Now;
@@ -924,6 +926,7 @@ namespace Nagru___Manga_Organizer
 					Dt_Date.Value = Convert.ToDateTime(dt.Rows[0]["PublishedDate"].ToString());
 					srRating.SelectedStar = Convert.ToInt32(dt.Rows[0]["Rating"].ToString());
 					Nud_Pages.Value = Convert.ToInt32(dt.Rows[0]["Pages"].ToString());
+					lblURL.Text = dt.Rows[0]["GalleryURL"].ToString();
 					acTxBx_Tags.Text = dt.Rows[0]["Tags"].ToString();
 				
 					acTxBx_Tags.SetScroll();
@@ -1134,7 +1137,7 @@ namespace Nagru___Manga_Organizer
 					asItems[ColTitle.Index] = dt.Rows[i]["Title"].ToString();
 					asItems[ColPages.Index] = dt.Rows[i]["Pages"].ToString();
 					asItems[ColTags.Index] = dt.Rows[i]["Tags"].ToString();
-					asItems[colDate.Index] = Convert.ToDateTime(dt.Rows[i]["PublishedDate"].ToString()).ToString("MM/dd/yy");
+					asItems[colDate.Index] = Convert.ToDateTime(dt.Rows[i]["PublishedDate"].ToString()).ToString("yy/MM/dd");
 					asItems[ColType.Index] = dt.Rows[i]["Type"].ToString();
 					asItems[ColRating.Index] = RatingFormat(Convert.ToDecimal(dt.Rows[i]["Rating"].ToString()));
 					asItems[colID.Index] = dt.Rows[i]["mangaID"].ToString();
@@ -1178,13 +1181,11 @@ namespace Nagru___Manga_Organizer
 						MessageBoxIcon.Question) == DialogResult.Yes) {
 					
 					mangaID = SQL.SaveManga(CmbBx_Artist.Text, acTxBx_Title.Text, acTxBx_Tags.Text, TxBx_Loc.Text, 
-						Dt_Date.Value, Nud_Pages.Value, CmbBx_Type.Text, srRating.SelectedStar, frTxBx_Desc.Text);
+						Dt_Date.Value, Nud_Pages.Value, CmbBx_Type.Text, srRating.SelectedStar, frTxBx_Desc.Text, lblURL.Text);
 
 					//add artist to autocomplete
-					if (!CmbBx_Artist.Items.Contains(CmbBx_Artist.Text)) {
-						CmbBx_Artist.Items.Add(CmbBx_Artist.Text);
-					}
-					acTxBx_Tags.UpdateAutoComplete();
+					CmbBx_Artist.DataSource = SQL.GetArtists();
+					acTxBx_Tags.KeyWords = SQL.GetTags();
 
 					//update LV_Entries
 					AddEntries();
@@ -1211,9 +1212,9 @@ namespace Nagru___Manga_Organizer
 
 			//overwrite entry properties
 			SQL.SaveManga(CmbBx_Artist.Text, acTxBx_Title.Text, acTxBx_Tags.Text, TxBx_Loc.Text, Dt_Date.Value, 
-				Nud_Pages.Value, CmbBx_Type.Text, srRating.SelectedStar, frTxBx_Desc.Text, "", mangaID);
+				Nud_Pages.Value, CmbBx_Type.Text, srRating.SelectedStar, frTxBx_Desc.Text, lblURL.Text, mangaID);
 			Text = "Edited entry: " + ExtString.GetFormattedTitle(CmbBx_Artist.Text, acTxBx_Title.Text);
-			acTxBx_Tags.UpdateAutoComplete();
+			acTxBx_Tags.KeyWords = SQL.GetTags();
 
 			//check if entry should still be displayed
 			if(SQL.Search(TxBx_Search.Text, mangaID).Rows.Count > 0) {
@@ -1249,7 +1250,7 @@ namespace Nagru___Manga_Organizer
 			string msg = "";
 			string sLoc = SQL.GetMangaDetail(mangaID, "Location");
 			bool bFile = false, bRst = true;
-			if (!(bRst = ExtDir.Restricted(sLoc)))
+			if ((bRst = ExtDir.Accessible(sLoc)))
 				msg = "Do you want to delete the source directory as well?";
 			else if (bFile = File.Exists(sLoc))
 				msg = "Do you want to delete the source file as well?";
