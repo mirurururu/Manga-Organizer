@@ -672,7 +672,7 @@ namespace Nagru___Manga_Organizer
 			#region Parse Terms
 			for (int i = 0; i < asItems.Length; i++) {
 				//check for type limiter
-				string[] sSplit = ExtString.Split(asItems[i].Trim(), ":");
+				string[] sSplit = asItems[i].Trim().Split(':');
 				if (sSplit.Length > 1) {
 					asType[i] = sSplit[0];
 				}
@@ -708,25 +708,35 @@ namespace Nagru___Manga_Organizer
 					switch (asType[i]) {
 						case "artist":
 						case "a":
-							sbCmd.AppendFormat("and at.Name like '%{0}%' ", Cleanse(asTerms[i][x]));
+							sbCmd.AppendFormat("and at.Name {0} like '%{1}%' "
+								, abNot[i][x] ? "not" : ""
+								, Cleanse(asTerms[i][x]));
 							break;
 						case "title":
 						case "t":
-							sbCmd.AppendFormat("and mgx.Title like '%{0}%' ", Cleanse(asTerms[i][x]));
+							sbCmd.AppendFormat("and mgx.Title {0} like '%{1}%' "
+								, abNot[i][x] ? "not" : ""
+								, Cleanse(asTerms[i][x]));
 							break;
 						case "tag":
 						case "tags":
 						case "g":
-							sbCmd.AppendFormat("and tg.Tags like '%{0}%' ", Cleanse(asTerms[i][x]));
+							sbCmd.AppendFormat("and tg.Tags {0} like '%{1}%' "
+								, abNot[i][x] ? "not" : ""
+								, Cleanse(asTerms[i][x]));
 							break;
 						case "description":
 						case "desc":
 						case "s":
-							sbCmd.AppendFormat("and mgx.Description like '%{0}%' ", Cleanse(asTerms[i][x]));
+							sbCmd.AppendFormat("and mgx.Description {0} like '%{1}%' "
+								, abNot[i][x] ? "not" : ""
+								, Cleanse(asTerms[i][x]));
 							break;
 						case "type":
 						case "y":
-							sbCmd.AppendFormat("and tp.Type like '%{0}%' ", Cleanse(asTerms[i][x]));
+							sbCmd.AppendFormat("and tp.Type {0} like '%{1}%' "
+								, abNot[i][x] ? "not" : ""
+								, Cleanse(asTerms[i][x]));
 							break;
 						case "date":
 						case "d":
@@ -736,7 +746,7 @@ namespace Nagru___Manga_Organizer
 
 							if (DateTime.TryParse(asTerms[i][x].Substring(c != '<' && c != '>' ? 0 : 1), out date))
 								sbCmd.AppendFormat("and date(mgx.PublishedDate) {0}= date('{1}') "
-									, (c == '<' || c == '>') ? c : ' '
+									, abNot[i][x] ? '!' : (c == '<' || c == '>') ? c : ' '
 									, date.ToString("yyyy-MM-dd"));
 							break;
 						case "pages":
@@ -747,12 +757,19 @@ namespace Nagru___Manga_Organizer
 
 							if (int.TryParse(asTerms[i][x].Substring(c != '<' && c != '>' ? 0 : 1), out pg))
 								sbCmd.AppendFormat("and mgx.Pages {0}= {1} "
-									, (c == '<' || c == '>') ? c : ' '
+									, abNot[i][x] ? '!' : (c == '<' || c == '>') ? c : ' '
 									, Cleanse(asTerms[i][x]));
 							break;
 						default:
-							sbCmd.AppendFormat("and (tg.Tags like '%{0}%' or mgx.Title like '%{0}%' or at.Name like '%{0}%' or mgx.Description like '%{0}%' or tp.Type like '%{0}%' or date(mgx.PublishedDate) like '%{0}%') "
+							if (abNot[i][x]) {
+								sbCmd.AppendFormat("and (tg.Tags not like '%{0}%' and mgx.Title not like '%{0}%' and at.Name not like '%{0}%' and mgx.Description not like '%{0}%' and tp.Type not like '%{0}%' and date(mgx.PublishedDate) not like '%{0}%') "
 								, Cleanse(asTerms[i][x]));
+							}
+							else {
+								sbCmd.AppendFormat("and (tg.Tags like '%{0}%' or mgx.Title like '%{0}%' or at.Name like '%{0}%' or mgx.Description like '%{0}%' or tp.Type like '%{0}%' or date(mgx.PublishedDate) like '%{0}%') "
+								, Cleanse(asTerms[i][x]));
+							}
+							
 							break;
 					}
 				}
