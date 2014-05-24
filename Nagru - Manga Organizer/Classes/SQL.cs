@@ -34,6 +34,9 @@ namespace Nagru___Manga_Organizer
 
 		#region Variables
 
+		public delegate void DelVoidInt(int i);
+		public static DelVoidInt delProgress = null;
+
 		private static SQLiteConnection sqConn;
 		private static bool bConverting = false;
 		private const int SQLITE_MAX_LENGTH = 1000000;
@@ -464,6 +467,10 @@ namespace Nagru___Manga_Organizer
 						lData[i].sType, lData[i].byRat, lData[i].sDesc,
 						""
 				);
+
+				if (delProgress != null) {
+					delProgress.Invoke(i + 1);
+				}
 			}
 			EndTransaction();
 			lData.Clear();

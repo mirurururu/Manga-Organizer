@@ -35,7 +35,6 @@ namespace Nagru___Manga_Organizer
 		delegate void DelInt(int iNum);
 		delegate void DelString(string sMsg);
 
-		//List<csEntry> lData = new List<csEntry>(500);
 		LVsorter lvSortObj = new LVsorter();
 		bool bSavNotes = true, bResize = false;
 		int mangaID = -1, iPage = -1;
@@ -91,10 +90,9 @@ namespace Nagru___Manga_Organizer
 
 		private void Main_Shown(object sender, EventArgs e)
 		{
-			//Load DB
 			Cursor = Cursors.WaitCursor;
-			SQL.Connect();
-			Cursor = Cursors.Default;
+			Text = "Loading Database...";
+			System.Threading.ThreadPool.QueueUserWorkItem(Database_Load);
 
 			//run tutorial on first run
 			if (Properties.Settings.Default.FirstRun) {
@@ -109,17 +107,6 @@ namespace Nagru___Manga_Organizer
 				Properties.Settings.Default.SavLoc = Environment.CurrentDirectory;
 				Properties.Settings.Default.DefLoc = Environment.CurrentDirectory;
 			}
-
-			UpdateLV();
-
-			//set up tags
-			acTxBx_Tags.KeyWords = SQL.GetTags();
-
-			//set up artists
-			CmbBx_Artist.Items.AddRange(SQL.GetArtists());
-
-			//set up types
-			CmbBx_Type.Items.AddRange(SQL.GetTypes());
 		}
 
 		/* Prevent Form close if unsaved data present   */
@@ -593,6 +580,52 @@ namespace Nagru___Manga_Organizer
 				LV_Entries.Items[i].BackColor = (i % 2 != 0) ?
 						Color.FromArgb(iRowColorAlt) : SystemColors.Window;
 			}
+		}
+
+		/// <summary>
+		/// Solely for converting old db's in a threaded manner
+		/// </summary>
+		private void Database_Load(object obj)
+		{
+			SQL.delProgress = Database_Converting;
+			SQL.Connect();
+			BeginInvoke(new DelVoid(Database_Display));
+		}
+
+		/// <summary>
+		/// Allows SQL.cs to send conversion progress to Main.cs
+		/// </summary>
+		/// <param name="i"></param>
+		private void Database_Converting(int i)
+		{
+			BeginInvoke(new DelInt(DisplayProgress), i);
+		}
+
+		/// <summary>
+		/// Bridge between the SQL and Main threads
+		/// </summary>
+		/// <param name="iProgress"></param>
+		private void DisplayProgress(int iProgress)
+		{
+			Text = iProgress.ToString() + " entries converted...";
+		}
+
+		/// <summary>
+		/// Sets DB contents into program once loaded
+		/// </summary>
+		private void Database_Display()
+		{
+			Cursor = Cursors.Default;
+			UpdateLV();
+
+			//set up tags
+			acTxBx_Tags.KeyWords = SQL.GetTags();
+
+			//set up artists
+			CmbBx_Artist.Items.AddRange(SQL.GetArtists());
+
+			//set up types
+			CmbBx_Type.Items.AddRange(SQL.GetTypes());
 		}
 
 		/// <summary>
