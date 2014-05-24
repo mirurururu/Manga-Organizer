@@ -87,7 +87,10 @@ namespace Nagru___Manga_Organizer
 			//set-up listview sorting & sizing
 			LV_Entries.ListViewItemSorter = lvSortObj;
 			LV_Entries.Select();
+		}
 
+		private void Main_Shown(object sender, EventArgs e)
+		{
 			//Load DB
 			Cursor = Cursors.WaitCursor;
 			SQL.Connect();
@@ -100,25 +103,23 @@ namespace Nagru___Manga_Organizer
 				Properties.Settings.Default.Save();
 				
 				Tutorial fmTut = new Tutorial();
-				fmTut.ShowDialog();
-				fmTut.Dispose();
+				fmTut.Show();
 
 				//set runtime sensitive default locations
 				Properties.Settings.Default.SavLoc = Environment.CurrentDirectory;
 				Properties.Settings.Default.DefLoc = Environment.CurrentDirectory;
 			}
-			else {
-				UpdateLV();
 
-				//set up tags
-				acTxBx_Tags.KeyWords = SQL.GetTags();
+			UpdateLV();
 
-				//set up artists
-				CmbBx_Artist.Items.AddRange(SQL.GetArtists());
+			//set up tags
+			acTxBx_Tags.KeyWords = SQL.GetTags();
 
-				//set up types
-				CmbBx_Type.Items.AddRange(SQL.GetTypes());
-			}
+			//set up artists
+			CmbBx_Artist.Items.AddRange(SQL.GetArtists());
+
+			//set up types
+			CmbBx_Type.Items.AddRange(SQL.GetTypes());
 		}
 
 		/* Prevent Form close if unsaved data present   */

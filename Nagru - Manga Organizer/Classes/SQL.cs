@@ -47,7 +47,7 @@ namespace Nagru___Manga_Organizer
 					,ifnull(at.Name, '')    Artist
 					,mgx.Title
 					,mgx.Pages
-					,group_concat(tg.Tag)		Tags
+					,tg.Tags
 					,mgx.Description
 					,mgx.PublishedDate
 					,mgx.Location
@@ -63,13 +63,13 @@ namespace Nagru___Manga_Organizer
 				left outer join
 					[Artist] at on at.ArtistID = mga.ArtistID
 				left outer join
-					[MangaTag] mgt on mgt.MangaID = mgx.MangaID
-				left outer join
 				(
-					 select tx.TagID, tx.Tag
-					 from [Tag] tx
-					 order by tx.Tag
-				) tg on tg.TagID = mgt.TagID ";
+					select mgt.MangaID, group_concat(tx.Tag, ', ') Tags
+					from [Tag] tx
+					join [MangaTag] mgt on mgt.TagID = tx.TagID
+					group by mgt.MangaID
+					order by tx.Tag
+				) tg on tg.MangaID = mgx.MangaID ";
 		private const string vsMangaEnd = " group by mgx.MangaID";
 		#endregion
 
@@ -647,7 +647,7 @@ namespace Nagru___Manga_Organizer
 			#region Populate Default Table Values
 			sQuery = @"
 				insert into [Type] (Type)
-				values('Doujinshi'),('Manga'),('ArtistCG'),('Game CG'),('Western'),('Non-H'),('Image Set'),('Cosplay'),('Asian Porn'),('Misc')";
+				values('Doujinshi'),('Manga'),('Artist CG'),('Game CG'),('Western'),('Non-H'),('Image Set'),('Cosplay'),('Asian Porn'),('Misc')";
 			ExecuteNonQuery(sQuery);
 			#endregion
 		}
@@ -751,7 +751,7 @@ namespace Nagru___Manga_Organizer
 									, Cleanse(asTerms[i][x]));
 							break;
 						default:
-							sbCmd.AppendFormat("and (tg.Tag like '%{0}%' or mgx.Title like '%{0}%' or at.Name like '%{0}%' or mgx.Description like '%{0}%' or tp.Type like '%{0}%' or date(mgx.PublishedDate) like '%{0}%') "
+							sbCmd.AppendFormat("and (tg.Tags like '%{0}%' or mgx.Title like '%{0}%' or at.Name like '%{0}%' or mgx.Description like '%{0}%' or tp.Type like '%{0}%' or date(mgx.PublishedDate) like '%{0}%') "
 								, Cleanse(asTerms[i][x]));
 							break;
 					}
