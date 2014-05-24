@@ -717,7 +717,7 @@ namespace Nagru___Manga_Organizer
 						case "tag":
 						case "tags":
 						case "g":
-							sbCmd.AppendFormat("and tg.Tag like '%{0}%' ", Cleanse(asTerms[i][x]));
+							sbCmd.AppendFormat("and tg.Tags like '%{0}%' ", Cleanse(asTerms[i][x]));
 							break;
 						case "description":
 						case "desc":
