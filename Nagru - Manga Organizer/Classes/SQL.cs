@@ -752,9 +752,19 @@ namespace Nagru___Manga_Organizer
 							char c = !string.IsNullOrEmpty(asTerms[i][x]) ? asTerms[i][x][0] : ' ';
 
 							if (DateTime.TryParse(asTerms[i][x].Substring(c != '<' && c != '>' ? 0 : 1), out date))
-								sbCmd.AppendFormat("and date(mgx.PublishedDate) {0}= date('{1}') "
-									, abNot[i][x] ? '!' : (c == '<' || c == '>') ? c : ' '
+								sbCmd.AppendFormat("and date(mgx.PublishedDate) {0} date('{1}') "
+									, abNot[i][x] ? '!' : (c == '<' || c == '>') ? c : '='
 									, date.ToString("yyyy-MM-dd"));
+							break;
+						case "rating":
+						case "r":
+							c = !string.IsNullOrEmpty(asTerms[i][x]) ? asTerms[i][x][0] : ' ';
+							int rat;
+
+							if (int.TryParse(asTerms[i][x].Substring(c != '<' && c != '>' ? 0 : 1), out rat))
+								sbCmd.AppendFormat("and mgx.Rating {0} {1} "
+									, abNot[i][x] ? '!' : (c == '<' || c == '>') ? c : '='
+									, rat);
 							break;
 						case "pages":
 						case "page":
@@ -763,9 +773,9 @@ namespace Nagru___Manga_Organizer
 							int pg;
 
 							if (int.TryParse(asTerms[i][x].Substring(c != '<' && c != '>' ? 0 : 1), out pg))
-								sbCmd.AppendFormat("and mgx.Pages {0}= {1} "
-									, abNot[i][x] ? '!' : (c == '<' || c == '>') ? c : ' '
-									, Cleanse(asTerms[i][x]));
+								sbCmd.AppendFormat("and mgx.Pages {0} {1} "
+									, abNot[i][x] ? '!' : (c == '<' || c == '>') ? c : '='
+									, pg);
 							break;
 						default:
 							if (abNot[i][x]) {
