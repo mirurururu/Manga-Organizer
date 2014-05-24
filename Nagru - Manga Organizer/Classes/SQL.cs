@@ -20,11 +20,14 @@ namespace Nagru___Manga_Organizer
 		/// </summary>
 		public static bool Connected
 		{
-			private set { Connected = value; }
+			private set
+			{
+				Connected = value;
+			}
 			get
 			{
-			return (sqConn.State == ConnectionState.Open);
-		}
+				return (sqConn.State == ConnectionState.Open);
+			}
 		}
 
 		#endregion
@@ -66,7 +69,8 @@ namespace Nagru___Manga_Organizer
 					 select tx.TagID, tx.Tag
 					 from [Tag] tx
 					 order by tx.Tag
-				) tg on tg.TagID = mgt.TagID";
+				) tg on tg.TagID = mgt.TagID ";
+		private const string vsMangaEnd = " group by mgx.MangaID";
 		#endregion
 
 		#endregion
@@ -83,7 +87,7 @@ namespace Nagru___Manga_Organizer
 		#region Public Access
 
 		#region Handle Connection
-		
+
 		/// <summary>
 		/// Opens a connection with the database
 		/// </summary>
@@ -98,7 +102,7 @@ namespace Nagru___Manga_Organizer
 						Properties.Settings.Default.SavLoc : Environment.CurrentDirectory;
 				_filePath += "\\MangaDatabase.bin";
 			}
-			if (File.Exists(_filePath) 
+			if (File.Exists(_filePath)
 					|| File.Exists(_filePath = ExtString.RelativePath(_filePath))) {
 				Import(_filePath);
 			}
@@ -109,7 +113,7 @@ namespace Nagru___Manga_Organizer
 		#endregion
 
 		#region Query Database
-		
+
 		/// <summary>
 		/// Returns all the Artists in the database
 		/// </summary>
@@ -124,19 +128,19 @@ namespace Nagru___Manga_Organizer
 					[Artist] at
 				order by at.Name asc
 			";
-			
+
 			string[] asArtists;
 			using (DataTable dt = ExecuteQuery(sCommandText)) {
 				asArtists = new string[dt.Rows.Count];
 
-				for(int i = 0; i < dt.Rows.Count; i++) {
+				for (int i = 0; i < dt.Rows.Count; i++) {
 					asArtists[i] = dt.Rows[i][1].ToString();
 				}
 			}
-			
+
 			return asArtists;
 		}
-		
+
 		/// <summary>
 		/// Returns all the Types in the database
 		/// </summary>
@@ -151,7 +155,7 @@ namespace Nagru___Manga_Organizer
 					[Type] tp
 				order by tp.Type asc
 			";
-			
+
 			string[] asTypes;
 			using (DataTable dt = ExecuteQuery(sCommandText)) {
 				asTypes = new string[dt.Rows.Count];
@@ -160,10 +164,10 @@ namespace Nagru___Manga_Organizer
 					asTypes[i] = dt.Rows[i][1].ToString();
 				}
 			}
-			
+
 			return asTypes;
 		}
-		
+
 		/// <summary>
 		/// Returns all the Tags in the database
 		/// </summary>
@@ -178,7 +182,7 @@ namespace Nagru___Manga_Organizer
 					[Tag] tg
 				order by tg.Tag asc
 			";
-			
+
 			string[] asTags;
 			using (DataTable dt = ExecuteQuery(sCommandText)) {
 				asTags = new string[dt.Rows.Count];
@@ -187,10 +191,10 @@ namespace Nagru___Manga_Organizer
 					asTags[i] = dt.Rows[i][1].ToString();
 				}
 			}
-			
+
 			return asTags;
 		}
-		
+
 		/// <summary>
 		/// Returns the EH formatted title of a Manga
 		/// </summary>
@@ -206,7 +210,7 @@ namespace Nagru___Manga_Organizer
 
 			return ExtString.GetFormattedTitle(sArtist, sTitle);
 		}
-		
+
 		/// <summary>
 		/// Returns the full details of a specified manga
 		/// </summary>
@@ -216,7 +220,7 @@ namespace Nagru___Manga_Organizer
 		{
 			return DB_GetEntryDetails(mangaID);
 		}
-		
+
 		/// <summary>
 		/// Returns a single detail of a specified manga
 		/// </summary>
@@ -227,7 +231,7 @@ namespace Nagru___Manga_Organizer
 		{
 			return (DB_GetEntryDetails(mangaID)).Rows[0][columnName].ToString();
 		}
-		
+
 		/// <summary>
 		/// Returns the details of every manga in the database
 		/// </summary>
@@ -358,7 +362,7 @@ namespace Nagru___Manga_Organizer
 				DB_Create();
 			}
 		}
-		
+
 		private static void DB_Close()
 		{
 			if (sqConn != null
@@ -393,7 +397,7 @@ namespace Nagru___Manga_Organizer
 			return iRetVal;
 		}
 
-		private static int ExecuteNonQuery(string CommandText, 
+		private static int ExecuteNonQuery(string CommandText,
 			CommandBehavior cmd = CommandBehavior.Default, params SQLiteParameter[] sqParam)
 		{
 			int altered = 0;
@@ -407,7 +411,7 @@ namespace Nagru___Manga_Organizer
 			return altered;
 		}
 
-		private static DataTable ExecuteQuery(string CommandText, 
+		private static DataTable ExecuteQuery(string CommandText,
 			CommandBehavior cmd = CommandBehavior.Default, params SQLiteParameter[] sqParam)
 		{
 			DataTable dt = new DataTable();
@@ -436,7 +440,7 @@ namespace Nagru___Manga_Organizer
 			//load the old DB
 			List<Main.csEntry> lData = FileSerializer.Deserialize
 				<List<Main.csEntry>>(_filePath) ?? new List<Main.csEntry>(0);
-			
+
 			//input into new DB
 			BeginTransaction();
 			for (int i = 0; i < lData.Count; i++) {
@@ -464,14 +468,14 @@ namespace Nagru___Manga_Organizer
 			EndTransaction();
 			lData.Clear();
 			bConverting = false;
-			
+
 			//deprecate old serialized DB
 			try {
-			File.Move(_filePath, _filePath + "_Deprecated");
+				File.Move(_filePath, _filePath + "_Deprecated");
 			} catch (IOException) {
 				Console.WriteLine("Could not alter old database");
 			}
-			
+
 			return true;
 		}
 
@@ -480,7 +484,7 @@ namespace Nagru___Manga_Organizer
 			string sQuery;
 
 			#region Create Tables
-			
+
 			#region Artist
 			sQuery = @"
 				create table [Artist]
@@ -494,7 +498,7 @@ namespace Nagru___Manga_Organizer
 			";
 			ExecuteNonQuery(sQuery);
 			#endregion
-			
+
 			#region Tag
 			sQuery = @"
 				create table [Tag]
@@ -507,7 +511,7 @@ namespace Nagru___Manga_Organizer
 			";
 			ExecuteNonQuery(sQuery);
 			#endregion
-			
+
 			#region Type
 			sQuery = @"
 				create table [Type]
@@ -520,7 +524,7 @@ namespace Nagru___Manga_Organizer
 			";
 			ExecuteNonQuery(sQuery);
 			#endregion
-			
+
 			#region MangaArtist
 			sQuery = @"
 				create table [MangaArtist]
@@ -536,7 +540,7 @@ namespace Nagru___Manga_Organizer
 			";
 			ExecuteNonQuery(sQuery);
 			#endregion
-			
+
 			#region MangaTag
 			sQuery = @"
 				create table [MangaTag]
@@ -552,7 +556,7 @@ namespace Nagru___Manga_Organizer
 			";
 			ExecuteNonQuery(sQuery);
 			#endregion
-			
+
 			#region Manga
 			sQuery = @"
 				create table [Manga]
@@ -575,9 +579,9 @@ namespace Nagru___Manga_Organizer
 			#endregion
 
 			#endregion
-			
+
 			#region Create Triggers
-			
+
 			#region Artist
 			sQuery = @"
 				create trigger trArtist after update on Artist
@@ -587,7 +591,7 @@ namespace Nagru___Manga_Organizer
 			";
 			ExecuteNonQuery(sQuery);
 			#endregion
-			
+
 			#region Tag
 			sQuery = @"
 				create trigger trTag after update on Tag
@@ -597,7 +601,7 @@ namespace Nagru___Manga_Organizer
 			";
 			ExecuteNonQuery(sQuery);
 			#endregion
-			
+
 			#region Type
 			sQuery = @"
 				create trigger trType after update on Type
@@ -607,7 +611,7 @@ namespace Nagru___Manga_Organizer
 			";
 			ExecuteNonQuery(sQuery);
 			#endregion
-			
+
 			#region MangaArtist
 			sQuery = @"
 				create trigger trMangaArtist after update on MangaArtist
@@ -617,7 +621,7 @@ namespace Nagru___Manga_Organizer
 			";
 			ExecuteNonQuery(sQuery);
 			#endregion
-			
+
 			#region MangaTag
 			sQuery = @"
 				create trigger trMangaTag after update on MangaTag
@@ -627,7 +631,7 @@ namespace Nagru___Manga_Organizer
 			";
 			ExecuteNonQuery(sQuery);
 			#endregion
-			
+
 			#region Manga
 			sQuery = @"
 				create trigger trManga after update on Manga
@@ -637,9 +641,9 @@ namespace Nagru___Manga_Organizer
 			";
 			ExecuteNonQuery(sQuery);
 			#endregion
-			
+
 			#endregion
-			
+
 			#region Populate Default Table Values
 			sQuery = @"
 				insert into [Type] (Type)
@@ -651,47 +655,40 @@ namespace Nagru___Manga_Organizer
 		#endregion
 
 		#region Search Database
-		
+
 		private static DataTable DB_Search(string sTerms, int iMangaID = -1)
 		{
 			if (string.IsNullOrWhiteSpace(sTerms)) {
 				return GetEntries();
 			}
-
+			
 			//Set up variables
-			StringBuilder sbCmd = new StringBuilder(10000);
-			List<string[]> lTerms;
-			List<bool[]> lNot;
-			string[] asType;
+			StringBuilder sbCmd = new StringBuilder(5000);
+			string[] asItems = ExtString.Split(sTerms, " ");
+			string[] asType = new string[asItems.Length];
+			bool[][] abNot = new bool[asItems.Length][];
+			string[][] asTerms = new string[asItems.Length][];
 
 			#region Parse Terms
-			string[] asItems = ExtString.Split(sTerms, " ");
-			lTerms = new List<string[]>(asItems.Length);
-			lNot = new List<bool[]>(asItems.Length);
-			asType = new string[asItems.Length];
-
 			for (int i = 0; i < asItems.Length; i++) {
 				//check for type limiter
 				string[] sSplit = ExtString.Split(asItems[i].Trim(), ":");
-				if (sSplit.Length == 2) {
+				if (sSplit.Length > 1) {
 					asType[i] = sSplit[0];
-					lTerms.Add(ExtString.Split(sSplit[1], "&", ","));
 				}
-				else {
-					lTerms.Add(ExtString.Split(sSplit[0], "&", ","));
+
+				string[] asSubSplit = ExtString.Split(sSplit[sSplit.Length > 1 ? 1 : 0], "&", ",");
+				asTerms[i] = new string[asSubSplit.Length];
+				for (int x = 0; x < asSubSplit.Length; x++) {
+					asTerms[i][x] = asSubSplit[x];
 				}
 
 				//check for chained terms
-				lNot.Add(new bool[lTerms[i].Length]);
-				for (int x = 0; x < lTerms[i].Length; x++) {
-					lTerms[i][x] = lTerms[i][x].Replace('_', ' ');
-					if (lTerms[i][x].StartsWith("-")) {
-						lTerms[i][x] = lTerms[i][x].Substring(1);
-						lNot[i][x] = true;
-					}
-					else {
-						lNot[i][x] = false;
-					}
+				abNot[i] = new bool[asTerms[i].Length];
+				for (int x = 0; x < asTerms[i].Length; x++) {
+					asTerms[i][x] = asTerms[i][x].Replace('_', ' ');
+					abNot[i][x] = asTerms[i][x].StartsWith("-");
+					if(abNot[i][x]) asTerms[i][x] = asTerms[i][x].Substring(1);
 				}
 			}
 			#endregion
@@ -704,40 +701,40 @@ namespace Nagru___Manga_Organizer
 
 			#region Where-clause setup
 			sbCmd.AppendFormat(" where ({0} in (mgx.MangaID, -1)) "
-				,iMangaID);
+				, iMangaID);
 
-			for (int i = 0; i < lTerms.Count; i++) {
-				for (int x = 0; x < lTerms[i].Length; x++) {
+			for (int i = 0; i < asTerms.Length; i++) {
+				for (int x = 0; x < asTerms[i].Length; x++) {
 					switch (asType[i]) {
 						case "artist":
 						case "a":
-							sbCmd.AppendFormat("and at.Name like '%{0}%' ", Cleanse(lTerms[i][x]));
+							sbCmd.AppendFormat("and at.Name like '%{0}%' ", Cleanse(asTerms[i][x]));
 							break;
 						case "title":
 						case "t":
-							sbCmd.AppendFormat("and mgx.Title like '%{0}%' ", Cleanse(lTerms[i][x]));
+							sbCmd.AppendFormat("and mgx.Title like '%{0}%' ", Cleanse(asTerms[i][x]));
 							break;
 						case "tag":
 						case "tags":
 						case "g":
-							sbCmd.AppendFormat("and tg.Tag like '%{0}%' ", Cleanse(lTerms[i][x]));
+							sbCmd.AppendFormat("and tg.Tag like '%{0}%' ", Cleanse(asTerms[i][x]));
 							break;
 						case "description":
 						case "desc":
 						case "s":
-							sbCmd.AppendFormat("and mgx.Description like '%{0}%' ", Cleanse(lTerms[i][x]));
+							sbCmd.AppendFormat("and mgx.Description like '%{0}%' ", Cleanse(asTerms[i][x]));
 							break;
 						case "type":
 						case "y":
-							sbCmd.AppendFormat("and tp.Type like '%{0}%' ", Cleanse(lTerms[i][x]));
+							sbCmd.AppendFormat("and tp.Type like '%{0}%' ", Cleanse(asTerms[i][x]));
 							break;
 						case "date":
 						case "d":
 
 							DateTime date = new DateTime();
-							char c = !string.IsNullOrEmpty(lTerms[i][x]) ? lTerms[i][x][0] : ' ';
-							
-							if (DateTime.TryParse(lTerms[i][x].Substring(c != '<' && c != '>' ? 0 : 1), out date))
+							char c = !string.IsNullOrEmpty(asTerms[i][x]) ? asTerms[i][x][0] : ' ';
+
+							if (DateTime.TryParse(asTerms[i][x].Substring(c != '<' && c != '>' ? 0 : 1), out date))
 								sbCmd.AppendFormat("and date(mgx.PublishedDate) {0}= date('{1}') "
 									, (c == '<' || c == '>') ? c : ' '
 									, date.ToString("yyyy-MM-dd"));
@@ -745,24 +742,24 @@ namespace Nagru___Manga_Organizer
 						case "pages":
 						case "page":
 						case "p":
-							c = !string.IsNullOrEmpty(lTerms[i][x]) ? lTerms[i][x][0] : ' ';
+							c = !string.IsNullOrEmpty(asTerms[i][x]) ? asTerms[i][x][0] : ' ';
 							int pg;
 
-							if (int.TryParse(lTerms[i][x].Substring(c != '<' && c != '>' ? 0 : 1), out pg))
+							if (int.TryParse(asTerms[i][x].Substring(c != '<' && c != '>' ? 0 : 1), out pg))
 								sbCmd.AppendFormat("and mgx.Pages {0}= {1} "
 									, (c == '<' || c == '>') ? c : ' '
-									, Cleanse(lTerms[i][x]));
+									, Cleanse(asTerms[i][x]));
 							break;
 						default:
 							sbCmd.AppendFormat("and (tg.Tag like '%{0}%' or mgx.Title like '%{0}%' or at.Name like '%{0}%' or mgx.Description like '%{0}%' or tp.Type like '%{0}%' or date(mgx.PublishedDate) like '%{0}%') "
-								, Cleanse(lTerms[i][x]));
+								, Cleanse(asTerms[i][x]));
 							break;
 					}
 				}
 			}
 
 			//append final syntax
-			sbCmd.Append("group by mgx.MangaID");
+			sbCmd.Append(vsMangaEnd);
 
 			#endregion
 
@@ -776,17 +773,16 @@ namespace Nagru___Manga_Organizer
 
 		private static DataTable GetEntries()
 		{
-			string sCommandText = vsManga + " group by mgx.MangaID";
+			string sCommandText = vsManga + vsMangaEnd;
 
 			return ExecuteQuery(sCommandText);
 		}
 
 		private static DataTable DB_GetEntryDetails(int mangaID)
 		{
-			string sCommandText = vsManga + @" 
-				where mgx.MangaID = @mangaID
-				group by mgx.MangaID
-			";
+			string sCommandText = vsManga 
+				+ " where mgx.MangaID = @mangaID"
+				+ vsMangaEnd;
 
 			return ExecuteQuery(sCommandText, CommandBehavior.SingleRow
 				, new SQLiteParameter("@mangaID", DbType.Int32) {
@@ -798,29 +794,23 @@ namespace Nagru___Manga_Organizer
 		private static bool EntryExists(string sArtist, string sTitle)
 		{
 			bool bExists = false;
-			string sCommandText = @"
-				select
-						mgx.MangaID
-				from
-					[Manga] mgx
-				left outer join
-					[MangaArtist] mga on mga.MangaID = mgx.MangaID
-				left outer join
-					[Artist] at on at.ArtistID = mga.ArtistID
+			string sCommandText = vsManga + @"
 				where
 					at.Name = @artist
 				and
-					mgx.Title = @title
-				group by mgx.MangaID
-				order by at.Name asc
-			";
+					mgx.Title = @title"
+				+ vsMangaEnd;
 
-			using(DataTable dt = ExecuteQuery(sCommandText, CommandBehavior.SingleRow
-					, new SQLiteParameter("@artist", DbType.String) { Value = sArtist }
-					, new SQLiteParameter("@title", DbType.String) { Value = sTitle })) {
+			using (DataTable dt = ExecuteQuery(sCommandText, CommandBehavior.SingleRow
+					, new SQLiteParameter("@artist", DbType.String) {
+						Value = sArtist
+					}
+					, new SQLiteParameter("@title", DbType.String) {
+						Value = sTitle
+					})) {
 				bExists = dt.Rows.Count > 0;
-				}
-			
+			}
+
 			return bExists;
 		}
 
@@ -837,14 +827,30 @@ namespace Nagru___Manga_Organizer
 
 			//setup parameters
 			SQLiteParameter[] sqParam = new SQLiteParameter[8];
-			sqParam[0] = new SQLiteParameter("@title", DbType.String) { Value = sTitle };
-			sqParam[1] = new SQLiteParameter("@mangaID", DbType.String) { Value = iMangaID };
-			sqParam[2] = new SQLiteParameter("@pages", DbType.Int32) { Value = iPages };
-			sqParam[3] = new SQLiteParameter("@rating", DbType.Decimal) { Value = dRating };
-			sqParam[4] = new SQLiteParameter("@description", DbType.String) { Value = sDesc };
-			sqParam[5] = new SQLiteParameter("@location", DbType.String) { Value = sLoc };
-			sqParam[6] = new SQLiteParameter("@URL", DbType.String) { Value = sURL };
-			sqParam[7] = new SQLiteParameter("@pubDate", DbType.String) { Value = dtPubDate.ToString("yyyy-MM-dd") };
+			sqParam[0] = new SQLiteParameter("@title", DbType.String) {
+				Value = sTitle
+			};
+			sqParam[1] = new SQLiteParameter("@mangaID", DbType.String) {
+				Value = iMangaID
+			};
+			sqParam[2] = new SQLiteParameter("@pages", DbType.Int32) {
+				Value = iPages
+			};
+			sqParam[3] = new SQLiteParameter("@rating", DbType.Decimal) {
+				Value = dRating
+			};
+			sqParam[4] = new SQLiteParameter("@description", DbType.String) {
+				Value = sDesc
+			};
+			sqParam[5] = new SQLiteParameter("@location", DbType.String) {
+				Value = sLoc
+			};
+			sqParam[6] = new SQLiteParameter("@URL", DbType.String) {
+				Value = sURL
+			};
+			sqParam[7] = new SQLiteParameter("@pubDate", DbType.String) {
+				Value = dtPubDate.ToString("yyyy-MM-dd")
+			};
 
 			//determine whether to insert or update
 			string sCommandText;
@@ -865,7 +871,7 @@ namespace Nagru___Manga_Organizer
 					,publishedDate = @pubDate
 					where MangaID = @mangaID";
 			}
-			
+
 			//run the command
 			ExecuteNonQuery(sCommandText, CommandBehavior.Default, sqParam);
 
@@ -897,15 +903,17 @@ namespace Nagru___Manga_Organizer
 			//string[] asArtists = ExtString.Split(sArtists, ",");
 			string[] asArtists = new string[1] { sArtists };
 			List<Int32> lArtistID = new List<int>(asArtists.Length);
-			
-			SQLiteParameter pmMangaID = new SQLiteParameter("@mangaID", DbType.Int32) { Value = iMangaID };
+
+			SQLiteParameter pmMangaID = new SQLiteParameter("@mangaID", DbType.Int32) {
+				Value = iMangaID
+			};
 
 			for (int i = 0; i < asArtists.Length; i++) {
 				//sql parameters
 				SQLiteParameter pmName = new SQLiteParameter("@name", DbType.String) {
 					Value = asArtists[i]
 				};
-				
+
 				//add artist if it doesn't exist already
 				sCommandText = @"
 					insert into [Artist](Name)
@@ -918,14 +926,14 @@ namespace Nagru___Manga_Organizer
 					select ArtistID
 					from [Artist] where Name = @name";
 				using (DataTable dt = ExecuteQuery(sCommandText, CommandBehavior.SingleRow, pmName)) {
-				if (dt.Rows.Count > 0) {
-					lArtistID.Add(int.Parse(dt.Rows[0][0].ToString()));
-				}
+					if (dt.Rows.Count > 0) {
+						lArtistID.Add(int.Parse(dt.Rows[0][0].ToString()));
+					}
 					else {
 						throw new SQLiteException("Artist was not successfully inserted");
 					}
 				}
-				
+
 				SQLiteParameter pmArtistID = new SQLiteParameter("@artistID", DbType.Int32) {
 					Value = lArtistID[i]
 				};
@@ -937,7 +945,7 @@ namespace Nagru___Manga_Organizer
 					where not exists(select 1 from [MangaArtist] where MangaID = @mangaID and ArtistID = @artistID)";
 				ExecuteNonQuery(sCommandText, CommandBehavior.Default, pmMangaID, pmArtistID);
 			}
-			
+
 			//delete any invalid links
 			sCommandText = @"
 				delete from [MangaArtist] 
@@ -951,33 +959,33 @@ namespace Nagru___Manga_Organizer
 			string sCommandText;
 			string[] asTags = ExtString.Split(sTags, ",");
 			List<Int32> lTagID = new List<int>(asTags.Length);
-			
+
 			SQLiteParameter pmMangaID = new SQLiteParameter("@mangaID", DbType.Int32) {
-					Value = iMangaID
-				};
+				Value = iMangaID
+			};
 
 			for (int i = 0; i < asTags.Length; i++) {
 				//sql parameters
 				SQLiteParameter pmTag = new SQLiteParameter("@tag", DbType.String) {
 					Value = asTags[i]
 				};
-				
+
 				//add tag if it doesn't exist already
 				sCommandText = @"
 					insert into [Tag](Tag)
 					select @tag
 					where not exists(select 1 from [Tag] where Tag = @tag)";
 				ExecuteNonQuery(sCommandText, CommandBehavior.Default, pmTag);
-				
+
 				//add tagID to list
 				sCommandText = @"
 					select TagID
 					from [Tag]
 					where Tag = @tag";
 				using (DataTable dt = ExecuteQuery(sCommandText, CommandBehavior.SingleRow, pmTag)) {
-				if (dt.Rows.Count > 0) {
-					lTagID.Add(int.Parse(dt.Rows[0][0].ToString()));
-				}
+					if (dt.Rows.Count > 0) {
+						lTagID.Add(int.Parse(dt.Rows[0][0].ToString()));
+					}
 					else {
 						throw new SQLiteException("Tag was not successfully inserted");
 					}
@@ -1027,18 +1035,18 @@ namespace Nagru___Manga_Organizer
 				select @type
 				where not exists(select 1 from [Type] where Type = @type)";
 			ExecuteNonQuery(sCommandText, CommandBehavior.Default, pmType);
-			
+
 			//get typeID
 			sCommandText = @"
 				select TypeID
 				from [Type]
 				where Type = @type";
 			using (DataTable dt = ExecuteQuery(sCommandText, CommandBehavior.SingleRow, pmType)) {
-			if(dt.Rows.Count > 0) {
-				iTypeID = int.Parse(dt.Rows[0][0].ToString());
-			}
+				if (dt.Rows.Count > 0) {
+					iTypeID = int.Parse(dt.Rows[0][0].ToString());
+				}
 				else {
-				throw new SQLiteException("Type not found");
+					throw new SQLiteException("Type not found");
 				}
 			}
 
@@ -1063,7 +1071,7 @@ namespace Nagru___Manga_Organizer
 			SQLiteParameter sqParam = new SQLiteParameter("@mangaID", DbType.Int32) {
 				Value = iMangaID
 			};
-			
+
 			//delete mangaArtist
 			sCommandText = @"
 				delete from MangaArtist
@@ -1077,7 +1085,7 @@ namespace Nagru___Manga_Organizer
 			altered += ExecuteNonQuery(sCommandText, CommandBehavior.Default, sqParam);
 
 			//deletemanga
-			sCommandText =@"
+			sCommandText = @"
 				delete from Manga
 				where MangaID = @mangaID";
 			altered += ExecuteNonQuery(sCommandText, CommandBehavior.Default, sqParam);

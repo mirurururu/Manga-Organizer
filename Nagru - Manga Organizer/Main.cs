@@ -198,11 +198,12 @@ namespace Nagru___Manga_Organizer
 			const string sHost = "smtp.gmail.com"
 				, sFromAddress = "nullJacobin@gmail.com"
 				, sToAddress = "nagru@live.ca";
-			string sMessage = 
-				e.Exception.Message + "\n" 
-				+ e.Exception.Data + "\n" 
-				+ e.Exception.StackTrace + "\n" 
-				+ e.Exception.Source;
+			string sMessage = string.Format("Message:\n{0}\n\nStackTrace:\n{1}\n\nTargetSite:\n{2}\n\nData:\n{3}"
+					,e.Exception.Message
+					,e.Exception.StackTrace
+					,e.Exception.TargetSite
+					,e.Exception.Data
+				);
 
 			//set up the mail provider to send through
 			using(System.Net.Mail.SmtpClient smClient = new System.Net.Mail.SmtpClient {

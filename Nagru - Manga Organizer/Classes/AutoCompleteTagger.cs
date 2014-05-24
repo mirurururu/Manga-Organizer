@@ -118,7 +118,7 @@ namespace Nagru___Manga_Organizer.Classes
 			Parent.Controls.Add(sbHorz);
 			base.InitLayout();
 		}
-		
+
 		protected void lbSuggest_VisibleChanged(object sender, EventArgs e)
 		{
 			if (lbSuggest.Visible) {
