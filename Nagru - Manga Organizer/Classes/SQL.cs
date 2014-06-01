@@ -232,7 +232,20 @@ namespace Nagru___Manga_Organizer
 		/// <returns></returns>
 		public static string GetMangaDetail(int mangaID, string columnName)
 		{
-			return (DB_GetEntryDetails(mangaID)).Rows[0][columnName].ToString();
+			string sVal = "";
+			using (DataTable dt = DB_GetEntryDetails(mangaID)) {
+				sVal = dt.Rows[0][columnName].ToString();
+			}
+			return sVal;
+		}
+
+		public static string GetSetting(string columnName)
+		{
+			string sVal = "";
+			using (DataTable dt = DB_GetSettings(columnName)) {
+				sVal = dt.Rows[0][columnName].ToString();
+			}
+			return sVal;
 		}
 
 		/// <summary>
@@ -490,6 +503,8 @@ namespace Nagru___Manga_Organizer
 		{
 			string sQuery;
 
+			//CreateSettings();
+
 			#region Create Tables
 
 			#region Artist
@@ -657,6 +672,53 @@ namespace Nagru___Manga_Organizer
 				values('Doujinshi'),('Manga'),('Artist CG'),('Game CG'),('Western'),('Non-H'),('Image Set'),('Cosplay'),('Asian Porn'),('Misc')";
 			ExecuteNonQuery(sQuery);
 			#endregion
+		}
+
+		private static void CreateSettings()
+		{
+			bool bExists = false;
+
+			//check if the table already exists
+			using (DataTable dt = ExecuteQuery("select * from sqlite_master where tbl_name = 'Settings'")) {
+				if (dt.Rows.Count > 0)
+					bExists = true;
+			}
+
+			//if it doesn't, create it
+			if (!bExists) {
+				string sCommandText = @"
+					create table [Settings]
+					(
+						SettingsID						integer			primary key		autoincrement
+						,RootPath							text				null
+						,SavePath							text				null
+						,SearchIgnore					text				null
+						,FormPosition					text				null
+						,ImageBrowser					text				null
+						,member_id						text				null
+						,pass_hash						text				null
+						,NewUser							integer			not null			default		1
+						,SendReports					integer			not null			default		1
+						,ShowGrid							integer			not null			default		1
+						,ShowDate							integer			not null			default		1
+						,ReadInterval					integer			not null			default		20000
+						,RowColourHighlight		integer			not null			default		-15
+						,RowColourAlt					integer			not null			default		-657931
+						,BackgroundColor			text				not null			default		'39,40,34'
+						,GallerySettings			text				not null			default		'1,1,0,0,0,0,0,0,0,0'
+						,CreatedDBTime				text				not null			default		CURRENT_TIMESTAMP
+						,AuditDBTime					text				not null			default		CURRENT_TIMESTAMP
+					)";
+				ExecuteNonQuery(sCommandText);
+
+				//set up trigger for changes
+				sCommandText = @"
+					create trigger trSettings after update on Settings
+					begin
+						update Settings set AuditDBTime = CURRENT_TIMESTAMP where settingsID = new.rowid;
+					end;";
+				ExecuteNonQuery(sCommandText);
+			}
 		}
 
 		#endregion
@@ -846,6 +908,36 @@ namespace Nagru___Manga_Organizer
 			}
 
 			return bExists;
+		}
+
+		private static DataTable DB_GetSettings(string sColumn)
+		{
+			string sCommandText = @"
+				select 
+						sx.SettingsID
+						,sx.RootPath
+						,sx.SavePath
+						,sx.SearchIgnore
+						,sx.FormPosition
+						,sx.ImageBrowser
+						,sx.member_id
+						,sx.pass_hash
+						,sx.NewUser
+						,sx.SendReports
+						,sx.ShowGrid
+						,sx.ShowDate
+						,sx.ReadInterval
+						,sx.RowColourHighlight
+						,sx.RowColourAlt
+						,sx.BackgroundColor
+						,sx.GallerySettings
+						,sx.CreatedDBTime
+						,sx.AuditDBTime
+				from
+					Settings sx
+			";
+
+			return ExecuteQuery(sCommandText);
 		}
 
 		#endregion

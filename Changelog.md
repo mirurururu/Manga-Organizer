@@ -1,4 +1,7 @@
-#### v.4.5.00 (May 22, 2014)
+#### v. 4.5.02 (June 1, 2014)
+	- Minor bugfixes for deleting entries, copying titles, etc
+
+#### v. 4.5.00 (May 22, 2014)
 	- Switched data storage from serialization to Sqlite
 	- Remapped 'search EH' shortcut to Alt+X
 	

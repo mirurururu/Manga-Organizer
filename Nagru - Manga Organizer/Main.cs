@@ -561,8 +561,15 @@ namespace Nagru___Manga_Organizer
 		{
 			UpdateLV();
 			LV_Entries.Select();
-			if (mangaID != -1)
+
+			if (mangaID != -1
+					&& !string.IsNullOrWhiteSpace(TxBx_Search.Text)
+					&& SQL.Search(TxBx_Search.Text, mangaID).Rows.Count > 0) {
 				ReFocus();
+			}
+			else {
+				Reset();
+			}
 		}
 
 		/// <summary>
@@ -766,7 +773,7 @@ namespace Nagru___Manga_Organizer
 				Dt_Date.Value = dt.AddSeconds((long)Convert.ToDouble(asResp[2]));
 
 				Nud_Pages.Value = Convert.ToInt32(asResp[3]); //set page count
-				srRating.SelectedStar = (int)Convert.ToDouble(asResp[4]); //set star rating
+				srRating.SelectedStar = Convert.ToInt32(Convert.ToDouble(asResp[4])); //set star rating
 
 				//set tags
 				if (acTxBx_Tags.Text == string.Empty) {
@@ -854,7 +861,7 @@ namespace Nagru___Manga_Organizer
 		private void ReFocus()
 		{
 			for (int i = 0; i < LV_Entries.Items.Count; i++)
-				if(LV_Entries.Items[i].SubItems[ColRating.Index].Text == mangaID.ToString()) {
+				if(LV_Entries.Items[i].SubItems[colID.Index].Text == mangaID.ToString()) {
 					ScrollTo(i);
 					break;
 				}
@@ -1224,15 +1231,6 @@ namespace Nagru___Manga_Organizer
 
 					//update LV_Entries
 					AddEntries();
-
-					//re-select the added item if applicable
-					if (string.IsNullOrWhiteSpace(TxBx_Search.Text) 
-							|| SQL.Search(TxBx_Search.Text, mangaID).Rows.Count > 0) {
-						ReFocus();
-					}
-					else {
-						Reset();
-					}
 				}
 			}
 			else
@@ -1298,7 +1296,7 @@ namespace Nagru___Manga_Organizer
 
 			//delete source file\directory
 			if (dResult == DialogResult.Yes) {
-				if (!bRst) {
+				if (bRst) {
 					//warn user before deleting subdirectories
 					int iNumDir = Directory.GetDirectories(sLoc).Length;
 					if (iNumDir > 0) {
@@ -1353,7 +1351,7 @@ namespace Nagru___Manga_Organizer
 			}
 
 			Clipboard.SetText(
-				ExtString.GetFormattedTitle(CmbBx_Artist.Text, CmbBx_Type.Text));
+				ExtString.GetFormattedTitle(CmbBx_Artist.Text, acTxBx_Title.Text));
 			Text = "Name copied to clipboard";
 		}
 
@@ -1898,29 +1896,6 @@ namespace Nagru___Manga_Organizer
 				else
 					iPages = (ushort)ExtDir.GetFiles(
 						_Path, SearchOption.TopDirectoryOnly).Length;
-			}
-
-			//Returns formatted title of Entry
-			public override string ToString()
-			{
-				return string.Format(!string.IsNullOrEmpty(sArtist) ?
-						"[{0}] {1}" : "{1}", sArtist, sTitle);
-			}
-
-			/* Override equals to compare entry titles */
-			public override bool Equals(object obj)
-			{
-				if (!(obj is csEntry))
-					return false;
-				csEntry en = obj as csEntry;
-				return (en.sArtist + en.sTitle).Equals(
-						sArtist + sTitle, StringComparison.OrdinalIgnoreCase);
-			}
-
-			/* 'Disable' hashtable */
-			public override int GetHashCode()
-			{
-				return 1;
 			}
 
 			/* custom serialization to save datatypes manually */
