@@ -1,3 +1,7 @@
+#### v. 4.5.03 (June 4, 2014)
+	- Fixed sorting by dates
+	- Improved sorting speed by a couple nanoseconds
+
 #### v. 4.5.02 (June 1, 2014)
 	- Minor bugfixes for deleting entries, copying titles, etc
 

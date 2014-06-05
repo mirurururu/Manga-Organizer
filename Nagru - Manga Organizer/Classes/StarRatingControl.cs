@@ -137,18 +137,18 @@ namespace Nagru___Manga_Organizer
 
 			//setup star shape (from top tip and in thirds)
 			gpStar = new GraphicsPath();
-			gpStar.AddLines(new PointF[] {
-          new PointF(iWidth / 2, 0),                   //A
-          new PointF(2 * iWidth / 3, iHeight / 3),     //B
-          new PointF(iWidth, iHeight / 3),             //C
-          new PointF(4 * iWidth / 5, 4 * iHeight / 7), //D
-          new PointF(5 * iWidth / 6, iHeight),         //E
-          new PointF(iWidth / 2, 4 * iHeight / 5),     //F
-          new PointF(iWidth / 6, iHeight),             //G
-          new PointF(iWidth / 5, 4 * iHeight / 7),     //H
-          new PointF(0, iHeight / 3),                  //I
-          new PointF(iWidth / 3, iHeight / 3)          //J
-      });
+			PointF[] pfStar = new PointF[10];
+			pfStar[0] = new PointF(iWidth / 2, 0);											//12:00
+      pfStar[1] = new PointF(2 * iWidth / 3, iHeight / 3);				//1:00
+      pfStar[2] = new PointF(iWidth, iHeight / 3);								//2:00
+      pfStar[3] = new PointF(4 * iWidth / 5, 4 * iHeight / 7);		//3:00
+      pfStar[4] = new PointF(5 * iWidth / 6, iHeight);						//4:00
+      pfStar[5] = new PointF(iWidth / 2, 4 * iHeight / 5);				//6:00
+			pfStar[6] = new PointF(iWidth - pfStar[4].X, pfStar[4].Y);	//8:00
+			pfStar[7] = new PointF(iWidth - pfStar[3].X, pfStar[3].Y);	//9:00
+			pfStar[8] = new PointF(iWidth - pfStar[2].X, pfStar[2].Y);	//10:00
+			pfStar[9] = new PointF(iWidth - pfStar[1].X, pfStar[1].Y);	//11:00
+			gpStar.AddLines(pfStar);
 			gpStar.CloseFigure();
 		}
 

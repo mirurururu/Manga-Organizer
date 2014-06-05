@@ -563,8 +563,8 @@ namespace Nagru___Manga_Organizer
 			LV_Entries.Select();
 
 			if (mangaID != -1
-					&& !string.IsNullOrWhiteSpace(TxBx_Search.Text)
-					&& SQL.Search(TxBx_Search.Text, mangaID).Rows.Count > 0) {
+					&& (string.IsNullOrWhiteSpace(TxBx_Search.Text)
+					|| SQL.Search(TxBx_Search.Text, mangaID).Rows.Count > 0)) {
 				ReFocus();
 			}
 			else {
@@ -1179,7 +1179,7 @@ namespace Nagru___Manga_Organizer
 					asItems[ColTitle.Index] = dt.Rows[i]["Title"].ToString();
 					asItems[ColPages.Index] = dt.Rows[i]["Pages"].ToString();
 					asItems[ColTags.Index] = dt.Rows[i]["Tags"].ToString();
-					asItems[colDate.Index] = Convert.ToDateTime(dt.Rows[i]["PublishedDate"].ToString()).ToString("yy/MM/dd");
+					asItems[colDate.Index] = Convert.ToDateTime(dt.Rows[i]["PublishedDate"].ToString()).ToString("MM/dd/yy");
 					asItems[ColType.Index] = dt.Rows[i]["Type"].ToString();
 					asItems[ColRating.Index] = RatingFormat(Convert.ToDecimal(dt.Rows[i]["Rating"].ToString()));
 					asItems[colID.Index] = dt.Rows[i]["mangaID"].ToString();
@@ -1382,7 +1382,7 @@ namespace Nagru___Manga_Organizer
 		private void MnTs_SearchEH_Click(object sender, EventArgs e)
 		{
 			Suggest fmSuggest = new Suggest(
-				ExtString.GetFormattedTitle(CmbBx_Artist.Text, CmbBx_Type.Text));
+				ExtString.GetFormattedTitle(CmbBx_Artist.Text, acTxBx_Title.Text));
 			fmSuggest.ShowDialog();
 
 			if (fmSuggest.DialogResult == DialogResult.OK) {

@@ -11,9 +11,20 @@ namespace Nagru___Manga_Organizer
 	/// <remarks>Author: Microsoft (March 13, 2008)</remarks>
 	public class LVsorter : IComparer
 	{
+		#region Column IDs
+		const int colArtist = 0;
+		const int colTitle	= 1;
+		const int colPages	= 2;
+		const int colTags		= 3;
+		const int colDate		= 4;
+		const int colType		= 5;
+		const int colRating = 6;
+		#endregion
+
 		static TrueCompare tc = new TrueCompare();
 		public int ColToSort;
 		public SortOrder OrdOfSort;
+		private int Result;
 
 		public LVsorter()
 		{
@@ -39,31 +50,49 @@ namespace Nagru___Manga_Organizer
 		{
 			if (x == null || y == null)
 				return 0;
+
+			Result = 0;
 			ListViewItem lviX = (ListViewItem)x;
 			ListViewItem lviY = (ListViewItem)y;
 
-			//sort by art-tit, tit-art or custom-single
-			string sX, sY;
 			switch (ColToSort) {
-				case 0:
-					sX = lviX.SubItems[0].Text + lviX.SubItems[1].Text;
-					sY = lviY.SubItems[0].Text + lviY.SubItems[1].Text;
+				case colArtist:
+					Result = tc.Compare(
+						lviX.SubItems[colArtist].Text + lviX.SubItems[colTitle].Text
+						, lviY.SubItems[colArtist].Text + lviY.SubItems[colTitle].Text);
 					break;
-				case 1:
-					sX = lviX.SubItems[1].Text + lviX.SubItems[0].Text;
-					sY = lviY.SubItems[1].Text + lviY.SubItems[0].Text;
+				case colTitle:
+					Result = tc.Compare(
+						lviX.SubItems[colTitle].Text + lviX.SubItems[colArtist].Text
+						, lviY.SubItems[colTitle].Text + lviY.SubItems[colArtist].Text);
 					break;
-				case 4:
-					sX = Convert.ToDateTime(lviX.SubItems[4].Text).ToString("yyyy MM dd");
-					sY = Convert.ToDateTime(lviY.SubItems[4].Text).ToString("yyyy MM dd");
+				case colPages:
+					Result = (Int32.Parse(lviX.SubItems[colPages].Text))
+						.CompareTo
+						(Int32.Parse(lviY.SubItems[colPages].Text));
 					break;
-				default:
-					sX = lviX.SubItems[ColToSort].Text;
-					sY = lviY.SubItems[ColToSort].Text;
+				case colDate: //re-order MM/DD/YY into YYMMDD for search
+					Result = (lviX.SubItems[colDate].Text.Substring(6, 2) 
+							+ lviX.SubItems[colDate].Text.Substring(0, 2) 
+							+ lviX.SubItems[colDate].Text.Substring(3, 2))
+						.CompareTo
+						(lviY.SubItems[colDate].Text.Substring(6, 2) 
+							+ lviY.SubItems[colDate].Text.Substring(0, 2) 
+							+ lviY.SubItems[colDate].Text.Substring(3, 2));
+					break;
+				case colType:
+					Result = tc.Compare(
+						lviX.SubItems[colType].Text
+						, lviY.SubItems[colType].Text);
+					break;
+				case colRating:
+					Result = 
+						(lviX.SubItems[colRating].Text.Length)
+						.CompareTo
+						(lviY.SubItems[colRating].Text.Length);
 					break;
 			}
-			int iResult = tc.Compare(sX, sY);
-			return (OrdOfSort == SortOrder.Ascending) ? iResult : -iResult;
+			return (OrdOfSort == SortOrder.Ascending) ? Result : -Result;
 		}
 	}
 }
