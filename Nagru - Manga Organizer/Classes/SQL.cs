@@ -318,8 +318,17 @@ namespace Nagru___Manga_Organizer
 		/// <returns>Returns the success state of the operation</returns>
 		public static bool DeleteManga(int mangaID)
 		{
-			int error = Entry_Delete(mangaID);
-			return (error == 0);
+			int altered = Entry_Delete(mangaID);
+			return (altered == 1);
+		}
+
+		/// <summary>
+		/// Deletes all unused tags from the DB
+		/// </summary>
+		/// <returns>Returns the number of deleted tags.</returns>
+		public static int CleanUpTags()
+		{
+			return DeleteUnusedTags();
 		}
 
 		/// <summary>
@@ -1218,6 +1227,15 @@ namespace Nagru___Manga_Organizer
 
 			EndTransaction();
 			return altered;
+		}
+
+		private static int DeleteUnusedTags()
+		{
+			string sCommandText = @"
+				delete from Tag
+				where TagID not in 
+				(select TagID from MangaTag)";
+			return ExecuteNonQuery(sCommandText);
 		}
 
 		#endregion

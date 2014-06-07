@@ -29,7 +29,7 @@ namespace Nagru___Manga_Organizer
 		{
 			if (Properties.Settings.Default.DefGrid)
 				LV_Found.GridLines = true;
-			LV_Found.ListViewItemSorter = null;
+			LV_Found.ListViewItemSorter = lvSortObj;
 			LV_Found_Resize(sender, e);
 
 			string[] sRaw = Properties.Settings.Default.Ignore.Split('|');
@@ -207,9 +207,8 @@ namespace Nagru___Manga_Organizer
 
 		private void LV_Found_ColumnClick(object sender, ColumnClickEventArgs e)
 		{
-			if (e.Column != lvSortObj.ColToSort) {
-				lvSortObj.ColToSort = e.Column;
-				lvSortObj.OrdOfSort = SortOrder.Ascending;
+			if (e.Column != lvSortObj.SortingColumn) {
+				lvSortObj.NewColumn(e.Column, SortOrder.Ascending);
 			}
 			else
 				lvSortObj.SwapOrder();

@@ -113,8 +113,8 @@ namespace Nagru___Manga_Organizer
 					lItems.Add(lvi);
 				}
 				lvStats.Items.AddRange(lItems.ToArray());
-				lvSortObj.ColToSort = 2;
-				lvSortObj.OrdOfSort = SortOrder.Descending;
+				lvSortObj.SortingColumn = 2;
+				lvSortObj.SortingOrder = SortOrder.Descending;
 				lvStats.Sort();
 				lvStats.EndUpdate();
 			}
@@ -125,7 +125,7 @@ namespace Nagru___Manga_Organizer
 
 		private void lvStats_ColumnClick(object sender, ColumnClickEventArgs e)
 		{
-			if (e.Column != lvSortObj.ColToSort)
+			if (e.Column != lvSortObj.SortingColumn)
 				lvSortObj.NewColumn(e.Column, SortOrder.Ascending);
 			else
 				lvSortObj.SwapOrder();

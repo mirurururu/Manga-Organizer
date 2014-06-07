@@ -1,3 +1,6 @@
+#### v. 4.5.04 (June 6, 2014)
+	- Fixed sorting by percentage in the tag stats viewer
+
 #### v. 4.5.03 (June 4, 2014)
 	- Fixed sorting by dates
 	- Improved sorting speed by a couple nanoseconds

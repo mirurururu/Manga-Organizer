@@ -187,7 +187,7 @@ namespace Nagru___Manga_Organizer
 
 		private void lvDetails_ColumnClick(object sender, ColumnClickEventArgs e)
 		{
-			if (e.Column != lvSortObj.ColToSort)
+			if (e.Column != lvSortObj.SortingColumn)
 				lvSortObj.NewColumn(e.Column, SortOrder.Ascending);
 			else
 				lvSortObj.SwapOrder();

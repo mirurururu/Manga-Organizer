@@ -214,13 +214,15 @@ namespace Nagru___Manga_Organizer
 			}
 
 			//parse returned string
+			DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 			if (!bExc && asResp.Length >= 11) {
 				asParse[0] = ExtString.HTMLConvertToPlainText(
-					asResp[2].Split(':')[1].Substring(1));         //set artist/title
-				asParse[1] = asResp[4].Split(':')[1].Substring(1); //set entry type
-				asParse[2] = asResp[7].Split(':')[1].Substring(1); //set date
-				asParse[3] = asResp[8].Split(':')[1].Substring(1); //set page count
-				asParse[4] = asResp[9].Split(':')[3].Substring(1); //set star rating
+					asResp[2].Split(':')[1].Substring(1));													//set artist/title
+				asParse[1] = asResp[4].Split(':')[1].Substring(1);								//set entry type
+				asParse[2] = dt.AddSeconds(long.Parse(
+					asResp[7].Split(':')[1].Substring(1))).ToShortDateString();			//set date
+				asParse[3] = asResp[8].Split(':')[1].Substring(1);								//set page count
+				asParse[4] = asResp[9].Split(':')[3].Substring(1);								//set star rating
 
 				//set and format tags
 				int iLast = asResp.Length - 1;
