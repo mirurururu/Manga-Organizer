@@ -1415,6 +1415,12 @@ namespace Nagru___Manga_Organizer
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
 		}
 
+		private void MnTs_CleanTags_Click(object sender, EventArgs e)
+		{
+			MessageBox.Show(string.Format("{0} unused tags have been removed.", SQL.CleanUpTags())
+				, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+		}
+
 		private void MnTS_Stats_Click(object sender, EventArgs e)
 		{
 			Stats fmStats = new Stats();
@@ -1945,10 +1951,5 @@ namespace Nagru___Manga_Organizer
 		#endregion
 
 		#endregion
-		
-		private void MnTs_CleanTags_Click(object sender, EventArgs e)
-		{
-			SQL.CleanUpTags();
-		}
 	}
-}
+}     

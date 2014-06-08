@@ -80,6 +80,8 @@
 			this.MnTs_SearchEH = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
 			this.MnTS_OpenDataFolder = new System.Windows.Forms.ToolStripMenuItem();
+			this.maintenanceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.MnTs_CleanTags = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
 			this.MnTS_Stats = new System.Windows.Forms.ToolStripMenuItem();
 			this.MnTS_Settings = new System.Windows.Forms.ToolStripMenuItem();
@@ -100,8 +102,6 @@
 			this.Tb_Notes = new System.Windows.Forms.TabPage();
 			this.frTxBx_Notes = new Nagru___Manga_Organizer.FixedRichTextBox();
 			this.Delay = new System.Windows.Forms.Timer(this.components);
-			this.maintenanceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.MnTs_CleanTags = new System.Windows.Forms.ToolStripMenuItem();
 			this.TabControl.SuspendLayout();
 			this.Tb_Browse.SuspendLayout();
 			this.Mn_TxBx.SuspendLayout();
@@ -709,6 +709,21 @@
 			this.MnTS_OpenDataFolder.ToolTipText = "Alt+L";
 			this.MnTS_OpenDataFolder.Click += new System.EventHandler(this.MnTS_OpenDataFolder_Click);
 			// 
+			// maintenanceToolStripMenuItem
+			// 
+			this.maintenanceToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MnTs_CleanTags});
+			this.maintenanceToolStripMenuItem.Name = "maintenanceToolStripMenuItem";
+			this.maintenanceToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+			this.maintenanceToolStripMenuItem.Text = "Maintenance";
+			// 
+			// MnTs_CleanTags
+			// 
+			this.MnTs_CleanTags.Name = "MnTs_CleanTags";
+			this.MnTs_CleanTags.Size = new System.Drawing.Size(184, 22);
+			this.MnTs_CleanTags.Text = "Remove unused tags";
+			this.MnTs_CleanTags.Click += new System.EventHandler(this.MnTs_CleanTags_Click);
+			// 
 			// toolStripSeparator4
 			// 
 			this.toolStripSeparator4.Name = "toolStripSeparator4";
@@ -928,21 +943,6 @@
 			// 
 			this.Delay.Interval = 400;
 			this.Delay.Tick += new System.EventHandler(this.Delay_Tick);
-			// 
-			// maintenanceToolStripMenuItem
-			// 
-			this.maintenanceToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.MnTs_CleanTags});
-			this.maintenanceToolStripMenuItem.Name = "maintenanceToolStripMenuItem";
-			this.maintenanceToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
-			this.maintenanceToolStripMenuItem.Text = "Maintenance";
-			// 
-			// MnTs_CleanTags
-			// 
-			this.MnTs_CleanTags.Name = "MnTs_CleanTags";
-			this.MnTs_CleanTags.Size = new System.Drawing.Size(184, 22);
-			this.MnTs_CleanTags.Text = "Remove unused tags";
-			this.MnTs_CleanTags.Click += new System.EventHandler(this.MnTs_CleanTags_Click);
 			// 
 			// Main
 			// 

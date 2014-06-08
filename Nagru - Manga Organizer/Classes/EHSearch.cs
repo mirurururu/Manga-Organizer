@@ -5,6 +5,8 @@ using System.Text;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Nagru___Manga_Organizer
 {
@@ -182,9 +184,8 @@ namespace Nagru___Manga_Organizer
 
 		public static string[] LoadMetadata(string sAddress)
 		{
-			const int iPreTag = 11;
-			string[] asParse = new string[6]
-				, asResp = new string[0];
+			string sEHResponse = string.Empty;
+			string[] asParse = new string[0];
 			bool bExc = false;
 
 			//set up connection
@@ -205,7 +206,7 @@ namespace Nagru___Manga_Organizer
 				}
 				using (StreamReader sr = new StreamReader((
 					(HttpWebResponse)rq.GetResponse()).GetResponseStream())) {
-					asResp = ExtString.Split(sr.ReadToEnd(), "\",\"");
+					sEHResponse = sr.ReadToEnd();
 					rq.Abort();
 				}
 			} catch (WebException exc) {
@@ -214,25 +215,24 @@ namespace Nagru___Manga_Organizer
 			}
 
 			//parse returned string
-			DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-			if (!bExc && asResp.Length >= 11) {
-				asParse[0] = ExtString.HTMLConvertToPlainText(
-					asResp[2].Split(':')[1].Substring(1));													//set artist/title
-				asParse[1] = asResp[4].Split(':')[1].Substring(1);								//set entry type
-				asParse[2] = dt.AddSeconds(long.Parse(
-					asResp[7].Split(':')[1].Substring(1))).ToShortDateString();			//set date
-				asParse[3] = asResp[8].Split(':')[1].Substring(1);								//set page count
-				asParse[4] = asResp[9].Split(':')[3].Substring(1);								//set star rating
+			if (!bExc && !string.IsNullOrEmpty(sEHResponse)) {
+				try {
+					DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+					dynamic dynJsonObj = JObject.Parse(sEHResponse);
 
-				//set and format tags
-				int iLast = asResp.Length - 1;
-				asResp[11] = asResp[11].Split(':')[1].Substring(2);
-				asResp[iLast] = asResp[iLast].Substring(0, asResp[iLast].Length - 5);
-				asParse[5] = string.Join(", ", asResp, iPreTag, asResp.Length - iPreTag);
-				return asParse;
+					asParse = new string[6];
+					asParse[0] = dynJsonObj.gmetadata[0].title.Value;
+					asParse[1] = dynJsonObj.gmetadata[0].category.Value;
+					asParse[2] = dt.AddSeconds(long.Parse(dynJsonObj.gmetadata[0].posted.Value)).ToShortDateString();
+					asParse[3] = dynJsonObj.gmetadata[0].filecount.Value;
+					asParse[4] = dynJsonObj.gmetadata[0].rating.Value;
+					asParse[5] = string.Join(",", dynJsonObj.gmetadata[0].tags);
+				} catch (JsonReaderException exc) {
+					Console.WriteLine(exc.Message);
+				}
 			}
-			else
-				return new string[0];
+
+			return asParse;
 		}
 
 		public void Search(string sRaw)
@@ -265,9 +265,9 @@ namespace Nagru___Manga_Organizer
 			if (bXH) {
 				rq.CookieContainer = new CookieContainer(2);
 				rq.CookieContainer.Add(new CookieCollection() {
-                    new Cookie("ipb_member_id", Properties.Settings.Default.member_id) { Domain = "exhentai.org" },
-                    new Cookie("ipb_pass_hash", Properties.Settings.Default.pass_hash) { Domain = "exhentai.org" }
-                });
+					new Cookie("ipb_member_id", Properties.Settings.Default.member_id) { Domain = "exhentai.org" },
+					new Cookie("ipb_pass_hash", Properties.Settings.Default.pass_hash) { Domain = "exhentai.org" }
+				});
 			}
 
 			try {
