@@ -5,116 +5,116 @@ using System.Windows.Forms;
 
 namespace Nagru___Manga_Organizer
 {
-	public partial class About : Form
-	{
-		delegate void DelVoidInt(string sGet);
-		DelVoidInt delFini = null;
+  public partial class About : Form
+  {
+    delegate void DelVoidInt(string sGet);
+    DelVoidInt delFini = null;
 
-		int iVer = 0;
+    int iVer = 0;
 
-		public About()
-		{
-			InitializeComponent();
-		}
+    public About()
+    {
+      InitializeComponent();
+    }
 
-		private void About_Load(object sender, EventArgs e)
-		{
-			delFini = Checked;
-			string sVer = Application.ProductVersion.Substring(
-					0, Application.ProductVersion.LastIndexOf('.'));
-			Text += string.Format("(v. {0})", sVer);
-			iVer = Convert.ToInt32(sVer.Replace(".", ""));
+    private void About_Load(object sender, EventArgs e)
+    {
+      delFini = Checked;
+      string sVer = Application.ProductVersion.Substring(
+          0, Application.ProductVersion.LastIndexOf('.'));
+      Text += string.Format("(v. {0})", sVer);
+      iVer = Convert.ToInt32(sVer.Replace(".", ""));
 
-			Lbl_P1.Text = "This program provides tagging, searching and other basic management\n" +
-			"tools for manga. It is intended as a companion to the E-H website, and\n" +
-			"optimally functions with directory names formatted as \"[Artist] Title\".\n" +
-			"Copyright (C) 2012  Nagru\n\n\n" +
-			"This program is free software; you can redistribute it and/or modify it\n" +
-			"under the terms of the GNU General Public License as published by the Free\n" +
-			"Software Foundation, either version 3 of the License, or (at your option)\n" +
-			"any later version.\n\n" +
-			"This program is distributed in the hope that it will be useful, but WITHOUT\n" +
-			"ANY WARRANTY; without even the implied warranty of\n" +
-			"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n" +
-			"See the GNU General Public License for more details:";
-			Lbl_P2.Text = "For updates, or a copy of the source code, visit:";
-		}
+      Lbl_P1.Text = "This program provides tagging, searching and other basic management\n" +
+      "tools for manga. It is intended as a companion to the E-H website, and\n" +
+      "optimally functions with directory names formatted as \"[Artist] Title\".\n" +
+      "Copyright (C) 2012  Nagru\n\n\n" +
+      "This program is free software; you can redistribute it and/or modify it\n" +
+      "under the terms of the GNU General Public License as published by the Free\n" +
+      "Software Foundation, either version 3 of the License, or (at your option)\n" +
+      "any later version.\n\n" +
+      "This program is distributed in the hope that it will be useful, but WITHOUT\n" +
+      "ANY WARRANTY; without even the implied warranty of\n" +
+      "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n" +
+      "See the GNU General Public License for more details:";
+      Lbl_P2.Text = "For updates, or a copy of the source code, visit:";
+    }
 
-		private void About_Shown(object sender, EventArgs e)
-		{
-			this.Cursor = Cursors.WaitCursor;
-			Text += " - Checking version...";
+    private void About_Shown(object sender, EventArgs e)
+    {
+      this.Cursor = Cursors.WaitCursor;
+      Text += " - Checking version...";
 
-			System.Threading.ThreadPool.QueueUserWorkItem(CheckLatest);
-		}
+      System.Threading.ThreadPool.QueueUserWorkItem(CheckLatest);
+    }
 
-		private void CheckLatest(object Null)
-		{
-			string sGet = "0";
+    private void CheckLatest(object Null)
+    {
+      string sGet = "0";
 
-			//exit if there (probably) isn't an internet connection
-			if (!System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable()) {
-				Invoke(delFini, sGet);
-				return;
-			}
+      //exit if there (probably) isn't an internet connection
+      if (!System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable()) {
+        Invoke(delFini, sGet);
+        return;
+      }
 
-			try {
-				ServicePointManager.DefaultConnectionLimit = 64;
-				HttpWebRequest rq = (HttpWebRequest)WebRequest.Create(
-						"http://cloud.openmailbox.org/public.php?service=files&t=dbf99c611dad4ccd8627d37e6fdb4045&download");
-				rq.UserAgent = "Mozilla/5.0 (Windows; WIndows NT 9.0; en-US))";
-				rq.Method = "GET";
-				rq.Timeout = 5000;
-				rq.KeepAlive = false;
-				rq.Proxy = null;
+      try {
+        ServicePointManager.DefaultConnectionLimit = 64;
+        HttpWebRequest rq = (HttpWebRequest)WebRequest.Create(
+            "http://cloud.openmailbox.org/public.php?service=files&t=dbf99c611dad4ccd8627d37e6fdb4045&download");
+        rq.UserAgent = "Mozilla/5.0 (Windows; WIndows NT 9.0; en-US))";
+        rq.Method = "GET";
+        rq.Timeout = 5000;
+        rq.KeepAlive = false;
+        rq.Proxy = null;
 
-				using (StreamReader sr = new StreamReader(
-								rq.GetResponse().GetResponseStream())) {
-					sGet = sr.ReadToEnd();
-				}
-				rq.Abort();
-			} catch (Exception e) {
-				MessageBox.Show("A connection could not be established:\n" + e.Message,
-								Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
-			} finally {
-					Invoke(delFini, sGet);
-			}
-		}
+        using (StreamReader sr = new StreamReader(
+                rq.GetResponse().GetResponseStream())) {
+          sGet = sr.ReadToEnd();
+        }
+        rq.Abort();
+      } catch (Exception e) {
+        MessageBox.Show("A connection could not be established:\n" + e.Message,
+                Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+      } finally {
+        Invoke(delFini, sGet);
+      }
+    }
 
-		private void Checked(string sGet)
-		{
-			int iGet;
-			int.TryParse(sGet.Replace(".", ""), out iGet);
+    private void Checked(string sGet)
+    {
+      int iGet;
+      int.TryParse(sGet.Replace(".", ""), out iGet);
 
-			Text = Text.Remove(Text.Length - 22);
-			if (iGet > iVer)
-				Text += string.Format(
-						" - New version available (v. {0})", sGet);
-			else if (iGet == iVer)
-				Text += " - Latest version";
-			else if (iGet == 0)
-				Text += " - Could not establish a connection";
-			else
-				Text += " - Pre-release version";
+      Text = Text.Remove(Text.Length - 22);
+      if (iGet > iVer)
+        Text += string.Format(
+            " - New version available (v. {0})", sGet);
+      else if (iGet == iVer)
+        Text += " - Latest version";
+      else if (iGet == 0)
+        Text += " - Could not establish a connection";
+      else
+        Text += " - Pre-release version";
 
-			this.Cursor = Cursors.Default;
-		}
+      this.Cursor = Cursors.Default;
+    }
 
-		private void LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-		{
-			if (sender == LnkLbl_Git) {
-				LnkLbl_Git.LinkVisited = true;
-				System.Diagnostics.Process.Start("http://nagru.github.io/Manga-Organizer/");
-			}
-			else /*if (sender == LnkLbl_Gpl)*/ {
-				LnkLbl_Gpl.LinkVisited = true;
-				System.Diagnostics.Process.Start("http://www.gnu.org/licenses/gpl.html");
-			}
-		}
+    private void LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+    {
+      if (sender == LnkLbl_Git) {
+        LnkLbl_Git.LinkVisited = true;
+        System.Diagnostics.Process.Start("http://nagru.github.io/Manga-Organizer/");
+      }
+      else /*if (sender == LnkLbl_Gpl)*/ {
+        LnkLbl_Gpl.LinkVisited = true;
+        System.Diagnostics.Process.Start("http://www.gnu.org/licenses/gpl.html");
+      }
+    }
 
-		private void About_FormClosing(object sender, FormClosingEventArgs e)
-		{
-			this.DialogResult = DialogResult.OK;
-		}
-	}
+    private void About_FormClosing(object sender, FormClosingEventArgs e)
+    {
+      this.DialogResult = DialogResult.OK;
+    }
+  }
 }

@@ -62,7 +62,9 @@
     <StartupObject>Nagru___Manga_Organizer.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL" />
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <Private>False</Private>
+    </Reference>
     <Reference Include="SharpCompress">
       <HintPath>Resources\SharpCompress.dll</HintPath>
       <Private>False</Private>
@@ -79,7 +81,6 @@
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
     <Reference Include="System.Drawing" />
-    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.Xml" />
@@ -268,6 +269,7 @@
     <None Include="Scripts\DBSchema.sql" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Resources\Newtonsoft.Json.dll" />
     <Content Include="Resources\SadPanda.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
