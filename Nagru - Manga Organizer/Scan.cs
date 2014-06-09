@@ -117,12 +117,12 @@ namespace Nagru___Manga_Organizer
     /* Add new item to listview */
     private void AddItem(Main.csEntry en)
     {
-      if (en.iPages == 0)
+      if (en.pages == 0)
         return;
       ListViewItem lvi = new ListViewItem(en.sArtist);
       lvi.SubItems.AddRange(new string[] { 
           en.sTitle, 
-          en.iPages.ToString(),
+          en.pages.ToString(),
           lFound.Count.ToString()
       });
       lFound.Add(en);
@@ -163,7 +163,7 @@ namespace Nagru___Manga_Organizer
         ListViewItem lvi = new ListViewItem(lFound[i].sArtist);
         lvi.SubItems.AddRange(new string[] {
                     lFound[i].sTitle,
-                    lFound[i].iPages.ToString(),
+                    lFound[i].pages.ToString(),
                     i.ToString()
                 });
 
@@ -267,7 +267,7 @@ namespace Nagru___Manga_Organizer
         //save entry and remove from list
         int iPos = Convert.ToInt32(LV_Found.SelectedItems[i].SubItems[3].Text);
         SQL.SaveManga(lFound[iPos].sArtist, lFound[iPos].sTitle, lFound[iPos].sTags,
-          lFound[iPos].sLoc, lFound[iPos].dtDate, lFound[iPos].iPages, lFound[iPos].sType,
+          lFound[iPos].sLoc, lFound[iPos].dtDate, lFound[iPos].pages, lFound[iPos].sType,
           lFound[iPos].byRat, lFound[iPos].sDesc);
         lRm.Add(iPos);
       }

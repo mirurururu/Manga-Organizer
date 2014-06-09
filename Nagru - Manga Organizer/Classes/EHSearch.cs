@@ -97,15 +97,6 @@ namespace Nagru___Manga_Organizer
         };
       }
     }
-
-    /// <summary>
-    /// Returns whether an error has ocurred
-    /// </summary>
-    public bool Error {
-      get {
-        return bConnError;
-      }
-    }
     #endregion
 
     #region Properties
@@ -114,7 +105,6 @@ namespace Nagru___Manga_Organizer
     private string sSearchURL;
     private int iCurrentPage = 0;
     private int iPages = 0;
-    private bool bConnError = false;
     #endregion
 
     #region EH API JSON Class
@@ -135,6 +125,72 @@ namespace Nagru___Manga_Organizer
           gidlist = new object[1][];
           gidlist[0] = new object[2] { int.Parse(asChunk[4]), asChunk[5] };
         }
+      }
+    }
+    #endregion
+
+    #region EH Metadata
+    public class gmetadata
+    {
+      public int gid;
+      public string token;
+      public string archiver_key;
+      public string title;
+      public string title_jpn;
+      public string category;
+      public string thumb;
+      public string uploader;
+      public DateTime posted;
+      public int filecount;
+      public int filesize;
+      public bool expunged;
+      public float rating;
+      public int torrentcount;
+      public string[] tags;
+
+      public gmetadata(string JSON)
+      {
+        DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        try {
+          dynamic JsonObject = JObject.Parse(JSON);
+          
+          gid = Int32.Parse(JsonObject.gmetadata[0].gid.Value.ToString());
+          token = JsonObject.gmetadata[0].token.Value;
+          archiver_key = JsonObject.gmetadata[0].archiver_key.Value;
+          title = ExtString.HTMLConvertToPlainText(JsonObject.gmetadata[0].title.Value);
+          title_jpn = JsonObject.gmetadata[0].title_jpn.Value;
+          category = JsonObject.gmetadata[0].category.Value;
+          thumb = JsonObject.gmetadata[0].thumb.Value;
+          uploader = JsonObject.gmetadata[0].uploader.Value;
+          posted = dt.AddSeconds(long.Parse(JsonObject.gmetadata[0].posted.Value.ToString()));
+          filecount = Int32.Parse(JsonObject.gmetadata[0].filecount.Value.ToString());
+          filesize = Int32.Parse(JsonObject.gmetadata[0].filesize.Value.ToString());
+          expunged = bool.Parse(JsonObject.gmetadata[0].expunged.Value.ToString());
+          rating = float.Parse(JsonObject.gmetadata[0].rating.Value.ToString());
+          torrentcount = Int32.Parse(JsonObject.gmetadata[0].torrentcount.Value.ToString());
+          JArray ja = JsonObject.gmetadata[0].tags;
+          tags = ja.Select(x => (string)x).ToArray();
+        } catch (JsonReaderException exc) {
+          Console.WriteLine(exc.Message);
+        }
+      }
+
+      public string GetTags(string sCurrentTags = null)
+      {
+        List<string> lRaw = new List<string>(tags.Length * 2);
+        lRaw.AddRange(tags);
+
+        if (!string.IsNullOrEmpty(sCurrentTags)) {
+          lRaw.AddRange(sCurrentTags.Split(','));
+        }
+        lRaw.Sort(new TrueCompare());
+        
+        string[] sRaw = lRaw.Select(
+          x => x.Trim()).Distinct().Where(
+          x => !string.IsNullOrWhiteSpace(x)).ToArray<string>();
+        
+        return String.Join(", ", sRaw);
       }
     }
     #endregion
@@ -171,11 +227,15 @@ namespace Nagru___Manga_Organizer
         byOpt[6], byOpt[7], byOpt[8], byOpt[9], Uri.EscapeDataString(sRaw).Replace("%20", "+"));
     }
 
-    public static string[] LoadMetadata(string sAddress)
+    public static gmetadata LoadMetadata(string sAddress)
     {
       string sEHResponse = string.Empty;
-      string[] asParse = new string[0];
-      bool bExc = false;
+      gmetadata gmManga = null;
+      bool bException = true;
+
+      //exit if there (probably) isn't an internet connection
+      if (!System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable())
+        return gmManga;
 
       //set up connection
       ServicePointManager.DefaultConnectionLimit = 64;
@@ -199,31 +259,17 @@ namespace Nagru___Manga_Organizer
           sEHResponse = sr.ReadToEnd();
           rq.Abort();
         }
+        bException = false;
       } catch (WebException exc) {
         Console.WriteLine(exc.Message);
-        bExc = true;
-      }
-
-      //parse returned string
-      if (!bExc && !string.IsNullOrEmpty(sEHResponse)) {
-        try {
-          DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-          dynamic dynJsonObj = JObject.Parse(sEHResponse);
-
-          asParse = new string[6] {
-						ExtString.HTMLConvertToPlainText(dynJsonObj.gmetadata[0].title.Value),				//title
-						dynJsonObj.gmetadata[0].category.Value,																				//type
-						dt.AddSeconds(long.Parse(dynJsonObj.gmetadata[0].posted.Value)).ToString(),		//date
-						dynJsonObj.gmetadata[0].filecount.Value,																			//pages
-						dynJsonObj.gmetadata[0].rating.Value,																					//rating
-						string.Join(", ", dynJsonObj.gmetadata[0].tags),															//tags
-					};
-        } catch (JsonReaderException exc) {
-          Console.WriteLine(exc.Message);
+      } finally {
+        //parse returned JSON
+        if (!bException && !string.IsNullOrEmpty(sEHResponse)) {
+          gmManga = new gmetadata(sEHResponse);
         }
       }
 
-      return asParse;
+      return gmManga;
     }
 
     public void Search(string sRaw)
@@ -235,6 +281,7 @@ namespace Nagru___Manga_Organizer
         return;
 
       string sPage = "";
+      bool bException = true;
 
       //determine if exhentai can be called
       bool bXH = !(string.IsNullOrEmpty(Properties.Settings.Default.pass_hash)
@@ -242,7 +289,7 @@ namespace Nagru___Manga_Organizer
 
       //convert raw search terms into web form
       sSearchURL = FormatSearch(sRaw, (bXH) ? "exhentai" : "g.e-hentai", bOpt);
-
+      
       //set up connection
       ServicePointManager.DefaultConnectionLimit = 64;
       HttpWebRequest rq = (HttpWebRequest)
@@ -268,18 +315,16 @@ namespace Nagru___Manga_Organizer
           sPage = sr.ReadToEnd();
         }
         rq.Abort();
+        bException = false;
       } catch (WebException exc) {
         Console.WriteLine(exc.Message);
-        bConnError = true;
       }
 
       //find all gallery results
-      if (!bConnError && !string.IsNullOrEmpty(sPage)) {
+      if (!bException && !string.IsNullOrEmpty(sPage)) {
         string sRegexGallery = ".*http://(ex|g.e-)hentai.org/g/[0-9]{6}/[a-zA-z0-9]{10}/.*"
           + "onmouseover=.* onmouseout=.*";
-        //string sRegexPage = "td onclick=\"sp\\([0-9]*\\)\">";
         const int iMinGallery = 125;
-        //const int iMinPage = 18;
 
         string[] asplit = sPage.Split('<');
         for (int i = 0; i < asplit.Length; i++) {
@@ -300,7 +345,7 @@ namespace Nagru___Manga_Organizer
     public void SaveOptions()
     {
       Properties.Settings.Default.GalleryTypes =
-          string.Join(",", bOpt.Select(x => x.ToString()));
+        string.Join(",", bOpt.Select(x => x.ToString()));
     }
   }
 }

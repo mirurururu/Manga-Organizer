@@ -57,7 +57,7 @@ namespace Nagru___Manga_Organizer
         //check for artist/title fields and set formatting
         if (!string.IsNullOrEmpty(asSplit[0])) {
           sb.AppendFormat("{0}{1}", (asSplit[0].Contains("("))
-              ? "" : "artist:", asSplit[0]);
+            ? "" : "artist:", asSplit[0]);
 
           sb.AppendFormat(" {0}", asSplit[1]);
           txbxSearch.Text = sb.ToString();
@@ -70,8 +70,8 @@ namespace Nagru___Manga_Organizer
     private void tsbtn_Help_Clicked(object sender, EventArgs e)
     {
       MessageBox.Show("These credentials are the 'content' parameters of the exhentai cookies. "
-      + "If not provided, this program will use g.e-hentai instead.",
-          Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        + "If not provided, this program will use g.e-hentai instead.",
+        Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
 
     //update searched gallery types
@@ -83,7 +83,7 @@ namespace Nagru___Manga_Organizer
 				ckbxWestern.Checked,	ckbxNonH.Checked,
 				ckbxImage.Checked,		ckbxCosplay.Checked,
 				ckbxAsian.Checked,		ckbxMisc.Checked
-            };
+      };
       ddmGallery.ShowDropDown();
     }
 
@@ -105,8 +105,8 @@ namespace Nagru___Manga_Organizer
       }
       else {
         MessageBox.Show("Search was invoked before the delegate was bound.",
-            Application.ProductName, MessageBoxButtons.OK,
-            MessageBoxIcon.Error);
+          Application.ProductName, MessageBoxButtons.OK,
+          MessageBoxIcon.Error);
       }
     }
 
@@ -118,17 +118,13 @@ namespace Nagru___Manga_Organizer
 
         for (int i = 0; i < csResults.Count; i++) {
           lvDetails.Items.Add(new ListViewItem(new string[2] {
-                        csResults.URL(i),
-                        csResults.Title(i)
-                    }));
+            csResults.URL(i),
+            csResults.Title(i)
+          }));
         }
 
         Alternate();
         lvDetails.ResumeLayout();
-      }
-      else if (csResults.Error) {
-        MessageBox.Show("A connection to EH could not be established.",
-            Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
       }
 
       this.Cursor = Cursors.Default;
@@ -145,9 +141,9 @@ namespace Nagru___Manga_Organizer
     private void ToggleButtonEnabled(ref Button btn, bool? bEnabled = null)
     {
       btn.Enabled = (bEnabled == null) ?
-          !btn.Enabled : (bool)bEnabled;
+        !btn.Enabled : (bool)bEnabled;
       btn.BackColor = btn.Enabled ?
-          SystemColors.ButtonFace : SystemColors.ScrollBar;
+        SystemColors.ButtonFace : SystemColors.ScrollBar;
     }
 
     private void btnOK_Click(object sender, EventArgs e)
@@ -211,7 +207,7 @@ namespace Nagru___Manga_Organizer
         return;
       for (int i = iStart; i < lvDetails.Items.Count; i++) {
         lvDetails.Items[i].BackColor = (i % 2 != 0) ?
-            Color.FromArgb(245, 245, 245) : SystemColors.Window;
+          Color.FromArgb(245, 245, 245) : SystemColors.Window;
       }
     }
     #endregion

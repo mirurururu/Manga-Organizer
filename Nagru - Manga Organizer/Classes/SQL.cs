@@ -485,7 +485,7 @@ namespace Nagru___Manga_Organizer
         //add the entry
         DB_SaveEntry(
             lData[i].sArtist, lData[i].sTitle, lData[i].sTags,
-            lData[i].sLoc, lData[i].dtDate, lData[i].iPages,
+            lData[i].sLoc, lData[i].dtDate, lData[i].pages,
             lData[i].sType, lData[i].byRat, lData[i].sDesc,
             ""
         );
