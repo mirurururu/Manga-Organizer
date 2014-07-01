@@ -341,7 +341,7 @@ namespace Nagru___Manga_Organizer
     private void Browse_FormClosing(object sender, FormClosingEventArgs e)
     {
       if (bAuto) {
-        SQL.UpdateSetting("ReadInterval", trFlip.Interval);
+        SQL.UpdateSetting(SQL.Setting.ReadInterval, trFlip.Interval);
 
         if(trFlip != null) {
           trFlip.Stop();

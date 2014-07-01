@@ -393,11 +393,11 @@ namespace Nagru___Manga_Organizer
     /// <summary>
     /// Update the indicated setting
     /// </summary>
-    /// <param name="ColumnName"></param>
+    /// <param name="DBSetting"></param>
     /// <param name="setting"></param>
-    public static void UpdateSetting(string ColumnName, object setting)
+    public static void UpdateSetting(Setting DBSetting, object setting)
     {
-      DB_UpdateSetting(ColumnName, setting);
+      DB_UpdateSetting(DBSetting, setting);
     }
 
     #endregion
@@ -595,43 +595,40 @@ namespace Nagru___Manga_Organizer
       }
     }
 
-    private static int DB_UpdateSetting(string columnName, object value)
+    private static int DB_UpdateSetting(Setting DBSetting, object value)
     {
       //setup parameters
       SQLiteParameter sqParam = null;
 
-      switch (columnName) {
-        case "BackgroundColour":
-        case "DBversion":
-        case "member_id":
-        case "NewUser":
-        case "ReadInterval":
-        case "RowColourAlt":
-        case "RowColourHighlight":
-        case "SendReports":
-        case "ShowDate":
-        case "ShowGrid":
+      switch (DBSetting) {
+        case Setting.BackgroundColour:
+        case Setting.DBversion:
+        case Setting.member_id:
+        case Setting.NewUser:
+        case Setting.ReadInterval:
+        case Setting.RowColourAlt:
+        case Setting.RowColourHighlight:
+        case Setting.SendReports:
+        case Setting.ShowDate:
+        case Setting.ShowGrid:
            sqParam = new SQLiteParameter("@value", DbType.Int32) { Value = value };
           break;
-        case "FormPosition":
-        case "GallerySettings":
-        case "ImageBrowser":
-        case "Notes":
-        case "pass_hash":
-        case "RootPath":
-        case "SavePath":
-        case "SearchIgnore":
+        case Setting.FormPosition:
+        case Setting.GallerySettings:
+        case Setting.ImageBrowser:
+        case Setting.Notes:
+        case Setting.pass_hash:
+        case Setting.RootPath:
+        case Setting.SavePath:
+        case Setting.SearchIgnore:
           sqParam = new SQLiteParameter("@value", DbType.String) { Value = value };
           break;
-        default:
-          throw new MissingFieldException(
-            string.Format("The column {0} does not exist in dbo.Settings", columnName));
       }
 
       //determine whether to insert or update
       string sCommandText = string.Format(
         "update [Settings] set {0} = @value"
-        , columnName);
+        , DBSetting.ToString());
       
       //run the command
       return ExecuteNonQuery(sCommandText, CommandBehavior.Default, sqParam);

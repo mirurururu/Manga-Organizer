@@ -315,7 +315,7 @@ namespace Nagru___Manga_Organizer
         if (svar != "")
           sNew += svar + '|';
 
-      SQL.UpdateSetting("SearchIgnore", sNew);
+      SQL.UpdateSetting(SQL.Setting.SearchIgnore, sNew);
       hsIgnore.Clear();
       hsPaths.Clear();
       lFound.Clear();

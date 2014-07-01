@@ -189,18 +189,18 @@ namespace Nagru___Manga_Organizer
     {
       //only finalize settings when `Btn_Save_Click' triggered
       if (aTxBx_Prog.Text != sDefProgram) {
-        SQL.UpdateSetting("ImageBrowser", aTxBx_Prog.Text);
+        SQL.UpdateSetting(SQL.Setting.ImageBrowser, aTxBx_Prog.Text);
         Properties.Settings.Default.DefLoc = aTxBx_Prog.Text;
         Properties.Settings.Default.Save();
       }
-      SQL.UpdateSetting("SavePath", aTxBx_Save.Text);
-      SQL.UpdateSetting("RootPath", aTxBx_Root.Text);
-      SQL.UpdateSetting("ReadInterval", (int)Nud_Intv.Value);
-      SQL.UpdateSetting("BackgroundColour", picBx_Colour.BackColor.ToArgb());
-      SQL.UpdateSetting("ShowGrid", ChkBx_Gridlines.Checked ? 1 : 0);
-      SQL.UpdateSetting("ShowDate", ChkBx_Date.Checked ? 1 : 0);
-      SQL.UpdateSetting("SendReports", ChkBx_Email.Checked ? 1 : 0);
-      SQL.UpdateSetting("SearchIgnored", sIgnored);
+      SQL.UpdateSetting(SQL.Setting.SavePath, aTxBx_Save.Text);
+      SQL.UpdateSetting(SQL.Setting.RootPath, aTxBx_Root.Text);
+      SQL.UpdateSetting(SQL.Setting.ReadInterval, (int)Nud_Intv.Value);
+      SQL.UpdateSetting(SQL.Setting.BackgroundColour, picBx_Colour.BackColor.ToArgb());
+      SQL.UpdateSetting(SQL.Setting.ShowGrid, ChkBx_Gridlines.Checked ? 1 : 0);
+      SQL.UpdateSetting(SQL.Setting.ShowDate, ChkBx_Date.Checked ? 1 : 0);
+      SQL.UpdateSetting(SQL.Setting.SendReports, ChkBx_Email.Checked ? 1 : 0);
+      SQL.UpdateSetting(SQL.Setting.SearchIgnore, sIgnored);
       bSave = true;
       this.Close();
     }

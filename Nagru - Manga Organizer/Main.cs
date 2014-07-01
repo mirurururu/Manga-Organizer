@@ -80,12 +80,12 @@ namespace Nagru___Manga_Organizer
     {
       //save changes to text automatically
       if (!bSavNotes) {
-        SQL.UpdateSetting("Notes", frTxBx_Notes.Text);
+        SQL.UpdateSetting(SQL.Setting.Notes, frTxBx_Notes.Text);
         bSavNotes = true;
       }
 
       //save Form's last position
-      SQL.UpdateSetting("FormPosition", string.Format("{0},{1},{2},{3}"
+      SQL.UpdateSetting(SQL.Setting.FormPosition, string.Format("{0},{1},{2},{3}"
         , this.Location.X
         , this.Location.Y
         , this.Size.Width
@@ -569,13 +569,13 @@ namespace Nagru___Manga_Organizer
       //run tutorial on first run
       if (SQL.GetSetting(SQL.Setting.NewUser) == "1") {
         //Run tutorial on first execution
-        SQL.UpdateSetting("NewUser", 0);
+        SQL.UpdateSetting(SQL.Setting.NewUser, 0);
         Tutorial fmTut = new Tutorial();
         fmTut.Show();
 
         //set runtime sensitive default locations
-        SQL.UpdateSetting("SavePath", Environment.CurrentDirectory);
-        SQL.UpdateSetting("RootPath", Environment.CurrentDirectory);
+        SQL.UpdateSetting(SQL.Setting.SavePath, Environment.CurrentDirectory);
+        SQL.UpdateSetting(SQL.Setting.RootPath, Environment.CurrentDirectory);
       }
 
       //check user settings

@@ -344,7 +344,7 @@ namespace Nagru___Manga_Organizer
     /// </summary>
     public void SaveOptions()
     {
-      SQL.UpdateSetting("SearchIgnore", 
+      SQL.UpdateSetting(SQL.Setting.SearchIgnore, 
         string.Join(",", bOpt.Select(x => x.ToString()))
       );
     }

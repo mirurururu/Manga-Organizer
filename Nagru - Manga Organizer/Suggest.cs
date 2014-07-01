@@ -220,12 +220,12 @@ namespace Nagru___Manga_Organizer
     }
     private void txbxPass_TextChanged(object sender, EventArgs e)
     {
-      SQL.UpdateSetting("pass_hash", txbxPass.Text);
+      SQL.UpdateSetting(SQL.Setting.pass_hash, txbxPass.Text);
     }
 
     private void txbxID_TextChanged(object sender, EventArgs e)
     {
-      SQL.UpdateSetting("member_id", txbxID.Text);
+      SQL.UpdateSetting(SQL.Setting.member_id, txbxID.Text);
     }
     #endregion
 
