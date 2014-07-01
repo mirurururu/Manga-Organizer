@@ -12,8 +12,8 @@ namespace Nagru___Manga_Organizer
   public partial class Settings : Form
   {
     const string sDefProgram = "System Default";
-    string sIgnored = Properties.Settings.Default.Ignore;
-    bool bNew = false, bSave = false;
+    string sIgnored = SQL.GetSetting(SQL.Setting.SearchIgnore);
+    bool bSave = true;
 
     public Settings()
     {
@@ -24,38 +24,36 @@ namespace Nagru___Manga_Organizer
     private void Settings_Load(object sender, EventArgs e)
     {
       //initialize components
-      aTxBx_Save.Text = Properties.Settings.Default.SavLoc;
-      aTxBx_Root.Text = Properties.Settings.Default.DefLoc;
-      aTxBx_Prog.Text = Properties.Settings.Default.DefProg;
-      if (aTxBx_Prog.Text == "")
-        aTxBx_Prog.Text = sDefProgram;
-      Nud_Intv.Value = Properties.Settings.Default.Interval;
-      picBx_Colour.BackColor = Properties.Settings.Default.DefColour;
-      ChkBx_Gridlines.Checked = Properties.Settings.Default.DefGrid;
-      ChkBx_Date.Checked = !Properties.Settings.Default.HideDate;
-      ChkBx_Email.Checked = Properties.Settings.Default.SendReports;
+      aTxBx_Save.Text = SQL.GetSetting(SQL.Setting.SavePath);
+      aTxBx_Root.Text = SQL.GetSetting(SQL.Setting.RootPath);
+      aTxBx_Prog.Text = SQL.GetSetting(SQL.Setting.ImageBrowser);
+      if (!string.IsNullOrEmpty(aTxBx_Prog.Text)) aTxBx_Prog.Text = sDefProgram;
+      Nud_Intv.Value = Int32.Parse(SQL.GetSetting(SQL.Setting.ReadInterval));
+      picBx_Colour.BackColor = Color.FromArgb(Int32.Parse(SQL.GetSetting(SQL.Setting.BackgroundColour)));
+      ChkBx_Gridlines.Checked = SQL.GetSetting(SQL.Setting.ShowGrid) == "1";
+      ChkBx_Date.Checked = SQL.GetSetting(SQL.Setting.ShowDate) == "1";
+      ChkBx_Email.Checked = SQL.GetSetting(SQL.Setting.SendReports) == "1";
 
-      string[] asIgn = ExtString.Split(Properties.Settings.Default.Ignore, "|");
+      string[] asIgn = ExtString.Split(SQL.GetSetting(SQL.Setting.SearchIgnore), "|");
       for (int i = 0; i < asIgn.Length; i++) {
         ckLbx_Ign.Items.Add(asIgn[i], true);
       }
 
       Btn_Save.FlatAppearance.BorderColor = Color.Green;
-      bNew = false;
     }
 
     private void aTxBx_Save_Click(object sender, EventArgs e)
     {
       FolderBrowserDialog fbd = new FolderBrowserDialog();
       string sPath = aTxBx_Save.Text != "" ?
-          aTxBx_Save.Text : Environment.CurrentDirectory;
+        aTxBx_Save.Text : Environment.CurrentDirectory;
       fbd.SelectedPath = sPath;
 
       if (fbd.ShowDialog() == DialogResult.OK
-              && ExtDir.Accessible(fbd.SelectedPath)) {
+          && ExtDir.Accessible(fbd.SelectedPath)) {
         Btn_Save.FlatAppearance.BorderColor = Color.Red;
         aTxBx_Save.Text = fbd.SelectedPath;
-        bNew = true;
+        bSave = false;
 
         if (aTxBx_Root.Text == string.Empty)
           aTxBx_Root.Text = fbd.SelectedPath;
@@ -67,14 +65,14 @@ namespace Nagru___Manga_Organizer
     {
       FolderBrowserDialog fbd = new FolderBrowserDialog();
       string sPath = aTxBx_Root.Text != "" ?
-          aTxBx_Root.Text : Environment.CurrentDirectory;
+        aTxBx_Root.Text : Environment.CurrentDirectory;
       fbd.SelectedPath = sPath;
 
       if (fbd.ShowDialog() == DialogResult.OK
-              && ExtDir.Accessible(fbd.SelectedPath)) {
+          && ExtDir.Accessible(fbd.SelectedPath)) {
         Btn_Save.FlatAppearance.BorderColor = Color.Red;
         aTxBx_Root.Text = fbd.SelectedPath;
-        bNew = true;
+        bSave = false;
 
         if (aTxBx_Save.Text == string.Empty)
           aTxBx_Save.Text = fbd.SelectedPath;
@@ -86,14 +84,14 @@ namespace Nagru___Manga_Organizer
     {
       OpenFileDialog ofd = new OpenFileDialog();
       string sPath = aTxBx_Prog.Text != sDefProgram ?
-          aTxBx_Prog.Text : Environment.CurrentDirectory;
+        aTxBx_Prog.Text : Environment.CurrentDirectory;
       ofd.Filter = "Executables (*.exe)|*.exe";
       ofd.InitialDirectory = sPath;
 
       if (ofd.ShowDialog() == DialogResult.OK) {
         Btn_Save.FlatAppearance.BorderColor = Color.Red;
         aTxBx_Prog.Text = ofd.FileName;
-        bNew = true;
+        bSave = false;
       }
       ofd.Dispose();
     }
@@ -106,22 +104,22 @@ namespace Nagru___Manga_Organizer
     private void Nud_Intv_ValueChanged(object sender, EventArgs e)
     {
       Btn_Save.FlatAppearance.BorderColor = Color.Red;
-      bNew = true;
+      bSave = false;
     }
 
     private void picBx_Colour_Click(object sender, EventArgs e)
     {
       ColorDialog cd = new ColorDialog();
       cd.CustomColors = new int[2] {
-                ColorTranslator.ToOle(Color.FromArgb(39,40,34)),
-                ColorTranslator.ToOle(picBx_Colour.BackColor)
-            };
+        ColorTranslator.ToOle(Color.FromArgb(39,40,34)),
+        ColorTranslator.ToOle(picBx_Colour.BackColor)
+      };
       cd.Color = picBx_Colour.BackColor;
 
       if (cd.ShowDialog() == DialogResult.OK) {
         Btn_Save.FlatAppearance.BorderColor = Color.Red;
         picBx_Colour.BackColor = cd.Color;
-        bNew = true;
+        bSave = false;
       }
     }
 
@@ -138,19 +136,20 @@ namespace Nagru___Manga_Organizer
       foreach (string svar in ckLbx_Ign.CheckedItems) {
         sIgn.AppendFormat(string.Format("{0}|", svar));
       }
-      if (sIgn.Length > 1)
+      if (sIgn.Length > 1) {
         sIgn.Remove(sIgn.Length - 1, 1);
+      }
       if (sIgnored != sIgn.ToString()) {
         Btn_Save.FlatAppearance.BorderColor = Color.Red;
         sIgnored = sIgn.ToString();
-        bNew = true;
+        bSave = false;
       }
     }
 
     private void ChkBx_Defaults_CheckedChanged(object sender, EventArgs e)
     {
       Btn_Save.FlatAppearance.BorderColor = Color.Red;
-      bNew = true;
+      bSave = false;
     }
 
     private void MnAct_Reset_Click(object sender, EventArgs e)
@@ -183,40 +182,40 @@ namespace Nagru___Manga_Organizer
       }
 
       Btn_Save.FlatAppearance.BorderColor = Color.Red;
-      bNew = true;
+      bSave = false;
     }
 
     private void Btn_Save_Click(object sender, EventArgs e)
     {
       //only finalize settings when `Btn_Save_Click' triggered
-      if (aTxBx_Prog.Text != sDefProgram)
-        Properties.Settings.Default.DefProg = aTxBx_Prog.Text;
-      else
-        Properties.Settings.Default.DefProg = "";
-      Properties.Settings.Default.SavLoc = aTxBx_Save.Text;
-      Properties.Settings.Default.DefLoc = aTxBx_Root.Text;
-      Properties.Settings.Default.Interval = (int)Nud_Intv.Value;
-      Properties.Settings.Default.DefColour = picBx_Colour.BackColor;
-      Properties.Settings.Default.DefGrid = ChkBx_Gridlines.Checked;
-      Properties.Settings.Default.HideDate = !ChkBx_Date.Checked;
-      Properties.Settings.Default.SendReports = ChkBx_Email.Checked;
-      Properties.Settings.Default.Ignore = sIgnored;
-      Properties.Settings.Default.Save();
-      bNew = false;
+      if (aTxBx_Prog.Text != sDefProgram) {
+        SQL.UpdateSetting("ImageBrowser", aTxBx_Prog.Text);
+        Properties.Settings.Default.DefLoc = aTxBx_Prog.Text;
+        Properties.Settings.Default.Save();
+      }
+      SQL.UpdateSetting("SavePath", aTxBx_Save.Text);
+      SQL.UpdateSetting("RootPath", aTxBx_Root.Text);
+      SQL.UpdateSetting("ReadInterval", (int)Nud_Intv.Value);
+      SQL.UpdateSetting("BackgroundColour", picBx_Colour.BackColor.ToArgb());
+      SQL.UpdateSetting("ShowGrid", ChkBx_Gridlines.Checked ? 1 : 0);
+      SQL.UpdateSetting("ShowDate", ChkBx_Date.Checked ? 1 : 0);
+      SQL.UpdateSetting("SendReports", ChkBx_Email.Checked ? 1 : 0);
+      SQL.UpdateSetting("SearchIgnored", sIgnored);
       bSave = true;
       this.Close();
     }
 
     private void Settings_FormClosing(object sender, FormClosingEventArgs e)
     {
-      if (bNew && MessageBox.Show(
-              "Are you sure you want to exit wthout saving?",
-              Application.ProductName, MessageBoxButtons.YesNo,
-              MessageBoxIcon.Question) == DialogResult.No) {
+      if (!bSave && MessageBox.Show(
+          "Are you sure you want to exit wthout saving?",
+          Application.ProductName, MessageBoxButtons.YesNo,
+          MessageBoxIcon.Question) == DialogResult.No) {
         e.Cancel = true;
       }
-      else if (bSave)
+      else {
         this.DialogResult = DialogResult.Yes;
+      }
     }
   }
 }

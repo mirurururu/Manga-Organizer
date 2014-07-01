@@ -95,8 +95,8 @@
 			this.MnTS_Del = new System.Windows.Forms.ToolStripMenuItem();
 			this.MnTS_Clear = new System.Windows.Forms.ToolStripMenuItem();
 			this.PicBx_Cover = new System.Windows.Forms.PictureBox();
-			this.acTxBx_Title = new Nagru___Manga_Organizer.Classes.AutoCompleteTagger();
-			this.acTxBx_Tags = new Nagru___Manga_Organizer.Classes.AutoCompleteTagger();
+			this.acTxBx_Title = new Nagru___Manga_Organizer.AutoCompleteTagger();
+			this.acTxBx_Tags = new Nagru___Manga_Organizer.AutoCompleteTagger();
 			this.srRating = new Nagru___Manga_Organizer.StarRatingControl();
 			this.frTxBx_Desc = new Nagru___Manga_Organizer.FixedRichTextBox();
 			this.Tb_Notes = new System.Windows.Forms.TabPage();
@@ -1047,9 +1047,9 @@
         private StarRatingControl srRating;
         private System.Windows.Forms.ColumnHeader ColRating;
         private System.Windows.Forms.ToolStripMenuItem MnTS_Tutorial;
-        private Classes.AutoCompleteTagger acTxBx_Tags;
+        private AutoCompleteTagger acTxBx_Tags;
         private System.Windows.Forms.ColumnHeader colDate;
-        private Classes.AutoCompleteTagger acTxBx_Title;
+        private AutoCompleteTagger acTxBx_Title;
 				private System.Windows.Forms.ToolStripMenuItem MnTs_SearchEH;
 				private System.Windows.Forms.Label lblURL;
 				private System.Windows.Forms.ToolStripMenuItem maintenanceToolStripMenuItem;

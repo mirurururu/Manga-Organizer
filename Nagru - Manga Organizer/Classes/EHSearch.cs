@@ -155,22 +155,22 @@ namespace Nagru___Manga_Organizer
         try {
           dynamic JsonObject = JObject.Parse(JSON);
           
-          gid = Int32.Parse(JsonObject.gmetadata[0].gid.Value.ToString());
-          token = JsonObject.gmetadata[0].token.Value;
-          archiver_key = JsonObject.gmetadata[0].archiver_key.Value;
-          title = ExtString.HTMLConvertToPlainText(JsonObject.gmetadata[0].title.Value);
-          title_jpn = JsonObject.gmetadata[0].title_jpn.Value;
-          category = JsonObject.gmetadata[0].category.Value;
-          thumb = JsonObject.gmetadata[0].thumb.Value;
-          uploader = JsonObject.gmetadata[0].uploader.Value;
-          posted = dt.AddSeconds(long.Parse(JsonObject.gmetadata[0].posted.Value.ToString()));
-          filecount = Int32.Parse(JsonObject.gmetadata[0].filecount.Value.ToString());
-          filesize = Int32.Parse(JsonObject.gmetadata[0].filesize.Value.ToString());
-          expunged = bool.Parse(JsonObject.gmetadata[0].expunged.Value.ToString());
-          rating = float.Parse(JsonObject.gmetadata[0].rating.Value.ToString());
-          torrentcount = Int32.Parse(JsonObject.gmetadata[0].torrentcount.Value.ToString());
-          JArray ja = JsonObject.gmetadata[0].tags;
-          tags = ja.Select(x => (string)x).ToArray();
+          gid						= Int32.Parse(JsonObject.gmetadata[0].gid.Value.ToString());
+          token					= JsonObject.gmetadata[0].token.Value;
+          archiver_key	= JsonObject.gmetadata[0].archiver_key.Value;
+          title					= ExtString.HTMLConvertToPlainText(JsonObject.gmetadata[0].title.Value);
+          title_jpn			= JsonObject.gmetadata[0].title_jpn.Value;
+          category			= JsonObject.gmetadata[0].category.Value;
+          thumb					= JsonObject.gmetadata[0].thumb.Value;
+          uploader			= JsonObject.gmetadata[0].uploader.Value;
+          posted				= dt.AddSeconds(long.Parse(JsonObject.gmetadata[0].posted.Value.ToString()));
+          filecount			= Int32.Parse(JsonObject.gmetadata[0].filecount.Value.ToString());
+          filesize			= Int32.Parse(JsonObject.gmetadata[0].filesize.Value.ToString());
+          expunged			= bool.Parse(JsonObject.gmetadata[0].expunged.Value.ToString());
+          rating				= float.Parse(JsonObject.gmetadata[0].rating.Value.ToString());
+          torrentcount	= Int32.Parse(JsonObject.gmetadata[0].torrentcount.Value.ToString());
+          JArray ja			= JsonObject.gmetadata[0].tags;
+          tags					= ja.Select(x => (string)x).ToArray();
         } catch (JsonReaderException exc) {
           Console.WriteLine(exc.Message);
         }
@@ -201,7 +201,7 @@ namespace Nagru___Manga_Organizer
       hsTitle = new List<string>();
 
       #region Gallery Options
-      bOpt = Properties.Settings.Default.GalleryTypes
+      bOpt = SQL.GetSetting(SQL.Setting.GallerySettings)
           .Split(',').Select(x => byte.Parse(x)).ToArray();
       #endregion
     }
@@ -284,8 +284,8 @@ namespace Nagru___Manga_Organizer
       bool bException = true;
 
       //determine if exhentai can be called
-      bool bXH = !(string.IsNullOrEmpty(Properties.Settings.Default.pass_hash)
-        || string.IsNullOrEmpty(Properties.Settings.Default.member_id));
+      bool bXH = !string.IsNullOrEmpty(
+        SQL.GetSetting(SQL.Setting.pass_hash) + SQL.GetSetting(SQL.Setting.member_id));
 
       //convert raw search terms into web form
       sSearchURL = FormatSearch(sRaw, (bXH) ? "exhentai" : "g.e-hentai", bOpt);
@@ -303,8 +303,8 @@ namespace Nagru___Manga_Organizer
       if (bXH) {
         rq.CookieContainer = new CookieContainer(2);
         rq.CookieContainer.Add(new CookieCollection() {
-          new Cookie("ipb_member_id", Properties.Settings.Default.member_id) { Domain = "exhentai.org" },
-          new Cookie("ipb_pass_hash", Properties.Settings.Default.pass_hash) { Domain = "exhentai.org" }
+          new Cookie("ipb_member_id", SQL.GetSetting(SQL.Setting.member_id)) { Domain = "exhentai.org" },
+          new Cookie("ipb_pass_hash", SQL.GetSetting(SQL.Setting.pass_hash)) { Domain = "exhentai.org" }
 				});
       }
 
@@ -344,8 +344,9 @@ namespace Nagru___Manga_Organizer
     /// </summary>
     public void SaveOptions()
     {
-      Properties.Settings.Default.GalleryTypes =
-        string.Join(",", bOpt.Select(x => x.ToString()));
+      SQL.UpdateSetting("SearchIgnore", 
+        string.Join(",", bOpt.Select(x => x.ToString()))
+      );
     }
   }
 }

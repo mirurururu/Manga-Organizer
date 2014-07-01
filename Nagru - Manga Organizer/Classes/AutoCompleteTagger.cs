@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 
-namespace Nagru___Manga_Organizer.Classes
+namespace Nagru___Manga_Organizer
 {
   public class AutoCompleteTagger : TextBox
   {
@@ -257,10 +257,13 @@ namespace Nagru___Manga_Organizer.Classes
       base.OnClick(e);
     }
 
-    ~AutoCompleteTagger()
+    protected override void Dispose(bool disposing)
     {
-      lbSuggest.Dispose();
-      sbHorz.Dispose();
+      if (!disposing) {
+        lbSuggest.Dispose();
+        sbHorz.Dispose();
+      }
+      base.Dispose(disposing);
     }
 
     #region Mouse Handling

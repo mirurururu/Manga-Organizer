@@ -44,9 +44,9 @@
 			this.ckLbx_Ign = new System.Windows.Forms.CheckedListBox();
 			this.Btn_Save = new System.Windows.Forms.Button();
 			this.lblProg = new System.Windows.Forms.Label();
-			this.aTxBx_Save = new Nagru___Manga_Organizer.Classes.AutoCompleteTagger();
-			this.aTxBx_Prog = new Nagru___Manga_Organizer.Classes.AutoCompleteTagger();
-			this.aTxBx_Root = new Nagru___Manga_Organizer.Classes.AutoCompleteTagger();
+			this.aTxBx_Save = new Nagru___Manga_Organizer.AutoCompleteTagger();
+			this.aTxBx_Prog = new Nagru___Manga_Organizer.AutoCompleteTagger();
+			this.aTxBx_Root = new Nagru___Manga_Organizer.AutoCompleteTagger();
 			this.ChkBx_Email = new System.Windows.Forms.CheckBox();
 			((System.ComponentModel.ISupportInitialize)(this.Nud_Intv)).BeginInit();
 			this.MnAct.SuspendLayout();
@@ -322,9 +322,9 @@
         private System.Windows.Forms.Button Btn_Save;
         private System.Windows.Forms.CheckBox ChkBx_Date;
         private System.Windows.Forms.Label lblProg;
-        private Classes.AutoCompleteTagger aTxBx_Save;
-        private Classes.AutoCompleteTagger aTxBx_Prog;
-        private Classes.AutoCompleteTagger aTxBx_Root;
+        private AutoCompleteTagger aTxBx_Save;
+        private AutoCompleteTagger aTxBx_Prog;
+        private AutoCompleteTagger aTxBx_Root;
         private System.Windows.Forms.ContextMenuStrip MnAct;
         private System.Windows.Forms.ToolStripMenuItem MnAct_Reset;
 				private System.Windows.Forms.CheckBox ChkBx_Email;

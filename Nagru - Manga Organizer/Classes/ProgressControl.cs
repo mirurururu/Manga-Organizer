@@ -3,7 +3,7 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 
-namespace Nagru___Manga_Organizer.Classes
+namespace Nagru___Manga_Organizer
 {
   public class ProgressControl : Control
   {

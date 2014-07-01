@@ -55,16 +55,16 @@ namespace Nagru___Manga_Organizer
       //set up timer
       trFlip = new Timer();
       trFlip.Tick += trFlip_Tick;
-      trFlip.Interval = Properties.Settings.Default.Interval;
+      trFlip.Interval = Int32.Parse(SQL.GetSetting(SQL.Setting.ReadInterval));
 
-#if !DEBUG
+      #if !DEBUG
       Cursor.Hide();
       Bounds = Screen.GetWorkingArea(this.picBx);
       FormBorderStyle = FormBorderStyle.None;
       WindowState = FormWindowState.Maximized;
-#endif
+      #endif
 
-      picBx.BackColor = Properties.Settings.Default.DefColour;
+      picBx.BackColor = Color.FromArgb(Int32.Parse(SQL.GetSetting(SQL.Setting.BackgroundColour)));
       fWidth = (float)(Bounds.Width / 2.0);
 
     }
@@ -341,20 +341,16 @@ namespace Nagru___Manga_Organizer
     private void Browse_FormClosing(object sender, FormClosingEventArgs e)
     {
       if (bAuto) {
-        Properties.Settings.Default.Interval = trFlip.Interval;
-        Properties.Settings.Default.Save();
-        trFlip.Stop();
+        SQL.UpdateSetting("ReadInterval", trFlip.Interval);
+
+        if(trFlip != null) {
+          trFlip.Stop();
+          trFlip.Dispose();
+        }
       }
 
       Cursor.Show();
       Page += 2;
-    }
-
-    ~Browse_Img()
-    {
-      if (trFlip != null) {
-        trFlip.Dispose();
-      }
     }
   }
 }

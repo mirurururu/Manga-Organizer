@@ -27,12 +27,11 @@ namespace Nagru___Manga_Organizer
 
     private void Scan_Load(object sender, EventArgs e)
     {
-      if (Properties.Settings.Default.DefGrid)
-        LV_Found.GridLines = true;
+      LV_Found.GridLines = SQL.GetSetting(SQL.Setting.ShowGrid) == "1";
       LV_Found.ListViewItemSorter = lvSortObj;
       LV_Found_Resize(sender, e);
 
-      string[] sRaw = Properties.Settings.Default.Ignore.Split('|');
+      string[] sRaw = SQL.GetSetting(SQL.Setting.SearchIgnore).Split('|');
       for (int i = 0; i < sRaw.Length - 1; i++)
         hsIgnore.Add(sRaw[i]);
 
@@ -42,7 +41,7 @@ namespace Nagru___Manga_Organizer
       }
 
       //auto-scan at load
-      string sPath = Properties.Settings.Default.DefLoc;
+      string sPath = SQL.GetSetting(SQL.Setting.RootPath);
       if (sPath == string.Empty || !Directory.Exists(sPath))
         sPath = Environment.CurrentDirectory;
       TxBx_Loc.Text = sPath;
@@ -195,7 +194,7 @@ namespace Nagru___Manga_Organizer
         return;
 
       LV_Found.BeginUpdate();
-      int iRowColorAlt = Properties.Settings.Default.RowColorAlt;
+      int iRowColorAlt = Int32.Parse(SQL.GetSetting(SQL.Setting.RowColourAlt));
       for (int i = 0; i < LV_Found.Items.Count; i++) {
         if (LV_Found.Items[i].BackColor == Color.MistyRose)
           continue;
@@ -316,7 +315,7 @@ namespace Nagru___Manga_Organizer
         if (svar != "")
           sNew += svar + '|';
 
-      Properties.Settings.Default.Ignore = sNew;
+      SQL.UpdateSetting("SearchIgnore", sNew);
       hsIgnore.Clear();
       hsPaths.Clear();
       lFound.Clear();

@@ -42,7 +42,7 @@
             this.btnPrev = new System.Windows.Forms.Button();
             this.btnNxt = new System.Windows.Forms.Button();
             this.picBx_Ex = new System.Windows.Forms.PictureBox();
-            this.progBar = new Nagru___Manga_Organizer.Classes.ProgressControl();
+            this.progBar = new Nagru___Manga_Organizer.ProgressControl();
             this.pnl0.SuspendLayout();
             this.pnl1.SuspendLayout();
             this.pnl2.SuspendLayout();
@@ -247,7 +247,7 @@
         private System.Windows.Forms.Label lblTitle_p0;
         private System.Windows.Forms.Button btnPrev;
         private System.Windows.Forms.Button btnNxt;
-        private Classes.ProgressControl progBar;
+        private ProgressControl progBar;
         private System.Windows.Forms.PictureBox picBx_Ex;
         private System.Windows.Forms.Label lbl_Exp0;
         private System.Windows.Forms.Label lbl_Exp1;

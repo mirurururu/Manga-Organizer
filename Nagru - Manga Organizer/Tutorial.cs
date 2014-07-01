@@ -45,7 +45,7 @@ Tagging can be done more conveniently by:
 - Limit search scale by setting a tag type
 artist, title, tag, desc, type, date, or pages
 - Use '<' or '>'  with 'date' or 'pages' for range
-- Chain terms by placing '&&' between them
+- Chain terms by placing '&' between them
 
 Example:
 title:celeb_wife date:>01/01/12 -vanilla";

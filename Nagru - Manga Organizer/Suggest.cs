@@ -37,7 +37,7 @@ namespace Nagru___Manga_Organizer
       this.AcceptButton.NotifyDefault(false);
 
       //set-up user choices
-      lvDetails.GridLines = Properties.Settings.Default.DefGrid;
+      lvDetails.GridLines = SQL.GetSetting(SQL.Setting.ShowGrid) == "1";
       for (int i = 0; i < csSearch.Options.Length; i++) {
         (ddmGallery.DropDownItems[i] as ToolStripMenuItem).Checked = csSearch.Options[i];
       }
@@ -46,13 +46,13 @@ namespace Nagru___Manga_Organizer
       tsbtnHelp.Image = SystemIcons.Information.ToBitmap();
 
       //input user credentials
-      txbxPass.Text = Properties.Settings.Default.pass_hash;
-      txbxID.Text = Properties.Settings.Default.member_id;
+      txbxPass.Text = SQL.GetSetting(SQL.Setting.pass_hash);
+      txbxID.Text = SQL.GetSetting(SQL.Setting.member_id);
 
       //auto-format search terms where applicable
       if (sTrySearch.Contains("[")) {
         StringBuilder sb = new StringBuilder("");
-        string[] asSplit = Main.SplitTitle(sTrySearch);
+        string[] asSplit = ExtString.ParseGalleryTitle(sTrySearch);
 
         //check for artist/title fields and set formatting
         if (!string.IsNullOrEmpty(asSplit[0])) {
@@ -203,7 +203,7 @@ namespace Nagru___Manga_Organizer
 
     private void Alternate(int iStart = 0)
     {
-      if (Properties.Settings.Default.DefGrid)
+      if (SQL.GetSetting(SQL.Setting.ShowGrid) == "1")
         return;
       for (int i = iStart; i < lvDetails.Items.Count; i++) {
         lvDetails.Items[i].BackColor = (i % 2 != 0) ?
@@ -220,14 +220,12 @@ namespace Nagru___Manga_Organizer
     }
     private void txbxPass_TextChanged(object sender, EventArgs e)
     {
-      Properties.Settings.Default.pass_hash = txbxPass.Text;
-      Properties.Settings.Default.Save();
+      SQL.UpdateSetting("pass_hash", txbxPass.Text);
     }
 
     private void txbxID_TextChanged(object sender, EventArgs e)
     {
-      Properties.Settings.Default.member_id = txbxID.Text;
-      Properties.Settings.Default.Save();
+      SQL.UpdateSetting("member_id", txbxID.Text);
     }
     #endregion
 
