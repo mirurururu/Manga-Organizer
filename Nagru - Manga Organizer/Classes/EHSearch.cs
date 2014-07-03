@@ -169,8 +169,7 @@ namespace Nagru___Manga_Organizer
           expunged			= bool.Parse(JsonObject.gmetadata[0].expunged.Value.ToString());
           rating				= float.Parse(JsonObject.gmetadata[0].rating.Value.ToString());
           torrentcount	= Int32.Parse(JsonObject.gmetadata[0].torrentcount.Value.ToString());
-          JArray ja			= JsonObject.gmetadata[0].tags;
-          tags					= ja.Select(x => (string)x).ToArray();
+          tags					= (JsonObject.gmetadata[0].tags as JArray).Select(x => (string)x).ToArray();
         } catch (JsonReaderException exc) {
           Console.WriteLine(exc.Message);
         }
@@ -186,11 +185,10 @@ namespace Nagru___Manga_Organizer
         }
         lRaw.Sort(new TrueCompare());
         
-        string[] sRaw = lRaw.Select(
-          x => x.Trim()).Distinct().Where(
-          x => !string.IsNullOrWhiteSpace(x)).ToArray<string>();
-        
-        return String.Join(", ", sRaw);
+        return String.Join(", ",
+					lRaw.Select(
+						x => x.Trim()).Distinct().ToArray<string>()
+				);
       }
     }
     #endregion

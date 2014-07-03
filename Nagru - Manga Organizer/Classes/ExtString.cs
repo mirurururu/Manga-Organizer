@@ -74,14 +74,14 @@ namespace Nagru___Manga_Organizer
 
 					if (!Directory.Exists(sPath))
 					{
-						if (File.Exists(sPath + ".zip"))
-							sPath += ".zip";
-						else if (File.Exists(sPath + ".cbz"))
+            if (File.Exists(sPath + ".cbz"))
 							sPath += ".cbz";
+            else if (File.Exists(sPath + ".cbr"))
+							sPath += ".cbr";
+						else if (File.Exists(sPath + ".zip"))
+							sPath += ".zip";
 						else if (File.Exists(sPath + ".rar"))
 							sPath += ".rar";
-						else if (File.Exists(sPath + ".cbr"))
-							sPath += ".cbr";
 						else if (File.Exists(sPath + ".7z"))
 							sPath += ".7z";
 						else

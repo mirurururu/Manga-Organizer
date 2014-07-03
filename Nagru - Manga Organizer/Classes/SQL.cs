@@ -57,6 +57,21 @@ namespace Nagru___Manga_Organizer
 			,CreatedDBTime
 			,AuditDBTime
     };
+
+    public enum Manga {
+      MangaID
+      ,Artist
+      ,Title
+      ,Pages
+      ,Tags
+      ,Description
+      ,PublishedDate
+      ,Location
+      ,GalleryURL
+      ,Thumbnail
+      ,Type
+      ,Rating
+    };
     
     public delegate void DelVoidInt(int i);
     public static DelVoidInt delProgress = null;
@@ -263,11 +278,11 @@ namespace Nagru___Manga_Organizer
     /// <param name="mangaID">The ID of the record</param>
     /// <param name="columnName">The name of the column to extract</param>
     /// <returns></returns>
-    public static string GetMangaDetail(int mangaID, string columnName)
+    public static string GetMangaDetail(int mangaID, Manga Column)
     {
       string sVal = "";
       using (DataTable dt = DB_GetEntryDetails(mangaID)) {
-        sVal = dt.Rows[0][columnName].ToString();
+        sVal = dt.Rows[0][Column.ToString()].ToString();
       }
       return sVal;
     }
@@ -647,6 +662,13 @@ namespace Nagru___Manga_Organizer
     private static string Cleanse(string sRaw)
     {
       return sRaw.Replace("'", "''").Replace(";", "");
+    }
+
+    private static SQLiteParameter NewParameter(string ParameterName, DbType dbType, object value)
+    {
+      return new SQLiteParameter(ParameterName, dbType) {
+        Value = value
+      };
     }
 
     private static int BeginTransaction()
@@ -1178,18 +1200,10 @@ namespace Nagru___Manga_Organizer
 
       //setup parameters
       SQLiteParameter[] sqParam = new SQLiteParameter[8];
-      sqParam[0] = new SQLiteParameter("@title", DbType.String) {
-        Value = sTitle
-      };
-      sqParam[1] = new SQLiteParameter("@mangaID", DbType.String) {
-        Value = iMangaID
-      };
-      sqParam[2] = new SQLiteParameter("@pages", DbType.Int32) {
-        Value = iPages
-      };
-      sqParam[3] = new SQLiteParameter("@rating", DbType.Decimal) {
-        Value = dRating
-      };
+      sqParam[0] = NewParameter("@title", DbType.String, sTitle);
+      sqParam[1] = NewParameter("@mangaID", DbType.String, iMangaID);
+      sqParam[2] = NewParameter("@pages", DbType.Int32, iPages);
+      sqParam[3] = NewParameter("@rating", DbType.Decimal, dRating);
       sqParam[4] = new SQLiteParameter("@description", DbType.String) {
         Value = sDesc
       };
@@ -1271,33 +1285,26 @@ namespace Nagru___Manga_Organizer
 				where 
           Name = @name 
         and 
-          not exists(select 1 from [MangaArtist] mat where MangaID = @mangaID and mat.ArtistID = art.ArtistID)";
-      ExecuteNonQuery(sCommandText, CommandBehavior.Default, pmMangaID, pmName);
+          not exists(select 1 from [MangaArtist] mat where MangaID = @mangaID and mat.ArtistID = art.ArtistID);
 
-      //delete any invalid links
-      //sArtists = string.Join("','", asArtists);
-      sCommandText = @"
-				delete from [MangaArtist] 
+        delete from [MangaArtist] 
 				where MangaID = @mangaID and ArtistID not in (
-          select ArtistID from [Artist] where Name in ('" + sArtists + @"'))
+          select ArtistID from [Artist] where Name = @name)
       ";
-      ExecuteNonQuery(sCommandText, CommandBehavior.Default, pmMangaID);
+      ExecuteNonQuery(sCommandText, CommandBehavior.Default, pmMangaID, pmName);
     }
 
     private static void DB_UpdateTag(int iMangaID, string sTags)
     {
       string sCommandText;
       string[] asTags = ExtString.Split(sTags, ",");
-      SQLiteParameter pmMangaID, pmTag;
+      SQLiteParameter pmMangaID, pmTag, pmTags;
 
-      pmMangaID = new SQLiteParameter("@mangaID", DbType.Int32) {
-        Value = iMangaID
-      };
+      pmMangaID = NewParameter("@mangaID", DbType.Int32, iMangaID);
+      pmTags = NewParameter("@tags", DbType.String, string.Join(",", asTags));
 
       for (int i = 0; i < asTags.Length; i++) {
-        pmTag = new SQLiteParameter("@tag", DbType.String) {
-          Value = asTags[i]
-        };
+        pmTag = NewParameter("@tag", DbType.String, asTags[i]);
 
         //add tag if it doesn't exist already
         sCommandText = @"
@@ -1311,25 +1318,21 @@ namespace Nagru___Manga_Organizer
 				where 
           Tag = @tag 
         and 
-          not exists(select 1 from [MangaTag] mtg where MangaID = @mangaID and mtg.TagID = tg.TagID)";
-        ExecuteNonQuery(sCommandText, CommandBehavior.Default, pmMangaID, pmTag);
+          not exists(select 1 from [MangaTag] mtg where MangaID = @mangaID and mtg.TagID = tg.TagID);
+
+        delete from [MangaTag] 
+				where MangaID = @mangaID and TagID not in (
+          select TagID from [Tag] where Tag in (@tags))
+        ";
+        ExecuteNonQuery(sCommandText, CommandBehavior.Default, pmMangaID, pmTag, pmTags);
       }
 
       //delete any invalid links
-      sTags = string.Join("','", asTags);
-      sCommandText = @"
-        delete from [MangaTag] 
-				where MangaID = @mangaID and TagID not in (
-          select TagID from [Tag] where Tag in ('" + sTags + @"'))
-      ";
-      ExecuteNonQuery(sCommandText, CommandBehavior.Default, pmMangaID);
     }
 
     private static void DB_UpdateType(int iMangaID, string sType)
     {
-      SQLiteParameter pmMangaID = new SQLiteParameter("@mangaID", DbType.Int32) {
-        Value = iMangaID
-      };
+      SQLiteParameter pmMangaID = NewParameter("@mangaID", DbType.Int32, iMangaID);
 
       //remove type if empty
       if (string.IsNullOrEmpty(sType)) {
@@ -1339,9 +1342,7 @@ namespace Nagru___Manga_Organizer
       }
       else {
         //declare variables
-        SQLiteParameter pmType = new SQLiteParameter("@type", DbType.String) {
-          Value = sType
-        };
+        SQLiteParameter pmType = NewParameter("@type", DbType.String, sType);
 
         //add type if it doesn't exist already
         string sCommandText = @"
@@ -1363,9 +1364,7 @@ namespace Nagru___Manga_Organizer
     private static int Entry_Delete(int iMangaID)
     {
       BeginTransaction();
-      SQLiteParameter sqParam = new SQLiteParameter("@mangaID", DbType.Int32) {
-        Value = iMangaID
-      };
+      SQLiteParameter sqParam = NewParameter("@mangaID", DbType.Int32, iMangaID);
 
       string sCommandText = @"
 				delete from MangaArtist
