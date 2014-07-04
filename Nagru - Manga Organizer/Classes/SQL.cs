@@ -1241,11 +1241,11 @@ namespace Nagru___Manga_Organizer
       ExecuteNonQuery(sCommandText, CommandBehavior.Default, lParam.ToArray());
 			#endregion
 
-			//get the new mangaID if applicable
+      //set the mangaID parameter if necessary
       if (iMangaID == -1) {
         using (DataTable dt = ExecuteQuery("select max(MangaID) from Manga", CommandBehavior.SingleRow)) {
           iMangaID = Int32.Parse(dt.Rows[0][0].ToString());
-          lParam[1] = NewParameter("@mangaID", DbType.Int32, iMangaID);
+          lParam[0].Value = iMangaID;
         }
       }
 
