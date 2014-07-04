@@ -77,7 +77,6 @@ namespace Nagru___Manga_Organizer
     public static DelVoidInt delProgress = null;
 
     private static SQLiteConnection sqConn = null;
-    private static bool bConverting = false;
     private const int SQLITE_MAX_LENGTH = 1000000;
 
     //prevents having to write alter statements 
@@ -357,13 +356,12 @@ namespace Nagru___Manga_Organizer
     /// <param name="URL">The source URL of the gallery</param>
     /// <param name="MangaID">If passed through, attempts to update the indicated record</param>
     /// <returns></returns>
-    public static int SaveManga(string Artist, string Title, string Tags, string Location,
-        DateTime PublishedDate, decimal Pages, string Type, decimal Rating,
-        string Description, string URL = null, int MangaID = -1)
+    public static int SaveManga(string Artist, string Title, DateTime PublishedDate,
+        string Tags = null, string Location = null, decimal Pages = 0, string Type = null, 
+        decimal Rating = 0, string Description = null, string URL = null, int MangaID = -1)
     {
-      return DB_SaveEntry(Artist, Title, Tags, Location,
-        PublishedDate, Convert.ToInt32(Pages), Type, Rating,
-        Description, URL, MangaID);
+      return DB_SaveEntry(Artist, Title, PublishedDate, Tags, 
+        Location, Pages, Type, Rating, Description, URL, MangaID);
     }
 
     /// <summary>
@@ -729,8 +727,6 @@ namespace Nagru___Manga_Organizer
 
     private static bool Import(string _filePath)
     {
-      bConverting = true;
-
       //load the old DB
       List<Main.csEntry> lData = FileSerializer.Deserialize
         <List<Main.csEntry>>(_filePath) ?? new List<Main.csEntry>(0);
@@ -750,10 +746,9 @@ namespace Nagru___Manga_Organizer
 
         //add the entry
         DB_SaveEntry(
-          lData[i].sArtist, lData[i].sTitle, lData[i].sTags,
-          lData[i].sLoc, lData[i].dtDate, lData[i].pages,
-          lData[i].sType, lData[i].byRat, lData[i].sDesc,
-          ""
+          lData[i].sArtist, lData[i].sTitle, lData[i].dtDate, 
+          lData[i].sTags, lData[i].sLoc, lData[i].pages,
+          lData[i].sType, lData[i].byRat, lData[i].sDesc, bConverting:true
         );
 
         if (delProgress != null) {
@@ -762,7 +757,6 @@ namespace Nagru___Manga_Organizer
       }
       EndTransaction();
       lData.Clear();
-      bConverting = false;
 
       //deprecate old serialized DB
       try {
@@ -1191,38 +1185,45 @@ namespace Nagru___Manga_Organizer
 
     #region Update Database
 
-    private static int DB_SaveEntry(string sArtist, string sTitle, string sTags, string sLoc,
-        DateTime dtPubDate, int iPages, string sType, decimal dRating,
-        string sDesc, string sURL = null, int iMangaID = -1)
+    private static int DB_SaveEntry(string sArtist, string sTitle, DateTime dtPubDate, 
+        string sTags = null, string sLoc = null, decimal iPages = 0, string sType = null, 
+        decimal dRating = 0, string sDesc = null, string sURL = null, int iMangaID = -1, 
+        bool bConverting = false)
     {
       if (!bConverting)
         BeginTransaction();
 
       //setup parameters
-      SQLiteParameter[] sqParam = new SQLiteParameter[8];
-      sqParam[0] = NewParameter("@title", DbType.String, sTitle);
-      sqParam[1] = NewParameter("@mangaID", DbType.String, iMangaID);
-      sqParam[2] = NewParameter("@pages", DbType.Int32, iPages);
-      sqParam[3] = NewParameter("@rating", DbType.Decimal, dRating);
-      sqParam[4] = new SQLiteParameter("@description", DbType.String) {
-        Value = sDesc
-      };
-      sqParam[5] = new SQLiteParameter("@location", DbType.String) {
-        Value = sLoc
-      };
-      sqParam[6] = new SQLiteParameter("@URL", DbType.String) {
-        Value = sURL
-      };
-      sqParam[7] = new SQLiteParameter("@pubDate", DbType.String) {
-        Value = dtPubDate.ToString("yyyy-MM-dd")
-      };
+      StringBuilder sbCmd = new StringBuilder(10000);
+      List<SQLiteParameter> lParam = new List<SQLiteParameter>(50);
+      lParam.AddRange(new SQLiteParameter[10] {
+        NewParameter("@title", DbType.String, sTitle)
+        , NewParameter("@mangaID", DbType.Int32, iMangaID)
+        , NewParameter("@pages", DbType.Int32, Convert.ToInt32(iPages))
+        , NewParameter("@rating", DbType.Decimal, dRating)
+        , NewParameter("@description", DbType.String, sDesc)
+        , NewParameter("@location", DbType.String, sLoc)
+        , NewParameter("@URL", DbType.String, sURL)
+        , NewParameter("@pubDate", DbType.String, dtPubDate.ToString("yyyy-MM-dd"))
+        , NewParameter("@name", DbType.String, sArtist)
+        , NewParameter("@type", DbType.String, sType)
+      });
 
-      //determine whether to insert or update
+			#region Update the base Manga record
+			//determine whether to insert or update
       string sCommandText;
       if (iMangaID == -1) {
         sCommandText = @"
 					insert into [Manga](title, pages, rating, description, location, galleryURL, publishedDate)
-					values(@title,@pages,@rating,@description,@location,@URL,@pubDate)";
+					values(
+            @title
+					  ,@pages
+					  ,@rating
+					  ,case when @description <> '' then @description else null end
+					  ,case when @location <> '' then @location else null end
+					  ,case when @URL <> '' then @URL else null end
+					  ,@pubDate
+      )";
       }
       else {
         sCommandText = @"
@@ -1230,54 +1231,31 @@ namespace Nagru___Manga_Organizer
 					set title = @title
 					,pages = @pages
 					,rating = @rating
-					,description = @description
-					,location = @location
-					,galleryURL = @URL
+					,description = case when @description <> '' then @description else null end
+					,location = case when @location <> '' then @location else null end
+					,galleryURL = case when @URL <> '' then @URL else null end
 					,publishedDate = @pubDate
 					where MangaID = @mangaID";
       }
-      ExecuteNonQuery(sCommandText, CommandBehavior.Default, sqParam);
+      ExecuteNonQuery(sCommandText, CommandBehavior.Default, lParam.ToArray());
+			#endregion
 
-      //get the new mangaID if applicable
-      if (iMangaID == -1) {
-        using (DataTable dt = ExecuteQuery("select max(MangaID) from Manga", CommandBehavior.SingleRow)) {
-          iMangaID = int.Parse(dt.Rows[0][0].ToString());
-        }
-      }
+      //set the mangaID parameter if necessary
+      sbCmd.Append(@"
+        --set the ID of the record
+        select @mangaID = case when @mangaID = -1 then (select max(MangaID) from Manga) else @mangaID end; 
+      ");
 
-      //insert artist
-      DB_UpdateArtist(iMangaID, sArtist);
+			#region update the artist and manga type
 
-      //insert tags
-      DB_UpdateTag(iMangaID, sTags);
-
-      //update type
-      DB_UpdateType(iMangaID, sType);
-
-      if (!bConverting)
-        EndTransaction();
-
-      return iMangaID;
-    }
-
-    private static void DB_UpdateArtist(int iMangaID, string sArtists)
-    {
-      string sCommandText;
-      //string[] asArtists = sArtists.Split(","); --add support for multi-artists eventually
-      SQLiteParameter pmMangaID, pmName;
-
-      pmMangaID = new SQLiteParameter("@mangaID", DbType.Int32) {
-        Value = iMangaID
-      };
-      pmName = new SQLiteParameter("@name", DbType.String) {
-        Value = sArtists
-      };
-
-      //add artist if it doesn't exist already
-      sCommandText = @"
+      sbCmd.Append(@"
+				--insert/update the manga artist
 				insert into [Artist](Name)
 				select @name
-				where not exists(select 1 from [Artist] where Name = @name);
+				where 
+					@name <> ''
+				and
+					not exists(select 1 from [Artist] where Name = @name);
 
         insert into [MangaArtist](MangaID, ArtistID)
 				select @mangaID, ArtistID
@@ -1289,76 +1267,48 @@ namespace Nagru___Manga_Organizer
 
         delete from [MangaArtist] 
 				where MangaID = @mangaID and ArtistID not in (
-          select ArtistID from [Artist] where Name = @name)
-      ";
-      ExecuteNonQuery(sCommandText, CommandBehavior.Default, pmMangaID, pmName);
-    }
+          select ArtistID from [Artist] where Name = @name);
 
-    private static void DB_UpdateTag(int iMangaID, string sTags)
-    {
-      string sCommandText;
-      string[] asTags = ExtString.Split(sTags, ",");
-      SQLiteParameter pmMangaID, pmTag, pmTags;
+				--insert/update the manga type
+				insert into [Type](Type)
+				select @type
+				where 
+					@type <> ''
+				and
+					not exists(select 1 from [Type] where Type = @type);
 
-      pmMangaID = NewParameter("@mangaID", DbType.Int32, iMangaID);
-      pmTags = NewParameter("@tags", DbType.String, string.Join(",", asTags));
+        update [Manga]
+        set TypeID = (select TypeID from [Type] where Type = @type)
+        where 
+            MangaID = @mangaID 
+        and 
+          (TypeID is null or TypeID != (select TypeID from [Type] where Type = @type));"
+      );
+
+			#endregion
+
+      #region Update the tags
+
+      string[] asTags = Cleanse(sTags).Split(',').Select(x => x.Trim()).ToArray();
+      sTags = string.Format("'{0}'", String.Join("','", asTags));
+      lParam.Add(NewParameter("@mangaID", DbType.Int32, iMangaID));
 
       for (int i = 0; i < asTags.Length; i++) {
-        pmTag = NewParameter("@tag", DbType.String, asTags[i]);
+        lParam.Add(NewParameter("@tag" + i.ToString(), DbType.String, asTags[i]));
 
-        //add tag if it doesn't exist already
-        sCommandText = @"
-				insert into [Tag](Tag)
-				select @tag
-				where not exists(select 1 from [Tag] where Tag = @tag);
-
-        insert into [MangaTag](MangaID, TagID)
-				select @mangaID, TagID
-        from [Tag] tg
-				where 
-          Tag = @tag 
-        and 
-          not exists(select 1 from [MangaTag] mtg where MangaID = @mangaID and mtg.TagID = tg.TagID);
-
-        delete from [MangaTag] 
-				where MangaID = @mangaID and TagID not in (
-          select TagID from [Tag] where Tag in (@tags))
-        ";
-        ExecuteNonQuery(sCommandText, CommandBehavior.Default, pmMangaID, pmTag, pmTags);
+        sbCmd.AppendFormat("insert into [Tag](Tag) select {0} where not exists(select 1 from [Tag] where Tag = {0}); insert into [MangaTag](MangaID, TagID) select @mangaID, TagID from [Tag] tg where Tag = {0} and not exists(select 1 from [MangaTag] mtg where MangaID = @mangaID and mtg.TagID = tg.TagID);",
+          "@tag" + i.ToString());
       }
+      sbCmd.AppendFormat("delete from [MangaTag] where MangaID = @mangaID and TagID not in (select TagID from [Tag] where Tag in ({0}))", sTags);
+      
+      #endregion
 
-      //delete any invalid links
-    }
+      ExecuteNonQuery(sbCmd.ToString(), CommandBehavior.Default, lParam.ToArray());
 
-    private static void DB_UpdateType(int iMangaID, string sType)
-    {
-      SQLiteParameter pmMangaID = NewParameter("@mangaID", DbType.Int32, iMangaID);
+      if (!bConverting)
+        EndTransaction();
 
-      //remove type if empty
-      if (string.IsNullOrEmpty(sType)) {
-        ExecuteNonQuery("update Manga set TypeID = null where MangaID = @mangaID"
-          , CommandBehavior.Default, pmMangaID);
-        return;
-      }
-      else {
-        //declare variables
-        SQLiteParameter pmType = NewParameter("@type", DbType.String, sType);
-
-        //add type if it doesn't exist already
-        string sCommandText = @"
-				  insert into [Type](Type)
-				  select @type
-				  where not exists(select 1 from [Type] where Type = @type);
-
-          update [Manga]
-          set TypeID = (select TypeID from [Type] where Type = @type)
-          where 
-             MangaID = @mangaID 
-          and 
-            (TypeID is null or TypeID != (select TypeID from [Type] where Type = @type));
-        ";
-        ExecuteNonQuery(sCommandText, CommandBehavior.Default, pmMangaID, pmType);
-      }
+      return iMangaID;
     }
 
     private static int Entry_Delete(int iMangaID)
@@ -1381,11 +1331,16 @@ namespace Nagru___Manga_Organizer
 
     private static int DeleteUnusedTags()
     {
+			BeginTransaction();
+
       string sCommandText = @"
 				delete from Tag
 				where TagID not in 
 				(select TagID from MangaTag)";
-      return ExecuteNonQuery(sCommandText);
+			int altered = ExecuteNonQuery(sCommandText);
+
+			EndTransaction();
+			return altered;
     }
 
     #endregion

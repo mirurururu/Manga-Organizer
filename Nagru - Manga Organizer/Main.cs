@@ -541,12 +541,10 @@ namespace Nagru___Manga_Organizer
 			int iPos = LV_Entries.SelectedItems.Count == 1 ?
 				LV_Entries.SelectedItems[0].Index : aiShuffle[0];
 
-			if(iPos != -1) {
-				for (int i = 0; i < aiShuffle.Length; i++) {
-					if (aiShuffle[i] == iPos) {
-						iPos = aiShuffle[i + 1 < aiShuffle.Length ? i + 1 : 0];
-						break;
-					}
+			for (int i = 0; i < aiShuffle.Length; i++) {
+				if (aiShuffle[i] == iPos) {
+					iPos = aiShuffle[i + 1 < aiShuffle.Length ? i + 1 : 0];
+					break;
 				}
 			}
 			ScrollTo(iPos > -1 ? iPos : 0);
@@ -1160,7 +1158,7 @@ namespace Nagru___Manga_Organizer
 
           #region Set the row properties
           ListViewItem lvi = new ListViewItem(new string[8] {
-            ExtString.GetFormattedTitle(dt.Rows[i]["Artist"].ToString(), dt.Rows[i]["Title"].ToString())
+            dt.Rows[i]["Artist"].ToString()
             ,dt.Rows[i]["Title"].ToString()
             ,dt.Rows[i]["Pages"].ToString()
             ,dt.Rows[i]["Tags"].ToString()
@@ -1214,8 +1212,9 @@ namespace Nagru___Manga_Organizer
             Application.ProductName, MessageBoxButtons.YesNo,
             MessageBoxIcon.Question) == DialogResult.Yes) {
 
-          mangaID = SQL.SaveManga(CmbBx_Artist.Text, acTxBx_Title.Text, acTxBx_Tags.Text, TxBx_Loc.Text,
-            Dt_Date.Value, Nud_Pages.Value, CmbBx_Type.Text, srRating.SelectedStar, frTxBx_Desc.Text, lblURL.Text);
+          mangaID = SQL.SaveManga(CmbBx_Artist.Text, acTxBx_Title.Text, Dt_Date.Value, 
+            acTxBx_Tags.Text, TxBx_Loc.Text, Nud_Pages.Value, CmbBx_Type.Text, 
+            srRating.SelectedStar, frTxBx_Desc.Text, lblURL.Text);
 
           //add artist to autocomplete
           CmbBx_Artist.Items.AddRange(SQL.GetArtists());
@@ -1239,7 +1238,7 @@ namespace Nagru___Manga_Organizer
         return;
 
       //overwrite entry properties
-      SQL.SaveManga(CmbBx_Artist.Text, acTxBx_Title.Text, acTxBx_Tags.Text, TxBx_Loc.Text, Dt_Date.Value,
+      SQL.SaveManga(CmbBx_Artist.Text, acTxBx_Title.Text, Dt_Date.Value, acTxBx_Tags.Text, TxBx_Loc.Text, 
         Nud_Pages.Value, CmbBx_Type.Text, srRating.SelectedStar, frTxBx_Desc.Text, lblURL.Text, mangaID);
       Text = "Edited entry: " + ExtString.GetFormattedTitle(CmbBx_Artist.Text, acTxBx_Title.Text);
       acTxBx_Tags.KeyWords = SQL.GetTags();
@@ -1897,8 +1896,8 @@ namespace Nagru___Manga_Organizer
         //add item
         csEntry en = new csEntry(asDir[i]);
         if (!SQL.ContainsEntry(en.sArtist, en.sTitle)) {
-          mangaID = SQL.SaveManga(en.sArtist, en.sTitle, en.sTags, en.sLoc,
-            en.dtDate, en.pages, en.sType, en.byRat, en.sDesc);
+          mangaID = SQL.SaveManga(en.sArtist, en.sTitle, en.dtDate, en.sTags, 
+            en.sLoc, en.pages, en.sType, en.byRat, en.sDesc);
 
           if (en.sArtist != "" && !CmbBx_Artist.Items.Contains(en.sArtist))
             CmbBx_Artist.Items.Add(en.sArtist);

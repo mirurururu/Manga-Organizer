@@ -265,9 +265,9 @@ namespace Nagru___Manga_Organizer
       for (int i = 0; i < LV_Found.SelectedItems.Count; i++) {
         //save entry and remove from list
         int iPos = Convert.ToInt32(LV_Found.SelectedItems[i].SubItems[3].Text);
-        SQL.SaveManga(lFound[iPos].sArtist, lFound[iPos].sTitle, lFound[iPos].sTags,
-          lFound[iPos].sLoc, lFound[iPos].dtDate, lFound[iPos].pages, lFound[iPos].sType,
-          lFound[iPos].byRat, lFound[iPos].sDesc);
+        SQL.SaveManga(lFound[iPos].sArtist, lFound[iPos].sTitle, lFound[iPos].dtDate, 
+          lFound[iPos].sTags, lFound[iPos].sLoc, lFound[iPos].pages, 
+          lFound[iPos].sType, lFound[iPos].byRat, lFound[iPos].sDesc);
         lRm.Add(iPos);
       }
 
