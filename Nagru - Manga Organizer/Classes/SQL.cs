@@ -1196,9 +1196,10 @@ namespace Nagru___Manga_Organizer
       //setup parameters
       StringBuilder sbCmd = new StringBuilder(10000);
       List<SQLiteParameter> lParam = new List<SQLiteParameter>(50);
-      lParam.AddRange(new SQLiteParameter[10] {
-        NewParameter("@title", DbType.String, sTitle)
-        , NewParameter("@mangaID", DbType.Int32, iMangaID)
+      lParam.AddRange(new SQLiteParameter[11] {
+        NewParameter("@mangaID", DbType.Int32, iMangaID)
+        , NewParameter("@title", DbType.String, sTitle)
+        , NewParameter("@name", DbType.String, sArtist)
         , NewParameter("@pages", DbType.Int32, Convert.ToInt32(iPages))
         , NewParameter("@rating", DbType.Decimal, dRating)
         , NewParameter("@description", DbType.String, sDesc)
@@ -1240,11 +1241,13 @@ namespace Nagru___Manga_Organizer
       ExecuteNonQuery(sCommandText, CommandBehavior.Default, lParam.ToArray());
 			#endregion
 
-      //set the mangaID parameter if necessary
-      sbCmd.Append(@"
-        --set the ID of the record
-        select @mangaID = case when @mangaID = -1 then (select max(MangaID) from Manga) else @mangaID end; 
-      ");
+			//get the new mangaID if applicable
+      if (iMangaID == -1) {
+        using (DataTable dt = ExecuteQuery("select max(MangaID) from Manga", CommandBehavior.SingleRow)) {
+          iMangaID = Int32.Parse(dt.Rows[0][0].ToString());
+          lParam[1] = NewParameter("@mangaID", DbType.Int32, iMangaID);
+        }
+      }
 
 			#region update the artist and manga type
 
