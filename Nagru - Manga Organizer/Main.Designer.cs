@@ -31,7 +31,6 @@
 			this.components = new System.ComponentModel.Container();
 			this.TabControl = new System.Windows.Forms.TabControl();
 			this.Tb_Browse = new System.Windows.Forms.TabPage();
-			this.imageListView1 = new Manina.Windows.Forms.ImageListView();
 			this.ChkBx_ShowFav = new System.Windows.Forms.CheckBox();
 			this.LV_Entries = new Nagru___Manga_Organizer.ListViewNF();
 			this.ColArtist = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -132,7 +131,6 @@
 			// Tb_Browse
 			// 
 			this.Tb_Browse.BackColor = System.Drawing.SystemColors.ControlLightLight;
-			this.Tb_Browse.Controls.Add(this.imageListView1);
 			this.Tb_Browse.Controls.Add(this.ChkBx_ShowFav);
 			this.Tb_Browse.Controls.Add(this.LV_Entries);
 			this.Tb_Browse.Controls.Add(this.Btn_Scan);
@@ -146,17 +144,6 @@
 			this.Tb_Browse.TabIndex = 0;
 			this.Tb_Browse.Text = "Browse";
 			this.Tb_Browse.Click += new System.EventHandler(this.ClearSelection);
-			// 
-			// imageListView1
-			// 
-			this.imageListView1.ColumnHeaderFont = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-			this.imageListView1.GroupHeaderFont = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
-			this.imageListView1.Location = new System.Drawing.Point(3, 33);
-			this.imageListView1.Name = "imageListView1";
-			this.imageListView1.PersistentCacheFile = "";
-			this.imageListView1.PersistentCacheSize = ((long)(100));
-			this.imageListView1.Size = new System.Drawing.Size(118, 516);
-			this.imageListView1.TabIndex = 7;
 			// 
 			// ChkBx_ShowFav
 			// 
@@ -194,14 +181,13 @@
 			this.LV_Entries.FullRowSelect = true;
 			this.LV_Entries.HideSelection = false;
 			this.LV_Entries.LabelWrap = false;
-			this.LV_Entries.Location = new System.Drawing.Point(127, 32);
+			this.LV_Entries.Location = new System.Drawing.Point(0, 32);
 			this.LV_Entries.MultiSelect = false;
 			this.LV_Entries.Name = "LV_Entries";
-			this.LV_Entries.Size = new System.Drawing.Size(796, 517);
+			this.LV_Entries.Size = new System.Drawing.Size(923, 517);
 			this.LV_Entries.TabIndex = 0;
 			this.LV_Entries.UseCompatibleStateImageBehavior = false;
 			this.LV_Entries.View = System.Windows.Forms.View.Details;
-			this.LV_Entries.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.LV_Entries_ColumnClick);
 			this.LV_Entries.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.LV_Entries_ColumnWidthChanging);
 			this.LV_Entries.SelectedIndexChanged += new System.EventHandler(this.LV_Entries_SelectedIndexChanged);
 			this.LV_Entries.DragDrop += new System.Windows.Forms.DragEventHandler(this.LV_Entries_DragDrop);
@@ -1067,7 +1053,6 @@
 				private System.Windows.Forms.Label lblURL;
 				private System.Windows.Forms.ToolStripMenuItem maintenanceToolStripMenuItem;
 				private System.Windows.Forms.ToolStripMenuItem MnTs_CleanTags;
-        private Manina.Windows.Forms.ImageListView imageListView1;
     }
 }
 

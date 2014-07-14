@@ -13,7 +13,6 @@ namespace Nagru___Manga_Organizer
     public delegate void DelVoid();
     public DelVoid delNewEntry, delDone;
 
-    LVsorter lvSortObj = new LVsorter();
     HashSet<string> hsPaths = new HashSet<string>(),
       hsIgnore = new HashSet<string>();
     List<Main.csEntry> lFound = new List<Main.csEntry>();
@@ -28,7 +27,6 @@ namespace Nagru___Manga_Organizer
     private void Scan_Load(object sender, EventArgs e)
     {
       LV_Found.GridLines = SQL.GetSetting(SQL.Setting.ShowGrid) == "1";
-      LV_Found.ListViewItemSorter = lvSortObj;
       LV_Found_Resize(sender, e);
 
       string[] sRaw = SQL.GetSetting(SQL.Setting.SearchIgnore).Split('|');
@@ -143,9 +141,7 @@ namespace Nagru___Manga_Organizer
     /* Signal finished scan */
     private void SetFoundItems()
     {
-      LV_Found.ListViewItemSorter = lvSortObj;
-      LV_Found.Sort();
-      Alternate();
+      LV_Found.SortRows();
 
       Cursor = Cursors.Default;
     }
@@ -179,41 +175,12 @@ namespace Nagru___Manga_Organizer
       LV_Found.BeginUpdate();
       LV_Found.Items.Clear();
       LV_Found.Items.AddRange(lItems.ToArray());
-      LV_Found.Sort();
-      Alternate();
+      LV_Found.SortRows();
       LV_Found.EndUpdate();
 
       LV_Found.Select();
       Cursor = Cursors.Default;
       Text = "Found " + LV_Found.Items.Count + " possible entries";
-    }
-
-    private void Alternate()
-    {
-      if (LV_Found.GridLines)
-        return;
-
-      LV_Found.BeginUpdate();
-      int iRowColorAlt = Int32.Parse(SQL.GetSetting(SQL.Setting.RowColourAlt));
-      for (int i = 0; i < LV_Found.Items.Count; i++) {
-        if (LV_Found.Items[i].BackColor == Color.MistyRose)
-          continue;
-        LV_Found.Items[i].BackColor = (i % 2 != 0) ?
-            Color.FromArgb(iRowColorAlt) : SystemColors.Window;
-      }
-      LV_Found.EndUpdate();
-    }
-
-    private void LV_Found_ColumnClick(object sender, ColumnClickEventArgs e)
-    {
-      if (e.Column != lvSortObj.SortingColumn) {
-        lvSortObj.NewColumn(e.Column, SortOrder.Ascending);
-      }
-      else
-        lvSortObj.SwapOrder();
-
-      LV_Found.Sort();
-      Alternate();
     }
 
     /* Auto-resizes Col_Title to match fmScan width   */

@@ -14,7 +14,6 @@ namespace Nagru___Manga_Organizer
     public string sChoice = "";
 
     DelClassVoid delResults = null;
-    LVsorter lvSortObj = new LVsorter();
     csEHSearch csSearch = new csEHSearch();
     string sTrySearch = string.Empty;
 
@@ -29,7 +28,6 @@ namespace Nagru___Manga_Organizer
 
     private void Suggest_Load(object sender, EventArgs e)
     {
-      lvDetails.ListViewItemSorter = lvSortObj;
       delResults = DisplayResults;
       ResizeLV();
 
@@ -179,17 +177,6 @@ namespace Nagru___Manga_Organizer
     {
       e.Cancel = true;
       e.NewWidth = lvDetails.Columns[e.ColumnIndex].Width;
-    }
-
-    private void lvDetails_ColumnClick(object sender, ColumnClickEventArgs e)
-    {
-      if (e.Column != lvSortObj.SortingColumn)
-        lvSortObj.NewColumn(e.Column, SortOrder.Ascending);
-      else
-        lvSortObj.SwapOrder();
-
-      lvDetails.Sort();
-      Alternate();
     }
 
     //open selected url in browser

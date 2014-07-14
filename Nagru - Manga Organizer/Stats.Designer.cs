@@ -132,7 +132,6 @@
             this.lvStats.TabIndex = 0;
             this.lvStats.UseCompatibleStateImageBehavior = false;
             this.lvStats.View = System.Windows.Forms.View.Details;
-            this.lvStats.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.lvStats_ColumnClick);
             this.lvStats.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.lvStats_ColumnWidthChanging);
             this.lvStats.Resize += new System.EventHandler(this.lvStats_Resize);
             // 

@@ -366,7 +366,6 @@
             this.lvDetails.TabIndex = 10;
             this.lvDetails.UseCompatibleStateImageBehavior = false;
             this.lvDetails.View = System.Windows.Forms.View.Details;
-            this.lvDetails.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.lvDetails_ColumnClick);
             this.lvDetails.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.lvDetails_ColumnWidthChanging);
             this.lvDetails.SelectedIndexChanged += new System.EventHandler(this.lvDetails_SelectedIndexChanged);
             this.lvDetails.DoubleClick += new System.EventHandler(this.lvDetails_DoubleClick);

@@ -184,7 +184,6 @@
             this.LV_Found.TabIndex = 7;
             this.LV_Found.UseCompatibleStateImageBehavior = false;
             this.LV_Found.View = System.Windows.Forms.View.Details;
-            this.LV_Found.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.LV_Found_ColumnClick);
             this.LV_Found.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.LV_Found_ColumnWidthChanging);
             this.LV_Found.DoubleClick += new System.EventHandler(this.LV_Found_DoubleClick);
             this.LV_Found.MouseHover += new System.EventHandler(this.LV_Found_MouseHover);

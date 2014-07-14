@@ -13,7 +13,6 @@ namespace Nagru___Manga_Organizer
   {
     DataTable dt = null;
     SortedDictionary<string, ushort> dtTags = new SortedDictionary<string, ushort>();
-    LVsorter lvSortObj = new LVsorter();
     bool bPrevState = true;
     uint iCount = 0;
 
@@ -26,7 +25,6 @@ namespace Nagru___Manga_Organizer
 
     private void Stats_Load(object sender, EventArgs e)
     {
-      lvStats.ListViewItemSorter = lvSortObj;
       SwitchView(1);
     }
 
@@ -113,23 +111,12 @@ namespace Nagru___Manga_Organizer
           lItems.Add(lvi);
         }
         lvStats.Items.AddRange(lItems.ToArray());
-        lvSortObj.SortingColumn = 2;
-        lvSortObj.SortingOrder = SortOrder.Descending;
-        lvStats.Sort();
+        lvStats.SortRows();
         lvStats.EndUpdate();
       }
 
       Text = string.Format("Stats: {0} tags in {1} manga", dtTags.Count, iCount);
       bPrevState = bFavsOnly;
-    }
-
-    private void lvStats_ColumnClick(object sender, ColumnClickEventArgs e)
-    {
-      if (e.Column != lvSortObj.SortingColumn)
-        lvSortObj.NewColumn(e.Column, SortOrder.Ascending);
-      else
-        lvSortObj.SwapOrder();
-      lvStats.Sort();
     }
 
     private void lvStats_Resize(object sender, EventArgs e)

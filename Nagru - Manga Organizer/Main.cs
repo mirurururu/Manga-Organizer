@@ -36,7 +36,6 @@ namespace Nagru___Manga_Organizer
     delegate void DelInt(int iNum);
     delegate void DelString(string sMsg);
 
-    LVsorter lvSortObj = new LVsorter(true);
     bool bSavNotes = true, bResize = false;
     int mangaID = -1, page = -1;
     int[] aiShuffle = null;
@@ -73,7 +72,8 @@ namespace Nagru___Manga_Organizer
       frTxBx_Notes.DragEnter += new DragEventHandler(DragEnterTxBx);
       
       //set-up listview sorting & sizing
-      LV_Entries.ListViewItemSorter = lvSortObj;
+			LV_Entries.staticColumns.Add(ColTags.Index);
+			LV_Entries.IsMain = true;
       LV_Entries.Select();
     }
 
@@ -278,24 +278,6 @@ namespace Nagru___Manga_Organizer
         SetData(Int32.Parse(LV_Entries.FocusedItem.SubItems[colID.Index].Text));
       else
         Reset();
-    }
-
-		/// <summary>
-		/// Sort the ListView by the selected column
-		/// </summary>
-    private void LV_Entries_ColumnClick(object sender, System.Windows.Forms.ColumnClickEventArgs e)
-    {
-      //prevent sorting by tags
-      if (e.Column == ColTags.Index)
-        return;
-
-      if (e.Column != lvSortObj.SortingColumn)
-        lvSortObj.NewColumn(e.Column, System.Windows.Forms.SortOrder.Ascending);
-      else
-        lvSortObj.SwapOrder();
-
-      LV_Entries.Sort();
-      Alternate();
     }
 
 		/// <summary>
@@ -710,23 +692,6 @@ namespace Nagru___Manga_Organizer
       }
       else {
         Reset();
-      }
-    }
-
-    /// <summary>
-    /// Alternate row colors in the listview
-    /// </summary>
-    private void Alternate()
-    {
-      if (SQL.GetSetting(SQL.Setting.ShowGrid) == "1")
-        return;
-
-      int iRowColorAlt = Int32.Parse(SQL.GetSetting(SQL.Setting.RowColourAlt));
-      for (int i = 0; i < LV_Entries.Items.Count; i++) {
-        if (LV_Entries.Items[i].SubItems[ColRating.Index].Text.Length != 5) {
-          LV_Entries.Items[i].BackColor = (i % 2 != 0) ?
-            Color.FromArgb(iRowColorAlt) : SystemColors.Window;
-        }
       }
     }
 
@@ -1180,8 +1145,7 @@ namespace Nagru___Manga_Organizer
         LV_Entries.BeginUpdate();
         LV_Entries.Items.Clear();
         LV_Entries.Items.AddRange(aItems.Where(x => x != null).ToArray());
-        LV_Entries.Sort();
-        Alternate();
+        LV_Entries.SortRows();
         LV_Entries.EndUpdate();
 
         aiShuffle = null;
@@ -1249,17 +1213,17 @@ namespace Nagru___Manga_Organizer
         if (srRating.SelectedStar == 5) {
           lvi.BackColor = Color.FromArgb(Int32.Parse(SQL.GetSetting(SQL.Setting.RowColourHighlight)));
         }
+				acTxBx_Tags.Text = SQL.GetMangaDetail(mangaID, SQL.Manga.Tags);
         lvi.SubItems[ColArtist.Index].Text = CmbBx_Artist.Text;
         lvi.SubItems[ColTitle.Index].Text = acTxBx_Title.Text;
         lvi.SubItems[ColPages.Index].Text = Nud_Pages.Value.ToString();
-        lvi.SubItems[ColTags.Index].Text = SQL.GetMangaDetail(mangaID, SQL.Manga.Tags);
+				lvi.SubItems[ColTags.Index].Text = acTxBx_Tags.Text;
         lvi.SubItems[colDate.Index].Text = Dt_Date.Value.ToString("MM/dd/yy");
         lvi.SubItems[ColType.Index].Text = CmbBx_Type.Text;
-        LV_Entries.Sort();
         ReFocus();
       }
-
-      Alternate();
+			
+			LV_Entries.SortRows();
       MnTS_Edit.Visible = false;
     }
 
@@ -1469,7 +1433,7 @@ namespace Nagru___Manga_Organizer
             SQL.Disconnect();
             SQL.Connect(sNew);
 
-            if (SQL.Connected) {
+            if (SQL.IsConnected()) {
               UpdateLV();
 
               //set up CmbBx autocomplete

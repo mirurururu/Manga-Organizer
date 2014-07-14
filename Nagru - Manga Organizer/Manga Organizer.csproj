@@ -130,7 +130,6 @@
     <Compile Include="Classes\ListViewNF.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Classes\LVsorter.cs" />
     <Compile Include="Classes\ProgressControl.cs">
       <SubType>Component</SubType>
     </Compile>

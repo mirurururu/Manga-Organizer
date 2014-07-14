@@ -10,32 +10,20 @@ using System.Data.SQLite;
 
 namespace Nagru___Manga_Organizer
 {
-  /* Controls access to the database */
+	/// <summary>
+	/// Controls access to the database
+	/// </summary>
   public static class SQL
   {
     #region Properties
 
-    /// <summary>
-    /// Returns whether or not the DB connection is currently open
-    /// </summary>
-    public static bool Connected
-    {
-      private set
-      {
-        Connected = value;
-      }
-      get
-      {
-        return (sqConn != null
-          && sqConn.State == ConnectionState.Open);
-      }
-    }
+		public delegate void DelVoidInt(int i);
+    public static DelVoidInt delProgress = null;
+		private static SQLBase sqlBase = null;
+		
+		#region Table Enums
 
-    #endregion
-
-    #region Variables
-
-    public enum Setting {
+		public enum Setting {
       DBversion
 			,RootPath
 			,SavePath
@@ -72,17 +60,12 @@ namespace Nagru___Manga_Organizer
       ,Type
       ,Rating
     };
-    
-    public delegate void DelVoidInt(int i);
-    public static DelVoidInt delProgress = null;
 
-    private static SQLiteConnection sqConn = null;
-    private const int SQLITE_MAX_LENGTH = 1000000;
+		#endregion// prevents having to write alter statements
 
-    //prevents having to write alter statements 
-    //if I need to make changes to them later
-    #region Views
-    private const string vsManga = @"
+		#region Views
+
+			internal const string vsManga = @"
 				select
 					mgx.MangaID
 					,ifnull(at.Name, '')    Artist
@@ -106,58 +89,76 @@ namespace Nagru___Manga_Organizer
 					[Artist] at on at.ArtistID = mga.ArtistID
 				left outer join
 				(
-					select mgt.MangaID, group_concat(tx.Tag, ', ') Tags
-					from [Tag] tx
-					join [MangaTag] mgt on mgt.TagID = tx.TagID
-					group by mgt.MangaID
-					order by tx.Tag
+					select MangaID, group_concat(Tag, ', ') Tags
+					from 
+					(
+						select mgt.MangaID, mgt.TagID, tx.Tag
+						from [Tag] tx
+						join [MangaTag] mgt on mgt.TagID = tx.TagID
+						order by tx.Tag
+					)
+					group by MangaID
 				) tg on tg.MangaID = mgx.MangaID ";
-    private const string vsMangaEnd = " group by mgx.MangaID ";
-    #endregion
+			internal const string vsMangaEnd = " group by mgx.MangaID ";
+
+			#endregion
 
     #endregion
 
-    #region Class Functions
+    #region Constructor
 
+		/// <summary>
+		/// Instantiates the non-static sqlBase that holds the DB connection
+		/// </summary>
     static SQL()
     {
-      DB_Connect();
+			sqlBase = new SQLBase();
+			sqlBase.UpdateVersion();
     }
 
     #endregion
 
     #region Public Access
 
-    #region Handle Connection
+    #region Connection
 
     /// <summary>
-    /// Opens a connection with the database
+    /// Opens a connection to the database and imports any previous Manga DB's if possible
     /// </summary>
-    /// <param name="_filePath">Can override the automatic DB filepath</param>
-    /// <returns>Returns whether the operation suceeded or failed</returns>
+    /// <param name="_filePath">The path to the old database</param>
+    /// <returns>Returns whether the operation succeeded or failed</returns>
     public static bool Connect(string _filePath = null)
     {
-      //convert the old DB if it still exists
       if (string.IsNullOrEmpty(_filePath)) {
-        //Get default old DB location
         _filePath = SQL.GetSetting(SQL.Setting.SavePath) != string.Empty ?
             SQL.GetSetting(SQL.Setting.SavePath) : Environment.CurrentDirectory;
         _filePath += "\\MangaDatabase.bin";
       }
+
       if (File.Exists(_filePath)
           || File.Exists(_filePath = ExtString.RelativePath(_filePath))) {
-        Import(_filePath);
+        sqlBase.Import(_filePath);
       }
 
-      return Connected;
+			return IsConnected();
     }
+
+		/// <summary>
+		/// Returns whether or not the DB connection is currently open
+		/// </summary>
+		public static bool IsConnected()
+		{
+			return (sqlBase != null && sqlBase.sqConn != null
+				&& sqlBase.sqConn.State == ConnectionState.Open);
+		}
 
     /// <summary>
     /// Vacuum's the DB and closes the connection
     /// </summary>
     public static void Disconnect()
     {
-      DB_Close();
+      sqlBase.Close();
+			sqlBase.Dispose();
     }
 
     #endregion
@@ -165,110 +166,81 @@ namespace Nagru___Manga_Organizer
     #region Query Database
 
     /// <summary>
-    /// Returns all the Artists in the database
+    /// Returns all the artists in the database
     /// </summary>
-    /// <returns></returns>
     public static string[] GetArtists()
     {
-      string sCommandText = @"
-				select
-						at.ArtistID
-					,ifnull(at.Name, '')				Artist
-				from
-					[Artist] at
-				order by at.Name asc
-			";
-
-      string[] asArtists;
-      using (DataTable dt = ExecuteQuery(sCommandText)) {
-        asArtists = new string[dt.Rows.Count];
-
-        for (int i = 0; i < dt.Rows.Count; i++) {
-          asArtists[i] = dt.Rows[i][1].ToString();
+			string[] asArtists;
+			using (DataTable dtArtists = SQLAccess.GetArtists())
+			{
+				asArtists = new string[dtArtists.Rows.Count];
+				for (int i = 0; i < dtArtists.Rows.Count; i++)
+				{
+					asArtists[i] = dtArtists.Rows[i]["Artist"].ToString();
         }
-      }
-
-      return asArtists;
+			}
+			return asArtists;
     }
 
     /// <summary>
-    /// Returns all the Types in the database
+    /// Returns all the manga types in the database
     /// </summary>
-    /// <returns></returns>
     public static string[] GetTypes()
     {
-      string sCommandText = @"
-				select
-						tp.TypeID
-					,tp.Type
-				from
-					[Type] tp
-				order by tp.Type asc
-			";
-
-      string[] asTypes;
-      using (DataTable dt = ExecuteQuery(sCommandText)) {
-        asTypes = new string[dt.Rows.Count];
-
-        for (int i = 0; i < dt.Rows.Count; i++) {
-          asTypes[i] = dt.Rows[i][1].ToString();
-        }
-      }
-
-      return asTypes;
+			string[] asTypes;
+			using (DataTable dtTypes = SQLAccess.GetTypes())
+			{
+				asTypes = new string[dtTypes.Rows.Count];
+				for (int i = 0; i < dtTypes.Rows.Count; i++)
+				{
+					asTypes[i] = dtTypes.Rows[i]["Type"].ToString();
+				}
+			}
+			return asTypes;
     }
 
     /// <summary>
-    /// Returns all the Tags in the database
+    /// Returns all the tags in the database
     /// </summary>
-    /// <returns></returns>
     public static string[] GetTags()
     {
-      string sCommandText = @"
-				select
-						tg.TagID
-					,tg.Tag
-				from
-					[Tag] tg
-				order by tg.Tag asc
-			";
-
-      string[] asTags;
-      using (DataTable dt = ExecuteQuery(sCommandText)) {
-        asTags = new string[dt.Rows.Count];
-
-        for (int i = 0; i < dt.Rows.Count; i++) {
-          asTags[i] = dt.Rows[i][1].ToString();
-        }
-      }
-
-      return asTags;
+			string[] asTags;
+			using (DataTable dtTags = SQLAccess.GetTags())
+			{
+				asTags = new string[dtTags.Rows.Count];
+				for (int i = 0; i < dtTags.Rows.Count; i++)
+				{
+					asTags[i] = dtTags.Rows[i]["Tag"].ToString();
+				}
+			}
+			return asTags;
     }
 
     /// <summary>
     /// Returns the EH formatted title of a Manga
     /// </summary>
-    /// <param name="_mangaID">The ID of the record to access</param>
-    /// <returns></returns>
+    /// <param name="mangaID">The ID of the record to access</param>
     public static string GetMangaTitle(int mangaID)
     {
-      string sArtist = "", sTitle = "";
-      using (DataTable dt = DB_GetEntryDetails(mangaID)) {
-        sArtist = dt.Rows[0]["Artist"].ToString();
-        sTitle = dt.Rows[0]["Title"].ToString();
+			string sTitle = string.Empty;
+			using (DataTable dt = SQLAccess.DB_GetEntryDetails(mangaID))
+			{
+				sTitle = ExtString.GetFormattedTitle(
+					dt.Rows[0]["Artist"].ToString(),
+					dt.Rows[0]["Title"].ToString()
+				);
       }
 
-      return ExtString.GetFormattedTitle(sArtist, sTitle);
+      return sTitle;
     }
 
     /// <summary>
     /// Returns the full details of a specified manga
     /// </summary>
     /// <param name="mangaID">The ID of the record</param>
-    /// <returns>Returns a single row containing manga details</returns>
     public static DataTable GetManga(int mangaID)
     {
-      return DB_GetEntryDetails(mangaID);
+			return SQLAccess.DB_GetEntryDetails(mangaID);
     }
 
     /// <summary>
@@ -276,11 +248,11 @@ namespace Nagru___Manga_Organizer
     /// </summary>
     /// <param name="mangaID">The ID of the record</param>
     /// <param name="columnName">The name of the column to extract</param>
-    /// <returns></returns>
     public static string GetMangaDetail(int mangaID, Manga Column)
     {
       string sVal = "";
-      using (DataTable dt = DB_GetEntryDetails(mangaID)) {
+			using (DataTable dt = SQLAccess.DB_GetEntryDetails(mangaID))
+			{
         sVal = dt.Rows[0][Column.ToString()].ToString();
       }
       return sVal;
@@ -290,11 +262,11 @@ namespace Nagru___Manga_Organizer
     /// Returns a setting from the DB
     /// </summary>
     /// <param name="DBSetting"></param>
-    /// <returns></returns>
     public static string GetSetting(Setting DBSetting)
     {
       string sVal = "";
-      using (DataTable dt = DB_GetSettings()) {
+			using (DataTable dt = SQLAccess.DB_GetSettings())
+			{
         sVal = dt.Rows[0][DBSetting.ToString()].ToString();
       }
       return sVal;
@@ -303,11 +275,10 @@ namespace Nagru___Manga_Organizer
     /// <summary>
     /// Returns the details of every manga in the database
     /// </summary>
-    /// <param name="OnlyFavs">Only return entries with a rating of 5.0</param>
-    /// <returns></returns>
-    public static DataTable GetAllEntries(bool OnlyFavs = false)
+    /// <param name="OnlyFavourites">Only return entries with a rating of 5.0?</param>
+		public static DataTable GetAllEntries(bool OnlyFavourites = false)
     {
-      return GetEntries(OnlyFavs);
+			return SQLAccess.GetEntries(OnlyFavourites);
     }
 
     #region Search Database
@@ -317,22 +288,20 @@ namespace Nagru___Manga_Organizer
     /// </summary>
     /// <param name="Artist">The artist's name</param>
     /// <param name="Title">The title of the maga</param>
-    /// <returns></returns>
     public static bool ContainsEntry(string Artist, string Title)
     {
-      return EntryExists(Artist, Title);
+			return SQLAccess.EntryExists(Artist, Title);
     }
 
     /// <summary>
-    /// 
+    /// Uses EH-like parameters to search the DB for matching manga
     /// </summary>
-    /// <param name="SearchTerms"></param>
-    /// <param name="OnlyFavs"></param>
-    /// <param name="MangaID"></param>
-    /// <returns></returns>
-    public static DataTable Search(string SearchTerms, bool OnlyFavs = false, int MangaID = -1)
+    /// <param name="SearchTerms">The raw search terms</param>
+		/// <param name="OnlyFavourites">Only return entries with a rating of 5.0?</param>
+    /// <param name="MangaID">Check a specific manga to see if it matches the conditions</param>
+		public static DataTable Search(string SearchTerms, bool OnlyFavourites = false, int MangaID = -1)
     {
-      return DB_Search(SearchTerms, OnlyFavs, MangaID);
+			return SQLAccess.DB_Search(SearchTerms, OnlyFavourites, MangaID);
     }
 
     #endregion
@@ -355,12 +324,11 @@ namespace Nagru___Manga_Organizer
     /// <param name="Description">User comments</param>
     /// <param name="URL">The source URL of the gallery</param>
     /// <param name="MangaID">If passed through, attempts to update the indicated record</param>
-    /// <returns></returns>
     public static int SaveManga(string Artist, string Title, DateTime PublishedDate,
         string Tags = null, string Location = null, decimal Pages = 0, string Type = null, 
         decimal Rating = 0, string Description = null, string URL = null, int MangaID = -1)
     {
-      return DB_SaveEntry(Artist, Title, PublishedDate, Tags, 
+			return SQLAccess.DB_SaveEntry(Artist, Title, PublishedDate, Tags, 
         Location, Pages, Type, Rating, Description, URL, MangaID);
     }
 
@@ -368,10 +336,9 @@ namespace Nagru___Manga_Organizer
     /// Deletes an entry from the database
     /// </summary>
     /// <param name="mangaID">The ID of the record to be deleted</param>
-    /// <returns>Returns the success state of the operation</returns>
     public static bool DeleteManga(int mangaID)
     {
-      int altered = Entry_Delete(mangaID);
+			int altered = SQLAccess.Entry_Delete(mangaID);
       return (altered == 1);
     }
 
@@ -381,7 +348,7 @@ namespace Nagru___Manga_Organizer
     /// <returns>Returns the number of deleted tags.</returns>
     public static int CleanUpTags()
     {
-      return DeleteUnusedTags();
+			return SQLAccess.DeleteUnusedTags();
     }
 
     /// <summary>
@@ -389,404 +356,335 @@ namespace Nagru___Manga_Organizer
     /// </summary>
     /// <param name="MangaID">The ID of the record to update</param>
     /// <param name="Rating">The new rating value</param>
-    /// <returns></returns>
     public static void UpdateRating(int MangaID, decimal Rating)
     {
       string sCommandText = "update Manga set Rating = @rating where MangaID = @mangaID";
-      SQLiteParameter sqManga = new SQLiteParameter("@mangaID", DbType.Int32) {
-        Value = MangaID
-      };
-      SQLiteParameter sqRating = new SQLiteParameter("@rating", DbType.Decimal) {
-        Value = Rating
-      };
 
-      ExecuteNonQuery(sCommandText, CommandBehavior.Default, sqManga, sqRating);
+      SQLiteParameter sqManga = SQLBase.NewParameter("@mangaID", DbType.Int32, MangaID);
+			SQLiteParameter sqRating = SQLBase.NewParameter("@rating", DbType.Decimal, Rating);
+
+      sqlBase.ExecuteNonQuery(sCommandText, CommandBehavior.Default, sqManga, sqRating);
     }
 
     /// <summary>
     /// Update the indicated setting
     /// </summary>
-    /// <param name="DBSetting"></param>
-    /// <param name="setting"></param>
+    /// <param name="DBSetting">The name of the setting to update</param>
+    /// <param name="setting">The new value</param>
     public static void UpdateSetting(Setting DBSetting, object setting)
     {
-      DB_UpdateSetting(DBSetting, setting);
+			SQLAccess.DB_UpdateSetting(DBSetting, setting);
     }
 
     #endregion
 
     #endregion
 
-    #region Internal Methods
+		private class SQLBase : IDisposable
+		{
+			#region Properties
 
-    #region Handle connection
+			internal SQLiteConnection sqConn = null;
+			private const int SQLITE_MAX_LENGTH = 1000000;
+			private const int DB_VERSION = 1;
+			private bool bDisposed = false;
 
-    private static void DB_Connect()
-    {
-      DB_Close();
-      string sPath = Properties.Settings.Default.SavLoc != string.Empty ?
-        Properties.Settings.Default.SavLoc : Environment.CurrentDirectory;
-      sPath += "\\MangaDB.sqlite";
+			#endregion
 
-      //check existence
-      bool bExist = false;
-      if (File.Exists(sPath))
-        bExist = true;
+			#region Constructor
 
-      //create connection
-      sqConn = new SQLiteConnection();
-      if (!bExist)
-        SQLiteConnection.CreateFile(sPath);
-      sqConn.ConnectionString = new DbConnectionStringBuilder()
+			/// <summary>
+			/// Establish a DB connection when instantiated
+			/// </summary>
+			internal SQLBase()
 			{
-				{"Data Source", sPath},
-				{"Version", "3"},
-				{"Compress", true},
-				{"New", !bExist}
-			}.ConnectionString;
-      sqConn.Open();
+				this.Connect();
+			}
 
-      if (!bExist) {
-        DB_Create();
-      }
-      else {
-        UpdateVersion();
-      }
-    }
+			/// <summary>
+			/// Public implementation of Dispose
+			/// </summary>
+			public void Dispose()
+			{
+				Dispose(true);
+				GC.SuppressFinalize(this);
+			}
 
-    private static void UpdateVersion()
-    {
-      bool bExists = false;
+			//protected implementation of Dispose
+			protected virtual void Dispose(bool Disposing)
+			{
+				if (bDisposed)
+					return;
 
-      //check if the settings table exists
-      using (DataTable dt = ExecuteQuery("select * from sqlite_master where tbl_name = 'Settings'")) {
-        if (dt.Rows.Count > 0) bExists = true;
-      }
+				if (Disposing)
+				{
+					sqConn.Dispose();
+				}
 
-      if (bExists) {
-        /*int iDBVersion = Int32.Parse(GetSetting("DBVersion"));
-        switch (iDBVersion) {
-          default:
-            break;
-          case 2:
-            break;
-        }*/
-      }
-      else {
-        BeginTransaction();
-        Create_Settings();
+				bDisposed = true;
+			}
 
-        #region Grab the current settings and populate the table
-        List<SQLiteParameter> sqParam = new List<SQLiteParameter>(20);
+			/// <summary>
+			/// Destructor
+			/// </summary>
+			~SQLBase()
+			{
+				Dispose(false);
+			}
 
-        string sQuery = @"
-				update [Settings]
-        set DBversion           = 1
-				  ,RootPath							= @rootPath
-				  ,SavePath							= @savePath
-				  ,SearchIgnore					= @ignore
-				  ,FormPosition					= @position
-				  ,ImageBrowser					= @browser
-          ,Notes                = @notes
-				  ,member_id						= @memberID
-				  ,pass_hash						= @passHash
-				  ,NewUser							= 0
-				  ,SendReports					= @sendReports
-				  ,ShowGrid							= @showGrid
-				  ,ShowDate							= @showDate
-				  ,ReadInterval					= @interval
-				  ,RowColourHighlight		= @rowHighlight
-				  ,RowColourAlt					= @rowAlt
-				  ,BackgroundColour			= @background
-				  ,GallerySettings			= @galleries";
+			#endregion
 
-        sqParam.Add(new SQLiteParameter("@rootPath", DbType.String) {
-          Value = Properties.Settings.Default.DefLoc
-        });
-        sqParam.Add(new SQLiteParameter("@savePath", DbType.String) {
-          Value = Properties.Settings.Default.SavLoc
-        });
-        sqParam.Add(new SQLiteParameter("@ignore", DbType.String) {
-          Value = Properties.Settings.Default.Ignore
-        });
-        sqParam.Add(new SQLiteParameter("@position", DbType.String) {
-          Value = string.Format("{0},{1},{2},{3}"
-            , Properties.Settings.Default.Position.X
-            , Properties.Settings.Default.Position.Y
-            , Properties.Settings.Default.Position.Width
-            , Properties.Settings.Default.Position.Height)
-        });
-        sqParam.Add(new SQLiteParameter("@browser", DbType.String) {
-          Value = Properties.Settings.Default.DefProg
-        });
-        sqParam.Add(new SQLiteParameter("@notes", DbType.String) {
-          Value = Properties.Settings.Default.Notes
-        });
-        sqParam.Add(new SQLiteParameter("@memberID", DbType.Int32) {
-          Value = !string.IsNullOrEmpty(Properties.Settings.Default.member_id) ?
-            Int32.Parse(Properties.Settings.Default.member_id) : -1
-        });
-        sqParam.Add(new SQLiteParameter("@passHash", DbType.String) {
-          Value = Properties.Settings.Default.pass_hash
-        });
-        sqParam.Add(new SQLiteParameter("@sendReports", DbType.Int32) {
-          Value = Properties.Settings.Default.SendReports ? 1 : 0
-        });
-        sqParam.Add(new SQLiteParameter("@showGrid", DbType.Int32) {
-          Value = Properties.Settings.Default.DefGrid ? 1 : 0
-        });
-        sqParam.Add(new SQLiteParameter("@showDate", DbType.Int32) {
-          Value = Properties.Settings.Default.HideDate ? 0 : 1
-        });
-        sqParam.Add(new SQLiteParameter("@interval", DbType.Int32) {
-          Value = Properties.Settings.Default.Interval
-        });
-        sqParam.Add(new SQLiteParameter("@rowHighlight", DbType.Int32) {
-          Value = Properties.Settings.Default.RowColorHighlight
-        });
-        sqParam.Add(new SQLiteParameter("@rowAlt", DbType.Int32) {
-          Value = Properties.Settings.Default.RowColorAlt
-        });
-        sqParam.Add(new SQLiteParameter("@background", DbType.Int32) {
-          Value = Properties.Settings.Default.DefColour.ToArgb()
-        });
-        sqParam.Add(new SQLiteParameter("@galleries", DbType.String) {
-          Value = Properties.Settings.Default.GalleryTypes
-        });
+			#region Handle connection
 
-        ExecuteNonQuery(sQuery, CommandBehavior.Default, sqParam.ToArray());
-        #endregion
+			/// <summary>
+			/// Establishes a connection with the database or, if one is not found, create a new instance
+			/// </summary>
+			internal void Connect()
+			{
+				Close();
+				string sPath = Properties.Settings.Default.SavLoc != string.Empty ?
+					Properties.Settings.Default.SavLoc : Environment.CurrentDirectory;
+				sPath += "\\MangaDB.sqlite";
 
-        #region Add the Thumbnails column to dbo.Manga
-        sQuery = @"
-        alter table [Manga]
-        add column Thumbnail blob null";
-        ExecuteNonQuery(sQuery);
-        #endregion
+				//check existence
+				bool bExist = File.Exists(sPath);
 
-        #region Remove the Audit details from the link tables
-        sQuery = @"
-        drop trigger trMangaArtist;
-        create temporary table [tmpMangaArtist](MangaID, ArtistID);
-        insert into [tmpMangaArtist] select MangaID, ArtistID from [MangaArtist];
-        drop table [MangaArtist];
+				//create connection
+				sqConn = new SQLiteConnection();
+				if (!bExist)
+					SQLiteConnection.CreateFile(sPath);
+				sqConn.ConnectionString = new DbConnectionStringBuilder()
+				{
+					{"Data Source", sPath},
+					{"Version", "3"},
+					{"Compress", true},
+					{"New", !bExist}
+				}.ConnectionString;
+				sqConn.Open();
+
+				if (!bExist)
+				{
+					CreateDatabase();
+				}
+			}
+
+			/// <summary>
+			/// Check if there are updates to the DB, and if so deploy them
+			/// </summary>
+			internal void UpdateVersion()
+			{
+				int iCurrentVersion = 0;
+
+				//check if there's a new version of the database
+				using (DataTable dt = ExecuteQuery("select * from sqlite_master where tbl_name = 'Settings'"))
+				{
+					if (dt.Rows.Count > 0)
+					{
+						iCurrentVersion = Int32.Parse(GetSetting(Setting.DBversion));
+					}
+				}
+				if (DB_VERSION != iCurrentVersion)
+					return;
+
+				switch (iCurrentVersion)
+				{
+					default:
+					case 0:
+						#region Update to version 1.0
+						BeginTransaction();
+						Create_Settings();
+
+						#region Grab the current settings and populate the table
+						List<SQLiteParameter> sqParam = new List<SQLiteParameter>(20);
+
+						string sQuery = @"
+							update [Settings]
+							set DBversion           = 1
+							,RootPath							= @rootPath
+							,SavePath							= @savePath
+							,SearchIgnore					= @ignore
+							,FormPosition					= @position
+							,ImageBrowser					= @browser
+							,Notes                = @notes
+							,member_id						= @memberID
+							,pass_hash						= @passHash
+							,NewUser							= 0
+							,SendReports					= @sendReports
+							,ShowGrid							= @showGrid
+							,ShowDate							= @showDate
+							,ReadInterval					= @interval
+							,RowColourHighlight		= @rowHighlight
+							,RowColourAlt					= @rowAlt
+							,BackgroundColour			= @background
+							,GallerySettings			= @galleries";
+
+						sqParam.AddRange(new SQLiteParameter[14]{
+							NewParameter("@rootPath", DbType.String, Properties.Settings.Default.DefLoc),
+							NewParameter("@savePath", DbType.String, Properties.Settings.Default.SavLoc),
+							NewParameter("@ignore", DbType.String, Properties.Settings.Default.Ignore),
+							NewParameter("@browser", DbType.String, Properties.Settings.Default.DefProg),
+							NewParameter("@notes", DbType.String, Properties.Settings.Default.Notes),
+							NewParameter("@passHash", DbType.String, Properties.Settings.Default.pass_hash),
+							NewParameter("@sendReports", DbType.Int32, Properties.Settings.Default.SendReports ? 1 : 0),
+							NewParameter("@showGrid", DbType.Int32, Properties.Settings.Default.DefGrid ? 1 : 0),
+							NewParameter("@showDate", DbType.Int32, Properties.Settings.Default.HideDate ? 0 : 1),
+							NewParameter("@interval", DbType.Int32, Properties.Settings.Default.Interval),
+							NewParameter("@rowHighlight", DbType.Int32, Properties.Settings.Default.RowColorHighlight),
+							NewParameter("@rowAlt", DbType.Int32, Properties.Settings.Default.RowColorAlt),
+							NewParameter("@background", DbType.Int32, Properties.Settings.Default.DefColour.ToArgb()),
+							NewParameter("@galleries", DbType.String, Properties.Settings.Default.GalleryTypes),
+						});
+						sqParam.Add(NewParameter("@position", DbType.String, 
+							string.Format("{0},{1},{2},{3}"
+								, Properties.Settings.Default.Position.X
+								, Properties.Settings.Default.Position.Y
+								, Properties.Settings.Default.Position.Width
+								, Properties.Settings.Default.Position.Height)
+						));
+						sqParam.Add(NewParameter("@memberID", DbType.Int32, 
+							!string.IsNullOrEmpty(Properties.Settings.Default.member_id) ?
+								Int32.Parse(Properties.Settings.Default.member_id) : -1)
+						);
+
+						ExecuteNonQuery(sQuery, CommandBehavior.Default, sqParam.ToArray());
+						#endregion
+
+						#region Add the Thumbnails column to dbo.Manga
+						sQuery = @"
+					alter table [Manga]
+					add column Thumbnail blob null";
+						ExecuteNonQuery(sQuery);
+						#endregion
+
+						#region Remove the Audit details from the link tables
+						sQuery = @"
+					drop trigger trMangaArtist;
+					create temporary table [tmpMangaArtist](MangaID, ArtistID);
+					insert into [tmpMangaArtist] select MangaID, ArtistID from [MangaArtist];
+					drop table [MangaArtist];
         
-        create table [MangaArtist]
-				(
-					MangaArtistID		integer		primary key		autoincrement
-					,MangaID				integer		not null
-					,ArtistID				integer		not null
-					,constraint [fk_mangaID] foreign key ([MangaID]) references [Manga] ([MangaID])
-					,constraint [fk_artistID] foreign key ([ArtistID]) references [Artist] ([ArtistID])
-				);
+					create table [MangaArtist]
+					(
+						MangaArtistID		integer		primary key		autoincrement
+						,MangaID				integer		not null
+						,ArtistID				integer		not null
+						,constraint [fk_mangaID] foreign key ([MangaID]) references [Manga] ([MangaID])
+						,constraint [fk_artistID] foreign key ([ArtistID]) references [Artist] ([ArtistID])
+					);
 
-        insert into [MangaArtist](MangaID, ArtistID) select MangaID, ArtistID from [tmpMangaArtist];
-        drop table [tmpMangaArtist];";
-        ExecuteNonQuery(sQuery);
+					insert into [MangaArtist](MangaID, ArtistID) select MangaID, ArtistID from [tmpMangaArtist];
+					drop table [tmpMangaArtist];";
+						ExecuteNonQuery(sQuery);
 
-        sQuery = @"
-        drop trigger trMangaTag;
-        create temporary table [tmpMangaTag](MangaID, TagID);
-        insert into [tmpMangaTag] select MangaID, TagID from [MangaTag];
-        drop table [MangaTag];
+						sQuery = @"
+					drop trigger trMangaTag;
+					create temporary table [tmpMangaTag](MangaID, TagID);
+					insert into [tmpMangaTag] select MangaID, TagID from [MangaTag];
+					drop table [MangaTag];
         
-        create table [MangaTag]
-				(
-					MangaTagID			integer		primary key		autoincrement
-					,MangaID				integer		not null
-					,TagID					integer		not null
-					,constraint [fk_mangaID] foreign key ([MangaID]) references [Manga] ([MangaID])
-					,constraint [fk_tagID] foreign key ([TagID]) references [Tag] ([TagID])
-				);
+					create table [MangaTag]
+					(
+						MangaTagID			integer		primary key		autoincrement
+						,MangaID				integer		not null
+						,TagID					integer		not null
+						,constraint [fk_mangaID] foreign key ([MangaID]) references [Manga] ([MangaID])
+						,constraint [fk_tagID] foreign key ([TagID]) references [Tag] ([TagID])
+					);
 
-        insert into [MangaTag](MangaID, TagID) select MangaID, TagID from [tmpMangaTag];
-        drop table [tmpMangaTag];";
-        ExecuteNonQuery(sQuery);
-        #endregion
+					insert into [MangaTag](MangaID, TagID) select MangaID, TagID from [tmpMangaTag];
+					drop table [tmpMangaTag];";
+						ExecuteNonQuery(sQuery);
+						#endregion
 
-        EndTransaction();
-      }
-    }
+						EndTransaction();
+						#endregion
+						break;
+					case 1:
+						break;
+				}
+			}
 
-    private static int DB_UpdateSetting(Setting DBSetting, object value)
-    {
-      //setup parameters
-      SQLiteParameter sqParam = null;
+			internal void Close()
+			{
+				if (sqConn != null
+						&& sqConn.State != ConnectionState.Closed)
+				{
+					ExecuteNonQuery("VACUUM;");
+					sqConn.Close();
+				}
+			}
 
-      switch (DBSetting) {
-        case Setting.BackgroundColour:
-        case Setting.DBversion:
-        case Setting.member_id:
-        case Setting.NewUser:
-        case Setting.ReadInterval:
-        case Setting.RowColourAlt:
-        case Setting.RowColourHighlight:
-        case Setting.SendReports:
-        case Setting.ShowDate:
-        case Setting.ShowGrid:
-           sqParam = new SQLiteParameter("@value", DbType.Int32) { Value = value };
-          break;
-        case Setting.FormPosition:
-        case Setting.GallerySettings:
-        case Setting.ImageBrowser:
-        case Setting.Notes:
-        case Setting.pass_hash:
-        case Setting.RootPath:
-        case Setting.SavePath:
-        case Setting.SearchIgnore:
-          sqParam = new SQLiteParameter("@value", DbType.String) { Value = value };
-          break;
-      }
+			#endregion
 
-      //determine whether to insert or update
-      string sCommandText = string.Format(
-        "update [Settings] set {0} = @value"
-        , DBSetting.ToString());
-      
-      //run the command
-      return ExecuteNonQuery(sCommandText, CommandBehavior.Default, sqParam);
-    }
+			#region Create Database
 
-    private static void DB_Close()
-    {
-      if (sqConn != null
-          && sqConn.State != ConnectionState.Closed) {
-        ExecuteNonQuery("VACUUM;");
-        sqConn.Close();
-      }
-    }
+			internal bool Import(string _filePath)
+			{
+				//load the old DB
+				List<Main.csEntry> lData = FileSerializer.Deserialize
+					<List<Main.csEntry>>(_filePath) ?? new List<Main.csEntry>(0);
 
-    #region Convenience
-    private static string Cleanse(string sRaw)
-    {
-      return sRaw.Replace("'", "''").Replace(";", "");
-    }
+				//input into new DB
+				BeginTransaction();
+				for (int i = 0; i < lData.Count; i++)
+				{
+					//ensure sizes are valid
+					#region Force value sizes to be inside valid range
+					if (lData[i].sArtist.Length > SQLITE_MAX_LENGTH)
+						lData[i].sArtist = lData[i].sArtist.Substring(0, SQLITE_MAX_LENGTH);
+					if (lData[i].sTitle.Length > SQLITE_MAX_LENGTH)
+						lData[i].sTitle = lData[i].sTitle.Substring(0, SQLITE_MAX_LENGTH);
+					if (lData[i].sDesc.Length > SQLITE_MAX_LENGTH)
+						lData[i].sDesc = lData[i].sDesc.Substring(0, SQLITE_MAX_LENGTH);
+					#endregion
 
-    private static SQLiteParameter NewParameter(string ParameterName, DbType dbType, object value)
-    {
-      return new SQLiteParameter(ParameterName, dbType) {
-        Value = value
-      };
-    }
+					//add the entry
+					SQLAccess.DB_SaveEntry(
+						lData[i].sArtist, lData[i].sTitle, lData[i].dtDate,
+						lData[i].sTags, lData[i].sLoc, lData[i].pages,
+						lData[i].sType, lData[i].byRat, lData[i].sDesc, bConverting: true
+					);
 
-    private static int BeginTransaction()
-    {
-      int iRetVal = 0;
-      using (SQLiteCommand sqCmd = sqConn.CreateCommand()) {
-        sqCmd.CommandText = "begin transaction";
-        iRetVal = sqCmd.ExecuteNonQuery();
-      }
-      return iRetVal;
-    }
+					if (delProgress != null)
+					{
+						delProgress.Invoke(i + 1);
+					}
+				}
+				EndTransaction();
+				lData.Clear();
 
-    private static int EndTransaction(int error = 0)
-    {
-      int iRetVal = 0;
-      using (SQLiteCommand sqCmd = sqConn.CreateCommand()) {
-        sqCmd.CommandText = (error > -1 ? "commit" : "rollback") + " transaction";
-        iRetVal = sqCmd.ExecuteNonQuery();
-      }
-      return iRetVal;
-    }
+				//deprecate old serialized DB
+				try
+				{
+					File.Move(_filePath, _filePath + "_Deprecated");
+				}
+				catch (IOException)
+				{
+					Console.WriteLine("Could not alter old database");
+				}
 
-    private static int ExecuteNonQuery(string CommandText,
-      CommandBehavior cmd = CommandBehavior.Default, params SQLiteParameter[] sqParam)
-    {
-      int altered = 0;
+				return true;
+			}
 
-      using (SQLiteCommand sqCmd = sqConn.CreateCommand()) {
-        sqCmd.Parameters.AddRange(sqParam);
-        sqCmd.CommandText = CommandText;
-        altered = sqCmd.ExecuteNonQuery(cmd);
-      }
+			internal void CreateDatabase()
+			{
+				BeginTransaction();
+				Create_Artist();
+				Create_Tag();
+				Create_Type();
+				Create_MangaArtist();
+				Create_MangaTag();
+				Create_Manga();
+				Create_Settings();
+				EndTransaction();
+			}
 
-      return altered;
-    }
-
-    private static DataTable ExecuteQuery(string CommandText,
-      CommandBehavior cmd = CommandBehavior.Default, params SQLiteParameter[] sqParam)
-    {
-      DataTable dt = new DataTable();
-
-      using (SQLiteCommand sqCmd = sqConn.CreateCommand()) {
-        sqCmd.Parameters.AddRange(sqParam);
-        sqCmd.CommandText = CommandText;
-
-        using (SQLiteDataReader dr = sqCmd.ExecuteReader(cmd)) {
-          dt.Load(dr);
-        }
-      }
-
-      return dt;
-    }
-    #endregion
-
-    #endregion
-
-    #region Create Database
-
-    private static bool Import(string _filePath)
-    {
-      //load the old DB
-      List<Main.csEntry> lData = FileSerializer.Deserialize
-        <List<Main.csEntry>>(_filePath) ?? new List<Main.csEntry>(0);
-
-      //input into new DB
-      BeginTransaction();
-      for (int i = 0; i < lData.Count; i++) {
-        //ensure sizes are valid
-        #region Force value sizes to be inside valid range
-        if (lData[i].sArtist.Length > SQLITE_MAX_LENGTH)
-          lData[i].sArtist = lData[i].sArtist.Substring(0, SQLITE_MAX_LENGTH);
-        if (lData[i].sTitle.Length > SQLITE_MAX_LENGTH)
-          lData[i].sTitle = lData[i].sTitle.Substring(0, SQLITE_MAX_LENGTH);
-        if (lData[i].sDesc.Length > SQLITE_MAX_LENGTH)
-          lData[i].sDesc = lData[i].sDesc.Substring(0, SQLITE_MAX_LENGTH);
-        #endregion
-
-        //add the entry
-        DB_SaveEntry(
-          lData[i].sArtist, lData[i].sTitle, lData[i].dtDate, 
-          lData[i].sTags, lData[i].sLoc, lData[i].pages,
-          lData[i].sType, lData[i].byRat, lData[i].sDesc, bConverting:true
-        );
-
-        if (delProgress != null) {
-          delProgress.Invoke(i + 1);
-        }
-      }
-      EndTransaction();
-      lData.Clear();
-
-      //deprecate old serialized DB
-      try {
-        File.Move(_filePath, _filePath + "_Deprecated");
-      } catch (IOException) {
-        Console.WriteLine("Could not alter old database");
-      }
-
-      return true;
-    }
-
-    private static void DB_Create()
-    {
-      BeginTransaction();
-      Create_Artist();
-      Create_Tag();
-      Create_Type();
-      Create_MangaArtist();
-      Create_MangaTag();
-      Create_Manga();
-      Create_Settings();
-      EndTransaction();
-    }
-
-    /// <summary>
-    /// Create dbo.Artist
-    /// </summary>
-    private static void Create_Artist()
-    {
-      string sQuery = @"
+			/// <summary>
+			/// Create dbo.Artist
+			/// </summary>
+			internal void Create_Artist()
+			{
+				string sQuery = @"
 				create table [Artist]
 				(
 					ArtistID				integer			primary key		autoincrement
@@ -800,15 +698,15 @@ namespace Nagru___Manga_Organizer
 					update Artist set AuditDBTime = CURRENT_TIMESTAMP where artistID = new.rowid;
 				end;
 			";
-      ExecuteNonQuery(sQuery);
-    }
+				ExecuteNonQuery(sQuery);
+			}
 
-    /// <summary>
-    /// Create dbo.Tag
-    /// </summary>
-    private static void Create_Tag()
-    {
-      string sQuery = @"
+			/// <summary>
+			/// Create dbo.Tag
+			/// </summary>
+			internal void Create_Tag()
+			{
+				string sQuery = @"
 				create table [Tag]
 				(
 					TagID						integer			primary key		autoincrement
@@ -821,15 +719,15 @@ namespace Nagru___Manga_Organizer
 					update Tag set AuditDBTime = CURRENT_TIMESTAMP where tagID = new.rowid;
 				end;
 			";
-      ExecuteNonQuery(sQuery);
-    }
+				ExecuteNonQuery(sQuery);
+			}
 
-    /// <summary>
-    /// Create dbo.Type and insert the default values
-    /// </summary>
-    private static void Create_Type()
-    {
-      string sQuery = @"
+			/// <summary>
+			/// Create dbo.Type and insert the default values
+			/// </summary>
+			internal void Create_Type()
+			{
+				string sQuery = @"
 				create table [Type]
 				(
 					TypeID					integer		primary key		autoincrement
@@ -845,15 +743,15 @@ namespace Nagru___Manga_Organizer
 				values('Doujinshi'),('Manga'),('Artist CG'),('Game CG'),('Western')
           ,('Non-H'),('Image Set'),('Cosplay'),('Asian Porn'),('Misc');
 			";
-      ExecuteNonQuery(sQuery);
-    }
+				ExecuteNonQuery(sQuery);
+			}
 
-    /// <summary>
-    /// Create the linking table between Mangas and Artists
-    /// </summary>
-    private static void Create_MangaArtist()
-    {
-      string sQuery = @"
+			/// <summary>
+			/// Create the linking table between Mangas and Artists
+			/// </summary>
+			internal void Create_MangaArtist()
+			{
+				string sQuery = @"
 				create table [MangaArtist]
 				(
 					MangaArtistID		integer		primary key		autoincrement
@@ -863,15 +761,15 @@ namespace Nagru___Manga_Organizer
 					,constraint [fk_artistID] foreign key ([ArtistID]) references [Artist] ([ArtistID])
 				)
 			";
-      ExecuteNonQuery(sQuery);
-    }
+				ExecuteNonQuery(sQuery);
+			}
 
-    /// <summary>
-    /// Create the linking table between Mangas and Tags
-    /// </summary>
-    private static void Create_MangaTag()
-    {
-      string sQuery = @"
+			/// <summary>
+			/// Create the linking table between Mangas and Tags
+			/// </summary>
+			internal void Create_MangaTag()
+			{
+				string sQuery = @"
 				create table [MangaTag]
 				(
 					MangaTagID			integer		primary key		autoincrement
@@ -881,13 +779,13 @@ namespace Nagru___Manga_Organizer
 					,constraint [fk_tagID] foreign key ([TagID]) references [Tag] ([TagID])
 				)
 			";
-      ExecuteNonQuery(sQuery);
-    }
+				ExecuteNonQuery(sQuery);
+			}
 
-    //Create dbo.Manga
-    private static void Create_Manga()
-    {
-      string sQuery = @"
+			//Create dbo.Manga
+			internal void Create_Manga()
+			{
+				string sQuery = @"
 				create table [Manga]
 				(
 					MangaID					integer			primary key		autoincrement
@@ -909,15 +807,15 @@ namespace Nagru___Manga_Organizer
 					update Manga set AuditDBTime = CURRENT_TIMESTAMP where mangaID = new.rowid;
 				end;
        ";
-      ExecuteNonQuery(sQuery);
-    }
+				ExecuteNonQuery(sQuery);
+			}
 
-    /// <summary>
-    /// Create dbo.Settings and insert the default values
-    /// </summary>
-    private static void Create_Settings()
-    {
-      string sQuery = @"
+			/// <summary>
+			/// Create dbo.Settings and insert the default values
+			/// </summary>
+			internal void Create_Settings()
+			{
+				string sQuery = @"
 				create table [Settings]
 				(
 					SettingsID						integer			primary key		autoincrement
@@ -949,209 +847,344 @@ namespace Nagru___Manga_Organizer
         insert into [Settings] (DBVersion)
 				values(1);
       ";
-      ExecuteNonQuery(sQuery);
-    }
+				ExecuteNonQuery(sQuery);
+			}
 
-    #endregion
+			#endregion
+			
+			#region Convenience
+			internal static string Cleanse(string sRaw)
+			{
+				return sRaw.Replace("'", "''").Replace(";", "");
+			}
 
-    #region Search Database
+			internal static SQLiteParameter NewParameter(string ParameterName, DbType dbType, object value)
+			{
+				return new SQLiteParameter(ParameterName, dbType) {
+					Value = value
+				};
+			}
 
-    private static DataTable DB_Search(string sTerms, bool bOnlyFav = false, int iMangaID = -1)
-    {
-      if (string.IsNullOrWhiteSpace(sTerms)) {
-        return GetEntries();
-      }
+			internal int BeginTransaction()
+			{
+				int iRetVal = 0;
+				using (SQLiteCommand sqCmd = sqConn.CreateCommand())
+				{
+					sqCmd.CommandText = "begin transaction";
+					iRetVal = sqCmd.ExecuteNonQuery();
+				}
+				return iRetVal;
+			}
 
-      //Set up variables
-      StringBuilder sbCmd = new StringBuilder(5000);
-      string[] asItems = ExtString.Split(sTerms, " ");
-      string[] asType = new string[asItems.Length];
-      bool[][] abNot = new bool[asItems.Length][];
-      string[][] asTerms = new string[asItems.Length][];
+			internal int EndTransaction(int error = 0)
+			{
+				int iRetVal = 0;
+				using (SQLiteCommand sqCmd = sqConn.CreateCommand())
+				{
+					sqCmd.CommandText = (error > -1 ? "commit" : "rollback") + " transaction";
+					iRetVal = sqCmd.ExecuteNonQuery();
+				}
+				return iRetVal;
+			}
 
-      #region Parse Terms
-      for (int i = 0; i < asItems.Length; i++) {
-        //check for type limiter
-        string[] sSplit = asItems[i].Trim().Split(':');
-        if (sSplit.Length > 1) {
-          asType[i] = sSplit[0];
-        }
+			internal int ExecuteNonQuery(string CommandText,
+				CommandBehavior cmd = CommandBehavior.Default, params SQLiteParameter[] sqParam)
+			{
+				int altered = 0;
 
-        string[] asSubSplit = ExtString.Split(sSplit[sSplit.Length > 1 ? 1 : 0], "&", ",");
-        asTerms[i] = new string[asSubSplit.Length];
-        for (int x = 0; x < asSubSplit.Length; x++) {
-          asTerms[i][x] = asSubSplit[x];
-        }
+				using (SQLiteCommand sqCmd = sqConn.CreateCommand())
+				{
+					sqCmd.Parameters.AddRange(sqParam);
+					sqCmd.CommandText = CommandText;
+					altered = sqCmd.ExecuteNonQuery(cmd);
+				}
 
-        //check for chained terms
-        abNot[i] = new bool[asTerms[i].Length];
-        for (int x = 0; x < asTerms[i].Length; x++) {
-          asTerms[i][x] = asTerms[i][x].Replace('_', ' ');
-          abNot[i][x] = asTerms[i][x].StartsWith("-");
-          if (abNot[i][x])
-            asTerms[i][x] = asTerms[i][x].Substring(1);
-        }
-      }
-      #endregion
+				return altered;
+			}
 
-      #region Convert to SQL
+			internal DataTable ExecuteQuery(string CommandText,
+				CommandBehavior cmd = CommandBehavior.Default, params SQLiteParameter[] sqParam)
+			{
+				DataTable dt = new DataTable();
 
-      #region Data setup
-      sbCmd.Append(vsManga);
-      #endregion
+				using (SQLiteCommand sqCmd = sqConn.CreateCommand())
+				{
+					sqCmd.Parameters.AddRange(sqParam);
+					sqCmd.CommandText = CommandText;
 
-      #region Where-clause setup
-      sbCmd.AppendFormat(" where ({0} in (mgx.MangaID, -1)) "
-        , iMangaID);
+					using (SQLiteDataReader dr = sqCmd.ExecuteReader(cmd))
+					{
+						dt.Load(dr);
+					}
+				}
 
-      if (bOnlyFav) {
-        sbCmd.Append("and mgx.Rating = 5 ");
-      }
+				return dt;
+			}
+			#endregion
+		}
 
-      for (int i = 0; i < asTerms.Length; i++) {
-        for (int x = 0; x < asTerms[i].Length; x++) {
-          switch (asType[i]) {
-            case "artist":
-            case "a":
-              sbCmd.AppendFormat("and at.Name {0} like '%{1}%' "
-                , abNot[i][x] ? "not" : ""
-                , Cleanse(asTerms[i][x]));
-              break;
-            case "title":
-            case "t":
-              sbCmd.AppendFormat("and mgx.Title {0} like '%{1}%' "
-                , abNot[i][x] ? "not" : ""
-                , Cleanse(asTerms[i][x]));
-              break;
-            case "tag":
-            case "tags":
-            case "g":
-              sbCmd.AppendFormat("and tg.Tags {0} like '%{1}%' "
-                , abNot[i][x] ? "not" : ""
-                , Cleanse(asTerms[i][x]));
-              break;
-            case "description":
-            case "desc":
-            case "s":
-              sbCmd.AppendFormat("and mgx.Description {0} like '%{1}%' "
-                , abNot[i][x] ? "not" : ""
-                , Cleanse(asTerms[i][x]));
-              break;
-            case "type":
-            case "y":
-              sbCmd.AppendFormat("and tp.Type {0} like '%{1}%' "
-                , abNot[i][x] ? "not" : ""
-                , Cleanse(asTerms[i][x]));
-              break;
-            case "date":
-            case "d":
+		private static class SQLAccess
+		{
+			#region Search Database
 
-              DateTime date = new DateTime();
-              char c = !string.IsNullOrEmpty(asTerms[i][x]) ? asTerms[i][x][0] : ' ';
+			internal static DataTable DB_Search(string sTerms, bool bOnlyFav = false, int iMangaID = -1)
+			{
+				if (string.IsNullOrWhiteSpace(sTerms))
+				{
+					return GetEntries();
+				}
 
-              if (DateTime.TryParse(asTerms[i][x].Substring(c != '<' && c != '>' ? 0 : 1), out date))
-                sbCmd.AppendFormat("and date(mgx.PublishedDate) {0} date('{1}') "
-                  , abNot[i][x] ? '!' : (c == '<' || c == '>') ? c : '='
-                  , date.ToString("yyyy-MM-dd"));
-              break;
-            case "rating":
-            case "r":
-              c = !string.IsNullOrEmpty(asTerms[i][x]) ? asTerms[i][x][0] : ' ';
-              int rat;
+				//Set up variables
+				StringBuilder sbCmd = new StringBuilder(5000);
+				string[] asItems = ExtString.Split(sTerms, " ");
+				string[] asType = new string[asItems.Length];
+				bool[][] abNot = new bool[asItems.Length][];
+				string[][] asTerms = new string[asItems.Length][];
 
-              if (int.TryParse(asTerms[i][x].Substring(c != '<' && c != '>' ? 0 : 1), out rat))
-                sbCmd.AppendFormat("and mgx.Rating {0} {1} "
-                  , abNot[i][x] ? '!' : (c == '<' || c == '>') ? c : '='
-                  , rat);
-              break;
-            case "pages":
-            case "page":
-            case "p":
-              c = !string.IsNullOrEmpty(asTerms[i][x]) ? asTerms[i][x][0] : ' ';
-              int pg;
+				#region Parse Terms
+				for (int i = 0; i < asItems.Length; i++)
+				{
+					//check for type limiter
+					string[] sSplit = asItems[i].Trim().Split(':');
+					if (sSplit.Length > 1)
+					{
+						asType[i] = sSplit[0];
+					}
 
-              if (int.TryParse(asTerms[i][x].Substring(c != '<' && c != '>' ? 0 : 1), out pg))
-                sbCmd.AppendFormat("and mgx.Pages {0} {1} "
-                  , abNot[i][x] ? '!' : (c == '<' || c == '>') ? c : '='
-                  , pg);
-              break;
-            default:
-              if (abNot[i][x]) {
-                sbCmd.AppendFormat("and (tg.Tags not like '%{0}%' and mgx.Title not like '%{0}%' and at.Name not like '%{0}%' and mgx.Description not like '%{0}%' and tp.Type not like '%{0}%' and date(mgx.PublishedDate) not like '%{0}%') "
-                , Cleanse(asTerms[i][x]));
-              }
-              else {
-                sbCmd.AppendFormat("and (tg.Tags like '%{0}%' or mgx.Title like '%{0}%' or at.Name like '%{0}%' or mgx.Description like '%{0}%' or tp.Type like '%{0}%' or date(mgx.PublishedDate) like '%{0}%') "
-                , Cleanse(asTerms[i][x]));
-              }
+					string[] asSubSplit = ExtString.Split(sSplit[sSplit.Length > 1 ? 1 : 0], "&", ",");
+					asTerms[i] = new string[asSubSplit.Length];
+					for (int x = 0; x < asSubSplit.Length; x++)
+					{
+						asTerms[i][x] = asSubSplit[x];
+					}
 
-              break;
-          }
-        }
-      }
+					//check for chained terms
+					abNot[i] = new bool[asTerms[i].Length];
+					for (int x = 0; x < asTerms[i].Length; x++)
+					{
+						asTerms[i][x] = asTerms[i][x].Replace('_', ' ');
+						abNot[i][x] = asTerms[i][x].StartsWith("-");
+						if (abNot[i][x])
+							asTerms[i][x] = asTerms[i][x].Substring(1);
+					}
+				}
+				#endregion
 
-      //append final syntax
-      sbCmd.Append(vsMangaEnd);
+				#region Convert to SQL
 
-      #endregion
+				#region Data setup
+				sbCmd.Append(vsManga);
+				#endregion
 
-      #endregion
+				#region Where-clause setup
+				sbCmd.AppendFormat(" where ({0} in (mgx.MangaID, -1)) "
+					, iMangaID);
 
-      return ExecuteQuery(sbCmd.ToString(), CommandBehavior.Default);
-    }
-    #endregion
+				if (bOnlyFav)
+				{
+					sbCmd.Append("and mgx.Rating = 5 ");
+				}
 
-    #region Query Database
+				for (int i = 0; i < asTerms.Length; i++)
+				{
+					for (int x = 0; x < asTerms[i].Length; x++)
+					{
+						switch (asType[i])
+						{
+							case "artist":
+							case "a":
+								sbCmd.AppendFormat("and at.Name {0} like '%{1}%' "
+									, abNot[i][x] ? "not" : ""
+									, SQLBase.Cleanse(asTerms[i][x]));
+								break;
+							case "title":
+							case "t":
+								sbCmd.AppendFormat("and mgx.Title {0} like '%{1}%' "
+									, abNot[i][x] ? "not" : ""
+									, SQLBase.Cleanse(asTerms[i][x]));
+								break;
+							case "tag":
+							case "tags":
+							case "g":
+								sbCmd.AppendFormat("and tg.Tags {0} like '%{1}%' "
+									, abNot[i][x] ? "not" : ""
+									, SQLBase.Cleanse(asTerms[i][x]));
+								break;
+							case "description":
+							case "desc":
+							case "s":
+								sbCmd.AppendFormat("and mgx.Description {0} like '%{1}%' "
+									, abNot[i][x] ? "not" : ""
+									, SQLBase.Cleanse(asTerms[i][x]));
+								break;
+							case "type":
+							case "y":
+								sbCmd.AppendFormat("and tp.Type {0} like '%{1}%' "
+									, abNot[i][x] ? "not" : ""
+									, SQLBase.Cleanse(asTerms[i][x]));
+								break;
+							case "date":
+							case "d":
 
-    private static DataTable GetEntries(bool bOnlyFav = false)
-    {
-      string sCommandText = 
-        vsManga 
-        + (bOnlyFav ? "where mgx.Rating = 5" : "")
-        + vsMangaEnd;
+								DateTime date = new DateTime();
+								char c = !string.IsNullOrEmpty(asTerms[i][x]) ? asTerms[i][x][0] : ' ';
 
-      return ExecuteQuery(sCommandText);
-    }
+								if (DateTime.TryParse(asTerms[i][x].Substring(c != '<' && c != '>' ? 0 : 1), out date))
+									sbCmd.AppendFormat("and date(mgx.PublishedDate) {0} date('{1}') "
+										, abNot[i][x] ? '!' : (c == '<' || c == '>') ? c : '='
+										, date.ToString("yyyy-MM-dd"));
+								break;
+							case "rating":
+							case "r":
+								c = !string.IsNullOrEmpty(asTerms[i][x]) ? asTerms[i][x][0] : ' ';
+								int rat;
 
-    private static DataTable DB_GetEntryDetails(int mangaID)
-    {
-      string sCommandText = vsManga
-        + " where mgx.MangaID = @mangaID"
-        + vsMangaEnd;
+								if (int.TryParse(asTerms[i][x].Substring(c != '<' && c != '>' ? 0 : 1), out rat))
+									sbCmd.AppendFormat("and mgx.Rating {0} {1} "
+										, abNot[i][x] ? '!' : (c == '<' || c == '>') ? c : '='
+										, rat);
+								break;
+							case "pages":
+							case "page":
+							case "p":
+								c = !string.IsNullOrEmpty(asTerms[i][x]) ? asTerms[i][x][0] : ' ';
+								int pg;
 
-      return ExecuteQuery(sCommandText, CommandBehavior.SingleRow
-        , new SQLiteParameter("@mangaID", DbType.Int32) {
-          Value = mangaID
-        }
-      );
-    }
+								if (int.TryParse(asTerms[i][x].Substring(c != '<' && c != '>' ? 0 : 1), out pg))
+									sbCmd.AppendFormat("and mgx.Pages {0} {1} "
+										, abNot[i][x] ? '!' : (c == '<' || c == '>') ? c : '='
+										, pg);
+								break;
+							default:
+								if (abNot[i][x])
+								{
+									sbCmd.AppendFormat("and (tg.Tags not like '%{0}%' and mgx.Title not like '%{0}%' and at.Name not like '%{0}%' and mgx.Description not like '%{0}%' and tp.Type not like '%{0}%' and date(mgx.PublishedDate) not like '%{0}%') "
+									, SQLBase.Cleanse(asTerms[i][x]));
+								}
+								else
+								{
+									sbCmd.AppendFormat("and (tg.Tags like '%{0}%' or mgx.Title like '%{0}%' or at.Name like '%{0}%' or mgx.Description like '%{0}%' or tp.Type like '%{0}%' or date(mgx.PublishedDate) like '%{0}%') "
+									, SQLBase.Cleanse(asTerms[i][x]));
+								}
 
-    private static bool EntryExists(string sArtist, string sTitle)
-    {
-      bool bExists = false;
-      string sCommandText = vsManga + @"
+								break;
+						}
+					}
+				}
+
+				//append final syntax
+				sbCmd.Append(vsMangaEnd);
+
+				#endregion
+
+				#endregion
+
+				return sqlBase.ExecuteQuery(sbCmd.ToString(), CommandBehavior.Default);
+			}
+			#endregion
+
+			#region Query Database
+
+			/// <summary>
+			/// Returns all the Artists in the database
+			/// </summary>
+			/// <returns></returns>
+			internal static DataTable GetArtists()
+			{
+				string sCommandText = @"
+					select
+							at.ArtistID
+						,ifnull(at.Name, '')				Artist
+					from
+						[Artist] at
+					order by at.Name asc
+				";
+
+				return sqlBase.ExecuteQuery(sCommandText);
+			}
+
+			/// <summary>
+			/// Returns all the Types in the database
+			/// </summary>
+			/// <returns></returns>
+			internal static DataTable GetTypes()
+			{
+				string sCommandText = @"
+					select
+							tp.TypeID
+						,tp.Type
+					from
+						[Type] tp
+					order by tp.Type asc
+				";
+
+				return sqlBase.ExecuteQuery(sCommandText);
+			}
+
+			internal static DataTable GetTags()
+			{
+				string sCommandText = @"
+					select
+							tg.TagID
+						,tg.Tag
+					from
+						[Tag] tg
+					order by tg.Tag asc
+				";
+
+				return sqlBase.ExecuteQuery(sCommandText);
+			}
+
+			internal static DataTable GetEntries(bool bOnlyFav = false)
+			{
+				string sCommandText =
+					vsManga
+					+ (bOnlyFav ? "where mgx.Rating = 5" : "")
+					+ vsMangaEnd;
+
+				return sqlBase.ExecuteQuery(sCommandText);
+			}
+
+			internal static DataTable DB_GetEntryDetails(int mangaID)
+			{
+				string sCommandText = vsManga
+					+ " where mgx.MangaID = @mangaID"
+					+ vsMangaEnd;
+
+				return sqlBase.ExecuteQuery(sCommandText, CommandBehavior.SingleRow
+					, new SQLiteParameter("@mangaID", DbType.Int32) {
+						Value = mangaID
+					}
+				);
+			}
+
+			internal static bool EntryExists(string sArtist, string sTitle)
+			{
+				bool bExists = false;
+				string sCommandText = vsManga + @"
 				where
 					at.Name = @artist
 				and
 					mgx.Title = @title"
-        + vsMangaEnd;
+					+ vsMangaEnd;
 
-      using (DataTable dt = ExecuteQuery(sCommandText, CommandBehavior.SingleRow
-          , new SQLiteParameter("@artist", DbType.String) {
-            Value = sArtist
-          }
-          , new SQLiteParameter("@title", DbType.String) {
-            Value = sTitle
-          })) {
-        bExists = dt.Rows.Count > 0;
-      }
+				using (DataTable dt = sqlBase.ExecuteQuery(sCommandText, CommandBehavior.SingleRow
+						, new SQLiteParameter("@artist", DbType.String) {
+							Value = sArtist
+						}
+						, new SQLiteParameter("@title", DbType.String) {
+							Value = sTitle
+						}))
+				{
+					bExists = dt.Rows.Count > 0;
+				}
 
-      return bExists;
-    }
+				return bExists;
+			}
 
-    private static DataTable DB_GetSettings()
-    {
-      string sCommandText = @"
+			internal static DataTable DB_GetSettings()
+			{
+				string sCommandText = @"
 				select 
 						sx.SettingsID
             ,sx.DBVersion
@@ -1178,43 +1211,88 @@ namespace Nagru___Manga_Organizer
 					Settings sx
 			";
 
-      return ExecuteQuery(sCommandText);
-    }
+				return sqlBase.ExecuteQuery(sCommandText);
+			}
 
-    #endregion
+			#endregion
 
-    #region Update Database
+			#region Update Database
 
-    private static int DB_SaveEntry(string sArtist, string sTitle, DateTime dtPubDate, 
-        string sTags = null, string sLoc = null, decimal iPages = 0, string sType = null, 
-        decimal dRating = 0, string sDesc = null, string sURL = null, int iMangaID = -1, 
-        bool bConverting = false)
-    {
-      if (!bConverting)
-        BeginTransaction();
+			internal static int DB_UpdateSetting(Setting DBSetting, object value)
+			{
+				//setup parameters
+				SQLiteParameter sqParam = null;
 
-      //setup parameters
-      StringBuilder sbCmd = new StringBuilder(10000);
-      List<SQLiteParameter> lParam = new List<SQLiteParameter>(50);
-      lParam.AddRange(new SQLiteParameter[11] {
-        NewParameter("@mangaID", DbType.Int32, iMangaID)
-        , NewParameter("@title", DbType.String, sTitle)
-        , NewParameter("@name", DbType.String, sArtist)
-        , NewParameter("@pages", DbType.Int32, Convert.ToInt32(iPages))
-        , NewParameter("@rating", DbType.Decimal, dRating)
-        , NewParameter("@description", DbType.String, sDesc)
-        , NewParameter("@location", DbType.String, sLoc)
-        , NewParameter("@URL", DbType.String, sURL)
-        , NewParameter("@pubDate", DbType.String, dtPubDate.ToString("yyyy-MM-dd"))
-        , NewParameter("@name", DbType.String, sArtist)
-        , NewParameter("@type", DbType.String, sType)
+				switch (DBSetting)
+				{
+					case Setting.BackgroundColour:
+					case Setting.DBversion:
+					case Setting.member_id:
+					case Setting.NewUser:
+					case Setting.ReadInterval:
+					case Setting.RowColourAlt:
+					case Setting.RowColourHighlight:
+					case Setting.SendReports:
+					case Setting.ShowDate:
+					case Setting.ShowGrid:
+						sqParam = new SQLiteParameter("@value", DbType.Int32) {
+							Value = value
+						};
+						break;
+					case Setting.FormPosition:
+					case Setting.GallerySettings:
+					case Setting.ImageBrowser:
+					case Setting.Notes:
+					case Setting.pass_hash:
+					case Setting.RootPath:
+					case Setting.SavePath:
+					case Setting.SearchIgnore:
+						sqParam = new SQLiteParameter("@value", DbType.String) {
+							Value = value
+						};
+						break;
+				}
+
+				//determine whether to insert or update
+				string sCommandText = string.Format(
+					"update [Settings] set {0} = @value"
+					, DBSetting.ToString());
+
+				//run the command
+				return sqlBase.ExecuteNonQuery(sCommandText, CommandBehavior.Default, sqParam);
+			}
+
+			internal static int DB_SaveEntry(string sArtist, string sTitle, DateTime dtPubDate,
+					string sTags = null, string sLoc = null, decimal iPages = 0, string sType = null,
+					decimal dRating = 0, string sDesc = null, string sURL = null, int iMangaID = -1,
+					bool bConverting = false)
+			{
+				if (!bConverting)
+					sqlBase.BeginTransaction();
+
+				//setup parameters
+				StringBuilder sbCmd = new StringBuilder(10000);
+				List<SQLiteParameter> lParam = new List<SQLiteParameter>(50);
+				lParam.AddRange(new SQLiteParameter[11] {
+        SQLBase.NewParameter("@mangaID", DbType.Int32, iMangaID)
+        , SQLBase.NewParameter("@title", DbType.String, sTitle)
+        , SQLBase.NewParameter("@name", DbType.String, sArtist)
+        , SQLBase.NewParameter("@pages", DbType.Int32, Convert.ToInt32(iPages))
+        , SQLBase.NewParameter("@rating", DbType.Decimal, dRating)
+        , SQLBase.NewParameter("@description", DbType.String, sDesc)
+        , SQLBase.NewParameter("@location", DbType.String, sLoc)
+        , SQLBase.NewParameter("@URL", DbType.String, sURL)
+        , SQLBase.NewParameter("@pubDate", DbType.String, dtPubDate.ToString("yyyy-MM-dd"))
+        , SQLBase.NewParameter("@name", DbType.String, sArtist)
+        , SQLBase.NewParameter("@type", DbType.String, sType)
       });
 
-			#region Update the base Manga record
-			//determine whether to insert or update
-      string sCommandText;
-      if (iMangaID == -1) {
-        sCommandText = @"
+				#region Update the base Manga record
+				//determine whether to insert or update
+				string sCommandText;
+				if (iMangaID == -1)
+				{
+					sCommandText = @"
 					insert into [Manga](title, pages, rating, description, location, galleryURL, publishedDate)
 					values(
             @title
@@ -1225,9 +1303,10 @@ namespace Nagru___Manga_Organizer
 					  ,case when @URL <> '' then @URL else null end
 					  ,@pubDate
       )";
-      }
-      else {
-        sCommandText = @"
+				}
+				else
+				{
+					sCommandText = @"
 					update [Manga]
 					set title = @title
 					,pages = @pages
@@ -1237,21 +1316,23 @@ namespace Nagru___Manga_Organizer
 					,galleryURL = case when @URL <> '' then @URL else null end
 					,publishedDate = @pubDate
 					where MangaID = @mangaID";
-      }
-      ExecuteNonQuery(sCommandText, CommandBehavior.Default, lParam.ToArray());
-			#endregion
+				}
+				sqlBase.ExecuteNonQuery(sCommandText, CommandBehavior.Default, lParam.ToArray());
+				#endregion
 
-      //set the mangaID parameter if necessary
-      if (iMangaID == -1) {
-        using (DataTable dt = ExecuteQuery("select max(MangaID) from Manga", CommandBehavior.SingleRow)) {
-          iMangaID = Int32.Parse(dt.Rows[0][0].ToString());
-          lParam[0].Value = iMangaID;
-        }
-      }
+				//set the mangaID parameter if necessary
+				if (iMangaID == -1)
+				{
+					using (DataTable dt = sqlBase.ExecuteQuery("select max(MangaID) from Manga", CommandBehavior.SingleRow))
+					{
+						iMangaID = Int32.Parse(dt.Rows[0][0].ToString());
+						lParam[0].Value = iMangaID;
+					}
+				}
 
-			#region update the artist and manga type
+				#region update the artist and manga type
 
-      sbCmd.Append(@"
+				sbCmd.Append(@"
 				--insert/update the manga artist
 				insert into [Artist](Name)
 				select @name
@@ -1281,73 +1362,75 @@ namespace Nagru___Manga_Organizer
 					not exists(select 1 from [Type] where Type = @type);
 
         update [Manga]
-        set TypeID = (select TypeID from [Type] where Type = @type)
+        set TypeID = case when @type = '' then null else (select TypeID from [Type] where Type = @type) end 
         where 
             MangaID = @mangaID 
         and 
-          (TypeID is null or TypeID != (select TypeID from [Type] where Type = @type));"
-      );
+          (TypeID is null or TypeID not in (select TypeID from [Type] where Type = @type));"
+				);
 
-			#endregion
+				#endregion
 
-      #region Update the tags
+				#region Update the tags
 
-      string[] asTags = Cleanse(sTags).Split(',').Select(x => x.Trim()).ToArray();
-      sTags = string.Format("'{0}'", String.Join("','", asTags));
-      lParam.Add(NewParameter("@mangaID", DbType.Int32, iMangaID));
+				string[] asTags = SQLBase.Cleanse(sTags).Split(',').Select(x => x.Trim()).ToArray();
+				sTags = string.Format("'{0}'", String.Join("','", asTags));
+				lParam.Add(SQLBase.NewParameter("@mangaID", DbType.Int32, iMangaID));
 
-      for (int i = 0; i < asTags.Length; i++) {
-        lParam.Add(NewParameter("@tag" + i.ToString(), DbType.String, asTags[i]));
+				for (int i = 0; i < asTags.Length; i++)
+				{
+					if (string.IsNullOrWhiteSpace(asTags[i]))
+						continue;
+					lParam.Add(SQLBase.NewParameter("@tag" + i.ToString(), DbType.String, asTags[i]));
 
-        sbCmd.AppendFormat("insert into [Tag](Tag) select {0} where not exists(select 1 from [Tag] where Tag = {0}); insert into [MangaTag](MangaID, TagID) select @mangaID, TagID from [Tag] tg where Tag = {0} and not exists(select 1 from [MangaTag] mtg where MangaID = @mangaID and mtg.TagID = tg.TagID);",
-          "@tag" + i.ToString());
-      }
-      sbCmd.AppendFormat("delete from [MangaTag] where MangaID = @mangaID and TagID not in (select TagID from [Tag] where Tag in ({0}))", sTags);
-      
-      #endregion
+					sbCmd.AppendFormat("insert into [Tag](Tag) select {0} where {0} <> '' and not exists(select 1 from [Tag] where Tag = {0}); insert into [MangaTag](MangaID, TagID) select @mangaID, TagID from [Tag] tg where Tag = {0} and not exists(select 1 from [MangaTag] mtg where MangaID = @mangaID and mtg.TagID = tg.TagID);",
+						"@tag" + i.ToString());
+				}
+				sbCmd.AppendFormat("delete from [MangaTag] where MangaID = @mangaID and TagID not in (select TagID from [Tag] where Tag in ({0}))", sTags);
 
-      ExecuteNonQuery(sbCmd.ToString(), CommandBehavior.Default, lParam.ToArray());
+				#endregion
 
-      if (!bConverting)
-        EndTransaction();
+				sqlBase.ExecuteNonQuery(sbCmd.ToString(), CommandBehavior.Default, lParam.ToArray());
 
-      return iMangaID;
-    }
+				if (!bConverting)
+					sqlBase.EndTransaction();
 
-    private static int Entry_Delete(int iMangaID)
-    {
-      BeginTransaction();
-      SQLiteParameter sqParam = NewParameter("@mangaID", DbType.Int32, iMangaID);
+				return iMangaID;
+			}
 
-      string sCommandText = @"
+			internal static int Entry_Delete(int iMangaID)
+			{
+				sqlBase.BeginTransaction();
+				SQLiteParameter sqParam = SQLBase.NewParameter("@mangaID", DbType.Int32, iMangaID);
+
+				string sCommandText = @"
 				delete from MangaArtist
 				where MangaID = @mangaID;
         delete from MangaTag
 				where MangaID = @mangaID;
         delete from Manga
 				where MangaID = @mangaID;";
-      int altered = ExecuteNonQuery(sCommandText, CommandBehavior.Default, sqParam);
+				int altered = sqlBase.ExecuteNonQuery(sCommandText, CommandBehavior.Default, sqParam);
 
-      EndTransaction();
-      return altered;
-    }
+				sqlBase.EndTransaction();
+				return altered;
+			}
 
-    private static int DeleteUnusedTags()
-    {
-			BeginTransaction();
+			internal static int DeleteUnusedTags()
+			{
+				sqlBase.BeginTransaction();
 
-      string sCommandText = @"
+				string sCommandText = @"
 				delete from Tag
 				where TagID not in 
 				(select TagID from MangaTag)";
-			int altered = ExecuteNonQuery(sCommandText);
+				int altered = sqlBase.ExecuteNonQuery(sCommandText);
 
-			EndTransaction();
-			return altered;
-    }
+				sqlBase.EndTransaction();
+				return altered;
+			}
 
-    #endregion
-
-    #endregion
+			#endregion
+		}
   }
 }
