@@ -50,7 +50,7 @@ namespace Nagru___Manga_Organizer
       //auto-format search terms where applicable
       if (sTrySearch.Contains("[")) {
         StringBuilder sb = new StringBuilder("");
-        string[] asSplit = ExtString.ParseGalleryTitle(sTrySearch);
+        string[] asSplit = Ext.ParseGalleryTitle(sTrySearch);
 
         //check for artist/title fields and set formatting
         if (!string.IsNullOrEmpty(asSplit[0])) {

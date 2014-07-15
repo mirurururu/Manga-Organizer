@@ -167,7 +167,7 @@ namespace Nagru___Manga_Organizer
         }
 
         bmpTmp = new Bitmap(ms);
-        bmpTmp = ExtImage.Scale(bmpTmp,
+        bmpTmp = Ext.ScaleImage(bmpTmp,
             (bmpTmp.Width > bmpTmp.Height) ? picbxPreview.Bounds.Width : fWidth
             , picbxPreview.Bounds.Height);
       } catch (Exception Ex) {

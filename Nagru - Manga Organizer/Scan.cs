@@ -71,7 +71,7 @@ namespace Nagru___Manga_Organizer
     /* Start scan op in new thread */
     private void TryScan()
     {
-      if (ExtDir.Accessible(TxBx_Loc.Text)) {
+      if (Ext.Accessible(TxBx_Loc.Text)) {
         Cursor = Cursors.WaitCursor;
 
         lFound.Clear();
@@ -90,7 +90,7 @@ namespace Nagru___Manga_Organizer
     private void ScanDir(Object obj)
     {
       List<string> lEns = new List<string>();
-      lEns.AddRange(ExtDir.GetFiles(obj as string,
+      lEns.AddRange(Ext.GetFiles(obj as string,
           SearchOption.AllDirectories, "*.zip|*.cbz|*.rar|*.cbr|*.7z"));
 
       try {

@@ -158,7 +158,7 @@ namespace Nagru___Manga_Organizer
           gid						= Int32.Parse(JsonObject.gmetadata[0].gid.Value.ToString());
           token					= JsonObject.gmetadata[0].token.Value;
           archiver_key	= JsonObject.gmetadata[0].archiver_key.Value;
-          title					= ExtString.HTMLConvertToPlainText(JsonObject.gmetadata[0].title.Value);
+          title					= Ext.HTMLConvertToPlainText(JsonObject.gmetadata[0].title.Value);
           title_jpn			= JsonObject.gmetadata[0].title_jpn.Value;
           category			= JsonObject.gmetadata[0].category.Value;
           thumb					= JsonObject.gmetadata[0].thumb.Value;
@@ -207,7 +207,7 @@ namespace Nagru___Manga_Organizer
     public void Add(string sURL, string sTitle)
     {
       hsURL.Add(sURL);
-      hsTitle.Add(ExtString.HTMLConvertToPlainText(sTitle));
+      hsTitle.Add(Ext.HTMLConvertToPlainText(sTitle));
     }
 
     public void Clear()

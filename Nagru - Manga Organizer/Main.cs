@@ -343,7 +343,7 @@ namespace Nagru___Manga_Organizer
     private void Btn_Loc_Click(object sender, EventArgs e)
     {
       //try to auto-magically grab folder\file path
-      string sPath = ExtString.FindPath(TxBx_Loc.Text, CmbBx_Artist.Text, acTxBx_Title.Text)
+      string sPath = Ext.FindPath(TxBx_Loc.Text, CmbBx_Artist.Text, acTxBx_Title.Text)
         ?? SQL.GetSetting(SQL.Setting.RootPath);
 
       ExtFolderBrowserDialog xfbd = new ExtFolderBrowserDialog();
@@ -356,7 +356,7 @@ namespace Nagru___Manga_Organizer
         ThreadPool.QueueUserWorkItem(GetImage);
 
         if (CmbBx_Artist.Text == "" && acTxBx_Title.Text == "")
-          SetTitle(ExtString.GetNameSansExtension(xfbd.SelectedPath));
+          SetTitle(Ext.GetNameSansExtension(xfbd.SelectedPath));
       }
       xfbd.Dispose();
     }
@@ -383,7 +383,7 @@ namespace Nagru___Manga_Organizer
       if (Directory.Exists(TxBx_Loc.Text)) {
         //process 'loose' images
         string[] sFiles = new string[0];
-        if ((sFiles = ExtDir.GetFiles(TxBx_Loc.Text,
+        if ((sFiles = Ext.GetFiles(TxBx_Loc.Text,
                 SearchOption.TopDirectoryOnly)).Length > 0) {
           fmBrowse.Files = new List<string>(sFiles.Length);
           fmBrowse.Files.AddRange(sFiles);
@@ -709,7 +709,7 @@ namespace Nagru___Manga_Organizer
       }
       else {
         string[] sFiles = new string[0];
-        if ((sFiles = ExtDir.GetFiles(TxBx_Loc.Text,
+        if ((sFiles = Ext.GetFiles(TxBx_Loc.Text,
             SearchOption.TopDirectoryOnly)).Length > 0) {
           SetPicBxImage(sFiles[0]);
           Invoke(new DelInt(SetNudCount), sFiles.Length);
@@ -813,7 +813,7 @@ namespace Nagru___Manga_Organizer
 
       string sPath = TxBx_Loc.Text;
       if (Directory.Exists(sPath)) {
-        string[] sFiles = ExtDir.GetFiles(sPath);
+        string[] sFiles = Ext.GetFiles(sPath);
         if (sFiles.Length > 0)
           sPath = sFiles[0];
       }
@@ -940,7 +940,7 @@ namespace Nagru___Manga_Organizer
       Tb_View.SuspendLayout();
       using (DataTable dt = SQL.GetManga(mangaID)) {
         if (dt.Rows.Count > 0) {
-          Text = "Selected: " + ExtString.GetFormattedTitle(
+          Text = "Selected: " + Ext.GetFormattedTitle(
             dt.Rows[0]["Artist"].ToString(),
             dt.Rows[0]["Title"].ToString()
           );
@@ -964,7 +964,7 @@ namespace Nagru___Manga_Organizer
 
           //check for relativity
           if (!string.IsNullOrEmpty(TxBx_Loc.Text)) {
-            string sResult = ExtString.FindPath(TxBx_Loc.Text, CmbBx_Artist.Text, acTxBx_Title.Text);
+            string sResult = Ext.FindPath(TxBx_Loc.Text, CmbBx_Artist.Text, acTxBx_Title.Text);
             if (sResult != null)
               TxBx_Loc.Text = sResult;
           }
@@ -1028,7 +1028,7 @@ namespace Nagru___Manga_Organizer
               using(MemoryStream ms = new MemoryStream()) {
                 scEntries[iFirst].WriteTo(ms);
                 using (Bitmap bmpTmp = new Bitmap(ms)) {
-                  PicBx_Cover.Image = ExtImage.Scale(bmpTmp,
+                  PicBx_Cover.Image = Ext.ScaleImage(bmpTmp,
                     PicBx_Cover.Width, PicBx_Cover.Height);
                 }
               }
@@ -1056,7 +1056,7 @@ namespace Nagru___Manga_Organizer
     {
       try {
         using (Bitmap bmpTmp = new Bitmap(s)) {
-          PicBx_Cover.Image = ExtImage.Scale(bmpTmp,
+          PicBx_Cover.Image = Ext.ScaleImage(bmpTmp,
             PicBx_Cover.Width, PicBx_Cover.Height);
         }
       } catch (Exception Exc) {
@@ -1087,7 +1087,7 @@ namespace Nagru___Manga_Organizer
     private void SetTitle(string sRaw)
     {
       Tb_View.SuspendLayout();
-      string[] asProc = ExtString.ParseGalleryTitle(sRaw);
+      string[] asProc = Ext.ParseGalleryTitle(sRaw);
 
       if (!string.IsNullOrEmpty(asProc[0])) {
         if (string.IsNullOrEmpty(CmbBx_Artist.Text)) {
@@ -1172,7 +1172,7 @@ namespace Nagru___Manga_Organizer
 
       if (!SQL.ContainsEntry(CmbBx_Artist.Text, acTxBx_Title.Text)) {
         if (MessageBox.Show("Are you sure you wish to add:\n\""
-            + ExtString.GetFormattedTitle(CmbBx_Artist.Text, acTxBx_Title.Text) + "\"",
+            + Ext.GetFormattedTitle(CmbBx_Artist.Text, acTxBx_Title.Text) + "\"",
             Application.ProductName, MessageBoxButtons.YesNo,
             MessageBoxIcon.Question) == DialogResult.Yes) {
 
@@ -1204,7 +1204,7 @@ namespace Nagru___Manga_Organizer
       //overwrite entry properties
       SQL.SaveManga(CmbBx_Artist.Text, acTxBx_Title.Text, Dt_Date.Value, acTxBx_Tags.Text, TxBx_Loc.Text, 
         Nud_Pages.Value, CmbBx_Type.Text, srRating.SelectedStar, frTxBx_Desc.Text, lblURL.Text, mangaID);
-      Text = "Edited entry: " + ExtString.GetFormattedTitle(CmbBx_Artist.Text, acTxBx_Title.Text);
+      Text = "Edited entry: " + Ext.GetFormattedTitle(CmbBx_Artist.Text, acTxBx_Title.Text);
       acTxBx_Tags.KeyWords = SQL.GetTags();
 
       //check if entry should still be displayed
@@ -1248,7 +1248,7 @@ namespace Nagru___Manga_Organizer
       string msg = "";
       string sLoc = SQL.GetMangaDetail(mangaID, SQL.Manga.Location);
       bool bFile = false, bRst = true;
-      if ((bRst = ExtDir.Accessible(sLoc)))
+      if ((bRst = Ext.Accessible(sLoc)))
         msg = "Do you want to delete the source directory as well?";
       else if (bFile = File.Exists(sLoc))
         msg = "Do you want to delete the source file as well?";
@@ -1322,7 +1322,7 @@ namespace Nagru___Manga_Organizer
       }
 
       Clipboard.SetText(
-        ExtString.GetFormattedTitle(CmbBx_Artist.Text, acTxBx_Title.Text));
+        Ext.GetFormattedTitle(CmbBx_Artist.Text, acTxBx_Title.Text));
       Text = "Name copied to clipboard";
     }
 
@@ -1361,7 +1361,7 @@ namespace Nagru___Manga_Organizer
     private void MnTs_SearchEH_Click(object sender, EventArgs e)
     {
       Suggest fmSuggest = new Suggest(
-        ExtString.GetFormattedTitle(CmbBx_Artist.Text, acTxBx_Title.Text));
+        Ext.GetFormattedTitle(CmbBx_Artist.Text, acTxBx_Title.Text));
       fmSuggest.ShowDialog();
 
       if (fmSuggest.DialogResult == DialogResult.OK) {
@@ -1605,7 +1605,7 @@ namespace Nagru___Manga_Organizer
         case "TextBox":
         case "AutoCompleteTagger":
           if (ActiveControl.Name == "TxBx_Search") {
-            string[] asTitle = ExtString.ParseGalleryTitle(sAdd);
+            string[] asTitle = Ext.ParseGalleryTitle(sAdd);
             sAdd = (asTitle[0] == "") ? sAdd :
                 string.Format("artist:{0} title:{1}",
                 asTitle[0].Replace(' ', '_'), asTitle[1].Replace(' ', '_'));
@@ -1754,7 +1754,7 @@ namespace Nagru___Manga_Organizer
               acTxBx_Tags, sAdd, acTxBx_Tags.SelectionStart);
           break;
         case "TxBx_Search":
-          string[] asTitle = ExtString.ParseGalleryTitle(sAdd);
+          string[] asTitle = Ext.ParseGalleryTitle(sAdd);
           sAdd = (asTitle[0] == "") ? sAdd :
               string.Format("artist:{0} title:{1}",
               asTitle[0].Replace(' ', '_'), asTitle[1].Replace(' ', '_'));
@@ -1781,7 +1781,7 @@ namespace Nagru___Manga_Organizer
       }
       else if (File.Exists(asDir[0]) && IsArchive(asDir[0])) {
         if (CmbBx_Artist.Text == "" && acTxBx_Title.Text == "") {
-          SetTitle(ExtString.GetNameSansExtension(asDir[0]));
+          SetTitle(Ext.GetNameSansExtension(asDir[0]));
           ThreadPool.QueueUserWorkItem(GetImage);
         }
       }
@@ -1920,8 +1920,8 @@ namespace Nagru___Manga_Organizer
       public csEntry(string _Path)
       {
         //Try to format raw title string
-        string[] asTitle = ExtString.ParseGalleryTitle(
-            ExtString.GetNameSansExtension(_Path));
+        string[] asTitle = Ext.ParseGalleryTitle(
+            Ext.GetNameSansExtension(_Path));
         sArtist = asTitle[0];
         sTitle = asTitle[1];
 
@@ -1938,7 +1938,7 @@ namespace Nagru___Manga_Organizer
         if (File.Exists(_Path))
           sFiles = new string[1] { _Path };
         else
-          sFiles = ExtDir.GetFiles(_Path,
+          sFiles = Ext.GetFiles(_Path,
             SearchOption.TopDirectoryOnly, "*.zip|*.cbz|*.cbr|*.rar|*.7z");
 
         if (sFiles.Length > 0) {
@@ -1950,7 +1950,7 @@ namespace Nagru___Manga_Organizer
           }
         }
         else
-          pages = (ushort)ExtDir.GetFiles(
+          pages = (ushort)Ext.GetFiles(
             _Path, SearchOption.TopDirectoryOnly).Length;
       }
 

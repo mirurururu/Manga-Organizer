@@ -309,13 +309,15 @@ namespace Nagru___Manga_Organizer
     /// <summary>
     /// Get leftmost bounds of keyword based on caret position
     /// </summary>
-    /// <returns>First instance of the seperator char, left from the current pos</returns>
+    /// <returns>First instance of the separator char, left from the current pos</returns>
     private int getPrevSepCharIndex()
     {
-      if (!base.Text.Contains(cSep))
+			if (base.Text.IndexOf(cSep) == -1)
         return 0;
+
       int iPos = base.SelectionStart == base.Text.Length ?
-          base.Text.Length - 1 : base.SelectionStart - 1;
+				base.Text.Length - 1 : base.SelectionStart - 1;
+
       for (int i = iPos; i > -1; i--) {
         if (base.Text[i] == cSep)
           return i + 1;
@@ -327,13 +329,15 @@ namespace Nagru___Manga_Organizer
     /// Get rightmost bounds of keyword based on caret position
     /// </summary>
     /// <param name="iStart">Can override search position</param>
-    /// <returns>First instance of the seperator char, right from the current pos</returns>
+    /// <returns>First instance of the separator char, right from the current pos</returns>
     private int getNextSepCharIndex(int iStart = -1)
     {
-      if (!base.Text.Contains(cSep))
+      if (base.Text.IndexOf(cSep) == -1)
         return base.Text.Length;
+
       if (iStart == -1)
-        iStart = base.SelectionStart;
+				iStart = base.SelectionStart;
+
       for (int i = iStart; i < base.Text.Length; i++) {
         if (base.Text[i] == cSep)
           return i;

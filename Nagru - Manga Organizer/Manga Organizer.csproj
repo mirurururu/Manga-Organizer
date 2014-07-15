@@ -116,12 +116,10 @@
     </Compile>
     <Compile Include="Classes\EHSearch.cs" />
     <Compile Include="Classes\EmbeddedAssembly.cs" />
-    <Compile Include="Classes\ExtDirectory.cs" />
     <Compile Include="Classes\ExtFolderBrowserDialog.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Classes\ExtImage.cs" />
-    <Compile Include="Classes\ExtString.cs" />
+    <Compile Include="Classes\ExtFunctions.cs" />
     <Compile Include="Classes\FileSerializer.cs" />
     <Compile Include="Classes\FixedRichTextBox.cs">
       <SubType>Component</SubType>

@@ -34,7 +34,7 @@ namespace Nagru___Manga_Organizer
       ChkBx_Date.Checked = SQL.GetSetting(SQL.Setting.ShowDate) == "1";
       ChkBx_Email.Checked = SQL.GetSetting(SQL.Setting.SendReports) == "1";
 
-      string[] asIgn = ExtString.Split(SQL.GetSetting(SQL.Setting.SearchIgnore), "|");
+      string[] asIgn = Ext.Split(SQL.GetSetting(SQL.Setting.SearchIgnore), "|");
       for (int i = 0; i < asIgn.Length; i++) {
         ckLbx_Ign.Items.Add(asIgn[i], true);
       }
@@ -50,7 +50,7 @@ namespace Nagru___Manga_Organizer
       fbd.SelectedPath = sPath;
 
       if (fbd.ShowDialog() == DialogResult.OK
-          && ExtDir.Accessible(fbd.SelectedPath)) {
+          && Ext.Accessible(fbd.SelectedPath)) {
         Btn_Save.FlatAppearance.BorderColor = Color.Red;
         aTxBx_Save.Text = fbd.SelectedPath;
         bSave = false;
@@ -69,7 +69,7 @@ namespace Nagru___Manga_Organizer
       fbd.SelectedPath = sPath;
 
       if (fbd.ShowDialog() == DialogResult.OK
-          && ExtDir.Accessible(fbd.SelectedPath)) {
+          && Ext.Accessible(fbd.SelectedPath)) {
         Btn_Save.FlatAppearance.BorderColor = Color.Red;
         aTxBx_Root.Text = fbd.SelectedPath;
         bSave = false;

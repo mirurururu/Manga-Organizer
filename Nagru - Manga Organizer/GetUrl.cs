@@ -18,7 +18,7 @@ namespace Nagru___Manga_Organizer
     {
       InitializeComponent();
 
-      if (Clipboard.GetText().Contains("hentai.org/g/"))
+      if (Ext.Contains(Clipboard.GetText(), "hentai.org/g/"))
         TxBx_Url.Text = Clipboard.GetText();
       else
         TxBx_Url.SelectAll();

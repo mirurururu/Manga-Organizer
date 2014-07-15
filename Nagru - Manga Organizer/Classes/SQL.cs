@@ -136,7 +136,7 @@ namespace Nagru___Manga_Organizer
       }
 
       if (File.Exists(_filePath)
-          || File.Exists(_filePath = ExtString.RelativePath(_filePath))) {
+          || File.Exists(_filePath = Ext.RelativePath(_filePath))) {
         sqlBase.Import(_filePath);
       }
 
@@ -225,7 +225,7 @@ namespace Nagru___Manga_Organizer
 			string sTitle = string.Empty;
 			using (DataTable dt = SQLAccess.DB_GetEntryDetails(mangaID))
 			{
-				sTitle = ExtString.GetFormattedTitle(
+				sTitle = Ext.GetFormattedTitle(
 					dt.Rows[0]["Artist"].ToString(),
 					dt.Rows[0]["Title"].ToString()
 				);
@@ -936,7 +936,7 @@ namespace Nagru___Manga_Organizer
 
 				//Set up variables
 				StringBuilder sbCmd = new StringBuilder(5000);
-				string[] asItems = ExtString.Split(sTerms, " ");
+				string[] asItems = Ext.Split(sTerms, " ");
 				string[] asType = new string[asItems.Length];
 				bool[][] abNot = new bool[asItems.Length][];
 				string[][] asTerms = new string[asItems.Length][];
@@ -951,7 +951,7 @@ namespace Nagru___Manga_Organizer
 						asType[i] = sSplit[0];
 					}
 
-					string[] asSubSplit = ExtString.Split(sSplit[sSplit.Length > 1 ? 1 : 0], "&", ",");
+					string[] asSubSplit = Ext.Split(sSplit[sSplit.Length > 1 ? 1 : 0], "&", ",");
 					asTerms[i] = new string[asSubSplit.Length];
 					for (int x = 0; x < asSubSplit.Length; x++)
 					{
