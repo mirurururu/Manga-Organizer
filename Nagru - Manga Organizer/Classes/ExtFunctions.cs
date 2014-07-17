@@ -59,21 +59,6 @@ namespace Nagru___Manga_Organizer
     }
 		
 		/// <summary>
-    /// Convert unicode to usable Ascii
-    /// </summary>
-    /// <remarks>Author: Adam Sills (October 23, 2009)</remarks>
-    /// <param name="sRaw">The string to decode</param>
-    /// <returns>Ascii version of the input</returns>
-    public static string DecodeNonAscii(string sUnicode)
-    {
-      return Regex.Replace(sUnicode, @"\\u(?<Value>[a-zA-Z0-9]{4})",
-          m => {
-            return ((char)int.Parse(m.Groups["Value"].Value,
-                System.Globalization.NumberStyles.HexNumber)).ToString();
-          });
-    }
-		
-		/// <summary>
 		/// Predict the filepath of a manga
 		/// </summary>
 		/// <param name="sPath">The base filepath</param>
@@ -179,51 +164,25 @@ namespace Nagru___Manga_Organizer
     {
       StringBuilder sb = new StringBuilder(sName);
       int indx = sName.LastIndexOf('\\');
+
       if (indx > -1)
         sb.Remove(0, indx + 1);
 
+			if (!File.Exists(sName))
+				return sb.ToString();
+
       indx = sb.ToString().LastIndexOf('.');
-      if (indx > -1) {
-        switch (sb.Length - indx) {
-          case 3:
-            return sb.Remove(indx, 3).ToString();
-          case 4:
-            return sb.Remove(indx, 4).ToString();
-        }
-      }
+      if (indx > -1)
+				sb.Remove(indx, sb.Length - indx);
+
       return sb.ToString();
-    }
-		
-		/// <summary>
-    /// Converts HTML to Ascii
-    /// </summary>
-    /// <param name="sRaw"></param>
-    /// <returns></returns>
-    public static string HTMLConvertToPlainText(string sRaw)
-    {
-      StringBuilder sbSwap = new StringBuilder(sRaw);
-      sbSwap.Replace("&amp;", "&")
-          .Replace("&quot;", "\"")
-          .Replace("&lt;", "<")
-          .Replace("&gt;", ">")
-          .Replace("&#039;", "'")
-          .Replace("&frac14;", "¼")
-          .Replace("&frac12;", "½")
-          .Replace("&frac34;", "¾")
-          .Replace("&deg;", "°")
-          .Replace("&plusmn;", "±")
-          .Replace("&sup2;", "²")
-          .Replace("&sup3;", "³")
-          .Replace("&iquest;", "¿")
-          .Replace("&iexcl;", "¡");
-      return DecodeNonAscii(sbSwap.ToString());
     }
 
     /// <summary>
     /// Parses the input string into Artist and Title variables
     /// </summary>
     /// <param name="sRaw">The string to parse</param>
-    /// <returns>Returns the Artist (0) and Title (1)</returns>
+    /// <returns>Returns the Artist [0] and Title [1]</returns>
     public static string[] ParseGalleryTitle(string sRaw)
     {
       string[] asName = new string[2] { "", "" };
@@ -241,7 +200,7 @@ namespace Nagru___Manga_Organizer
 
       //split fields using EH format
       int iA = sRaw.IndexOf('['), iB = sRaw.IndexOf(']');
-      if ((iPos == -1 || iPos > 0)                            //ensure '(circle) [name]~' or '[name]~' format
+      if (iPos != 0																						//ensure '(circle) [name]~' or '[name]~' format
           && iA == 0 && iB > -1                               //ensure there's a closing brace
           && iA < iB                                          //ensure the closing brace comes *after*
           && iB + 1 < sRaw.Length)                            //ensure there is text after the brace
@@ -249,7 +208,7 @@ namespace Nagru___Manga_Organizer
         //Re-format for Artist/Title fields
         asName[0] = sRaw.Substring(iA + 1, iB - iA - 1).Trim();
         asName[1] = sRaw.Substring(iB + 1).Trim();
-        if (sCircle != "")
+        if (!string.IsNullOrEmpty(sCircle))
           asName[1] += " " + sCircle;
       }
       else {
