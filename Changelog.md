@@ -1,3 +1,6 @@
+#### v. 4.6.21 (July 25, 2014)
+	- Fixed check when looking for upgraded DB versions. '!=' should have been '=='.
+
 #### v. 4.6.20 (July 21, 2014)
 	- Improved the 'random manga' button to be a 'shuffle' operation
 	- Improved filename retrieving code

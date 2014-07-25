@@ -483,7 +483,7 @@ namespace Nagru___Manga_Organizer
 						iCurrentVersion = Int32.Parse(GetSetting(Setting.DBversion));
 					}
 				}
-				if (DB_VERSION != iCurrentVersion)
+				if (DB_VERSION == iCurrentVersion)
 					return;
 
 				switch (iCurrentVersion)
