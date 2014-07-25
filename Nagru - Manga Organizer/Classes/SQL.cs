@@ -380,11 +380,15 @@ namespace Nagru___Manga_Organizer
 
     #endregion
 
+		/// <summary>
+		/// Holds the connection object and provides the 'base' functionality of the SQL implementation
+		/// </summary>
 		private class SQLBase : IDisposable
 		{
 			#region Properties
 
 			internal SQLiteConnection sqConn = null;
+			internal bool CONVERTING = false;
 			private const int SQLITE_MAX_LENGTH = 1000000;
 			private const int DB_VERSION = 1;
 			private bool bDisposed = false;
@@ -410,7 +414,10 @@ namespace Nagru___Manga_Organizer
 				GC.SuppressFinalize(this);
 			}
 
-			//protected implementation of Dispose
+			/// <summary>
+			/// Protected implementation of Dispose
+			/// </summary>
+			/// <param name="Disposing">Whether we are calling the method from the Dispose override</param>
 			protected virtual void Dispose(bool Disposing)
 			{
 				if (bDisposed)
@@ -604,6 +611,9 @@ namespace Nagru___Manga_Organizer
 				}
 			}
 
+			/// <summary>
+			/// Closes the connection to the database
+			/// </summary>
 			internal void Close()
 			{
 				if (sqConn != null
@@ -618,6 +628,10 @@ namespace Nagru___Manga_Organizer
 
 			#region Create Database
 
+			/// <summary>
+			/// Converts the previous DB into the new SQL DB
+			/// </summary>
+			/// <param name="_filePath">The filepath of the old, serialized DB</param>
 			internal bool Import(string _filePath)
 			{
 				//load the old DB
@@ -626,6 +640,7 @@ namespace Nagru___Manga_Organizer
 
 				//input into new DB
 				BeginTransaction();
+				CONVERTING = true;
 				for (int i = 0; i < lData.Count; i++)
 				{
 					//ensure sizes are valid
@@ -642,7 +657,7 @@ namespace Nagru___Manga_Organizer
 					SQLAccess.DB_SaveEntry(
 						lData[i].sArtist, lData[i].sTitle, lData[i].dtDate,
 						lData[i].sTags, lData[i].sLoc, lData[i].pages,
-						lData[i].sType, lData[i].byRat, lData[i].sDesc, bConverting: true
+						lData[i].sType, lData[i].byRat, lData[i].sDesc
 					);
 
 					if (delProgress != null)
@@ -650,6 +665,7 @@ namespace Nagru___Manga_Organizer
 						delProgress.Invoke(i + 1);
 					}
 				}
+				CONVERTING = false;
 				EndTransaction();
 				lData.Clear();
 
@@ -666,6 +682,9 @@ namespace Nagru___Manga_Organizer
 				return true;
 			}
 
+			/// <summary>
+			/// Creates the tbales and triggers in the new DB
+			/// </summary>
 			internal void CreateDatabase()
 			{
 				BeginTransaction();
@@ -853,11 +872,22 @@ namespace Nagru___Manga_Organizer
 			#endregion
 			
 			#region Convenience
+			/// <summary>
+			/// Removes SQl characters from raw strings.
+			/// Should be removed at some point in favor of parameters.
+			/// </summary>
+			/// <param name="sRaw">The string to clean up</param>
 			internal static string Cleanse(string sRaw)
 			{
 				return sRaw.Replace("'", "''").Replace(";", "");
 			}
 
+			/// <summary>
+			/// Wrapper around SQLiteParameter for convenience
+			/// </summary>
+			/// <param name="ParameterName">The name of the parameter</param>
+			/// <param name="dbType">The type of object it should be</param>
+			/// <param name="value">The value of the parameter</param>
 			internal static SQLiteParameter NewParameter(string ParameterName, DbType dbType, object value)
 			{
 				return new SQLiteParameter(ParameterName, dbType) {
@@ -865,6 +895,10 @@ namespace Nagru___Manga_Organizer
 				};
 			}
 
+			/// <summary>
+			/// Begins a transaction.
+			/// NOTE: SQLite ONLY SUPPORTS ONE TRANSACTION AT A TIME
+			/// </summary>
 			internal int BeginTransaction()
 			{
 				int iRetVal = 0;
@@ -876,6 +910,10 @@ namespace Nagru___Manga_Organizer
 				return iRetVal;
 			}
 
+			/// <summary>
+			/// Ends the current transaction.
+			/// </summary>
+			/// <param name="error">If not 0, the program will rollback the transaction</param>
 			internal int EndTransaction(int error = 0)
 			{
 				int iRetVal = 0;
@@ -887,6 +925,12 @@ namespace Nagru___Manga_Organizer
 				return iRetVal;
 			}
 
+			/// <summary>
+			/// Wrapper around SQLite's ExecuteNonQuery for convenience
+			/// </summary>
+			/// <param name="CommandText">The SQL command to execute</param>
+			/// <param name="cmd">The behavior of the execution</param>
+			/// <param name="sqParam">The parameters associated with the command</param>
 			internal int ExecuteNonQuery(string CommandText,
 				CommandBehavior cmd = CommandBehavior.Default, params SQLiteParameter[] sqParam)
 			{
@@ -902,6 +946,12 @@ namespace Nagru___Manga_Organizer
 				return altered;
 			}
 
+			/// <summary>
+			/// Wrapper around SQLite's ExecuteQuery for convenience
+			/// </summary>
+			/// <param name="CommandText">The SQL command to execute</param>
+			/// <param name="cmd">The behavior of the execution</param>
+			/// <param name="sqParam">The parameters associated with the command</param>
 			internal DataTable ExecuteQuery(string CommandText,
 				CommandBehavior cmd = CommandBehavior.Default, params SQLiteParameter[] sqParam)
 			{
@@ -923,10 +973,20 @@ namespace Nagru___Manga_Organizer
 			#endregion
 		}
 
+		/// <summary>
+		/// Holds all the logic that updates, inserts, or queries information in the DB
+		/// </summary>
 		private static class SQLAccess
 		{
-			#region Search Database
+			#region Search Manga
 
+			/// <summary>
+			/// Parses search terms based on an EH-like scheme and returns all results in the DB that match
+			/// </summary>
+			/// <param name="sTerms">The raw search string from the user</param>
+			/// <param name="bOnlyFav">Whether to only return results with a rating of 5.0</param>
+			/// <param name="iMangaID">Optional ability to only check a single manga</param>
+			/// <returns></returns>
 			internal static DataTable DB_Search(string sTerms, bool bOnlyFav = false, int iMangaID = -1)
 			{
 				if (string.IsNullOrWhiteSpace(sTerms))
@@ -1088,7 +1148,6 @@ namespace Nagru___Manga_Organizer
 			/// <summary>
 			/// Returns all the Artists in the database
 			/// </summary>
-			/// <returns></returns>
 			internal static DataTable GetArtists()
 			{
 				string sCommandText = @"
@@ -1106,7 +1165,6 @@ namespace Nagru___Manga_Organizer
 			/// <summary>
 			/// Returns all the Types in the database
 			/// </summary>
-			/// <returns></returns>
 			internal static DataTable GetTypes()
 			{
 				string sCommandText = @"
@@ -1121,6 +1179,9 @@ namespace Nagru___Manga_Organizer
 				return sqlBase.ExecuteQuery(sCommandText);
 			}
 
+			/// <summary>
+			/// Returns all the Tags in the database
+			/// </summary>
 			internal static DataTable GetTags()
 			{
 				string sCommandText = @"
@@ -1135,6 +1196,10 @@ namespace Nagru___Manga_Organizer
 				return sqlBase.ExecuteQuery(sCommandText);
 			}
 
+			/// <summary>
+			/// Returns all manga entries
+			/// </summary>
+			/// <param name="bOnlyFav">Whether to only return manga with a rating of 5.0</param>
 			internal static DataTable GetEntries(bool bOnlyFav = false)
 			{
 				string sCommandText =
@@ -1145,6 +1210,10 @@ namespace Nagru___Manga_Organizer
 				return sqlBase.ExecuteQuery(sCommandText);
 			}
 
+			/// <summary>
+			/// Returns the full details of a specified manga
+			/// </summary>
+			/// <param name="mangaID">The PK of the manga record to find</param>
 			internal static DataTable DB_GetEntryDetails(int mangaID)
 			{
 				string sCommandText = vsManga
@@ -1158,6 +1227,11 @@ namespace Nagru___Manga_Organizer
 				);
 			}
 
+			/// <summary>
+			/// Check whether an entry already exists in the DB based on the Artist and Title
+			/// </summary>
+			/// <param name="sArtist">The Artist of the manga to check for</param>
+			/// <param name="sTitle">The Title of the manga to check for</param>
 			internal static bool EntryExists(string sArtist, string sTitle)
 			{
 				bool bExists = false;
@@ -1182,6 +1256,9 @@ namespace Nagru___Manga_Organizer
 				return bExists;
 			}
 
+			/// <summary>
+			/// Returns all the current settings values
+			/// </summary>
 			internal static DataTable DB_GetSettings()
 			{
 				string sCommandText = @"
@@ -1218,6 +1295,11 @@ namespace Nagru___Manga_Organizer
 
 			#region Update Database
 
+			/// <summary>
+			/// Updates a program setting
+			/// </summary>
+			/// <param name="DBSetting">The setting to update</param>
+			/// <param name="value">The new value for the setting</param>
 			internal static int DB_UpdateSetting(Setting DBSetting, object value)
 			{
 				//setup parameters
@@ -1262,12 +1344,25 @@ namespace Nagru___Manga_Organizer
 				return sqlBase.ExecuteNonQuery(sCommandText, CommandBehavior.Default, sqParam);
 			}
 
+			/// <summary>
+			/// Saves a manga record into the DB
+			/// </summary>
+			/// <param name="sArtist">The name of the Artist</param>
+			/// <param name="sTitle">The title of the manga</param>
+			/// <param name="dtPubDate">The date it was published</param>
+			/// <param name="sTags">The tags associated with the manga</param>
+			/// <param name="sLoc">The location on the HDD</param>
+			/// <param name="iPages">The page count</param>
+			/// <param name="sType">The manga type</param>
+			/// <param name="dRating">The user's rating</param>
+			/// <param name="sDesc">A description of the manga</param>
+			/// <param name="sURL">The EH gallery the manga was downloaded from</param>
+			/// <param name="iMangaID">The ID of the record if it already exists</param>
 			internal static int DB_SaveEntry(string sArtist, string sTitle, DateTime dtPubDate,
 					string sTags = null, string sLoc = null, decimal iPages = 0, string sType = null,
-					decimal dRating = 0, string sDesc = null, string sURL = null, int iMangaID = -1,
-					bool bConverting = false)
+					decimal dRating = 0, string sDesc = null, string sURL = null, int iMangaID = -1)
 			{
-				if (!bConverting)
+				if (!sqlBase.CONVERTING)
 					sqlBase.BeginTransaction();
 
 				//setup parameters
@@ -1330,8 +1425,7 @@ namespace Nagru___Manga_Organizer
 					}
 				}
 
-				#region update the artist and manga type
-
+				//update the artist and manga type
 				sbCmd.Append(@"
 				--insert/update the manga artist
 				insert into [Artist](Name)
@@ -1369,10 +1463,7 @@ namespace Nagru___Manga_Organizer
           (TypeID is null or TypeID not in (select TypeID from [Type] where Type = @type));"
 				);
 
-				#endregion
-
-				#region Update the tags
-
+				//Update the tags
 				string[] asTags = SQLBase.Cleanse(sTags).Split(',').Select(x => x.Trim()).ToArray();
 				sTags = string.Format("'{0}'", String.Join("','", asTags));
 				lParam.Add(SQLBase.NewParameter("@mangaID", DbType.Int32, iMangaID));
@@ -1388,16 +1479,19 @@ namespace Nagru___Manga_Organizer
 				}
 				sbCmd.AppendFormat("delete from [MangaTag] where MangaID = @mangaID and TagID not in (select TagID from [Tag] where Tag in ({0}))", sTags);
 
-				#endregion
-
+				//run the generated command statement
 				sqlBase.ExecuteNonQuery(sbCmd.ToString(), CommandBehavior.Default, lParam.ToArray());
 
-				if (!bConverting)
+				if (!sqlBase.CONVERTING)
 					sqlBase.EndTransaction();
 
 				return iMangaID;
 			}
 
+			/// <summary>
+			/// Deletes an entry from the DB
+			/// </summary>
+			/// <param name="iMangaID">The PK of the record to delete</param>
 			internal static int Entry_Delete(int iMangaID)
 			{
 				sqlBase.BeginTransaction();
@@ -1416,6 +1510,9 @@ namespace Nagru___Manga_Organizer
 				return altered;
 			}
 
+			/// <summary>
+			/// Removes tags from the DB with no associated manga
+			/// </summary>
 			internal static int DeleteUnusedTags()
 			{
 				sqlBase.BeginTransaction();

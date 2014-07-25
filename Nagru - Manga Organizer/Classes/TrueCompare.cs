@@ -6,8 +6,8 @@ namespace Nagru___Manga_Organizer
 {
   /// <summary>
   /// Compare strings accurately (accounts for numbers)
+	/// Author: Samuel Allen (2012)
   /// </summary>
-  /// <remarks>Author: Samuel Allen (2012)</remarks>
   public class TrueCompare : IComparer<string>
   {
     public int Compare(string sX, string sY)

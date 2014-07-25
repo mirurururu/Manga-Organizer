@@ -9,8 +9,16 @@ using SCA = SharpCompress.Archive;
 namespace Nagru___Manga_Organizer
 {
   public partial class Browse_Img : Form, IDisposable
-  {
-    public Dictionary<int, int> Sort = new Dictionary<int, int>();
+	{
+		#region Properties
+		public Dictionary<int, int> Sort = new Dictionary<int, int>();
+    bool bWideL, bWideR, bNext;
+    float fWidth;
+
+    Timer trFlip;
+    bool bAuto = false;
+
+		#region Interface
     public List<string> Files {
       get;
       set;
@@ -23,19 +31,18 @@ namespace Nagru___Manga_Organizer
       get;
       set;
     }
+		#endregion
 
-    bool bWideL, bWideR, bNext;
-    float fWidth;
+		#endregion
 
-    Timer trFlip;
-    bool bAuto = false;
+		#region Initialization
 
-    public Browse_Img()
+		public Browse_Img()
     {
       InitializeComponent();
     }
 
-    private void Browse_Load(object sender, EventArgs e)
+		private void Browse_Load(object sender, EventArgs e)
     {
       this.Location = Main.ActiveForm.Location;
 
@@ -71,14 +78,21 @@ namespace Nagru___Manga_Organizer
 
     private void Browse_Shown(object sender, EventArgs e)
     {
+			//if the browser is being opened to the last viewed page,
+			//use the Prev() function to display those pages
       if (Page == -1)
         Next();
       else
         Prev();
     }
 
+		#endregion
+
+		#region Events
+
     private void Browse_KeyDown(object sender, KeyEventArgs e)
     {
+			//handle changing timer interval settings
       if (bAuto && e.Modifiers == Keys.Shift) {
         if (e.KeyCode == Keys.Oemplus) {
           bAuto = true;
@@ -176,113 +190,6 @@ namespace Nagru___Manga_Organizer
       }
     }
 
-    private void Next()
-    {
-      Image imgL = null, imgR = null;
-      byte by = 0;
-      Reset(true);
-
-      do {
-        by++;
-        if (++Page >= Files.Count)
-          Page = 0;
-        imgR = TrySet(Page);
-      } while (imgR == null && by < 10);
-
-      if (imgR == null || !(bWideR = imgR.Height < imgR.Width)) {
-        by = 0;
-        do {
-          by++;
-          if (++Page >= Files.Count)
-            Page = 0;
-          imgL = TrySet(Page);
-        } while (imgL == null && by < 10);
-
-        if (imgL != null && (bWideL = imgL.Height < imgL.Width))
-          Page--;
-      }
-
-      Refresh(imgL, imgR);
-      if (imgL != null)
-        imgL.Dispose();
-      if (imgR != null)
-        imgR.Dispose();
-    }
-
-    private void Prev()
-    {
-      if (Page != 0 && !(bWideR || bWideL))
-        Page--;
-      Image imgL = null, imgR = null;
-      byte by = 0;
-      Reset(false);
-
-      do {
-        by++;
-        if (--Page < 0)
-          Page = Files.Count - 1;
-        else if (Page >= Files.Count)
-          Page = 0;
-        imgL = TrySet(Page);
-      } while (imgL == null && by < 10);
-
-      if (imgL == null || !(bWideL = imgL.Height < imgL.Width)) {
-        by = 0;
-        do {
-          by++;
-          if (--Page < 0)
-            Page = Files.Count - 1;
-          imgR = TrySet(Page);
-        } while (imgR == null && by < 10);
-
-        Page++;
-        bWideR = (imgR != null) ? imgR.Height < imgR.Width : false;
-      }
-
-      Refresh(imgL, imgR);
-      if (imgL != null)
-        imgL.Dispose();
-      if (imgR != null)
-        imgR.Dispose();
-    }
-
-    private Bitmap TrySet(int i)
-    {
-      Bitmap bmpTmp = null;
-      MemoryStream ms = new MemoryStream();
-
-      try {
-        if (Archive != null) {
-          Archive[Sort[i]].WriteTo(ms);
-        }
-        else {
-          FileStream fs = new FileStream(Files[i], FileMode.Open);
-          fs.CopyTo(ms);
-          fs.Dispose();
-        }
-
-        bmpTmp = new Bitmap(ms);
-        bmpTmp = Ext.ScaleImage(bmpTmp,
-            (bmpTmp.Width > bmpTmp.Height) ? picBx.Width : fWidth
-            , picBx.Height);
-      } catch (Exception ex) {
-        Console.WriteLine(ex.Message);
-      } finally {
-        ms.Dispose();
-      }
-
-      return bmpTmp;
-    }
-
-    private void Reset(bool bSet)
-    {
-      if (bAuto)
-        Tmr_Reset();
-      bWideL = false;
-      bWideR = false;
-      bNext = bSet;
-      GC.Collect(0);
-    }
     private void Tmr_Reset()
     {
       trFlip.Stop();
@@ -292,45 +199,6 @@ namespace Nagru___Manga_Organizer
     void trFlip_Tick(object sender, EventArgs e)
     {
       Next();
-    }
-
-    /* Process which images to draw & how */
-    private void Refresh(Image imgL, Image imgR)
-    {
-      picBx.Refresh();
-
-      picBx.SuspendLayout();
-      Graphics g = picBx.CreateGraphics();
-      g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-
-      if (!bWideL && !bWideR) {
-        DrawImage_L(g, imgL);
-        DrawImage_R(g, imgR);
-      }
-      else if (bNext)
-        DrawImage_R(g, imgR);
-      else
-        DrawImage_L(g, imgL);
-      picBx.ResumeLayout();
-    }
-
-    private void DrawImage_L(Graphics g, Image imgL)
-    {
-      if (imgL == null)
-        return;
-      g.DrawImage(imgL,
-          (bWideL) ? (int)(fWidth - imgL.Width / 2.0) : fWidth - imgL.Width - 5,
-          (int)(picBx.Height / 2.0 - imgL.Height / 2.0),
-          imgL.Width, imgL.Height);
-    }
-    private void DrawImage_R(Graphics g, Image imgR)
-    {
-      if (imgR == null)
-        return;
-      g.DrawImage(imgR,
-          (bWideR) ? (int)(fWidth - imgR.Width / 2.0) : fWidth + 5,
-          (int)(picBx.Height / 2.0 - imgR.Height / 2.0),
-          imgR.Width, imgR.Height);
     }
 
     private void Browse_MouseUp(object sender, MouseEventArgs e)
@@ -352,5 +220,185 @@ namespace Nagru___Manga_Organizer
       Cursor.Show();
       Page += 2;
     }
+
+		#endregion
+
+		#region Custom Methods
+
+		/// <summary>
+		/// Displays the next two pages
+		/// </summary>
+    private void Next()
+    {
+      Image imgL = null, imgR = null;		//holds the loaded image files
+      byte byError = 0;									//holds the number of tries attempted to load an image
+      Reset(true);											//reset the page values to their default
+
+			//get the next valid, right-hand image file in the sequence
+      do {
+				byError++;
+        if (++Page >= Files.Count)
+          Page = 0;
+        imgR = TrySet(Page);
+			} while (imgR == null && byError < 10);
+
+			//if the image is not multi-page, then load the next valid, left-hand image in the sequence
+      if (imgR == null || !(bWideR = imgR.Height < imgR.Width)) {
+				byError = 0;
+        do {
+					byError++;
+          if (++Page >= Files.Count)
+            Page = 0;
+          imgL = TrySet(Page);
+				} while (imgL == null && byError < 10);
+
+				//if this image is multi-page, decrement the page value so the next page turn will catch it
+        if (imgL != null && (bWideL = imgL.Height < imgL.Width))
+          Page--;
+      }
+
+      Refresh(imgL, imgR);
+    }
+
+		/// <summary>
+		/// Displays the previous two pages
+		/// </summary>
+    private void Prev()
+    {
+			//If neither of the previous images were multi-page, decrement the page value to not overshoot pages
+      if (Page != 0 && !(bWideR || bWideL))
+        Page--;
+
+			Image imgL = null, imgR = null;		//holds the loaded image files
+			byte byError = 0;									//holds the number of tries attempted to load an image
+			Reset(false);											//reset the page values to their default
+
+			//get the next valid, left-hand image file in the sequence
+      do {
+				byError++;
+        if (--Page < 0)
+          Page = Files.Count - 1;
+        else if (Page >= Files.Count)
+          Page = 0;
+        imgL = TrySet(Page);
+			} while (imgL == null && byError < 10);
+
+			//if the image is not multi-page, then load the next valid, right-hand image in the sequence
+      if (imgL == null || !(bWideL = imgL.Height < imgL.Width)) {
+				byError = 0;
+        do {
+					byError++;
+          if (--Page < 0)
+            Page = Files.Count - 1;
+          imgR = TrySet(Page);
+				} while (imgR == null && byError < 10);
+
+				//sets if the right-hand image is multi-page or not
+        bWideR = (imgR != null) ? imgR.Height < imgR.Width : false;
+        Page++;
+      }
+
+      Refresh(imgL, imgR);
+    }
+
+		/// <summary>
+		/// Try to load the image at the indicated index
+		/// </summary>
+		/// <param name="iPos">The file index</param>
+    private Bitmap TrySet(int iPos)
+    {
+      Bitmap bmpTmp = null;
+      MemoryStream ms = new MemoryStream();
+
+      try {
+        if (Archive != null) {
+					Archive[Sort[iPos]].WriteTo(ms);
+        }
+        else {
+					FileStream fs = new FileStream(Files[iPos], FileMode.Open);
+          fs.CopyTo(ms);
+          fs.Dispose();
+        }
+
+        bmpTmp = new Bitmap(ms);
+        bmpTmp = Ext.ScaleImage(bmpTmp,
+					(bmpTmp.Width > bmpTmp.Height) ? picBx.Width : fWidth
+					, picBx.Height);
+      } catch (Exception ex) {
+        Console.WriteLine(ex.Message);
+      } finally {
+        ms.Dispose();
+      }
+
+      return bmpTmp;
+    }
+
+		/// <summary>
+		/// Reset the image parameters to default
+		/// </summary>
+		/// <param name="Next">Whether it was called from Next()</param>
+    private void Reset(bool Next)
+    {
+      if (bAuto)
+        Tmr_Reset();
+      bWideL = false;
+      bWideR = false;
+      bNext = Next;
+      GC.Collect(0);
+    }
+
+		/// <summary>
+		/// Process which images to draw & how
+		/// </summary>
+		/// <param name="imgL"></param>
+		/// <param name="imgR"></param>
+    private void Refresh(Image imgL, Image imgR)
+    {
+      picBx.Refresh();
+
+      picBx.SuspendLayout();
+      using(Graphics g = picBx.CreateGraphics())
+			{
+				g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+
+				if (!bWideL && !bWideR) {
+					DrawImage(g, imgL, true);
+					DrawImage(g, imgR, false);
+				}
+				else if (bNext)
+					DrawImage(g, imgR, false);
+				else
+					DrawImage(g, imgL, true);
+			}
+      picBx.ResumeLayout();
+
+			if (imgL != null)
+				imgL.Dispose();
+			if (imgR != null)
+				imgR.Dispose();
+    }
+
+		/// <summary>
+		/// Draw the image to the screen
+		/// </summary>
+		/// <param name="g">A graphics reference to the picturebox</param>
+		/// <param name="imgL">The image to draw</param>
+		private void DrawImage(Graphics g, Image img, bool bLeft)
+		{
+			if (img != null)
+			{
+				g.DrawImage(
+					img
+					, (bLeft ? bWideL : bWideR)
+							? (int)(fWidth - img.Width / 2.0) 
+							: fWidth + (bLeft ? -(img.Width + 5) : 5)
+					, (int)(picBx.Height / 2.0 - img.Height / 2.0)
+					, img.Width
+					, img.Height
+				);
+			}
+		}
+
+		#endregion
   }
 }

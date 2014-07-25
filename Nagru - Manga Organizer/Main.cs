@@ -989,7 +989,14 @@ namespace Nagru___Manga_Organizer
     /// <param name="iExists">Set to 1 for an open status</param>
     private void SetOpenStatus(int iExists)
     {
+			try
+			{
       MnTS_Open.Visible = (iExists == 1);
+			}
+			catch(Exception exc)
+			{
+				Console.WriteLine(exc.Message);
+			}
     }
 
     /// <summary>
@@ -1019,8 +1026,11 @@ namespace Nagru___Manga_Organizer
           if (lEntries.Count > 0) {
             lEntries.Sort(new TrueCompare());
             for (; iFirst < iCount; iFirst++) {
-              if (scEntries[iFirst].FilePath.Equals(lEntries[0]))
-                break;
+							if (scEntries[iFirst].FilePath.Length == lEntries[0].Length) {
+								if (scEntries[iFirst].FilePath.Equals(lEntries[0])) {
+									break;
+								}
+							}
             }
 
             //load image
@@ -1059,6 +1069,7 @@ namespace Nagru___Manga_Organizer
           PicBx_Cover.Image = Ext.ScaleImage(bmpTmp,
             PicBx_Cover.Width, PicBx_Cover.Height);
         }
+				MnTS_Open.Visible = (PicBx_Cover.Image == null);
       } catch (Exception Exc) {
         MessageBox.Show("The following file could not be loaded:\n" + s,
           Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
@@ -1110,7 +1121,7 @@ namespace Nagru___Manga_Organizer
     /// </summary>
     private void UpdateLV()
     {
-      using (DataTable dt = (!string.IsNullOrEmpty(TxBx_Search.Text))
+      using (DataTable dt = !string.IsNullOrEmpty(TxBx_Search.Text)
         ? SQL.Search(TxBx_Search.Text, ChkBx_ShowFav.Checked) 
           : SQL.GetAllEntries(ChkBx_ShowFav.Checked)) {
 
@@ -1390,7 +1401,8 @@ namespace Nagru___Manga_Organizer
     /// </summary>
     private void MnTs_CleanTags_Click(object sender, EventArgs e)
     {
-      MessageBox.Show(string.Format("{0} unused tags have been removed.", SQL.CleanUpTags())
+			int iUnused = SQL.CleanUpTags();
+      MessageBox.Show(iUnused + " unused tags " + (iUnused > 0 ? "have been removed." : "exist.")
         , Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
 

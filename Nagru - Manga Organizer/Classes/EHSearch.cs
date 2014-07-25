@@ -12,10 +12,17 @@ using Newtonsoft.Json.Linq;
 namespace Nagru___Manga_Organizer
 {
   /// <summary>
-  /// Hold results of e-hentai search
+  /// Holds the results of an EH search
   /// </summary>
   public class csEHSearch
   {
+    #region Properties
+    private List<string> hsURL, hsTitle;
+    private byte[] bOpt = new byte[10];
+    private string sSearchURL;
+    private int iCurrentPage = 0;
+    private int iPages = 0;
+
     #region Interface
     /// <summary>
     /// The URL that was searched
@@ -98,18 +105,45 @@ namespace Nagru___Manga_Organizer
         };
       }
     }
+
+		/// <summary>
+		/// Save the gallery type settings
+		/// </summary>
+		public void SaveOptions()
+		{
+			SQL.UpdateSetting(SQL.Setting.SearchIgnore,
+				string.Join(",", bOpt.Select(x => x.ToString()))
+			);
+		}
+		
+		/// <summary>
+		/// Adds a possible match from EH
+		/// </summary>
+		/// <param name="sURL"></param>
+		/// <param name="sTitle"></param>
+		public void Add(string sURL, string sTitle)
+    {
+      hsURL.Add(sURL);
+			hsTitle.Add(HttpUtility.HtmlDecode(sTitle));
+    }
+
+		/// <summary>
+		/// Clears the result set
+		/// </summary>
+    public void Clear()
+    {
+      hsURL.Clear();
+      hsTitle.Clear();
+    }
+
     #endregion
 
-    #region Properties
-    private List<string> hsURL, hsTitle;
-    private byte[] bOpt = new byte[10];
-    private string sSearchURL;
-    private int iCurrentPage = 0;
-    private int iPages = 0;
     #endregion
 
-    #region EH API JSON Class
-    /// <summary>
+		#region Inner Classes
+
+		#region EH API JSON Class
+		/// <summary>
     /// Used to simulate JS Object Literal for JSON 
     /// </summary>
     /// <remarks>Based on Hupotronics' ExLinks</remarks>
@@ -131,6 +165,9 @@ namespace Nagru___Manga_Organizer
     #endregion
 
     #region EH Metadata
+		/// <summary>
+		/// Parses the JSON object returned from EH into a C# class
+		/// </summary>
     public class gmetadata
     {
       public int gid;
@@ -149,13 +186,16 @@ namespace Nagru___Manga_Organizer
       public int torrentcount;
       public string[] tags;
 
+			/// <summary>
+			/// The constructor which parses out the JSON object
+			/// </summary>
+			/// <param name="JSON">The JSON object literal</param>
       public gmetadata(string JSON)
       {
         DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         try {
           dynamic JsonObject = JObject.Parse(JSON);
-          
           gid						= Int32.Parse(JsonObject.gmetadata[0].gid.Value.ToString());
           token					= JsonObject.gmetadata[0].token.Value;
           archiver_key	= JsonObject.gmetadata[0].archiver_key.Value;
@@ -176,6 +216,11 @@ namespace Nagru___Manga_Organizer
         }
       }
 
+			/// <summary>
+			/// Returns all the tags in the object, organized by name
+			/// </summary>
+			/// <param name="sCurrentTags">Adds in any passed in tags to the returned array</param>
+			/// <returns></returns>
       public string GetTags(string sCurrentTags = null)
       {
         List<string> lRaw = new List<string>(tags.Length * 2);
@@ -194,7 +239,14 @@ namespace Nagru___Manga_Organizer
     }
     #endregion
 
-    public csEHSearch()
+		#endregion
+
+		#region Constructor
+
+		/// <summary>
+		/// Sets the initial values of the object
+		/// </summary>
+		public csEHSearch()
     {
       hsURL = new List<string>();
       hsTitle = new List<string>();
@@ -205,73 +257,31 @@ namespace Nagru___Manga_Organizer
       #endregion
     }
 
-    public void Add(string sURL, string sTitle)
-    {
-      hsURL.Add(sURL);
-			hsTitle.Add(HttpUtility.HtmlDecode(sTitle));
-    }
+		#endregion
 
-    public void Clear()
-    {
-      hsURL.Clear();
-      hsTitle.Clear();
-    }
-
-    private static string FormatSearch(string sRaw, string sSite, byte[] byOpt)
+		#region Search EH
+		
+		/// <summary>
+		/// Creates the search string
+		/// </summary>
+		/// <param name="SearchTerms">The search terms from the user</param>
+		/// <param name="useEXH">Whether to use regular EH or EXH</param>
+		/// <param name="Options">The gallery types to search for</param>
+		/// <returns></returns>
+		private static string FormatSearch(string SearchTerms, bool useEXH, byte[] Options)
     {
       return string.Format("http://{0}.org/?f_doujinshi={1}&f_manga={2}&f_artistcg={3}"
         + "&f_gamecg={4}&f_western={5}&f_non-h={6}&f_imageset={7}&f_cosplay={8}"
         + "&f_asianporn={9}&f_misc={10}&f_search={11}&f_apply=Apply+Filter",
-        sSite, byOpt[0], byOpt[1], byOpt[2], byOpt[3], byOpt[4], byOpt[5],
-        byOpt[6], byOpt[7], byOpt[8], byOpt[9], Uri.EscapeDataString(sRaw).Replace("%20", "+"));
+				useEXH ? "exhentai" : "g.e-hentai", Options[0], Options[1], Options[2], Options[3], Options[4], Options[5],
+				Options[6], Options[7], Options[8], Options[9], Uri.EscapeDataString(SearchTerms).Replace("%20", "+"));
     }
-
-    public static gmetadata LoadMetadata(string sAddress)
-    {
-      string sEHResponse = string.Empty;
-      gmetadata gmManga = null;
-      bool bException = true;
-
-      //exit if there (probably) isn't an internet connection
-      if (!System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable())
-        return gmManga;
-
-      //set up connection
-      ServicePointManager.DefaultConnectionLimit = 64;
-      HttpWebRequest rq = (HttpWebRequest)
-        WebRequest.Create("http://g.e-hentai.org/api.php");
-      rq.ContentType = "application/json; charset=UTF-8";
-      rq.Method = "POST";
-      rq.Timeout = 5000;
-      rq.KeepAlive = false;
-      rq.Proxy = null;
-
-      try {
-        //send formatted request to EH API
-        using (Stream s = rq.GetRequestStream()) {
-          byte[] byContent = Encoding.ASCII.GetBytes(
-            JsonConvert.SerializeObject(new csEHAPI(sAddress)));
-          s.Write(byContent, 0, byContent.Length);
-        }
-        using (StreamReader sr = new StreamReader((
-          (HttpWebResponse)rq.GetResponse()).GetResponseStream())) {
-          sEHResponse = sr.ReadToEnd();
-          rq.Abort();
-        }
-        bException = false;
-      } catch (WebException exc) {
-        Console.WriteLine(exc.Message);
-      } finally {
-        //parse returned JSON
-        if (!bException && !string.IsNullOrEmpty(sEHResponse)) {
-          gmManga = new gmetadata(sEHResponse);
-        }
-      }
-
-      return gmManga;
-    }
-
-    public void Search(string sRaw)
+		
+		/// <summary>
+		/// Searches EH and returns a list of gallery titles and addresses
+		/// </summary>
+		/// <param name="SearchTerms">The terms to search for</param>
+    public void Search(string SearchTerms)
     {
       this.Clear();
 
@@ -287,7 +297,7 @@ namespace Nagru___Manga_Organizer
         SQL.GetSetting(SQL.Setting.pass_hash) + SQL.GetSetting(SQL.Setting.member_id));
 
       //convert raw search terms into web form
-      sSearchURL = FormatSearch(sRaw, (bXH) ? "exhentai" : "g.e-hentai", bOpt);
+			sSearchURL = FormatSearch(SearchTerms, bXH, bOpt);
       
       //set up connection
       ServicePointManager.DefaultConnectionLimit = 64;
@@ -338,14 +348,59 @@ namespace Nagru___Manga_Organizer
       }
     }
 
-    /// <summary>
-    /// Save the gallery type settings
-    /// </summary>
-    public void SaveOptions()
+		#endregion
+
+		#region Get Metadata
+		
+		/// <summary>
+		/// Loads and parses a response from an EH URL
+		/// </summary>
+		/// <param name="sAddress"></param>
+		public static gmetadata LoadMetadata(string sAddress)
     {
-      SQL.UpdateSetting(SQL.Setting.SearchIgnore, 
-        string.Join(",", bOpt.Select(x => x.ToString()))
-      );
+      string sEHResponse = string.Empty;
+      gmetadata gmManga = null;
+      bool bException = true;
+
+      //exit if there (probably) isn't an internet connection
+      if (!System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable())
+        return gmManga;
+
+      //set up connection
+      ServicePointManager.DefaultConnectionLimit = 64;
+      HttpWebRequest rq = (HttpWebRequest)
+        WebRequest.Create("http://g.e-hentai.org/api.php");
+      rq.ContentType = "application/json; charset=UTF-8";
+      rq.Method = "POST";
+      rq.Timeout = 5000;
+      rq.KeepAlive = false;
+      rq.Proxy = null;
+
+      try {
+        //send formatted request to EH API
+        using (Stream s = rq.GetRequestStream()) {
+          byte[] byContent = Encoding.ASCII.GetBytes(
+            JsonConvert.SerializeObject(new csEHAPI(sAddress)));
+          s.Write(byContent, 0, byContent.Length);
+        }
+        using (StreamReader sr = new StreamReader((
+          (HttpWebResponse)rq.GetResponse()).GetResponseStream())) {
+          sEHResponse = sr.ReadToEnd();
+          rq.Abort();
+        }
+        bException = false;
+      } catch (WebException exc) {
+        Console.WriteLine(exc.Message);
+      } finally {
+        //parse returned JSON
+        if (!bException && !string.IsNullOrEmpty(sEHResponse)) {
+          gmManga = new gmetadata(sEHResponse);
+        }
+      }
+
+      return gmManga;
     }
+
+		#endregion
   }
 }

@@ -9,25 +9,39 @@ using SCA = SharpCompress.Archive;
 namespace Nagru___Manga_Organizer
 {
   public partial class BrowseTo : Form
-  {
-    public int iPage
-    {
-      get;
-      set;
-    }
+	{
+		#region Properties
 
     Browse_Img fmSource = null;
     bool bWideR, bWideL;
     float fWidth;
 
-    public BrowseTo(Browse_Img fm)
+		#region Interface
+
+		public int iPage
+    {
+      get;
+      set;
+    }
+
+		#endregion
+
+		#endregion
+
+		#region Constructor
+
+		public BrowseTo(Browse_Img fm)
     {
       InitializeComponent();
       this.DialogResult = DialogResult.Abort;
       fmSource = fm;
     }
 
-    private void Browse_GoTo_Load(object sender, EventArgs e)
+		#endregion
+
+		#region Events
+
+		private void Browse_GoTo_Load(object sender, EventArgs e)
     {
       //set grid on/off
       LV_Pages.GridLines = SQL.GetSetting(SQL.Setting.ShowGrid) == "1";
@@ -54,6 +68,27 @@ namespace Nagru___Manga_Organizer
 
     private void BrowseTo_Shown(object sender, EventArgs e)
     {
+      Next(iPage);
+    }
+		
+		private void BrowseTo_KeyDown(object sender, KeyEventArgs e)
+    {
+      switch (e.KeyCode) {
+        case Keys.Enter:
+          UpdatePage();
+          break;
+        default:
+          this.Close();
+          break;
+      }
+      e.Handled = true;
+    }
+		
+		private void BrowseTo_ResizeEnd(object sender, EventArgs e)
+    {
+      //re-calculate width of half-picbx
+      fWidth = (float)(picbxPreview.Bounds.Width / 2.0);
+
       Next(iPage);
     }
 
@@ -83,64 +118,45 @@ namespace Nagru___Manga_Organizer
       Next(iPage);
     }
 
-    private void BrowseTo_KeyDown(object sender, KeyEventArgs e)
-    {
-      switch (e.KeyCode) {
-        case Keys.Enter:
-          UpdatePage();
-          break;
-        default:
-          this.Close();
-          break;
-      }
-      e.Handled = true;
-    }
-
     private void LV_Pages_DoubleClick(object sender, EventArgs e)
     {
       UpdatePage();
     }
 
-    /* Return selected pages to Browse_Img */
-    private void UpdatePage()
-    {
-      this.DialogResult = DialogResult.OK;
-      this.Close();
-    }
+		#endregion
 
-    #region SetImagePreview
+		#region Custom Methods
 
-    private void BrowseTo_ResizeEnd(object sender, EventArgs e)
-    {
-      //re-calculate width of half-picbx
-      fWidth = (float)(picbxPreview.Bounds.Width / 2.0);
-
-      Next(iPage);
-    }
-
+		/// <summary>
+		/// Get the next pair of images for the preview screen
+		/// </summary>
+		/// <param name="Page">The index of the last page browse to</param>
     private void Next(int Page)
     {
-      Image imgL = null, imgR = null;
-      byte by = 0;
-      Page--;
+      Image imgL = null, imgR = null;		//holds the loaded image files
+      byte byError = 0;									//holds the number of tries attempted to load an image
+			Page--;
 
+			//get the next valid, right-hand image file in the sequence
       do {
-        by++;
+				byError++;
         if (++Page >= fmSource.Files.Count)
           Page = 0;
         imgR = TrySet(Page);
-      } while (imgR == null && by < 10);
+			} while (imgR == null && byError < 10);
 
-      if (!(bWideR = imgR.Height < imgR.Width)) {
-        by = 0;
+			//if the image is not multi-page, then load the next valid, left-hand image in the sequence
+      if (imgR == null || !(bWideR = imgR.Height < imgR.Width)) {
+				byError = 0;
         do {
-          by++;
-          if (++Page >= fmSource.Files.Count)
+					byError++;
+					if (++Page >= fmSource.Files.Count)
             Page = 0;
           imgL = TrySet(Page);
-        } while (imgL == null && by < 10);
+				} while (imgL == null && byError < 10);
 
-        if (bWideL = imgL.Height < imgL.Width)
+				//if this image is multi-page, decrement the page value so the next page turn will catch it
+        if (imgL != null && (bWideL = imgL.Height < imgL.Width))
           Page--;
       }
       Refresh(imgL, imgR);
@@ -151,6 +167,10 @@ namespace Nagru___Manga_Organizer
         imgR.Dispose();
     }
 
+		/// <summary>
+		/// Try to load the image at the indicated index
+		/// </summary>
+		/// <param name="iPos">The file index</param>
     private Bitmap TrySet(int i)
     {
       Bitmap bmpTmp = null;
@@ -179,38 +199,60 @@ namespace Nagru___Manga_Organizer
       return bmpTmp;
     }
 
-    /* Process which images to draw & how */
+		/// <summary>
+		/// Process which images to draw & how
+		/// </summary>
+		/// <param name="imgL"></param>
+		/// <param name="imgR"></param>
     private void Refresh(Image imgL, Image imgR)
     {
       picbxPreview.Refresh();
 
       picbxPreview.SuspendLayout();
-      Graphics g = picbxPreview.CreateGraphics();
-      g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+      using(Graphics g = picbxPreview.CreateGraphics())
+			{
+				g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
 
-      if (!bWideL && !bWideR) {
-        DrawImage_L(g, imgL);
-        DrawImage_R(g, imgR);
-      }
-      else
-        DrawImage_R(g, imgR);
+				if (!bWideL && !bWideR) {
+					DrawImage(g, imgL, true);
+					DrawImage(g, imgR, false);
+				}
+				else
+					DrawImage(g, imgR, false);
+			}
       picbxPreview.ResumeLayout();
     }
 
-    private void DrawImage_L(Graphics g, Image imgL)
+		/// <summary>
+		/// Draw the image to the screen
+		/// </summary>
+		/// <param name="g">A graphics reference to the picturebox</param>
+		/// <param name="imgL">The image to draw</param>
+		private void DrawImage(Graphics g, Image img, bool bLeft)
+		{
+			if (img != null)
+			{
+				g.DrawImage(
+					img
+					, (bLeft ? bWideL : bWideR)
+							? (int)(fWidth - img.Width / 2.0)
+							: fWidth + (bLeft ? -(img.Width + 5) : 5)
+					, (int)(picbxPreview.Height / 2.0 - img.Height / 2.0)
+					, img.Width
+					, img.Height
+				);
+			}
+		}
+
+		/// <summary>
+		/// Return selected pages to Browse_Img
+		/// </summary>
+    private void UpdatePage()
     {
-      g.DrawImage(imgL,
-          (bWideL) ? (int)(fWidth - imgL.Width / 2.0) : fWidth - imgL.Width - 5,
-          (int)(picbxPreview.Height / 2.0 - imgL.Height / 2.0),
-          imgL.Width, imgL.Height);
+      this.DialogResult = DialogResult.OK;
+      this.Close();
     }
-    private void DrawImage_R(Graphics g, Image imgR)
-    {
-      g.DrawImage(imgR,
-          (bWideR) ? (int)(fWidth - imgR.Width / 2.0) : fWidth + 5,
-          (int)(picbxPreview.Height / 2.0 - imgR.Height / 2.0),
-          imgR.Width, imgR.Height);
-    }
-    #endregion
+
+		#endregion
   }
 }

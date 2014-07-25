@@ -6,7 +6,10 @@ using System.Drawing.Drawing2D;
 
 namespace Nagru___Manga_Organizer
 {
-  /* Inspiration: Andrey Butov (Dec 20, 2004) */
+	/// <summary>
+	/// Custom control for displaying ratings
+	/// Inspiration: Andrey Butov (Dec 20, 2004)
+	/// </summary>
   public class StarRatingControl : Control
   {
     #region Properties
@@ -19,10 +22,12 @@ namespace Nagru___Manga_Organizer
     protected const int iPadding = 8;
     protected const int iHeight = 14;
     protected const int iWidth = 16;
-    protected int iOutThick = 1,
-        iHvrStar, iSelStar;
+    protected int iOutThick = 1;
+		protected int iHvrStar;
+		protected int iSelStar;
 
-    protected bool IsHovering {
+		#region Interface
+		protected bool IsHovering {
       get;
       private set;
     }
@@ -99,9 +104,16 @@ namespace Nagru___Manga_Organizer
         cFill = value;
       }
     }
+		#endregion
+
     #endregion
 
-    public StarRatingControl()
+		#region Constructor
+
+		/// <summary>
+		/// Initializes the control with default values
+		/// </summary>
+		public StarRatingControl()
     {
       SetStyle(ControlStyles.AllPaintingInWmPaint, true);
       SetStyle(ControlStyles.UserPaint, true);
@@ -133,7 +145,14 @@ namespace Nagru___Manga_Organizer
       gpStar.CloseFigure();
     }
 
-    protected override void OnPaint(PaintEventArgs pe)
+		#endregion
+
+		#region Events
+
+		/// <summary>
+		/// Draws the Control to the form
+		/// </summary>
+		protected override void OnPaint(PaintEventArgs pe)
     {
       pe.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
       pe.Graphics.Clear(BackColor);
@@ -150,7 +169,7 @@ namespace Nagru___Manga_Organizer
         else
           brFill = new SolidBrush(BackColor);
 
-        GraphicsPath gpTmp = GetPath(gpStar, rcDraw.X, 0);
+        GraphicsPath gpTmp = GetPath(rcDraw.X, 0);
         rcDraw.X += rcDraw.Width + iPadding;
         pe.Graphics.FillPath(brFill, gpTmp);
         pe.Graphics.DrawPath(pnOutln, gpTmp);
@@ -159,15 +178,9 @@ namespace Nagru___Manga_Organizer
       base.OnPaint(pe);
     }
 
-    protected static GraphicsPath GetPath(GraphicsPath gpObj, int iX, int iY)
-    {
-      GraphicsPath clone = (GraphicsPath)gpObj.Clone();
-      Matrix mat = new Matrix();
-      mat.Translate(iX, iY);
-      clone.Transform(mat);
-      return clone;
-    }
-
+		/// <summary>
+		/// Re-draws the control to highlight the control based on the area hovered over
+		/// </summary>
     protected override void OnMouseEnter(System.EventArgs ea)
     {
       IsHovering = true;
@@ -175,6 +188,9 @@ namespace Nagru___Manga_Organizer
       base.OnMouseEnter(ea);
     }
 
+		/// <summary>
+		/// Re-draws the control to return it to its normal state
+		/// </summary>
     protected override void OnMouseLeave(System.EventArgs ea)
     {
       IsHovering = false;
@@ -182,6 +198,9 @@ namespace Nagru___Manga_Organizer
       base.OnMouseLeave(ea);
     }
 
+		/// <summary>
+		/// Re-determines the area to highlight
+		/// </summary>
     protected override void OnMouseMove(MouseEventArgs args)
     {
       Point p = PointToClient(MousePosition);
@@ -199,6 +218,9 @@ namespace Nagru___Manga_Organizer
       base.OnMouseMove(args);
     }
 
+		/// <summary>
+		/// Sets the new progress value of the control
+		/// </summary>
     protected override void OnClick(System.EventArgs args)
     {
       Point p = PointToClient(MousePosition);
@@ -214,5 +236,25 @@ namespace Nagru___Manga_Organizer
 
       base.OnClick(args);
     }
-  }
+
+		#endregion
+
+		#region Custom Methods
+
+		/// <summary>
+		/// Returns a 'Star', cloned and transformed to the indicated position
+		/// </summary>
+		/// <param name="iX">The new X coordinate</param>
+		/// <param name="iY">The new Y coordinate</param>
+    protected GraphicsPath GetPath(int iX, int iY)
+    {
+      GraphicsPath clone = (GraphicsPath)gpStar.Clone();
+      Matrix mat = new Matrix();
+      mat.Translate(iX, iY);
+      clone.Transform(mat);
+      return clone;
+    }
+
+		#endregion
+	}
 }

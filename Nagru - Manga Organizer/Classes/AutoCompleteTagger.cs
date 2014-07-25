@@ -8,12 +8,16 @@ using System.Text;
 
 namespace Nagru___Manga_Organizer
 {
+	/// <summary>
+	/// An extended combo box that allows for multiple dropdown events based on a separator keyword
+	/// </summary>
   public class AutoCompleteTagger : TextBox
   {
-    #region Properties
+		#region Properties
+		private bool bDisposed = false;
     protected HScrollBar sbHorz;
     protected ListBox lbSuggest;
-    protected List<string> lKeyWords;
+    protected string[] asKeyWords;
     protected char cSep = ',';
 
     [Description("Sets the terms to be predicted.")]
@@ -21,12 +25,11 @@ namespace Nagru___Manga_Organizer
     {
       get
       {
-        return lKeyWords.ToArray();
+        return asKeyWords;
       }
       set
       {
-        lKeyWords.Clear();
-        lKeyWords.AddRange(value);
+				asKeyWords = value.ToArray();
       }
     }
 
@@ -43,8 +46,8 @@ namespace Nagru___Manga_Organizer
       }
     }
 
-    //Hide relevant inherited properties
-    [Browsable(false)]
+		#region Hide relevant inherited properties
+		[Browsable(false)]
     public new AutoCompleteStringCollection AutoCompleteCustomSource
     {
       get
@@ -92,9 +95,13 @@ namespace Nagru___Manga_Organizer
         base.ScrollBars = value;
       }
     }
-    #endregion
+		#endregion
 
-    public AutoCompleteTagger()
+		#endregion
+
+		#region Constructor
+
+		public AutoCompleteTagger()
     {
       sbHorz = new HScrollBar();
       sbHorz.Scroll += sbHorz_Scroll;
@@ -102,14 +109,18 @@ namespace Nagru___Manga_Organizer
       sbHorz.Hide();
 
       lbSuggest = new ListBox();
-      lKeyWords = new List<string>();
+      asKeyWords = new string[0];
       lbSuggest.MouseUp += lbSuggest_MouseUp;
       lbSuggest.MouseMove += lbSuggest_MouseMove;
       lbSuggest.VisibleChanged += lbSuggest_VisibleChanged;
       lbSuggest.Hide();
     }
+		
+		#endregion
 
-    /// <summary>
+		#region Events
+
+		/// <summary>
     /// Hook child controls to parent
     /// </summary>
     protected override void InitLayout()
@@ -119,16 +130,60 @@ namespace Nagru___Manga_Organizer
       base.InitLayout();
     }
 
+		/// <summary>
+		/// Whenever the list box becomes visible, adjust its position
+		/// </summary>
     protected void lbSuggest_VisibleChanged(object sender, EventArgs e)
     {
       if (lbSuggest.Visible) {
         SetListboxPosition();
       }
     }
+		
+		/// <summary>
+		/// Public implementation of Dispose
+		/// </summary>
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
 
+		/// <summary>
+		/// Protected implementation of Dispose
+		/// </summary>
+		/// <param name="Disposing">Whether we are calling the method from the Dispose override</param>
+    protected virtual void Dispose(bool Disposing)
+    {
+			if (bDisposed)
+				return;
+
+      if (Disposing) {
+        lbSuggest.Dispose();
+        sbHorz.Dispose();
+			}
+
+			bDisposed = true;
+    }
+
+		/// <summary>
+		/// Destructor
+		/// </summary>
+		~AutoCompleteTagger()
+		{
+			Dispose(false);
+		}
+
+		#endregion
+
+		#region Keyboard Handling
+		
+		/// <summary>
+		/// Whenever the user types, show the list box if there are any auto-complete possibilities
+		/// </summary>
     protected override void OnKeyUp(KeyEventArgs e)
     {
-      //filter out listbox controls
+      //filter out list box controls
       switch (e.KeyCode) {
         case Keys.Down:
         case Keys.Up:
@@ -149,7 +204,7 @@ namespace Nagru___Manga_Organizer
       }
       else {
         //re-pop suggestions
-        string[] asOpt = lKeyWords.Where(x => x.StartsWith(sKey)).ToArray();
+        string[] asOpt = asKeyWords.Where(x => x.StartsWith(sKey)).ToArray();
         switch (asOpt.Length) {
           case 0:
             lbSuggest.Hide();
@@ -174,6 +229,9 @@ namespace Nagru___Manga_Organizer
       base.OnKeyUp(e);
     }
 
+		/// <summary>
+		/// Handles the user selecting items in the list box with the arrow & enter keys
+		/// </summary>
     protected override void OnKeyDown(KeyEventArgs e)
     {
       //select suggestion
@@ -217,8 +275,8 @@ namespace Nagru___Manga_Organizer
 
       base.OnKeyDown(e);
     }
-
-    /// <summary>
+		
+		/// <summary>
     /// Update scrollbar as the user types
     /// </summary>
     protected override void OnTextChanged(EventArgs e)
@@ -229,7 +287,11 @@ namespace Nagru___Manga_Organizer
       base.OnTextChanged(e);
     }
 
-    /// <summary>
+		#endregion
+
+		#region Scroll Tags handling
+		
+		/// <summary>
     /// Move TxBx_Tags cursor pos. based on ScrTags value
     /// </summary>
     protected void sbHorz_Scroll(object sender, ScrollEventArgs e)
@@ -237,34 +299,32 @@ namespace Nagru___Manga_Organizer
       base.Select(sbHorz.Value, 0);
       base.ScrollToCaret();
     }
-
-    /// <summary>
-    /// Prevent autosuggest from blocking other inputs
+		
+		/// <summary>
+    /// Show\Hide scrollbar as needed
     /// </summary>
-    protected override void OnLostFocus(EventArgs e)
+    public void SetScroll()
     {
-      lbSuggest.Hide();
-      base.OnLostFocus(e);
-    }
+      int iWidth = TextRenderer.MeasureText(this.Text, this.Font).Width;
+      if (iWidth > this.Width) {
+        sbHorz.Maximum = this.Text.Length + 10;
+        sbHorz.Value = this.SelectionStart;
 
-    /// <summary>
-    /// Prevent listbox from showing when keyword changes
-    /// </summary>
-    protected override void OnClick(EventArgs e)
-    {
-      SetScroll();
-      lbSuggest.Hide();
-      base.OnClick(e);
-    }
-
-    protected override void Dispose(bool disposing)
-    {
-      if (!disposing) {
-        lbSuggest.Dispose();
-        sbHorz.Dispose();
+        //set sbHorz location
+        sbHorz.Width = Width;
+        sbHorz.Left = Left;
+        sbHorz.Top = Bottom;
+        sbHorz.Show();
       }
-      base.Dispose(disposing);
+      else if (sbHorz.Visible) {
+        int iStart = this.SelectionStart;
+        this.SelectionStart = 0;
+        this.SelectionStart = iStart;
+        sbHorz.Hide();
+      }
     }
+
+		#endregion
 
     #region Mouse Handling
 
@@ -300,6 +360,25 @@ namespace Nagru___Manga_Organizer
       lbSuggest.Hide();
       SetScroll();
       Select();
+    }
+		
+		/// <summary>
+    /// Prevent listbox from showing when keyword changes
+    /// </summary>
+    protected override void OnClick(EventArgs e)
+    {
+      SetScroll();
+      lbSuggest.Hide();
+      base.OnClick(e);
+    }
+		
+		/// <summary>
+    /// Prevent autosuggest from blocking other inputs
+    /// </summary>
+    protected override void OnLostFocus(EventArgs e)
+    {
+      lbSuggest.Hide();
+      base.OnLostFocus(e);
     }
 
     #endregion
@@ -354,30 +433,6 @@ namespace Nagru___Manga_Organizer
       lbSuggest.Left = Left;
       lbSuggest.Top = Bottom;
       lbSuggest.BringToFront();
-    }
-
-    /// <summary>
-    /// Show\Hide scrollbar as needed
-    /// </summary>
-    public void SetScroll()
-    {
-      int iWidth = TextRenderer.MeasureText(this.Text, this.Font).Width;
-      if (iWidth > this.Width) {
-        sbHorz.Maximum = this.Text.Length + 10;
-        sbHorz.Value = this.SelectionStart;
-
-        //set sbHorz location
-        sbHorz.Width = Width;
-        sbHorz.Left = Left;
-        sbHorz.Top = Bottom;
-        sbHorz.Show();
-      }
-      else if (sbHorz.Visible) {
-        int iStart = this.SelectionStart;
-        this.SelectionStart = 0;
-        this.SelectionStart = iStart;
-        sbHorz.Hide();
-      }
     }
 
     #endregion

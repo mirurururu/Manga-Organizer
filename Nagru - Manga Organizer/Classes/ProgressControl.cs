@@ -5,24 +5,29 @@ using System.Drawing.Drawing2D;
 
 namespace Nagru___Manga_Organizer
 {
+	/// <summary>
+	/// Custom control for showing progress
+	/// </summary>
   public class ProgressControl : Control
   {
     #region Properties
+		private const int iHeight = 20;
+		private const int iWidth = 70;
+		private int  iHover = 0;
+
     protected readonly GraphicsPath gpBlock;
     protected readonly Rectangle[] rcArea;
     protected readonly Pen pnOutln;
-    readonly int iHeight = 20;
-    readonly int iWidth = 70;
-
     protected Color cFill = SystemColors.MenuHighlight;
     protected Color cOutln = Color.Black;
     protected const int iOutlln = 1;
     protected int iBlocks = 5;
     protected int iStep = 0;
     protected int iPad = 5;
-    protected int iHover = 0;
 
-    public bool Hovering {
+		#region Interface
+
+		public bool Hovering {
       get;
       private set;
     }
@@ -75,9 +80,14 @@ namespace Nagru___Manga_Organizer
         }
       }
     }
+
 		#endregion
 
-    public ProgressControl()
+		#endregion
+
+		#region Constructor
+		
+		public ProgressControl()
     {
       SetStyle(ControlStyles.UserPaint, true);
       SetStyle(ControlStyles.DoubleBuffer, true);
@@ -105,7 +115,14 @@ namespace Nagru___Manga_Organizer
       gpBlock.CloseFigure();
     }
 
-    protected override void OnPaint(PaintEventArgs pe)
+		#endregion
+
+		#region Events
+		
+		/// <summary>
+		/// Draws the Control to the form
+		/// </summary>
+		protected override void OnPaint(PaintEventArgs pe)
     {
       pe.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
       pe.Graphics.Clear(BackColor);
@@ -113,15 +130,18 @@ namespace Nagru___Manga_Organizer
       Brush brFill;
       Rectangle rcDraw = new Rectangle(0, 0, iWidth, iHeight);
       for (int i = 0; i < iBlocks; i++) {
-        if (Hovering && iHover > i)
+        if (Hovering && iHover > i) {
           brFill = new LinearGradientBrush(rcDraw, cFill, BackColor,
             LinearGradientMode.ForwardDiagonal);
-        else if (!Hovering && iStep > i)
+				}
+        else if (!Hovering && iStep > i) {
           brFill = new SolidBrush(cFill);
-        else
+				}
+				else {
           brFill = new SolidBrush(BackColor);
+				}
 
-        GraphicsPath gpTmp = GetPath(gpBlock, rcDraw.X, 0);
+        GraphicsPath gpTmp = GetPath(rcDraw.X, 0);
         rcDraw.X += rcDraw.Width + iPad;
         pe.Graphics.FillPath(brFill, gpTmp);
         pe.Graphics.DrawPath(pnOutln, gpTmp);
@@ -130,15 +150,9 @@ namespace Nagru___Manga_Organizer
       base.OnPaint(pe);
     }
 
-    protected static GraphicsPath GetPath(GraphicsPath gpObj, int iX, int iY)
-    {
-      GraphicsPath clone = (GraphicsPath)gpObj.Clone();
-      Matrix mat = new Matrix();
-      mat.Translate(iX, iY);
-      clone.Transform(mat);
-      return clone;
-    }
-
+		/// <summary>
+		/// Re-draws the control to highlight the control based on the area hovered over
+		/// </summary>
     protected override void OnMouseEnter(System.EventArgs ea)
     {
       Hovering = true;
@@ -146,6 +160,9 @@ namespace Nagru___Manga_Organizer
       base.OnMouseEnter(ea);
     }
 
+		/// <summary>
+		/// Re-draws the control to return it to its normal state
+		/// </summary>
     protected override void OnMouseLeave(System.EventArgs ea)
     {
       Hovering = false;
@@ -153,6 +170,9 @@ namespace Nagru___Manga_Organizer
       base.OnMouseLeave(ea);
     }
 
+		/// <summary>
+		/// Re-determines the area to highlight
+		/// </summary>
     protected override void OnMouseMove(MouseEventArgs args)
     {
       Point p = PointToClient(MousePosition);
@@ -170,6 +190,9 @@ namespace Nagru___Manga_Organizer
       base.OnMouseMove(args);
     }
 
+		/// <summary>
+		/// Sets the new progress value of the control
+		/// </summary>
     protected override void OnClick(System.EventArgs args)
     {
       Point p = PointToClient(MousePosition);
@@ -185,5 +208,25 @@ namespace Nagru___Manga_Organizer
 
       base.OnClick(args);
     }
-  }
+
+		#endregion
+
+		#region Custom Methods
+
+		/// <summary>
+		/// Returns a 'Progress Block', cloned and transformed to the indicated position
+		/// </summary>
+		/// <param name="iX">The new X coordinate</param>
+		/// <param name="iY">The new Y coordinate</param>
+		protected GraphicsPath GetPath(int iX, int iY)
+    {
+      GraphicsPath clone = (GraphicsPath)gpBlock.Clone();
+      Matrix mat = new Matrix();
+      mat.Translate(iX, iY);
+      clone.Transform(mat);
+      return clone;
+		}
+
+		#endregion
+	}
 }
