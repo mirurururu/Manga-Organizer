@@ -180,6 +180,7 @@
 			this.LV_Entries.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.LV_Entries.FullRowSelect = true;
 			this.LV_Entries.HideSelection = false;
+			this.LV_Entries.IsMain = true;
 			this.LV_Entries.LabelWrap = false;
 			this.LV_Entries.Location = new System.Drawing.Point(0, 32);
 			this.LV_Entries.MultiSelect = false;

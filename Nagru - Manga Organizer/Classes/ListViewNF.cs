@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.Collections;
@@ -15,10 +16,17 @@ namespace Nagru___Manga_Organizer
 	{
 		#region Properties
 
+		public HashSet<int> staticColumns;
+		private int ColRating = 0;
+		private LVsorter lvSortObj;
+
+		#region Interface
 		/// <summary>
 		/// Returns whether the object is being used on the Main form page
 		/// Unlocks specific sorting behavior for the main page
 		/// </summary>
+		[DefaultValue(0)]
+		[Description("Unlocks specific sorting behavior for the main form page")]
 		public bool IsMain
 		{
 			get
@@ -31,9 +39,25 @@ namespace Nagru___Manga_Organizer
 			}
 		}
 
-		public HashSet<int> staticColumns;
-		public int RatingColumn = 0;
-		private LVsorter lvSortObj;
+		/// <summary>
+		/// The index of the Rating column, used for setting row colour
+		/// </summary>
+		[DefaultValue(0)]
+		[Description("The index of the Rating column, used for setting row colour")]
+		public int RatingColumn
+		{
+			get
+			{
+				return ColRating;
+			}
+			set
+			{
+				ColRating = value;
+			}
+		}
+
+		#endregion
+
 		#endregion
 
 		#region Constructor
@@ -115,10 +139,13 @@ namespace Nagru___Manga_Organizer
 			int iRowColorAlt = Int32.Parse(SQL.GetSetting(SQL.Setting.RowColourAlt));
 			for (int i = 0; i < this.Items.Count; i++)
 			{
-				if (IsMain && this.Items[i].SubItems[RatingColumn].Text.Length == 5)
+				if (IsMain) {
+					if (this.Items[i].SubItems[ColRating].Text.Length == 5)
+						continue;
+				}
+				else if (this.Items[i].BackColor == Color.MistyRose) {
 					continue;
-				else if (this.Items[i].BackColor == Color.MistyRose)
-					continue;
+				}
 				
 				this.Items[i].BackColor = (i % 2 != 0) ?
 					Color.FromArgb(iRowColorAlt) : SystemColors.Window;

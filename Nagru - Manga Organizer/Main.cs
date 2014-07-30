@@ -73,7 +73,7 @@ namespace Nagru___Manga_Organizer
       
       //set-up listview sorting & sizing
 			LV_Entries.staticColumns.Add(ColTags.Index);
-			LV_Entries.IsMain = true;
+			LV_Entries.RatingColumn = ColRating.Index;
       LV_Entries.Select();
     }
 
