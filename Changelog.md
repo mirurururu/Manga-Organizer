@@ -1,3 +1,6 @@
+#### v. 4.6.22 (July 30, 2014)
+	- Fixed issue with sorting listview columns
+
 #### v. 4.6.21 (July 25, 2014)
 	- Fixed check when looking for upgraded DB versions. '!=' should have been '=='.
 

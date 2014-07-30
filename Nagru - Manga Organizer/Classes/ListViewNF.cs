@@ -54,9 +54,6 @@ namespace Nagru___Manga_Organizer
       /* Enable the OnNotifyMessage event so we get a chance to filter out 
          Windows messages before they get to the form's WndProc   */
       this.SetStyle(ControlStyles.EnableNotifyMessage, true);
-
-			//override the default column click behavior
-			this.ColumnClick += ListViewNF_ColumnClick;
     }
 
 		#endregion
@@ -75,7 +72,7 @@ namespace Nagru___Manga_Organizer
 		/// <summary>
 		/// Call custom sorting whenever a column is clicked
 		/// </summary>
-		protected void ListViewNF_ColumnClick(object sender, ColumnClickEventArgs e)
+		protected override void OnColumnClick(ColumnClickEventArgs e)
 		{
 			//prevent sorting by tags
 			if (staticColumns != null && staticColumns.Contains(e.Column))
@@ -86,8 +83,7 @@ namespace Nagru___Manga_Organizer
 			else
 				lvSortObj.SwapOrder();
 
-			SortRows();
-
+			this.SortRows();
 			base.OnColumnClick(e);
 		}
 		
