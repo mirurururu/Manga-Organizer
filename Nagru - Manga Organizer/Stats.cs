@@ -14,7 +14,6 @@ namespace Nagru___Manga_Organizer
 		DataTable dtTags = null;
     SortedDictionary<string, ushort> sdtTags = new SortedDictionary<string, ushort>();
     bool bPrevState = true;
-    uint iCount = 0;
 
     public Stats()
     {
@@ -64,6 +63,7 @@ namespace Nagru___Manga_Organizer
     private void ShowStats(int iPanel)
     {
       bool bFavsOnly = ChkBx_FavsOnly.Checked;
+			int iCount = 0;
 
       //get stats of tags
       if (bFavsOnly != bPrevState) {

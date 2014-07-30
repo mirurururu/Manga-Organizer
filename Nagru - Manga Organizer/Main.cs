@@ -536,29 +536,34 @@ namespace Nagru___Manga_Organizer
     /// Update the rating of the selected manga
     /// </summary>
     private void srRating_Click(object sender, EventArgs e)
-    {
-      if (mangaID == -1 || SQL.GetMangaDetail(mangaID, SQL.Manga.Rating) == srRating.SelectedStar.ToString())
-        return;
+		{
+			if (mangaID != -1) {
+				MnTS_Edit.Visible = true;
+			}
+			MnTS_Clear.Visible = true;
+			////update rating
+			//SQL.UpdateRating(mangaID, srRating.SelectedStar);
+			//LV_Entries.SelectedItems[0].SubItems[ColRating.Index].Text =
+			//		RatingFormat(srRating.SelectedStar);
 
-      //update rating
-      SQL.UpdateRating(mangaID, srRating.SelectedStar);
-      LV_Entries.SelectedItems[0].SubItems[ColRating.Index].Text =
-          RatingFormat(srRating.SelectedStar);
-
-      //set BackColor
-      if (SQL.GetMangaDetail(mangaID, SQL.Manga.Rating) == "5") {
-        LV_Entries.FocusedItem.BackColor = Color.FromArgb(
-          Int32.Parse(SQL.GetSetting(SQL.Setting.RowColourHighlight)));
-      }
-      else {
-        if (LV_Entries.FocusedItem.Index % 2 == 0) {
-          LV_Entries.FocusedItem.BackColor = Color.FromArgb(
-            Int32.Parse(SQL.GetSetting(SQL.Setting.RowColourAlt)));
-        }
-        else {
-          LV_Entries.FocusedItem.BackColor = SystemColors.Window;
-        }
-      }
+			////set BackColor
+			//if (SQL.GetMangaDetail(mangaID, SQL.Manga.Rating) == "5")
+			//{
+			//	LV_Entries.FocusedItem.BackColor = Color.FromArgb(
+			//		Int32.Parse(SQL.GetSetting(SQL.Setting.RowColourHighlight)));
+			//}
+			//else
+			//{
+			//	if (LV_Entries.FocusedItem.Index % 2 == 0)
+			//	{
+			//		LV_Entries.FocusedItem.BackColor = Color.FromArgb(
+			//			Int32.Parse(SQL.GetSetting(SQL.Setting.RowColourAlt)));
+			//	}
+			//	else
+			//	{
+			//		LV_Entries.FocusedItem.BackColor = SystemColors.Window;
+			//	}
+			//}
     }
 
     /// <summary>
@@ -1224,7 +1229,17 @@ namespace Nagru___Manga_Organizer
         if (srRating.SelectedStar == 5) {
           lvi.BackColor = Color.FromArgb(Int32.Parse(SQL.GetSetting(SQL.Setting.RowColourHighlight)));
         }
+				else {
+					if (LV_Entries.FocusedItem.Index % 2 == 0) {
+						LV_Entries.FocusedItem.BackColor = Color.FromArgb(
+							Int32.Parse(SQL.GetSetting(SQL.Setting.RowColourAlt)));
+					}
+					else {
+						LV_Entries.FocusedItem.BackColor = SystemColors.Window;
+					}
+				}
 				acTxBx_Tags.Text = SQL.GetMangaDetail(mangaID, SQL.Manga.Tags);
+				lvi.SubItems[ColRating.Index].Text = RatingFormat(srRating.SelectedStar);
         lvi.SubItems[ColArtist.Index].Text = CmbBx_Artist.Text;
         lvi.SubItems[ColTitle.Index].Text = acTxBx_Title.Text;
         lvi.SubItems[ColPages.Index].Text = Nud_Pages.Value.ToString();
@@ -1233,6 +1248,9 @@ namespace Nagru___Manga_Organizer
         lvi.SubItems[ColType.Index].Text = CmbBx_Type.Text;
         ReFocus();
       }
+			else {
+				LV_Entries.Items.RemoveAt(LV_Entries.FocusedItem.Index);
+			}
 			
 			LV_Entries.SortRows();
       MnTS_Edit.Visible = false;

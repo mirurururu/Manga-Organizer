@@ -19,6 +19,7 @@ namespace Nagru___Manga_Organizer
 		public HashSet<int> staticColumns;
 		private int ColRating = 0;
 		private LVsorter lvSortObj;
+		private static readonly Color cRowColorAlt;
 
 		#region Interface
 		/// <summary>
@@ -80,6 +81,15 @@ namespace Nagru___Manga_Organizer
       this.SetStyle(ControlStyles.EnableNotifyMessage, true);
     }
 
+		/// <summary>
+		/// Set the row color to be used for alternating backgrounds
+		/// This value is application-scoped, so it only needs to be loaded once
+		/// </summary>
+		static ListViewNF()
+		{
+			cRowColorAlt = Color.FromArgb(Int32.Parse(SQL.GetSetting(SQL.Setting.RowColourAlt)));
+		}
+
 		#endregion
 
 		#region Overrides
@@ -133,9 +143,7 @@ namespace Nagru___Manga_Organizer
 		public void Alternate()
 		{
 			this.BeginUpdate();
-			int iRowColorAlt = Int32.Parse(SQL.GetSetting(SQL.Setting.RowColourAlt));
-			for (int i = 0; i < this.Items.Count; i++)
-			{
+			for (int i = 0; i < this.Items.Count; i++) {
 				if (IsMain) {
 					if (this.Items[i].SubItems[ColRating].Text.Length == 5)
 						continue;
@@ -145,7 +153,7 @@ namespace Nagru___Manga_Organizer
 				}
 				
 				this.Items[i].BackColor = (i % 2 != 0) ?
-					Color.FromArgb(iRowColorAlt) : SystemColors.Window;
+					cRowColorAlt : SystemColors.Window;
 			}
 			this.EndUpdate();
 		}
@@ -170,7 +178,7 @@ namespace Nagru___Manga_Organizer
 		{
 			#region Properties
 
-			#region Settings
+			#region Interface
 			/// <summary>
 			/// Enables custom sorting order for the main form
 			/// </summary>
