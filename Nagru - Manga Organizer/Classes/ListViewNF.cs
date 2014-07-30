@@ -132,9 +132,6 @@ namespace Nagru___Manga_Organizer
 		/// </summary>
 		public void Alternate()
 		{
-			if (SQL.GetSetting(SQL.Setting.ShowGrid) == "1")
-				return;
-
 			this.BeginUpdate();
 			int iRowColorAlt = Int32.Parse(SQL.GetSetting(SQL.Setting.RowColourAlt));
 			for (int i = 0; i < this.Items.Count; i++)

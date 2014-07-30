@@ -11,8 +11,8 @@ namespace Nagru___Manga_Organizer
   /* Show how many times a tag is used */
   public partial class Stats : Form
   {
-    DataTable dt = null;
-    SortedDictionary<string, ushort> dtTags = new SortedDictionary<string, ushort>();
+		DataTable dtTags = null;
+    SortedDictionary<string, ushort> sdtTags = new SortedDictionary<string, ushort>();
     bool bPrevState = true;
     uint iCount = 0;
 
@@ -20,7 +20,8 @@ namespace Nagru___Manga_Organizer
     {
       InitializeComponent();
       this.Icon = Properties.Resources.dbIcon;
-      dt = SQL.GetAllEntries();
+			dtTags = SQL.GetAllEntries();
+			ResizeLV();
     }
 
     private void Stats_Load(object sender, EventArgs e)
@@ -67,17 +68,17 @@ namespace Nagru___Manga_Organizer
       //get stats of tags
       if (bFavsOnly != bPrevState) {
         iCount = 0;
-        dtTags.Clear();
-        for (int i = 0; i < dt.Rows.Count; i++) {
+        sdtTags.Clear();
+				for (int i = 0; i < dtTags.Rows.Count; i++) {
           if (bFavsOnly
-              && Convert.ToDecimal(dt.Rows[i]["Rating"].ToString()) < 5)
+							&& Convert.ToDecimal(dtTags.Rows[i]["Rating"].ToString()) < 5)
             continue;
-          foreach (string svar in dt.Rows[i]["Tags"].ToString().Split(',')) {
+					foreach (string svar in dtTags.Rows[i]["Tags"].ToString().Split(',')) {
             string sItem = svar.TrimStart();
-            if (dtTags.ContainsKey(sItem))
-              dtTags[sItem]++;
+            if (sdtTags.ContainsKey(sItem))
+              sdtTags[sItem]++;
             else
-              dtTags.Add(sItem, 1);
+              sdtTags.Add(sItem, 1);
           }
           iCount++;
         }
@@ -87,7 +88,7 @@ namespace Nagru___Manga_Organizer
         //purge minority tags
         SortedDictionary<string, ushort> dtPie = new SortedDictionary<string, ushort>();
         dtPie.Add("_MO_Other_", 0);
-        foreach (KeyValuePair<string, ushort> kvpItem in dtTags) {
+        foreach (KeyValuePair<string, ushort> kvpItem in sdtTags) {
           if ((kvpItem.Value * 1.0 / iCount) < 0.05)
             dtPie["_MO_Other_"] += kvpItem.Value;
           else
@@ -103,8 +104,8 @@ namespace Nagru___Manga_Organizer
         //send stats to listview
         lvStats.BeginUpdate();
         lvStats.Items.Clear();
-        List<ListViewItem> lItems = new List<ListViewItem>(dtTags.Count + 1);
-        foreach (KeyValuePair<string, ushort> kvpItem in dtTags) {
+        List<ListViewItem> lItems = new List<ListViewItem>(sdtTags.Count + 1);
+        foreach (KeyValuePair<string, ushort> kvpItem in sdtTags) {
           ListViewItem lvi = new ListViewItem(kvpItem.Key);
           lvi.SubItems.Add(kvpItem.Value.ToString());
           lvi.SubItems.Add((kvpItem.Value * 1.0 / iCount).ToString("P2"));
@@ -115,12 +116,12 @@ namespace Nagru___Manga_Organizer
         lvStats.EndUpdate();
       }
 
-      Text = string.Format("Stats: {0} tags in {1} manga", dtTags.Count, iCount);
+      Text = string.Format("Stats: {0} tags in {1} manga", sdtTags.Count, iCount);
       bPrevState = bFavsOnly;
     }
 
-    private void lvStats_Resize(object sender, EventArgs e)
-    {
+		private void ResizeLV()
+		{
       lvStats.BeginUpdate();
       int iColWidth = 0;
       for (int i = 0; i < lvStats.Columns.Count; i++)
@@ -128,6 +129,11 @@ namespace Nagru___Manga_Organizer
 
       colTag.Width += lvStats.DisplayRectangle.Width - iColWidth;
       lvStats.EndUpdate();
+		}
+
+    private void lvStats_Resize(object sender, EventArgs e)
+    {
+			ResizeLV();
     }
 
     private void lvStats_ColumnWidthChanging(object sender, ColumnWidthChangingEventArgs e)
@@ -138,8 +144,8 @@ namespace Nagru___Manga_Organizer
 
     private void Stats_FormClosing(object sender, FormClosingEventArgs e)
     {
-      if (dt != null) {
-        dt.Dispose();
+			if (dtTags != null) {
+				dtTags.Dispose();
       }
 
       this.DialogResult = DialogResult.OK;

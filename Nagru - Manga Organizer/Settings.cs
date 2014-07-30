@@ -42,6 +42,11 @@ namespace Nagru___Manga_Organizer
       Btn_Save.FlatAppearance.BorderColor = Color.Green;
     }
 
+		private void Settings_Shown(object sender, EventArgs e)
+		{
+			bSave = true;
+		}
+
     private void aTxBx_Save_Click(object sender, EventArgs e)
     {
       FolderBrowserDialog fbd = new FolderBrowserDialog();
@@ -207,11 +212,12 @@ namespace Nagru___Manga_Organizer
 
     private void Settings_FormClosing(object sender, FormClosingEventArgs e)
     {
-      if (!bSave && MessageBox.Show(
-          "Are you sure you want to exit wthout saving?",
-          Application.ProductName, MessageBoxButtons.YesNo,
-          MessageBoxIcon.Question) == DialogResult.No) {
-        e.Cancel = true;
+      if (!bSave){
+				if(MessageBox.Show("Are you sure you want to exit without saving?",
+						Application.ProductName, MessageBoxButtons.YesNo,
+						MessageBoxIcon.Question) == DialogResult.No) {
+					e.Cancel = true;
+				}
       }
       else {
         this.DialogResult = DialogResult.Yes;

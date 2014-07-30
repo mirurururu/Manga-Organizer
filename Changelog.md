@@ -1,6 +1,7 @@
-#### v. 4.6.23 (July 30, 2014)
+#### v. 4.6.24 (July 30, 2014)
 	- Fixed issue with sorting listview columns
 	- Ensured column highlighting is properly respected when not using the grid display mode
+	- Other small updates
 
 #### v. 4.6.21 (July 25, 2014)
 	- Fixed check when looking for upgraded DB versions. '!=' should have been '=='.

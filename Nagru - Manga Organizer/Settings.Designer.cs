@@ -39,6 +39,7 @@
 			this.lblIntv = new System.Windows.Forms.Label();
 			this.lblIgnored = new System.Windows.Forms.Label();
 			this.grBxToggle = new System.Windows.Forms.GroupBox();
+			this.ChkBx_Email = new System.Windows.Forms.CheckBox();
 			this.ChkBx_Date = new System.Windows.Forms.CheckBox();
 			this.ChkBx_Gridlines = new System.Windows.Forms.CheckBox();
 			this.ckLbx_Ign = new System.Windows.Forms.CheckedListBox();
@@ -47,7 +48,6 @@
 			this.aTxBx_Save = new Nagru___Manga_Organizer.AutoCompleteTagger();
 			this.aTxBx_Prog = new Nagru___Manga_Organizer.AutoCompleteTagger();
 			this.aTxBx_Root = new Nagru___Manga_Organizer.AutoCompleteTagger();
-			this.ChkBx_Email = new System.Windows.Forms.CheckBox();
 			((System.ComponentModel.ISupportInitialize)(this.Nud_Intv)).BeginInit();
 			this.MnAct.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.picBx_Colour)).BeginInit();
@@ -166,6 +166,18 @@
 			this.grBxToggle.TabStop = false;
 			this.grBxToggle.Text = "Defaults";
 			// 
+			// ChkBx_Email
+			// 
+			this.ChkBx_Email.AutoSize = true;
+			this.ChkBx_Email.ContextMenuStrip = this.MnAct;
+			this.ChkBx_Email.Location = new System.Drawing.Point(15, 74);
+			this.ChkBx_Email.Name = "ChkBx_Email";
+			this.ChkBx_Email.Size = new System.Drawing.Size(116, 17);
+			this.ChkBx_Email.TabIndex = 3;
+			this.ChkBx_Email.Text = "Send error reports?";
+			this.ChkBx_Email.UseVisualStyleBackColor = true;
+			this.ChkBx_Email.CheckedChanged += new System.EventHandler(this.ChkBx_Defaults_CheckedChanged);
+			// 
 			// ChkBx_Date
 			// 
 			this.ChkBx_Date.AutoSize = true;
@@ -259,18 +271,6 @@
 			this.aTxBx_Root.Click += new System.EventHandler(this.aTxBx_Root_Click);
 			this.aTxBx_Root.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TxBx_KeyPress);
 			// 
-			// ChkBx_Email
-			// 
-			this.ChkBx_Email.AutoSize = true;
-			this.ChkBx_Email.ContextMenuStrip = this.MnAct;
-			this.ChkBx_Email.Location = new System.Drawing.Point(15, 74);
-			this.ChkBx_Email.Name = "ChkBx_Email";
-			this.ChkBx_Email.Size = new System.Drawing.Size(116, 17);
-			this.ChkBx_Email.TabIndex = 3;
-			this.ChkBx_Email.Text = "Send error reports?";
-			this.ChkBx_Email.UseVisualStyleBackColor = true;
-			this.ChkBx_Email.CheckedChanged += new System.EventHandler(this.ChkBx_Defaults_CheckedChanged);
-			// 
 			// Settings
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -297,6 +297,7 @@
 			this.Text = "Settings";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Settings_FormClosing);
 			this.Load += new System.EventHandler(this.Settings_Load);
+			this.Shown += new System.EventHandler(this.Settings_Shown);
 			((System.ComponentModel.ISupportInitialize)(this.Nud_Intv)).EndInit();
 			this.MnAct.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.picBx_Colour)).EndInit();
