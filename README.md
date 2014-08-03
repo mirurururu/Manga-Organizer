@@ -5,7 +5,7 @@ Manga-Organizer
 
 <p align="justify">It basically provides semi-automated metadata for your manga, EH-style searches, and the option to use a built-in 2-page image browser. When first ran, either press the 'Scan' button or drag your folders/archives onto the listview. This will fill out the artist, title, and page count fields. Other tags can be loaded from an EH gallery URL, dragged into the 'Tags' textbox, or added manually.</p>
 
-If this sounds useful to you, please give it a shot: <a href="https://dl.dropboxusercontent.com/u/103899726/Manga%20Organizer.exe">Download</a>
+If this sounds useful to you, please give it a shot: <a href="https://cloud.openmailbox.org/public.php?service=files&t=e0241b31d87a889ab73add19741ca5ec&download">Download</a>
 
 For examples of it running see: <a href="https://raw.github.com/Nagru/Manga-Organizer/master/Nagru - Manga Organizer/Resources/Prv_Browse.png" target="_blank">Browse</a>, <a href="https://raw.github.com/Nagru/Manga-Organizer/master/Nagru - Manga Organizer/Resources/Prv_View.jpg" target="_blank">View</a>, & <a href="https://raw.github.com/Nagru/Manga-Organizer/master/Nagru - Manga Organizer/Resources/Prv_Notes.png" target="_blank">Notes</a>
 <br><br><hr>
