@@ -33,7 +33,7 @@ namespace Nagru___Manga_Organizer
       for (int i = 0; i < sRaw.Length - 1; i++)
         hsIgnore.Add(sRaw[i]);
 
-      using (DataTable dt = SQL.GetAllEntries()) {
+      using (DataTable dt = SQL.GetAllManga()) {
         for (int i = 0; i < dt.Rows.Count; i++)
           hsPaths.Add(dt.Rows[i]["Location"].ToString());
       }

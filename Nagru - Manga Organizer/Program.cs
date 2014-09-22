@@ -12,11 +12,10 @@ namespace Nagru___Manga_Organizer
     {
       //load in embedded dlls
       const string resx = "Nagru___Manga_Organizer.Resources.";
-      string[] dll = new string[4] { 
+      string[] dll = new string[3] { 
         "System.Data.SQLite.dll", 
         "SharpCompress.dll", 
-        "Newtonsoft.Json.dll",
-        "ImageListView.dll"
+        "Newtonsoft.Json.dll"
 			};
       for (int i = 0; i < dll.Length; i++) {
         EmbeddedAssembly.Load(resx + dll[i], dll[i]);

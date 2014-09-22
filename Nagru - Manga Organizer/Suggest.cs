@@ -44,8 +44,11 @@ namespace Nagru___Manga_Organizer
       tsbtnHelp.Image = SystemIcons.Information.ToBitmap();
 
       //input user credentials
+      string memberID = SQL.GetSetting(SQL.Setting.member_id);
       txbxPass.Text = SQL.GetSetting(SQL.Setting.pass_hash);
-      txbxID.Text = SQL.GetSetting(SQL.Setting.member_id);
+      if(memberID != "-1") {
+        txbxID.Text = SQL.GetSetting(SQL.Setting.member_id);
+      }
 
       //auto-format search terms where applicable
       if (sTrySearch.Contains("[")) {

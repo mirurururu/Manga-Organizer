@@ -178,6 +178,19 @@ namespace Nagru___Manga_Organizer
       return sb.ToString();
     }
 
+		/// <summary>
+		/// Adds text to a control
+		/// </summary>
+		/// <param name="c">The control to alter</param>
+		/// <param name="sAdd">The text to add</param>
+		/// <param name="iStart">The start point to insert from</param>
+		/// <returns></returns>
+		public static int InsertText(System.Windows.Forms.Control c, string sAdd, int iStart)
+		{
+			c.Text = c.Text.Insert(iStart, sAdd);
+			return iStart + sAdd.Length;
+		}
+
     /// <summary>
     /// Parses the input string into Artist and Title variables
     /// </summary>
@@ -216,6 +229,15 @@ namespace Nagru___Manga_Organizer
       }
       return asName;
     }
+
+		/// <summary>
+		/// Convert number to string of stars
+		/// </summary>
+		/// <param name="iRating"></param>
+		public static string RatingFormat(int iRating)
+		{
+			return new string('☆', iRating);
+		}
 
     /// <summary>
     /// Tries to find an incorrect filepath relative to the executable

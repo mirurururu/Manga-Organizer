@@ -19,7 +19,7 @@ namespace Nagru___Manga_Organizer
     {
       InitializeComponent();
       this.Icon = Properties.Resources.dbIcon;
-			dtTags = SQL.GetAllEntries();
+			dtTags = SQL.GetAllManga();
 			ResizeLV();
     }
 

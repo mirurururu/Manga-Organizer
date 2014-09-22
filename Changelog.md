@@ -1,3 +1,8 @@
+#### v. 4.6.27 (September 22, 2014)
+  - Updated to prevent gibberish EH memberIDs
+  - Removed the error messaging code
+  - Other house-cleaning
+
 #### v. 4.6.25 (July 30, 2014)
 	- Fixed issue with sorting listview columns
 	- Ensured column highlighting is properly respected when not using the grid display mode

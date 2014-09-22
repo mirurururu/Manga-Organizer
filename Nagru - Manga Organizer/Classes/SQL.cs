@@ -272,14 +272,21 @@ namespace Nagru___Manga_Organizer
       return sVal;
     }
 
-    /// <summary>
-    /// Returns the details of every manga in the database
-    /// </summary>
-    /// <param name="OnlyFavourites">Only return entries with a rating of 5.0?</param>
-		public static DataTable GetAllEntries(bool OnlyFavourites = false)
-    {
-			return SQLAccess.GetEntries(OnlyFavourites);
-    }
+		/// <summary>
+		/// Returns the details of every manga in the database
+		/// </summary>
+		/// <param name="OnlyFavourites">Only return entries with a rating of 5.0?</param>
+		/// <param name="SearchText">The user search parameters to compare against</param>
+		/// <param name="mangaID">Can search for only a specific manga</param>
+		public static DataTable GetAllManga(bool OnlyFavourites = false, string SearchText = null, int MangaID = -1)
+		{
+			if(!string.IsNullOrEmpty(SearchText)) {
+				return SQLAccess.DB_Search(SearchText, OnlyFavourites, MangaID);
+			}
+			else {
+				return SQLAccess.GetEntries(OnlyFavourites);
+			}
+		}
 
     #region Search Database
 
@@ -291,17 +298,6 @@ namespace Nagru___Manga_Organizer
     public static bool ContainsEntry(string Artist, string Title)
     {
 			return SQLAccess.EntryExists(Artist, Title);
-    }
-
-    /// <summary>
-    /// Uses EH-like parameters to search the DB for matching manga
-    /// </summary>
-    /// <param name="SearchTerms">The raw search terms</param>
-		/// <param name="OnlyFavourites">Only return entries with a rating of 5.0?</param>
-    /// <param name="MangaID">Check a specific manga to see if it matches the conditions</param>
-		public static DataTable Search(string SearchTerms, bool OnlyFavourites = false, int MangaID = -1)
-    {
-			return SQLAccess.DB_Search(SearchTerms, OnlyFavourites, MangaID);
     }
 
     #endregion
@@ -1182,18 +1178,29 @@ namespace Nagru___Manga_Organizer
 			/// <summary>
 			/// Returns all the Tags in the database
 			/// </summary>
-			internal static DataTable GetTags()
+			internal static DataTable GetTags(bool bOnlyFavourites = false)
 			{
 				string sCommandText = @"
 					select
 							tg.TagID
 						,tg.Tag
+						,(
+							select 
+								count(1) 
+							from MangaTag mt 
+							join Manga mg on mt.MangaID = mg.MangaID
+							where 
+								tg.TagID = mt.TagID
+							and
+								(@rating is 0 or mg.Rating = @rating)
+						)
 					from
 						[Tag] tg
 					order by tg.Tag asc
 				";
+				SQLiteParameter sqParam = SQLBase.NewParameter("rating", DbType.Decimal, bOnlyFavourites ? 5 : 0);
 
-				return sqlBase.ExecuteQuery(sCommandText);
+				return sqlBase.ExecuteQuery(sCommandText, CommandBehavior.Default, sqParam);
 			}
 
 			/// <summary>
@@ -1317,9 +1324,12 @@ namespace Nagru___Manga_Organizer
 					case Setting.SendReports:
 					case Setting.ShowDate:
 					case Setting.ShowGrid:
-						sqParam = new SQLiteParameter("@value", DbType.Int32) {
-							Value = value
-						};
+            int iConvertedValue;
+            if (int.TryParse(value.ToString().Trim(), out iConvertedValue)) {
+						  sqParam = new SQLiteParameter("@value", DbType.Int32) {
+                Value = iConvertedValue
+						  };
+            }
 						break;
 					case Setting.FormPosition:
 					case Setting.GallerySettings:
@@ -1330,7 +1340,7 @@ namespace Nagru___Manga_Organizer
 					case Setting.SavePath:
 					case Setting.SearchIgnore:
 						sqParam = new SQLiteParameter("@value", DbType.String) {
-							Value = value
+							Value = value.ToString()
 						};
 						break;
 				}

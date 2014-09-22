@@ -91,15 +91,6 @@ namespace Nagru___Manga_Organizer.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to j%GxlpX10!h0*gCJ3B7bQAEpib%na$Ru.
-        /// </summary>
-        internal static string mail {
-            get {
-                return ResourceManager.GetString("mail", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap Search {
