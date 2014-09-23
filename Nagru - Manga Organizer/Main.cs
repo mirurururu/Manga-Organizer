@@ -1199,8 +1199,8 @@ namespace Nagru___Manga_Organizer
       //ensure deletion is intentional
       string msg = "";
       string sLoc = SQL.GetMangaDetail(mangaID, SQL.Manga.Location);
-      bool bFile = false, bRst = true;
-      if ((bRst = Ext.Accessible(sLoc)))
+      bool bFile = false, bFolder = true;
+      if ((bFolder = Ext.Accessible(sLoc)))
         msg = "Do you want to delete the source directory as well?";
       else if (bFile = File.Exists(sLoc))
         msg = "Do you want to delete the source file as well?";
@@ -1208,12 +1208,12 @@ namespace Nagru___Manga_Organizer
         msg = "Are you sure you wish to delete this entry?";
       DialogResult dResult = MessageBox.Show(msg, Application.ProductName,
           MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
-      if ((bRst && !bFile) && dResult == DialogResult.No)
+      if ((!bFolder && !bFile) && dResult == DialogResult.No)
         dResult = DialogResult.Cancel;
 
       //delete source file\directory
       if (dResult == DialogResult.Yes) {
-        if (bRst) {
+        if (bFolder) {
           //warn user before deleting subdirectories
           int iNumDir = Directory.GetDirectories(sLoc).Length;
           if (iNumDir > 0) {
@@ -1697,14 +1697,19 @@ namespace Nagru___Manga_Organizer
               acTxBx_Title, sAdd, acTxBx_Title.SelectionStart);
           break;
         case "acTxBx_Tags":
-          if (sAdd.Contains("\r")) {
-            IEnumerable<string> ie = sAdd.Split('(', '\n');
-            ie = ie.Where(s => !s.EndsWith("\r") && !s.EndsWith(")") && !s.Equals(""));
-            ie = ie.Select(s => s.TrimEnd());
-            sAdd = string.Join(", ", ie.ToArray());
-          }
-					acTxBx_Tags.SelectionStart = Ext.InsertText(
+          if (sAdd.Contains("\r\n")) {
+            List<string> lTags = new List<string>(20);
+            lTags.AddRange(Ext.Split(sAdd, "\r\n"));
+            lTags.AddRange(Ext.Split(acTxBx_Tags.Text, ","));
+            lTags = lTags.Select(s => s.Trim())
+              .Distinct<string>()
+              .OrderBy(s => s)
+              .ToList<string>();
+            acTxBx_Tags.Text = string.Join(", ", lTags);
+          } else {
+            acTxBx_Tags.SelectionStart = Ext.InsertText(
               acTxBx_Tags, sAdd, acTxBx_Tags.SelectionStart);
+          }
           break;
         case "TxBx_Search":
           string[] asTitle = Ext.ParseGalleryTitle(sAdd);

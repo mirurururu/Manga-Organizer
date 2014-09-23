@@ -149,16 +149,15 @@ namespace Nagru___Manga_Organizer
     /// <remarks>Based on Hupotronics' ExLinks</remarks>
     private class csEHAPI
     {
-      public string method;
+      public string method = "gdata";
       public object[][] gidlist;
 
       public csEHAPI(string URL) {
-        string[] asChunk = URL.Split('/');
-        method = "gdata";
+        string[] asChunk = Ext.Split(URL, "/");
 
-        if (asChunk.Length == 7) {
+        if (asChunk.Length == 5) {
           gidlist = new object[1][];
-          gidlist[0] = new object[2] { int.Parse(asChunk[4]), asChunk[5] };
+          gidlist[0] = new object[2] { int.Parse(asChunk[3]), asChunk[4] };
         }
       }
     }
@@ -212,6 +211,8 @@ namespace Nagru___Manga_Organizer
           torrentcount	= Int32.Parse(JsonObject.gmetadata[0].torrentcount.Value.ToString());
           tags					= (JsonObject.gmetadata[0].tags as JArray).Select(x => (string)x).ToArray();
         } catch (JsonReaderException exc) {
+          Console.WriteLine(exc.Message);
+        } catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException exc) {
           Console.WriteLine(exc.Message);
         }
       }
