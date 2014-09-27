@@ -1,13 +1,10 @@
 ﻿using System;
-using System.IO;
-using System.Net;
-using System.Text;
-using System.Linq;
 using System.Collections.Generic;
-using System.Security.Permissions;
-using System.Text.RegularExpressions;
-using System.Drawing.Drawing2D;
 using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Security.Permissions;
+using System.Text;
 
 
 namespace Nagru___Manga_Organizer
@@ -121,22 +118,18 @@ namespace Nagru___Manga_Organizer
 			List<string> lFiles = new List<string>(10000);
 			string[] sFilters = Filter.Split('|');
 
-			try
-			{
-				for (int i = 0; i < sFilters.Length; i++)
-				{
-					lFiles.AddRange(Directory.EnumerateFiles(SourceFolder,
-					sFilters[i], SearchOption));
-				}
-			}
-			catch (ArgumentException)
-			{
-				Console.WriteLine("Invalid characters in path:\n" + SourceFolder);
-			}
-			catch (UnauthorizedAccessException)
-			{
-				Console.WriteLine("User does not have access to:\n" + SourceFolder);
-			}
+      try {
+        for (int i = 0; i < sFilters.Length; i++) {
+          lFiles.AddRange(Directory.EnumerateFiles(SourceFolder,
+          sFilters[i], SearchOption));
+        }
+      } catch (ArgumentException) {
+        Console.WriteLine("Invalid characters in path:\n" + SourceFolder);
+      } catch (UnauthorizedAccessException) {
+        Console.WriteLine("User does not have access to:\n" + SourceFolder);
+      } catch (Exception ex) {
+        Console.WriteLine(ex.Message);
+      }
 
 			lFiles.Sort(new TrueCompare());
 			return lFiles.ToArray();

@@ -1,3 +1,7 @@
+#### v. 4.6.30 (September 26, 2014)
+  - Fixed an issue where closing the scan form, mid-scanning, would cause an exception
+  - Updated a filepath check to be case insensitive
+
 #### v. 4.6.28 (September 23, 2014)
   - Updated the drag-drop tag code to match EHs new format, auto-sort, and ignore duplicates
 

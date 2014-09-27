@@ -1,9 +1,10 @@
 ﻿using System;
-using System.IO;
+using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.IO;
+using System.Threading;
 using System.Windows.Forms;
-using System.Collections.Generic;
 
 namespace Nagru___Manga_Organizer
 {
@@ -12,6 +13,7 @@ namespace Nagru___Manga_Organizer
     private delegate void DelVoidEntry(Main.csEntry en);
     public delegate void DelVoid();
     public DelVoid delNewEntry, delDone;
+    bool bIsClosing = false;
 
     HashSet<string> hsPaths = new HashSet<string>(),
       hsIgnore = new HashSet<string>();
@@ -79,7 +81,9 @@ namespace Nagru___Manga_Organizer
         LV_Found.ListViewItemSorter = null;
         this.Text = "Scan";
 
-        System.Threading.ThreadPool.QueueUserWorkItem(ScanDir, TxBx_Loc.Text);
+        Thread trdScan = new Thread(ScanDir);
+        trdScan.IsBackground = true;
+        trdScan.Start(TxBx_Loc.Text);
       }
       else
         MessageBox.Show("Cannot read from the selected folder path.",
@@ -95,20 +99,27 @@ namespace Nagru___Manga_Organizer
 
       try {
         lEns.AddRange(Directory.EnumerateDirectories(
-            obj as string, "*", SearchOption.AllDirectories));
-      } catch (UnauthorizedAccessException ex) {
-        MessageBox.Show(ex.Message, Application.ProductName,
-            MessageBoxButtons.OK, MessageBoxIcon.Error);
+          obj as string, "*", SearchOption.AllDirectories));
       } catch (ArgumentException) {
-        Console.WriteLine("An invalid object got passed through!\n");
+        Console.WriteLine("An invalid object got passed through!");
+      } catch (UnauthorizedAccessException) {
+        MessageBox.Show("User does not have access to one of the folders/files scanned!",
+          Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+      } catch (Exception ex) {
+        MessageBox.Show(ex.Message, Application.ProductName,
+          MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
 
-      for (int i = 0; i < lEns.Count; i++) {
+      int i = 0;
+      while (i < lEns.Count && !bIsClosing) {
         if (!hsPaths.Contains(lEns[i]))
           BeginInvoke(new DelVoidEntry(AddItem),
-              new Main.csEntry(lEns[i]));
+            new Main.csEntry(lEns[i]));
+        i++;
       }
-      BeginInvoke(new DelVoid(SetFoundItems));
+      if (!bIsClosing) {
+        BeginInvoke(new DelVoid(SetFoundItems));
+      }
     }
 
     /* Add new item to listview */
@@ -276,6 +287,8 @@ namespace Nagru___Manga_Organizer
 
     private void Scan_FormClosing(object sender, FormClosingEventArgs e)
     {
+      bIsClosing = true;
+
       //preserve ignored items
       string sNew = "";
       foreach (string svar in hsIgnore)

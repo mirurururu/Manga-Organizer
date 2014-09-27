@@ -16,7 +16,6 @@
 
 using System;
 using System.IO;
-using System.Net;
 using System.Linq;
 using System.Data;
 using System.Drawing;
@@ -493,29 +492,6 @@ namespace Nagru___Manga_Organizer
 				MnTS_Edit.Visible = true;
 			}
 			MnTS_Clear.Visible = true;
-			////update rating
-			//SQL.UpdateRating(mangaID, srRating.SelectedStar);
-			//LV_Entries.SelectedItems[0].SubItems[ColRating.Index].Text =
-			//		RatingFormat(srRating.SelectedStar);
-
-			////set BackColor
-			//if (SQL.GetMangaDetail(mangaID, SQL.Manga.Rating) == "5")
-			//{
-			//	LV_Entries.FocusedItem.BackColor = Color.FromArgb(
-			//		Int32.Parse(SQL.GetSetting(SQL.Setting.RowColourHighlight)));
-			//}
-			//else
-			//{
-			//	if (LV_Entries.FocusedItem.Index % 2 == 0)
-			//	{
-			//		LV_Entries.FocusedItem.BackColor = Color.FromArgb(
-			//			Int32.Parse(SQL.GetSetting(SQL.Setting.RowColourAlt)));
-			//	}
-			//	else
-			//	{
-			//		LV_Entries.FocusedItem.BackColor = SystemColors.Window;
-			//	}
-			//}
     }
 
     /// <summary>
@@ -952,10 +928,10 @@ namespace Nagru___Manga_Organizer
 
           List<string> lEntries = new List<string>(iCount);
           for (int i = 0; i < iCount; i++) {
-            if (scEntries[i].FilePath.EndsWith("jpg")
-                || scEntries[i].FilePath.EndsWith("jpeg")
-                || scEntries[i].FilePath.EndsWith("png")
-                || scEntries[i].FilePath.EndsWith("bmp"))
+            if (scEntries[i].FilePath.EndsWith("jpg", StringComparison.OrdinalIgnoreCase)
+                || scEntries[i].FilePath.EndsWith("jpeg", StringComparison.OrdinalIgnoreCase)
+                || scEntries[i].FilePath.EndsWith("png", StringComparison.OrdinalIgnoreCase)
+                || scEntries[i].FilePath.EndsWith("bmp", StringComparison.OrdinalIgnoreCase))
               lEntries.Add(scEntries[i].FilePath);
           }
           if (lEntries.Count > 0) {
