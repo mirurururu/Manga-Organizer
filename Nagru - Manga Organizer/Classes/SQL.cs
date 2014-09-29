@@ -19,7 +19,7 @@ namespace Nagru___Manga_Organizer
 		public delegate void DelVoidInt(int i);
     public static DelVoidInt delProgress = null;
 		private static SQLBase sqlBase = null;
-    private static bool Transaction = false;
+    private static bool bInGlobalTransaction = false;
 		
 		#region Table Enums
 
@@ -169,20 +169,48 @@ namespace Nagru___Manga_Organizer
 
     /// <summary>
     /// Starts a new transaction
-    /// USE WITH CAUTION
+    /// USE WITH CAUTION: SQLite DOES NOT SUPPORT MULTIPLE TRANSACTIONS
     /// </summary>
     public static int BeginTransaction()
     {
-      return sqlBase.BeginTransaction();
+      int iRetVal = -1;
+
+      if (!bInGlobalTransaction) {
+        bInGlobalTransaction = true;
+        iRetVal = sqlBase.BeginTransaction();
+      }
+
+      return iRetVal;
     }
 
     /// <summary>
     /// Commits the current transaction
-    /// USE WITH CAUTION
     /// </summary>
     public static int CommitTransaction()
     {
-      return sqlBase.EndTransaction();
+      int iRetVal = -1;
+
+      if (bInGlobalTransaction) {
+        bInGlobalTransaction = false;
+        iRetVal = sqlBase.EndTransaction();
+      }
+
+      return iRetVal;
+    }
+
+    /// <summary>
+    /// Rollbacks the current transaction
+    /// </summary>
+    public static int RollbackTransaction()
+    {
+      int iRetVal = -1;
+
+      if (bInGlobalTransaction) {
+        bInGlobalTransaction = false;
+        iRetVal = sqlBase.EndTransaction(-1);
+      }
+
+      return iRetVal;
     }
 
     #endregion
@@ -419,6 +447,7 @@ namespace Nagru___Manga_Organizer
 			internal SQLiteConnection sqConn = null;
 			private const int SQLITE_MAX_LENGTH = 1000000;
 			private const int DB_VERSION = 1;
+      private bool bInTransaction = false;
 			private bool bDisposed = false;
 
 			#endregion
@@ -667,7 +696,7 @@ namespace Nagru___Manga_Organizer
 					<List<Main.csEntry>>(_filePath) ?? new List<Main.csEntry>(0);
 
 				//input into new DB
-				BeginTransaction();
+				SQL.BeginTransaction();
 				for (int i = 0; i < lData.Count; i++)
 				{
 					//ensure sizes are valid
@@ -692,7 +721,7 @@ namespace Nagru___Manga_Organizer
 						delProgress.Invoke(i + 1);
 					}
 				}
-				EndTransaction();
+				SQL.CommitTransaction();
 				lData.Clear();
 
 				//deprecate old serialized DB
@@ -929,8 +958,8 @@ namespace Nagru___Manga_Organizer
 			{
 				int iRetVal = 0;
 
-        if (!SQL.Transaction) {
-          SQL.Transaction = true;
+        if (!bInTransaction) {
+          bInTransaction = true;
 				  using (SQLiteCommand sqCmd = sqConn.CreateCommand())
 				  {
 					  sqCmd.CommandText = "begin transaction";
@@ -949,8 +978,8 @@ namespace Nagru___Manga_Organizer
 			{
 				int iRetVal = 0;
 
-        if (SQL.Transaction) {
-          SQL.Transaction = true;
+        if (bInTransaction) {
+          bInTransaction = false;
 				  using (SQLiteCommand sqCmd = sqConn.CreateCommand())
 				  {
 					  sqCmd.CommandText = (error > -1 ? "commit" : "rollback") + " transaction";
@@ -1412,7 +1441,8 @@ namespace Nagru___Manga_Organizer
 					string sTags = null, string sLoc = null, decimal iPages = 0, string sType = null,
 					decimal dRating = 0, string sDesc = null, string sURL = null, int iMangaID = -1)
 			{
-        sqlBase.BeginTransaction();
+        if (!SQL.bInGlobalTransaction)
+          sqlBase.BeginTransaction();
 
 				//setup parameters
 				StringBuilder sbCmd = new StringBuilder(10000);
@@ -1464,7 +1494,8 @@ namespace Nagru___Manga_Organizer
 				sqlBase.ExecuteNonQuery(sCommandText, CommandBehavior.Default, lParam.ToArray());
 				#endregion
 
-				//set the mangaID parameter if necessary
+        #region Update the peripheral records
+        //set the mangaID parameter if necessary
 				if (iMangaID == -1)
 				{
 					using (DataTable dt = sqlBase.ExecuteQuery("select max(MangaID) from Manga", CommandBehavior.SingleRow))
@@ -1528,10 +1559,12 @@ namespace Nagru___Manga_Organizer
 				}
 				sbCmd.AppendFormat("delete from [MangaTag] where MangaID = @mangaID and TagID not in (select TagID from [Tag] where Tag in ({0}))", sTags);
 
-				//run the generated command statement
+        //run the generated command statement
 				sqlBase.ExecuteNonQuery(sbCmd.ToString(), CommandBehavior.Default, lParam.ToArray());
+        #endregion
 
-        sqlBase.EndTransaction();
+        if (!SQL.bInGlobalTransaction)
+          sqlBase.EndTransaction();
 				return iMangaID;
 			}
 
