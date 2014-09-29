@@ -6,12 +6,12 @@
  */
 
 using System;
-using System.Windows.Forms;
-using System.Runtime.InteropServices;
 using System.ComponentModel;
-using System.Security.Permissions;
+using System.Runtime.InteropServices;
 using System.Security;
+using System.Security.Permissions;
 using System.Threading;
+using System.Windows.Forms;
 
 namespace Nagru___Manga_Organizer
 {

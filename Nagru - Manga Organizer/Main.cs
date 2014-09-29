@@ -40,24 +40,24 @@ namespace Nagru___Manga_Organizer
     #endregion
 
     #region Main Form
-		/// <summary>
-		/// Initializes the project
-		/// </summary>
-		/// <param name="sFile">The path passed in if the user opens the DB with the shell</param>
+    /// <summary>
+    /// Initializes the project
+    /// </summary>
+    /// <param name="sFile">The path passed in if the user opens the DB with the shell</param>
     public Main(string[] sFile)
     {
       InitializeComponent();
       this.Icon = Properties.Resources.dbIcon;
     }
 
-		/// <summary>
-		/// Perform some runtime modifications to behavior
-		/// </summary>
+    /// <summary>
+    /// Perform some runtime modifications to behavior
+    /// </summary>
     private void Main_Load(object sender, EventArgs e)
     {
       //disable ContextMenu in Nud_Pages
       Nud_Pages.ContextMenuStrip = new ContextMenuStrip();
-      
+
       //allow dragdrop in richtextbox
       frTxBx_Desc.AllowDrop = true;
       frTxBx_Notes.AllowDrop = true;
@@ -65,16 +65,16 @@ namespace Nagru___Manga_Organizer
       frTxBx_Desc.DragDrop += new DragEventHandler(DragDropTxBx);
       frTxBx_Desc.DragEnter += new DragEventHandler(DragEnterTxBx);
       frTxBx_Notes.DragEnter += new DragEventHandler(DragEnterTxBx);
-      
+
       //set-up listview sorting & sizing
-			lvManga.staticColumns.Add(ColTags.Index);
-			lvManga.RatingColumn = ColRating.Index;
+      lvManga.staticColumns.Add(ColTags.Index);
+      lvManga.RatingColumn = ColRating.Index;
       lvManga.Select();
     }
 
-		/// <summary>
-		/// Start loading the DB asynchronously
-		/// </summary>
+    /// <summary>
+    /// Start loading the DB asynchronously
+    /// </summary>
     private void Main_Shown(object sender, EventArgs e)
     {
       Cursor = Cursors.WaitCursor;
@@ -82,9 +82,9 @@ namespace Nagru___Manga_Organizer
       System.Threading.ThreadPool.QueueUserWorkItem(Database_Load);
     }
 
-		/// <summary>
-		/// When the program is closed, save the last form position and close the DB connection
-		/// </summary>
+    /// <summary>
+    /// When the program is closed, save the last form position and close the DB connection
+    /// </summary>
     private void Main_FormClosing(object sender, FormClosingEventArgs e)
     {
       //save changes to text automatically
@@ -104,9 +104,9 @@ namespace Nagru___Manga_Organizer
       SQL.Disconnect();
     }
 
-		/// <summary>
-		/// Change the title of the Form based on which tab we're on
-		/// </summary>
+    /// <summary>
+    /// Change the title of the Form based on which tab we're on
+    /// </summary>
     private void TabControl_SelectedIndexChanged(object sender, EventArgs e)
     {
       this.SuspendLayout();
@@ -135,9 +135,9 @@ namespace Nagru___Manga_Organizer
       this.ResumeLayout();
     }
 
-		/// <summary>
-		/// Switch between tabs with ctrl+# shortcuts
-		/// </summary>
+    /// <summary>
+    /// Switch between tabs with ctrl+# shortcuts
+    /// </summary>
     private void Main_KeyDown(object sender, KeyEventArgs e)
     {
       if (e.Control) {
@@ -157,18 +157,18 @@ namespace Nagru___Manga_Organizer
     #endregion
 
     #region Tab_Browse
-		/// <summary>
-		/// When clicking on Form whitespace, unselect anything in the ListView
-		/// </summary>
+    /// <summary>
+    /// When clicking on Form whitespace, unselect anything in the ListView
+    /// </summary>
     private void ClearSelection(object sender, EventArgs e)
     {
       if (mangaID != -1)
         Reset();
     }
 
-		/// <summary>
-		/// Load up the form for scanning for manga
-		/// </summary>
+    /// <summary>
+    /// Load up the form for scanning for manga
+    /// </summary>
     private void Btn_Scan_Click(object sender, EventArgs e)
     {
       Scan fmScan = new Scan();
@@ -184,22 +184,22 @@ namespace Nagru___Manga_Organizer
       Btn_Scan.Enabled = true;
     }
 
-		/// <summary>
-		/// Insert delay before Search() to account for Human input speed
-		/// </summary>
+    /// <summary>
+    /// Insert delay before Search() to account for Human input speed
+    /// </summary>
     private void TxBx_Search_TextChanged(object sender, EventArgs e)
     {
-			int offsetWidth = Btn_Clear.Size.Width;
+      int offsetWidth = Btn_Clear.Size.Width;
       Reset();
       Delay.Stop();
 
       if (TxBx_Search.Text == "") {
-				TxBx_Search.Width += offsetWidth;
+        TxBx_Search.Width += offsetWidth;
         Btn_Clear.Visible = false;
         UpdateLV();
       }
       else if (!Btn_Clear.Visible) {
-				TxBx_Search.Width -= offsetWidth;
+        TxBx_Search.Width -= offsetWidth;
         Btn_Clear.Visible = true;
       }
       else
@@ -211,18 +211,18 @@ namespace Nagru___Manga_Organizer
       UpdateLV();
     }
 
-		/// <summary>
-		/// Clear the search form and refresh the ListView
-		/// </summary>
+    /// <summary>
+    /// Clear the search form and refresh the ListView
+    /// </summary>
     private void Btn_Clear_Click(object sender, EventArgs e)
     {
       TxBx_Search.Focus();
       TxBx_Search.Clear();
     }
 
-		/// <summary>
-		/// Updates tab two of the form with the selected manga
-		/// </summary>
+    /// <summary>
+    /// Updates tab two of the form with the selected manga
+    /// </summary>
     private void LV_Entries_SelectedIndexChanged(object sender, EventArgs e)
     {
       if (lvManga.SelectedItems.Count > 0)
@@ -231,19 +231,19 @@ namespace Nagru___Manga_Organizer
         Reset();
     }
 
-		/// <summary>
-		/// Proportionally-resizes columns on ListView resizes
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
+    /// <summary>
+    /// Proportionally-resizes columns on ListView resizes
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void LV_Entries_Resize(object sender, EventArgs e)
     {
       ResizeLV();
     }
 
-		/// <summary>
-		/// Prevent user from changing column widths
-		/// </summary>
+    /// <summary>
+    /// Prevent user from changing column widths
+    /// </summary>
     private void LV_Entries_ColumnWidthChanging(
         object sender, ColumnWidthChangingEventArgs e)
     {
@@ -251,46 +251,46 @@ namespace Nagru___Manga_Organizer
       e.NewWidth = lvManga.Columns[e.ColumnIndex].Width;
     }
 
-		/// <summary>
-		/// Opens the selected manga in the default image browser
-		/// </summary>
+    /// <summary>
+    /// Opens the selected manga in the default image browser
+    /// </summary>
     private void LV_Entries_DoubleClick(object sender, EventArgs e)
     {
       OpenFile();
     }
 
-		/// <summary>
-		/// Auto-focus on the ListView when hovered over
-		/// </summary>
+    /// <summary>
+    /// Auto-focus on the ListView when hovered over
+    /// </summary>
     private void LV_Entries_MouseHover(object sender, EventArgs e)
     {
       if (!lvManga.Focused && !Delay.Enabled)
         lvManga.Focus();
     }
 
-		/// <summary>
-		/// Limit manga results to only favorites
-		/// </summary>
+    /// <summary>
+    /// Limit manga results to only favorites
+    /// </summary>
     private void ChkBx_ShowFav_CheckedChanged(object sender, EventArgs e)
     {
       UpdateLV();
 
-      if (mangaID != -1 
+      if (mangaID != -1
           && Convert.ToInt32(SQL.GetMangaDetail(mangaID, SQL.Manga.Rating)) == 5) {
-				ReFocus();
-			}
+        ReFocus();
+      }
       else {
-				Reset();
-			}
+        Reset();
+      }
 
       lvManga.Select();
     }
     #endregion
 
     #region Tab_View
-		/// <summary>
-		/// Lets the user select where the manga is located
-		/// </summary>
+    /// <summary>
+    /// Lets the user select where the manga is located
+    /// </summary>
     private void Btn_Loc_Click(object sender, EventArgs e)
     {
       //try to auto-magically grab folder\file path
@@ -312,17 +312,17 @@ namespace Nagru___Manga_Organizer
       xfbd.Dispose();
     }
 
-		/// <summary>
-		/// Open URL in default Browser
-		/// </summary>
+    /// <summary>
+    /// Open URL in default Browser
+    /// </summary>
     private void frTxBx_Desc_LinkClicked(object sender, LinkClickedEventArgs e)
     {
       System.Diagnostics.Process.Start(e.LinkText);
     }
 
-		/// <summary>
-		/// Opens the manga using the built-in image browser
-		/// </summary>
+    /// <summary>
+    /// Opens the manga using the built-in image browser
+    /// </summary>
     private void PicBx_Cover_Click(object sender, EventArgs e)
     {
       if (PicBx_Cover.Image == null)
@@ -367,9 +367,9 @@ namespace Nagru___Manga_Organizer
       GC.Collect(0);
     }
 
-		/// <summary>
-		/// Redraw cover image if form size has changed
-		/// </summary>
+    /// <summary>
+    /// Redraw cover image if form size has changed
+    /// </summary>
     private void PicBx_Cover_Resize(object sender, EventArgs e)
     {
       if (PicBx_Cover.Image == null)
@@ -399,9 +399,9 @@ namespace Nagru___Manga_Organizer
       }
     }
 
-		/// <summary>
-		/// Dynamically update PicBx when user manually alters path
-		/// </summary>
+    /// <summary>
+    /// Dynamically update PicBx when user manually alters path
+    /// </summary>
     private void TxBx_Loc_TextChanged(object sender, EventArgs e)
     {
       if (mangaID != -1) {
@@ -410,7 +410,7 @@ namespace Nagru___Manga_Organizer
       MnTS_Clear.Visible = true;
 
       if (Directory.Exists(TxBx_Loc.Text)
-					|| File.Exists(TxBx_Loc.Text)) {
+          || File.Exists(TxBx_Loc.Text)) {
         page = -1;
         ThreadPool.QueueUserWorkItem(GetImage);
       }
@@ -420,13 +420,13 @@ namespace Nagru___Manga_Organizer
       }
     }
 
-		/// <summary>
-		/// Programmatically select items in LV_Entries
-		/// </summary>
+    /// <summary>
+    /// Programmatically select items in LV_Entries
+    /// </summary>
     private void Btn_GoDn_Click(object sender, EventArgs e)
     {
       if (lvManga.Items.Count == 0
-					|| (lvManga.Items.Count == 1 && mangaID != -1))
+          || (lvManga.Items.Count == 1 && mangaID != -1))
         return;
       int iPos = 0;
 
@@ -441,7 +441,7 @@ namespace Nagru___Manga_Organizer
     private void Btn_GoUp_Click(object sender, EventArgs e)
     {
       if (lvManga.Items.Count == 0
-					|| (lvManga.Items.Count == 1 && mangaID != -1))
+          || (lvManga.Items.Count == 1 && mangaID != -1))
         return;
       int iPos = lvManga.Items.Count - 1;
 
@@ -457,41 +457,40 @@ namespace Nagru___Manga_Organizer
     {
       /* if there are no items to select, or we have already
        * selected the only one, skip operation */
-			if (lvManga.Items.Count == 0
-					|| (lvManga.Items.Count == 1 && mangaID != -1)) {
-				return;
-			}
+      if (lvManga.Items.Count == 0
+          || (lvManga.Items.Count == 1 && mangaID != -1)) {
+        return;
+      }
 
-			/* if the shuffling process hasn't happened yet, do it here */
-			if (aiShuffle == null || aiShuffle.Length != lvManga.Items.Count)
-			{
-				Random rnd = new Random(BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0));
+      /* if the shuffling process hasn't happened yet, do it here */
+      if (aiShuffle == null || aiShuffle.Length != lvManga.Items.Count) {
+        Random rnd = new Random(BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0));
         aiShuffle = Enumerable.Range(0, lvManga.Items.Count).ToArray()
           .OrderBy(x => rnd.Next()).ToArray();
-			}
+      }
 
-			/* Find the next manga in the random sequence to go to */
-			int iPos = lvManga.SelectedItems.Count == 1 ?
-				lvManga.SelectedItems[0].Index : aiShuffle[0];
+      /* Find the next manga in the random sequence to go to */
+      int iPos = lvManga.SelectedItems.Count == 1 ?
+        lvManga.SelectedItems[0].Index : aiShuffle[0];
 
-			for (int i = 0; i < aiShuffle.Length; i++) {
-				if (aiShuffle[i] == iPos) {
-					iPos = aiShuffle[i + 1 < aiShuffle.Length ? i + 1 : 0];
-					break;
-				}
-			}
-			ScrollTo(iPos > -1 ? iPos : 0);
+      for (int i = 0; i < aiShuffle.Length; i++) {
+        if (aiShuffle[i] == iPos) {
+          iPos = aiShuffle[i + 1 < aiShuffle.Length ? i + 1 : 0];
+          break;
+        }
+      }
+      ScrollTo(iPos > -1 ? iPos : 0);
     }
 
     /// <summary>
     /// Update the rating of the selected manga
     /// </summary>
     private void srRating_Click(object sender, EventArgs e)
-		{
-			if (mangaID != -1) {
-				MnTS_Edit.Visible = true;
-			}
-			MnTS_Clear.Visible = true;
+    {
+      if (mangaID != -1) {
+        MnTS_Edit.Visible = true;
+      }
+      MnTS_Clear.Visible = true;
     }
 
     /// <summary>
@@ -534,8 +533,8 @@ namespace Nagru___Manga_Organizer
 
     #region Custom Methods
 
-		#region Databse Conversion Progress
-		/// <summary>
+    #region Databse Conversion Progress
+    /// <summary>
     /// Solely for converting old db's in a threaded manner
     /// </summary>
     private void Database_Load(object obj)
@@ -604,13 +603,13 @@ namespace Nagru___Manga_Organizer
 
       //set up types
       CmbBx_Type.Items.AddRange(SQL.GetTypes());
-      
+
       UpdateLV();
       Cursor = Cursors.Default;
     }
-		#endregion
+    #endregion
 
-		/// <summary>
+    /// <summary>
     /// Refreshes the ListView and refocuses the current item
     /// </summary>
     private void AddEntries()
@@ -646,6 +645,8 @@ namespace Nagru___Manga_Organizer
             SearchOption.TopDirectoryOnly)).Length > 0) {
           SetPicBxImage(sFiles[0]);
           Invoke(new DelInt(SetNudCount), sFiles.Length);
+          Invoke(new DelVoid(SetZipSourceStatus));
+          MnTS_ZipSource.Enabled = true;
         }
         else {
           Invoke(new DelInt(SetOpenStatus), 0);
@@ -707,7 +708,7 @@ namespace Nagru___Manga_Organizer
         Nud_Pages.Value = manga.filecount;											//set page count
         srRating.SelectedStar = Convert.ToInt32(manga.rating);	//set star rating
         acTxBx_Tags.Text = manga.GetTags(                       //set tags
-          !string.IsNullOrWhiteSpace(acTxBx_Tags.Text) 
+          !string.IsNullOrWhiteSpace(acTxBx_Tags.Text)
             ? acTxBx_Tags.Text : null
         );
 
@@ -789,6 +790,7 @@ namespace Nagru___Manga_Organizer
 
       //Mn_EntryOps
       acTxBx_Tags.SetScroll();
+      MnTS_ZipSource.Enabled = false;
       MnTS_New.Visible = true;
       MnTS_Del.Visible = false;
       MnTS_Edit.Visible = false;
@@ -851,20 +853,20 @@ namespace Nagru___Manga_Organizer
       Tb_View.SuspendLayout();
       using (DataTable dt = SQL.GetManga(mangaID)) {
         if (dt.Rows.Count > 0) {
-          Text										= "Selected: " + Ext.GetFormattedTitle(
-																		dt.Rows[0]["Artist"].ToString(),
-																		dt.Rows[0]["Title"].ToString()
+          Text = "Selected: " + Ext.GetFormattedTitle(
+                                    dt.Rows[0]["Artist"].ToString(),
+                                    dt.Rows[0]["Title"].ToString()
           );
-          acTxBx_Title.Text       = dt.Rows[0]["Title"].ToString();
-          CmbBx_Artist.Text       = dt.Rows[0]["Artist"].ToString();
-          TxBx_Loc.Text           = dt.Rows[0]["Location"].ToString();
-          frTxBx_Desc.Text        = dt.Rows[0]["Description"].ToString();
-          CmbBx_Type.Text         = dt.Rows[0]["Type"].ToString();
-          Dt_Date.Value           = DateTime.Parse(dt.Rows[0]["PublishedDate"].ToString());
-          srRating.SelectedStar   = Int32.Parse(dt.Rows[0]["Rating"].ToString());
-          Nud_Pages.Value         = Int32.Parse(dt.Rows[0]["Pages"].ToString());
-          lblURL.Text             = dt.Rows[0]["GalleryURL"].ToString();
-          acTxBx_Tags.Text        = dt.Rows[0]["Tags"].ToString();
+          acTxBx_Title.Text = dt.Rows[0]["Title"].ToString();
+          CmbBx_Artist.Text = dt.Rows[0]["Artist"].ToString();
+          TxBx_Loc.Text = dt.Rows[0]["Location"].ToString();
+          frTxBx_Desc.Text = dt.Rows[0]["Description"].ToString();
+          CmbBx_Type.Text = dt.Rows[0]["Type"].ToString();
+          Dt_Date.Value = DateTime.Parse(dt.Rows[0]["PublishedDate"].ToString());
+          srRating.SelectedStar = Int32.Parse(dt.Rows[0]["Rating"].ToString());
+          Nud_Pages.Value = Int32.Parse(dt.Rows[0]["Pages"].ToString());
+          lblURL.Text = dt.Rows[0]["GalleryURL"].ToString();
+          acTxBx_Tags.Text = dt.Rows[0]["Tags"].ToString();
 
           acTxBx_Tags.SetScroll();
           MnTS_New.Visible = false;
@@ -900,14 +902,11 @@ namespace Nagru___Manga_Organizer
     /// <param name="iExists">Set to 1 for an open status</param>
     private void SetOpenStatus(int iExists)
     {
-			try
-			{
-      MnTS_Open.Visible = (iExists == 1);
-			}
-			catch(Exception exc)
-			{
-				Console.WriteLine(exc.Message);
-			}
+      try {
+        MnTS_Open.Visible = (iExists == 1);
+      } catch (Exception exc) {
+        Console.WriteLine(exc.Message);
+      }
     }
 
     /// <summary>
@@ -937,16 +936,16 @@ namespace Nagru___Manga_Organizer
           if (lEntries.Count > 0) {
             lEntries.Sort(new TrueCompare());
             for (; iFirst < iCount; iFirst++) {
-							if (scEntries[iFirst].FilePath.Length == lEntries[0].Length) {
-								if (scEntries[iFirst].FilePath.Equals(lEntries[0])) {
-									break;
-								}
-							}
+              if (scEntries[iFirst].FilePath.Length == lEntries[0].Length) {
+                if (scEntries[iFirst].FilePath.Equals(lEntries[0])) {
+                  break;
+                }
+              }
             }
 
             //load image
             try {
-              using(MemoryStream ms = new MemoryStream()) {
+              using (MemoryStream ms = new MemoryStream()) {
                 scEntries[iFirst].WriteTo(ms);
                 using (Bitmap bmpTmp = new Bitmap(ms)) {
                   PicBx_Cover.Image = Ext.ScaleImage(bmpTmp,
@@ -966,6 +965,14 @@ namespace Nagru___Manga_Organizer
     }
 
     /// <summary>
+    /// Enables the 'zip source' option
+    /// </summary>
+    private void SetZipSourceStatus()
+    {
+      MnTS_ZipSource.Enabled = true;
+    }
+
+    /// <summary>
     /// Ensure the picture being set is a valid image
     /// </summary>
     /// <param name="s"></param>
@@ -976,7 +983,7 @@ namespace Nagru___Manga_Organizer
           PicBx_Cover.Image = Ext.ScaleImage(bmpTmp,
             PicBx_Cover.Width, PicBx_Cover.Height);
         }
-				MnTS_Open.Visible = (PicBx_Cover.Image == null);
+        MnTS_Open.Visible = (PicBx_Cover.Image == null);
       } catch (Exception Exc) {
         MessageBox.Show("The following file could not be loaded:\n" + s,
           Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
@@ -1033,7 +1040,7 @@ namespace Nagru___Manga_Organizer
         Cursor = Cursors.WaitCursor;
         ListViewItem[] aItems = new ListViewItem[dt.Rows.Count];
 
-				Color cRowColorHighlight = Color.FromArgb(Int32.Parse(SQL.GetSetting(SQL.Setting.RowColourHighlight)));
+        Color cRowColorHighlight = Color.FromArgb(Int32.Parse(SQL.GetSetting(SQL.Setting.RowColourHighlight)));
         for (int i = 0; i < dt.Rows.Count; i++) {
           int iRating = Int32.Parse(dt.Rows[i]["Rating"].ToString());
 
@@ -1050,21 +1057,21 @@ namespace Nagru___Manga_Organizer
           });
 
           if (iRating == 5) {
-						lvi.BackColor = cRowColorHighlight;
+            lvi.BackColor = cRowColorHighlight;
           }
           #endregion
-          
+
           aItems[i] = lvi;
         }
 
-				lvManga.SuspendLayout();
+        lvManga.SuspendLayout();
         lvManga.Items.Clear();
         lvManga.Items.AddRange(aItems);
         lvManga.SortRows();
-				lvManga.ResumeLayout();
+        lvManga.ResumeLayout();
 
         aiShuffle = null;
-        Text = string.Format("{0}: {1:n0} entries", 
+        Text = string.Format("{0}: {1:n0} entries",
           (ChkBx_ShowFav.Checked || !string.IsNullOrEmpty(TxBx_Search.Text) ? "Returned" : "Manga Organizer")
           , dt.Rows.Count);
         Cursor = Cursors.Default;
@@ -1091,11 +1098,12 @@ namespace Nagru___Manga_Organizer
             Application.ProductName, MessageBoxButtons.YesNo,
             MessageBoxIcon.Question) == DialogResult.Yes) {
 
-          mangaID = SQL.SaveManga(CmbBx_Artist.Text, acTxBx_Title.Text, Dt_Date.Value, 
-            acTxBx_Tags.Text, TxBx_Loc.Text, Nud_Pages.Value, CmbBx_Type.Text, 
+          mangaID = SQL.SaveManga(CmbBx_Artist.Text, acTxBx_Title.Text, Dt_Date.Value,
+            acTxBx_Tags.Text, TxBx_Loc.Text, Nud_Pages.Value, CmbBx_Type.Text,
             srRating.SelectedStar, frTxBx_Desc.Text, lblURL.Text);
 
           //add artist to autocomplete
+          CmbBx_Artist.Items.Clear();
           CmbBx_Artist.Items.AddRange(SQL.GetArtists());
           acTxBx_Tags.KeyWords = SQL.GetTags();
 
@@ -1117,9 +1125,14 @@ namespace Nagru___Manga_Organizer
         return;
 
       //overwrite entry properties
-      SQL.SaveManga(CmbBx_Artist.Text, acTxBx_Title.Text, Dt_Date.Value, acTxBx_Tags.Text, TxBx_Loc.Text, 
+      SQL.SaveManga(CmbBx_Artist.Text, acTxBx_Title.Text, Dt_Date.Value, acTxBx_Tags.Text, TxBx_Loc.Text,
         Nud_Pages.Value, CmbBx_Type.Text, srRating.SelectedStar, frTxBx_Desc.Text, lblURL.Text, mangaID);
       Text = "Edited entry: " + Ext.GetFormattedTitle(CmbBx_Artist.Text, acTxBx_Title.Text);
+      acTxBx_Tags.KeyWords = SQL.GetTags();
+
+      //update auto-complete controls
+      CmbBx_Artist.Items.Clear();
+      CmbBx_Artist.Items.AddRange(SQL.GetArtists());
       acTxBx_Tags.KeyWords = SQL.GetTags();
 
       //check if entry should still be displayed
@@ -1128,30 +1141,30 @@ namespace Nagru___Manga_Organizer
         if (srRating.SelectedStar == 5) {
           lvi.BackColor = Color.FromArgb(Int32.Parse(SQL.GetSetting(SQL.Setting.RowColourHighlight)));
         }
-				else {
-					if (lvManga.FocusedItem.Index % 2 == 0) {
-						lvManga.FocusedItem.BackColor = Color.FromArgb(
-							Int32.Parse(SQL.GetSetting(SQL.Setting.RowColourAlt)));
-					}
-					else {
-						lvManga.FocusedItem.BackColor = SystemColors.Window;
-					}
-				}
-				acTxBx_Tags.Text = SQL.GetMangaDetail(mangaID, SQL.Manga.Tags);
-				lvi.SubItems[ColRating.Index].Text = Ext.RatingFormat(srRating.SelectedStar);
+        else {
+          if (lvManga.FocusedItem.Index % 2 == 0) {
+            lvManga.FocusedItem.BackColor = Color.FromArgb(
+              Int32.Parse(SQL.GetSetting(SQL.Setting.RowColourAlt)));
+          }
+          else {
+            lvManga.FocusedItem.BackColor = SystemColors.Window;
+          }
+        }
+        acTxBx_Tags.Text = SQL.GetMangaDetail(mangaID, SQL.Manga.Tags);
+        lvi.SubItems[ColRating.Index].Text = Ext.RatingFormat(srRating.SelectedStar);
         lvi.SubItems[ColArtist.Index].Text = CmbBx_Artist.Text;
         lvi.SubItems[ColTitle.Index].Text = acTxBx_Title.Text;
         lvi.SubItems[ColPages.Index].Text = Nud_Pages.Value.ToString();
-				lvi.SubItems[ColTags.Index].Text = acTxBx_Tags.Text;
+        lvi.SubItems[ColTags.Index].Text = acTxBx_Tags.Text;
         lvi.SubItems[colDate.Index].Text = Dt_Date.Value.ToString("MM/dd/yy");
         lvi.SubItems[ColType.Index].Text = CmbBx_Type.Text;
         ReFocus();
       }
-			else {
-				lvManga.Items.RemoveAt(lvManga.FocusedItem.Index);
-			}
-			
-			lvManga.SortRows();
+      else {
+        lvManga.Items.RemoveAt(lvManga.FocusedItem.Index);
+      }
+
+      lvManga.SortRows();
       MnTS_Edit.Visible = false;
     }
 
@@ -1160,8 +1173,12 @@ namespace Nagru___Manga_Organizer
     /// </summary>
     private void MnTS_Open_Click(object sender, EventArgs e)
     {
-      if (PicBx_Cover.Image != null)
-        OpenFile();
+      if (PicBx_Cover.Image != null) {
+        if (Directory.Exists(TxBx_Loc.Text)
+            && File.Exists(TxBx_Loc.Text)) {
+          OpenFile();
+        }
+      }
     }
 
     /// <summary>
@@ -1268,6 +1285,56 @@ namespace Nagru___Manga_Organizer
     }
 
     /// <summary>
+    /// Converts a folder into a new cbz file
+    /// </summary>
+    private void MnTS_ZipSource_Click(object sender, EventArgs e)
+    {
+      string sBaseLoc = TxBx_Loc.Text;
+
+      if (File.Exists(sBaseLoc.Trim() + ".cbz")) {
+        SharpCompress.Common.CompressionInfo cmp = new SharpCompress.Common.CompressionInfo();
+        this.Cursor = Cursors.WaitCursor;
+        
+        //zip the folder contents into a .cbz
+        using (var archive = SCA.Zip.ZipArchive.Create()) {
+          string[] asFiles = Directory.GetFiles(sBaseLoc);
+          for (int x = 0; x < asFiles.Length; x++) {
+            FileInfo fi = new FileInfo(asFiles[x]);
+            archive.AddEntry(fi.Name, fi);
+          }
+
+          using (FileStream fs = new FileStream(sBaseLoc.Trim() + ".cbz", FileMode.CreateNew)) {
+            archive.SaveTo(fs, cmp);
+          }
+        }
+
+        //Update the manga location and delete the old folder
+        TxBx_Loc.Text = sBaseLoc + ".cbz";
+        if (Ext.Accessible(sBaseLoc)) {
+          //warn user before deleting subdirectories
+          int iNumDir = Directory.GetDirectories(sBaseLoc).Length;
+          DialogResult dResult = DialogResult.Yes;
+
+          if (iNumDir > 0) {
+            dResult = MessageBox.Show(
+                string.Format("This directory contains {0} subfolder(s),\n" +
+                "are you sure you want to delete them?", iNumDir),
+                Application.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+          }
+          if (dResult == DialogResult.Yes) {
+            Directory.Delete(sBaseLoc, true);
+          }
+        }
+        MnTS_ZipSource.Enabled = false;
+        this.Cursor = Cursors.Default;
+      }
+      else {
+        MessageBox.Show("The file \"" + sBaseLoc.Trim() + ".cbz\" already exists.", 
+          Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+      }
+    }
+
+    /// <summary>
     /// Uses EH API to get metadata from gallery URL
     /// </summary>
     private void MnTS_LoadUrl_Click(object sender, EventArgs e)
@@ -1318,8 +1385,18 @@ namespace Nagru___Manga_Organizer
     /// </summary>
     private void MnTs_CleanTags_Click(object sender, EventArgs e)
     {
-			int iUnused = SQL.CleanUpTags();
+      int iUnused = SQL.CleanUpTags();
       MessageBox.Show(iUnused > 0 ? iUnused + " unused tags have been removed." : "No unused tags exist."
+        , Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+    }
+
+    /// <summary>
+    /// Remove unused artists
+    /// </summary>
+    private void MnTS_CleanArtists_Click(object sender, EventArgs e)
+    {
+      int iUnused = SQL.CleanUpArtists();
+      MessageBox.Show(iUnused > 0 ? iUnused + " unused artists have been removed." : "No unused artists exist."
         , Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
 
@@ -1345,7 +1422,7 @@ namespace Nagru___Manga_Organizer
         lvManga.GridLines = SQL.GetSetting(SQL.Setting.ShowGrid) == "1";
         PicBx_Cover.BackColor = Color.FromArgb(
           Int32.Parse(SQL.GetSetting(SQL.Setting.BackgroundColour)));
-        lvManga.Columns[4].Width = 
+        lvManga.Columns[4].Width =
           SQL.GetSetting(SQL.Setting.ShowDate) == "1" ? 70 : 0;
         ResizeLV();
 
@@ -1612,7 +1689,7 @@ namespace Nagru___Manga_Organizer
       /* Prevent mixed font types when c/p  */
       if (e.Modifiers == Keys.Control && e.KeyCode == Keys.V) {
         FixedRichTextBox frTxBx = sender as FixedRichTextBox;
-				frTxBx.SelectionStart = Ext.InsertText(
+        frTxBx.SelectionStart = Ext.InsertText(
             frTxBx, Clipboard.GetText(), frTxBx.SelectionStart);
         if (TabControl.SelectedIndex == 2)
           bSavNotes = false;
@@ -1651,25 +1728,25 @@ namespace Nagru___Manga_Organizer
 
       switch ((sender as Control).Name) {
         case "frTxBx_Desc":
-					frTxBx_Desc.SelectionStart = Ext.InsertText(
+          frTxBx_Desc.SelectionStart = Ext.InsertText(
               frTxBx_Desc, sAdd, frTxBx_Desc.SelectionStart);
           break;
         case "frTxBx_Notes":
-					frTxBx_Notes.SelectionStart = Ext.InsertText(
+          frTxBx_Notes.SelectionStart = Ext.InsertText(
               frTxBx_Notes, sAdd, frTxBx_Notes.SelectionStart);
           break;
         case "CmbBx_Artist":
-          if (sAdd.Contains('['))
+          if (sAdd.Contains('[') && sAdd.Contains(']'))
             SetTitle(sAdd);
           else
-						CmbBx_Artist.SelectionStart = Ext.InsertText(
+            CmbBx_Artist.SelectionStart = Ext.InsertText(
               CmbBx_Artist, sAdd, CmbBx_Artist.SelectionStart);
           break;
         case "acTxBx_Title":
-          if (sAdd.Contains('['))
+          if (sAdd.Contains('[') && sAdd.Contains(']'))
             SetTitle(sAdd);
           else
-						acTxBx_Title.SelectionStart = Ext.InsertText(
+            acTxBx_Title.SelectionStart = Ext.InsertText(
               acTxBx_Title, sAdd, acTxBx_Title.SelectionStart);
           break;
         case "acTxBx_Tags":
@@ -1678,11 +1755,13 @@ namespace Nagru___Manga_Organizer
             lTags.AddRange(Ext.Split(sAdd, "\r\n"));
             lTags.AddRange(Ext.Split(acTxBx_Tags.Text, ","));
             lTags = lTags.Select(s => s.Trim())
+              .Where(s => !(s[s.Length - 1] == ':'))
               .Distinct<string>()
               .OrderBy(s => s)
               .ToList<string>();
             acTxBx_Tags.Text = string.Join(", ", lTags);
-          } else {
+          }
+          else {
             acTxBx_Tags.SelectionStart = Ext.InsertText(
               acTxBx_Tags, sAdd, acTxBx_Tags.SelectionStart);
           }
@@ -1692,7 +1771,7 @@ namespace Nagru___Manga_Organizer
           sAdd = (asTitle[0] == "") ? sAdd :
               string.Format("artist:{0} title:{1}",
               asTitle[0].Replace(' ', '_'), asTitle[1].Replace(' ', '_'));
-					TxBx_Search.SelectionStart = Ext.InsertText(
+          TxBx_Search.SelectionStart = Ext.InsertText(
               TxBx_Search, sAdd, TxBx_Search.SelectionStart);
           UpdateLV();
           break;
@@ -1794,7 +1873,7 @@ namespace Nagru___Manga_Organizer
         //add item
         csEntry en = new csEntry(asDir[i]);
         if (!SQL.ContainsEntry(en.sArtist, en.sTitle)) {
-          mangaID = SQL.SaveManga(en.sArtist, en.sTitle, en.dtDate, en.sTags, 
+          mangaID = SQL.SaveManga(en.sArtist, en.sTitle, en.dtDate, en.sTags,
             en.sLoc, en.pages, en.sType, en.byRat, en.sDesc);
 
           if (en.sArtist != "" && !CmbBx_Artist.Items.Contains(en.sArtist))

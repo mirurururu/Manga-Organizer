@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
-using SCA = SharpCompress.Archive;
 
 namespace Nagru___Manga_Organizer
 {
@@ -49,7 +46,7 @@ namespace Nagru___Manga_Organizer
       //add pages to listview
       for (int i = 0; i < fmSource.Files.Count; i++) {
         LV_Pages.Items.Add(new ListViewItem(
-            Path.GetFileName(fmSource.Files[i])));
+          Path.GetFileName(fmSource.Files[i])));
       }
 
       if (iPage < 0)

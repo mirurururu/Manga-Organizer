@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Net;
-using System.Drawing;
 using System.Windows.Forms;
-using System.Collections.Generic;
 
 namespace Nagru___Manga_Organizer
 {

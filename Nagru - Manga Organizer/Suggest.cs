@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Text;
-using System.Data;
 using System.Drawing;
+using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-using System.Collections.Generic;
 
 namespace Nagru___Manga_Organizer
 {

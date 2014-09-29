@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Threading;
@@ -15,8 +16,8 @@ namespace Nagru___Manga_Organizer
     public DelVoid delNewEntry, delDone;
     bool bIsClosing = false;
 
-    HashSet<string> hsPaths = new HashSet<string>(),
-      hsIgnore = new HashSet<string>();
+    HashSet<string> hsPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+    HashSet<string> hsIgnore = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
     List<Main.csEntry> lFound = new List<Main.csEntry>();
 
     #region ScanOperation
@@ -168,10 +169,10 @@ namespace Nagru___Manga_Organizer
       for (int i = 0; i < lFound.Count; i++) {
         ListViewItem lvi = new ListViewItem(lFound[i].sArtist);
         lvi.SubItems.AddRange(new string[] {
-                    lFound[i].sTitle,
-                    lFound[i].pages.ToString(),
-                    i.ToString()
-                });
+          lFound[i].sTitle,
+          lFound[i].pages.ToString(),
+          i.ToString()
+        });
 
         if (hsIgnore.Contains(lvi.SubItems[0].Text + lvi.SubItems[1].Text)) {
           if (ChkBx_All.Checked) {
@@ -230,7 +231,7 @@ namespace Nagru___Manga_Organizer
     private void LV_Found_DoubleClick(object sender, EventArgs e)
     {
       int iPos = Convert.ToInt32(LV_Found.FocusedItem.SubItems[3].Text);
-      System.Diagnostics.Process.Start(lFound[iPos].sLoc);
+      Process.Start(lFound[iPos].sLoc);
     }
 
     /* Sends selected item(s) back to Main */
@@ -239,24 +240,31 @@ namespace Nagru___Manga_Organizer
       if (LV_Found.SelectedItems.Count == 0)
         return;
 
-      List<int> lRm = new List<int>(LV_Found.SelectedItems.Count);
+      this.Cursor = Cursors.WaitCursor;
+      int[] irmList = new int[LV_Found.SelectedItems.Count];
+      int[] irmView = new int[LV_Found.SelectedItems.Count];
       for (int i = 0; i < LV_Found.SelectedItems.Count; i++) {
         //save entry and remove from list
-        int iPos = Convert.ToInt32(LV_Found.SelectedItems[i].SubItems[3].Text);
-        SQL.SaveManga(lFound[iPos].sArtist, lFound[iPos].sTitle, lFound[iPos].dtDate, 
-          lFound[iPos].sTags, lFound[iPos].sLoc, lFound[iPos].pages, 
+        int iPos = Int32.Parse(LV_Found.SelectedItems[i].SubItems[3].Text);
+        SQL.SaveManga(lFound[iPos].sArtist, lFound[iPos].sTitle, lFound[iPos].dtDate,
+          lFound[iPos].sTags, lFound[iPos].sLoc, lFound[iPos].pages,
           lFound[iPos].sType, lFound[iPos].byRat, lFound[iPos].sDesc);
-        lRm.Add(iPos);
+        irmView[i] = LV_Found.SelectedItems[i].Index;
+        irmList[i] = iPos;
       }
 
-      lRm.Sort();
-      for (int i = lRm.Count - 1; i > -1; i--) {
-        lFound.RemoveAt(lRm[i]);
+      Array.Sort(irmList);
+      Array.Sort(irmView);
+      LV_Found.BeginUpdate();
+      for (int i = LV_Found.SelectedItems.Count - 1; i > -1; i--) {
+        LV_Found.Items.RemoveAt(irmView[i]);
+        lFound.RemoveAt(irmList[i]);
       }
-      UpdateLV();
+      LV_Found.EndUpdate();
 
       if (delNewEntry != null)
         delNewEntry.Invoke();
+      this.Cursor = Cursors.Default;
     }
 
     /* Add or remove item from ignored list based on context */

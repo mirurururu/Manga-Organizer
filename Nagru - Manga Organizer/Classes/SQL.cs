@@ -1,12 +1,11 @@
 ﻿using System;
-using System.IO;
-using System.Net;
-using System.Text;
-using System.Linq;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Collections.Generic;
 using System.Data.SQLite;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace Nagru___Manga_Organizer
 {
@@ -345,6 +344,15 @@ namespace Nagru___Manga_Organizer
     public static int CleanUpTags()
     {
 			return SQLAccess.DeleteUnusedTags();
+    }
+
+    /// <summary>
+    /// Deletes all unused artists from the DB
+    /// </summary>
+    /// <returns>Returns the number of deleted tags.</returns>
+    public static int CleanUpArtists()
+    {
+      return SQLAccess.DeleteUnusedArtists();
     }
 
     /// <summary>
@@ -1536,6 +1544,23 @@ namespace Nagru___Manga_Organizer
 				sqlBase.EndTransaction();
 				return altered;
 			}
+
+      /// <summary>
+      /// Removes tags from the DB with no associated manga
+      /// </summary>
+      internal static int DeleteUnusedArtists()
+      {
+        sqlBase.BeginTransaction();
+
+        string sCommandText = @"
+				delete from Artist
+				where ArtistID not in 
+				(select ArtistID from MangaArtist)";
+        int altered = sqlBase.ExecuteNonQuery(sCommandText);
+
+        sqlBase.EndTransaction();
+        return altered;
+      }
 
 			#endregion
 		}

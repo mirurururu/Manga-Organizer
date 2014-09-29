@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Windows.Forms;
 using System.Collections.Generic;
-using System.Drawing.Drawing2D;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.IO;
+using System.Windows.Forms;
 using SCA = SharpCompress.Archive;
 
 namespace Nagru___Manga_Organizer
