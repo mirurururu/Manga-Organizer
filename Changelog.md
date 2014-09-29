@@ -1,4 +1,4 @@
-#### v. 4.6.44 (September 29, 2014)
+#### v. 4.6.46 (September 29, 2014)
   - Added the ability to convert folders to .cbz's
   - Re-did the Settings form code-behind
   - Improved the load speed of the page-browser

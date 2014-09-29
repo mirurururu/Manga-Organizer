@@ -1412,8 +1412,7 @@ namespace Nagru___Manga_Organizer
 					string sTags = null, string sLoc = null, decimal iPages = 0, string sType = null,
 					decimal dRating = 0, string sDesc = null, string sURL = null, int iMangaID = -1)
 			{
-        if (!SQL.Transaction)
-					sqlBase.BeginTransaction();
+        sqlBase.BeginTransaction();
 
 				//setup parameters
 				StringBuilder sbCmd = new StringBuilder(10000);
@@ -1532,9 +1531,7 @@ namespace Nagru___Manga_Organizer
 				//run the generated command statement
 				sqlBase.ExecuteNonQuery(sbCmd.ToString(), CommandBehavior.Default, lParam.ToArray());
 
-        if (!SQL.Transaction)
-					sqlBase.EndTransaction();
-
+        sqlBase.EndTransaction();
 				return iMangaID;
 			}
 
