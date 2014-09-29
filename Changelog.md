@@ -2,6 +2,7 @@
   - Added the ability to convert folders to .cbz's
   - Re-did the Settings form code-behind
   - Improved the load speed of the page-browser
+  - Improved the speed of adding entries by Scanning
   - Slightly improved scanning speed
   - Updated the ListView to have a 'VS designer' mode
 

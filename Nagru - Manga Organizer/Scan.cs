@@ -243,6 +243,7 @@ namespace Nagru___Manga_Organizer
       this.Cursor = Cursors.WaitCursor;
       int[] irmList = new int[LV_Found.SelectedItems.Count];
       int[] irmView = new int[LV_Found.SelectedItems.Count];
+      SQL.BeginTransaction();
       for (int i = 0; i < LV_Found.SelectedItems.Count; i++) {
         //save entry and remove from list
         int iPos = Int32.Parse(LV_Found.SelectedItems[i].SubItems[3].Text);
@@ -252,7 +253,8 @@ namespace Nagru___Manga_Organizer
         irmView[i] = LV_Found.SelectedItems[i].Index;
         irmList[i] = iPos;
       }
-
+      SQL.CommitTransaction();
+      
       Array.Sort(irmList);
       Array.Sort(irmView);
       LV_Found.BeginUpdate();

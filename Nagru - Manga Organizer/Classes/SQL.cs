@@ -19,6 +19,7 @@ namespace Nagru___Manga_Organizer
 		public delegate void DelVoidInt(int i);
     public static DelVoidInt delProgress = null;
 		private static SQLBase sqlBase = null;
+    private static bool Transaction = false;
 		
 		#region Table Enums
 
@@ -160,6 +161,28 @@ namespace Nagru___Manga_Organizer
     {
       sqlBase.Close();
 			sqlBase.Dispose();
+    }
+
+    #endregion
+
+    #region Transactions
+
+    /// <summary>
+    /// Starts a new transaction
+    /// USE WITH CAUTION
+    /// </summary>
+    public static int BeginTransaction()
+    {
+      return sqlBase.BeginTransaction();
+    }
+
+    /// <summary>
+    /// Commits the current transaction
+    /// USE WITH CAUTION
+    /// </summary>
+    public static int CommitTransaction()
+    {
+      return sqlBase.EndTransaction();
     }
 
     #endregion
@@ -394,7 +417,6 @@ namespace Nagru___Manga_Organizer
 			#region Properties
 
 			internal SQLiteConnection sqConn = null;
-			internal bool CONVERTING = false;
 			private const int SQLITE_MAX_LENGTH = 1000000;
 			private const int DB_VERSION = 1;
 			private bool bDisposed = false;
@@ -646,7 +668,6 @@ namespace Nagru___Manga_Organizer
 
 				//input into new DB
 				BeginTransaction();
-				CONVERTING = true;
 				for (int i = 0; i < lData.Count; i++)
 				{
 					//ensure sizes are valid
@@ -671,7 +692,6 @@ namespace Nagru___Manga_Organizer
 						delProgress.Invoke(i + 1);
 					}
 				}
-				CONVERTING = false;
 				EndTransaction();
 				lData.Clear();
 
@@ -908,11 +928,16 @@ namespace Nagru___Manga_Organizer
 			internal int BeginTransaction()
 			{
 				int iRetVal = 0;
-				using (SQLiteCommand sqCmd = sqConn.CreateCommand())
-				{
-					sqCmd.CommandText = "begin transaction";
-					iRetVal = sqCmd.ExecuteNonQuery();
-				}
+
+        if (!SQL.Transaction) {
+          SQL.Transaction = true;
+				  using (SQLiteCommand sqCmd = sqConn.CreateCommand())
+				  {
+					  sqCmd.CommandText = "begin transaction";
+					  iRetVal = sqCmd.ExecuteNonQuery();
+				  }
+        }
+
 				return iRetVal;
 			}
 
@@ -923,11 +948,16 @@ namespace Nagru___Manga_Organizer
 			internal int EndTransaction(int error = 0)
 			{
 				int iRetVal = 0;
-				using (SQLiteCommand sqCmd = sqConn.CreateCommand())
-				{
-					sqCmd.CommandText = (error > -1 ? "commit" : "rollback") + " transaction";
-					iRetVal = sqCmd.ExecuteNonQuery();
-				}
+
+        if (SQL.Transaction) {
+          SQL.Transaction = true;
+				  using (SQLiteCommand sqCmd = sqConn.CreateCommand())
+				  {
+					  sqCmd.CommandText = (error > -1 ? "commit" : "rollback") + " transaction";
+					  iRetVal = sqCmd.ExecuteNonQuery();
+				  }
+        }
+
 				return iRetVal;
 			}
 
@@ -1382,7 +1412,7 @@ namespace Nagru___Manga_Organizer
 					string sTags = null, string sLoc = null, decimal iPages = 0, string sType = null,
 					decimal dRating = 0, string sDesc = null, string sURL = null, int iMangaID = -1)
 			{
-				if (!sqlBase.CONVERTING)
+        if (!SQL.Transaction)
 					sqlBase.BeginTransaction();
 
 				//setup parameters
@@ -1502,7 +1532,7 @@ namespace Nagru___Manga_Organizer
 				//run the generated command statement
 				sqlBase.ExecuteNonQuery(sbCmd.ToString(), CommandBehavior.Default, lParam.ToArray());
 
-				if (!sqlBase.CONVERTING)
+        if (!SQL.Transaction)
 					sqlBase.EndTransaction();
 
 				return iMangaID;
