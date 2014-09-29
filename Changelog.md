@@ -1,3 +1,10 @@
+#### v. 4.6.44 (September 29, 2014)
+  - Added the ability to convert folders to .cbz's
+  - Re-did the Settings form code-behind
+  - Improved the load speed of the page-browser
+  - Slightly improved scanning speed
+  - Updated the ListView to have a 'VS designer' mode
+
 #### v. 4.6.30 (September 26, 2014)
   - Fixed an issue where closing the scan form, mid-scanning, would cause an exception
   - Updated a filepath check to be case insensitive

@@ -227,7 +227,7 @@ namespace Nagru___Manga_Organizer
         List<string> lRaw = new List<string>(tags.Length * 2);
         lRaw.AddRange(tags);
 
-        if (!string.IsNullOrEmpty(sCurrentTags)) {
+        if (!string.IsNullOrWhiteSpace(sCurrentTags)) {
           lRaw.AddRange(sCurrentTags.Split(','));
         }
         lRaw.Sort(new TrueCompare());
@@ -294,7 +294,7 @@ namespace Nagru___Manga_Organizer
       bool bException = true;
 
       //determine if exhentai can be called
-      bool bXH = !string.IsNullOrEmpty(
+      bool bXH = !string.IsNullOrWhiteSpace(
         SQL.GetSetting(SQL.Setting.pass_hash) + SQL.GetSetting(SQL.Setting.member_id));
 
       //convert raw search terms into web form
@@ -331,7 +331,7 @@ namespace Nagru___Manga_Organizer
       }
 
       //find all gallery results
-      if (!bException && !string.IsNullOrEmpty(sPage)) {
+      if (!bException && !string.IsNullOrWhiteSpace(sPage)) {
         string sRegexGallery = ".*http://(ex|g.e-)hentai.org/g/[0-9]{6}/[a-zA-z0-9]{10}/.*"
           + "onmouseover=.* onmouseout=.*";
         const int iMinGallery = 125;
@@ -394,7 +394,7 @@ namespace Nagru___Manga_Organizer
         Console.WriteLine(exc.Message);
       } finally {
         //parse returned JSON
-        if (!bException && !string.IsNullOrEmpty(sEHResponse)) {
+        if (!bException && !string.IsNullOrWhiteSpace(sEHResponse)) {
           gmManga = new gmetadata(sEHResponse);
         }
       }

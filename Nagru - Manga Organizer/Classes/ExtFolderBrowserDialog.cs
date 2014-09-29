@@ -176,7 +176,7 @@ namespace Nagru___Manga_Organizer
                   BrowseForFolderMessages.BFFM_ENABLEOK, 0, haveValidPath ? 1 : 0);
 
               // Maybe set the Edit Box text to the Full Folder path
-              if (haveValidPath && !String.IsNullOrEmpty(displayedPath)) {
+              if (haveValidPath && !String.IsNullOrWhiteSpace(displayedPath)) {
                 if (_showEditBox && _showFullPathInEditBox) {
                   if (_hwndEdit != IntPtr.Zero)
                     PInvoke.User32.SetWindowText(_hwndEdit, displayedPath);

@@ -72,9 +72,9 @@ namespace Nagru___Manga_Organizer
 				if (!Directory.Exists(sPath) && !File.Exists(sPath))
 				{
 					sPath = string.Format("{0}\\{1}"
-            , !string.IsNullOrEmpty(SQL.GetSetting(SQL.Setting.RootPath)) ?
+            , !string.IsNullOrWhiteSpace(SQL.GetSetting(SQL.Setting.RootPath)) ?
               SQL.GetSetting(SQL.Setting.RootPath) : Environment.CurrentDirectory
-							, string.Format(!string.IsNullOrEmpty(sArtist) ?
+              , string.Format(!string.IsNullOrWhiteSpace(sArtist) ?
 								"[{0}] {1}" : "{1}", sArtist, sTitle)
 					);
 
@@ -143,7 +143,7 @@ namespace Nagru___Manga_Organizer
     /// <returns></returns>
     public static string GetFormattedTitle(string Artist, string Title)
     {
-      return string.Format((!string.IsNullOrEmpty(Artist))
+      return string.Format((!string.IsNullOrWhiteSpace(Artist))
           ? "[{0}] {1}" : "{1}", Artist, Title);
     }
 		
@@ -214,7 +214,7 @@ namespace Nagru___Manga_Organizer
         //Re-format for Artist/Title fields
         asName[0] = sRaw.Substring(iA + 1, iB - iA - 1).Trim();
         asName[1] = sRaw.Substring(iB + 1).Trim();
-        if (!string.IsNullOrEmpty(sCircle))
+        if (!string.IsNullOrWhiteSpace(sCircle))
           asName[1] += " " + sCircle;
       }
       else {

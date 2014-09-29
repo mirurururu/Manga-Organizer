@@ -582,7 +582,7 @@ namespace Nagru___Manga_Organizer
       //check user settings
       #region Set Form Position
       string sPos = SQL.GetSetting(SQL.Setting.FormPosition);
-      if (!string.IsNullOrEmpty(sPos)) {
+      if (!string.IsNullOrWhiteSpace(sPos)) {
         int[] aiForm = sPos.Split(',').Select(x => Int32.Parse(x)).ToArray();
         this.Location = new Point(aiForm[0], aiForm[1]);
         this.Width = aiForm[2];
@@ -876,7 +876,7 @@ namespace Nagru___Manga_Organizer
           Tb_View.ResumeLayout();
 
           //check for relativity
-          if (!string.IsNullOrEmpty(TxBx_Loc.Text)) {
+          if (!string.IsNullOrWhiteSpace(TxBx_Loc.Text)) {
             string sResult = Ext.FindPath(TxBx_Loc.Text, CmbBx_Artist.Text, acTxBx_Title.Text);
             if (sResult != null)
               TxBx_Loc.Text = sResult;
@@ -1014,11 +1014,11 @@ namespace Nagru___Manga_Organizer
       Tb_View.SuspendLayout();
       string[] asProc = Ext.ParseGalleryTitle(sRaw);
 
-      if (!string.IsNullOrEmpty(asProc[0])) {
-        if (string.IsNullOrEmpty(CmbBx_Artist.Text)) {
+      if (!string.IsNullOrWhiteSpace(asProc[0])) {
+        if (string.IsNullOrWhiteSpace(CmbBx_Artist.Text)) {
           CmbBx_Artist.Text = asProc[0];
         }
-        if (string.IsNullOrEmpty(acTxBx_Title.Text)) {
+        if (string.IsNullOrWhiteSpace(acTxBx_Title.Text)) {
           acTxBx_Title.Text = asProc[1];
         }
       }
@@ -1072,7 +1072,7 @@ namespace Nagru___Manga_Organizer
 
         aiShuffle = null;
         Text = string.Format("{0}: {1:n0} entries",
-          (ChkBx_ShowFav.Checked || !string.IsNullOrEmpty(TxBx_Search.Text) ? "Returned" : "Manga Organizer")
+          (ChkBx_ShowFav.Checked || !string.IsNullOrWhiteSpace(TxBx_Search.Text) ? "Returned" : "Manga Organizer")
           , dt.Rows.Count);
         Cursor = Cursors.Default;
       }
@@ -1370,7 +1370,7 @@ namespace Nagru___Manga_Organizer
     /// </summary>
     private void MnTS_OpenDataFolder_Click(object sender, EventArgs e)
     {
-      string sPath = !string.IsNullOrEmpty(SQL.GetSetting(SQL.Setting.SavePath)) ?
+      string sPath = !string.IsNullOrWhiteSpace(SQL.GetSetting(SQL.Setting.SavePath)) ?
           SQL.GetSetting(SQL.Setting.SavePath) : Environment.CurrentDirectory;
 
       if (Directory.Exists(sPath))
@@ -1925,7 +1925,7 @@ namespace Nagru___Manga_Organizer
         if (_Tags != "") {
           string[] sRaw = _Tags.Split(',').Select(
               x => x.Trim()).Distinct().Where(
-              x => !string.IsNullOrEmpty(x)).ToArray<string>();
+              x => !string.IsNullOrWhiteSpace(x)).ToArray<string>();
           sTags = String.Join(", ", sRaw.OrderBy(x => x));
         }
       }

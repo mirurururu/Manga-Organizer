@@ -128,9 +128,11 @@ namespace Nagru___Manga_Organizer
     /// <returns>Returns whether the operation succeeded or failed</returns>
     public static bool Connect(string _filePath = null)
     {
-      if (string.IsNullOrEmpty(_filePath)) {
-        _filePath = SQL.GetSetting(SQL.Setting.SavePath) != string.Empty ?
-            SQL.GetSetting(SQL.Setting.SavePath) : Environment.CurrentDirectory;
+      if (string.IsNullOrWhiteSpace(_filePath)) {
+        _filePath = !string.IsNullOrWhiteSpace(Properties.Settings.Default.SavLoc) ?
+          Properties.Settings.Default.SavLoc : 
+            (!string.IsNullOrWhiteSpace(SQL.GetSetting(SQL.Setting.SavePath)) ?
+              SQL.GetSetting(SQL.Setting.SavePath) : Environment.CurrentDirectory);
         _filePath += "\\MangaDatabase.bin";
       }
 
@@ -279,7 +281,7 @@ namespace Nagru___Manga_Organizer
 		/// <param name="mangaID">Can search for only a specific manga</param>
 		public static DataTable GetAllManga(bool OnlyFavourites = false, string SearchText = null, int MangaID = -1)
 		{
-			if(!string.IsNullOrEmpty(SearchText)) {
+      if (!string.IsNullOrWhiteSpace(SearchText)) {
 				return SQLAccess.DB_Search(SearchText, OnlyFavourites, MangaID);
 			}
 			else {
@@ -552,8 +554,8 @@ namespace Nagru___Manga_Organizer
 								, Properties.Settings.Default.Position.Width
 								, Properties.Settings.Default.Position.Height)
 						));
-						sqParam.Add(NewParameter("@memberID", DbType.Int32, 
-							!string.IsNullOrEmpty(Properties.Settings.Default.member_id) ?
+						sqParam.Add(NewParameter("@memberID", DbType.Int32,
+              !string.IsNullOrWhiteSpace(Properties.Settings.Default.member_id) ?
 								Int32.Parse(Properties.Settings.Default.member_id) : -1)
 						);
 
@@ -1091,7 +1093,7 @@ namespace Nagru___Manga_Organizer
 							case "d":
 
 								DateTime date = new DateTime();
-								char c = !string.IsNullOrEmpty(asTerms[i][x]) ? asTerms[i][x][0] : ' ';
+                char c = !string.IsNullOrWhiteSpace(asTerms[i][x]) ? asTerms[i][x][0] : ' ';
 
 								if (DateTime.TryParse(asTerms[i][x].Substring(c != '<' && c != '>' ? 0 : 1), out date))
 									sbCmd.AppendFormat("and date(mgx.PublishedDate) {0} date('{1}') "
@@ -1100,7 +1102,7 @@ namespace Nagru___Manga_Organizer
 								break;
 							case "rating":
 							case "r":
-								c = !string.IsNullOrEmpty(asTerms[i][x]) ? asTerms[i][x][0] : ' ';
+                c = !string.IsNullOrWhiteSpace(asTerms[i][x]) ? asTerms[i][x][0] : ' ';
 								int rat;
 
 								if (int.TryParse(asTerms[i][x].Substring(c != '<' && c != '>' ? 0 : 1), out rat))
@@ -1111,7 +1113,7 @@ namespace Nagru___Manga_Organizer
 							case "pages":
 							case "page":
 							case "p":
-								c = !string.IsNullOrEmpty(asTerms[i][x]) ? asTerms[i][x][0] : ' ';
+                c = !string.IsNullOrWhiteSpace(asTerms[i][x]) ? asTerms[i][x][0] : ' ';
 								int pg;
 
 								if (int.TryParse(asTerms[i][x].Substring(c != '<' && c != '>' ? 0 : 1), out pg))

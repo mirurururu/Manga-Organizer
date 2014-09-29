@@ -39,7 +39,6 @@
       this.lblIntv = new System.Windows.Forms.Label();
       this.lblIgnored = new System.Windows.Forms.Label();
       this.grBxToggle = new System.Windows.Forms.GroupBox();
-      this.ChkBx_Email = new System.Windows.Forms.CheckBox();
       this.ChkBx_Date = new System.Windows.Forms.CheckBox();
       this.ChkBx_Gridlines = new System.Windows.Forms.CheckBox();
       this.ckLbx_Ign = new System.Windows.Forms.CheckedListBox();
@@ -156,7 +155,6 @@
       // 
       // grBxToggle
       // 
-      this.grBxToggle.Controls.Add(this.ChkBx_Email);
       this.grBxToggle.Controls.Add(this.ChkBx_Date);
       this.grBxToggle.Controls.Add(this.ChkBx_Gridlines);
       this.grBxToggle.Location = new System.Drawing.Point(179, 180);
@@ -165,19 +163,6 @@
       this.grBxToggle.TabIndex = 15;
       this.grBxToggle.TabStop = false;
       this.grBxToggle.Text = "Defaults";
-      // 
-      // ChkBx_Email
-      // 
-      this.ChkBx_Email.AutoSize = true;
-      this.ChkBx_Email.ContextMenuStrip = this.MnAct;
-      this.ChkBx_Email.Location = new System.Drawing.Point(15, 74);
-      this.ChkBx_Email.Name = "ChkBx_Email";
-      this.ChkBx_Email.Size = new System.Drawing.Size(116, 17);
-      this.ChkBx_Email.TabIndex = 3;
-      this.ChkBx_Email.Text = "Send error reports?";
-      this.ChkBx_Email.UseVisualStyleBackColor = true;
-      this.ChkBx_Email.Visible = false;
-      this.ChkBx_Email.CheckedChanged += new System.EventHandler(this.ChkBx_Defaults_CheckedChanged);
       // 
       // ChkBx_Date
       // 
@@ -298,7 +283,6 @@
       this.Text = "Settings";
       this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Settings_FormClosing);
       this.Load += new System.EventHandler(this.Settings_Load);
-      this.Shown += new System.EventHandler(this.Settings_Shown);
       ((System.ComponentModel.ISupportInitialize)(this.Nud_Intv)).EndInit();
       this.MnAct.ResumeLayout(false);
       ((System.ComponentModel.ISupportInitialize)(this.picBx_Colour)).EndInit();
@@ -329,6 +313,5 @@
         private AutoCompleteTagger aTxBx_Root;
         private System.Windows.Forms.ContextMenuStrip MnAct;
         private System.Windows.Forms.ToolStripMenuItem MnAct_Reset;
-				private System.Windows.Forms.CheckBox ChkBx_Email;
     }
 }

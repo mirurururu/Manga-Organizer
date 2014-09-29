@@ -18,10 +18,12 @@ namespace Nagru___Manga_Organizer
     public Suggest(string sRaw)
     {
       InitializeComponent();
-      if (!string.IsNullOrEmpty(sRaw))
+      if (!string.IsNullOrWhiteSpace(sRaw)) {
         sTrySearch = sRaw;
-      else
+      }
+      else {
         sTrySearch = Clipboard.GetText();
+      }
     }
 
     private void Suggest_Load(object sender, EventArgs e)
@@ -54,7 +56,7 @@ namespace Nagru___Manga_Organizer
         string[] asSplit = Ext.ParseGalleryTitle(sTrySearch);
 
         //check for artist/title fields and set formatting
-        if (!string.IsNullOrEmpty(asSplit[0])) {
+        if (!string.IsNullOrWhiteSpace(asSplit[0])) {
           sb.AppendFormat("{0}{1}", (asSplit[0].Contains("("))
             ? "" : "artist:", asSplit[0]);
 

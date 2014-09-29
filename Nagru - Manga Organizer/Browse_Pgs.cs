@@ -44,10 +44,14 @@ namespace Nagru___Manga_Organizer
       LV_Pages.GridLines = SQL.GetSetting(SQL.Setting.ShowGrid) == "1";
 
       //add pages to listview
+      ListViewItem[] lvi = new ListViewItem[fmSource.Files.Count];
       for (int i = 0; i < fmSource.Files.Count; i++) {
-        LV_Pages.Items.Add(new ListViewItem(
-          Path.GetFileName(fmSource.Files[i])));
+        lvi[i] = new ListViewItem(
+          Path.GetFileName(fmSource.Files[i]));
       }
+      LV_Pages.BeginUpdate();
+      LV_Pages.Items.AddRange(lvi);
+      LV_Pages.EndUpdate();
 
       if (iPage < 0)
         iPage = 0;
