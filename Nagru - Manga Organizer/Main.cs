@@ -1175,7 +1175,7 @@ namespace Nagru___Manga_Organizer
     {
       if (PicBx_Cover.Image != null) {
         if (Directory.Exists(TxBx_Loc.Text)
-            && File.Exists(TxBx_Loc.Text)) {
+            || File.Exists(TxBx_Loc.Text)) {
           OpenFile();
         }
       }
