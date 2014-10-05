@@ -8,7 +8,7 @@ namespace Nagru___Manga_Organizer
 	/// <summary>
 	/// An extended combo box that allows for multiple dropdown events based on a separator keyword
 	/// </summary>
-  public class AutoCompleteTagger : TextBox
+  public class AutoCompleteTagger : TextBox, IDisposable
   {
 		#region Properties
 		private bool bDisposed = false;
@@ -138,19 +138,10 @@ namespace Nagru___Manga_Organizer
     }
 		
 		/// <summary>
-		/// Public implementation of Dispose
-		/// </summary>
-		public void Dispose()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-
-		/// <summary>
 		/// Protected implementation of Dispose
 		/// </summary>
 		/// <param name="Disposing">Whether we are calling the method from the Dispose override</param>
-    protected virtual void Dispose(bool Disposing)
+    protected override void Dispose(bool Disposing)
     {
 			if (bDisposed)
 				return;
@@ -161,6 +152,7 @@ namespace Nagru___Manga_Organizer
 			}
 
 			bDisposed = true;
+      base.Dispose();
     }
 
 		/// <summary>
@@ -168,7 +160,7 @@ namespace Nagru___Manga_Organizer
 		/// </summary>
 		~AutoCompleteTagger()
 		{
-			Dispose(false);
+			Dispose(true);
 		}
 
 		#endregion

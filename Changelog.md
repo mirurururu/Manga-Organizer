@@ -1,3 +1,7 @@
+#### v. 4.6.48 (October 03, 2014)
+  - Chose a new compromise with tagging (small speed improvement)
+  - Added better error handling for querying the EH API
+
 #### v. 4.6.46 (September 29, 2014)
   - Added the ability to convert folders to .cbz's
   - Re-did the Settings form code-behind

@@ -195,30 +195,35 @@ namespace Nagru___Manga_Organizer
       string sCircle = "";
       int iPos = -1;
 
-      //strip out circle info & store
-      if (sRaw.StartsWith("(")) {
-        iPos = sRaw.IndexOf(')');
-        if (iPos > -1 && ++iPos < sRaw.Length) {
-          sCircle = sRaw.Substring(0, iPos);
-          sRaw = sRaw.Remove(0, iPos).TrimStart();
+      if (!string.IsNullOrWhiteSpace(sRaw)) {
+        //strip out circle info & store
+        if (sRaw.StartsWith("(")) {
+          iPos = sRaw.IndexOf(')');
+          if (iPos > -1 && ++iPos < sRaw.Length) {
+            sCircle = sRaw.Substring(0, iPos);
+            sRaw = sRaw.Remove(0, iPos).TrimStart();
+          }
         }
-      }
 
-      //split fields using EH format
-      int iA = sRaw.IndexOf('['), iB = sRaw.IndexOf(']');
-      if (iPos != 0																						//ensure '(circle) [name]~' or '[name]~' format
-          && iA == 0 && iB > -1                               //ensure there's a closing brace
-          && iA < iB                                          //ensure the closing brace comes *after*
-          && iB + 1 < sRaw.Length)                            //ensure there is text after the brace
-      {
-        //Re-format for Artist/Title fields
-        asName[0] = sRaw.Substring(iA + 1, iB - iA - 1).Trim();
-        asName[1] = sRaw.Substring(iB + 1).Trim();
-        if (!string.IsNullOrWhiteSpace(sCircle))
-          asName[1] += " " + sCircle;
-      }
-      else {
-        asName[1] = sRaw;
+        //split fields using EH format
+        int iA = sRaw.IndexOf('['), iB = sRaw.IndexOf(']');
+        if (iPos != 0																						//ensure '(circle) [name]~' or '[name]~' format
+            && iA == 0 && iB > -1                               //ensure there's a closing brace
+            && iA < iB                                          //ensure the closing brace comes *after*
+            && ++iB < sRaw.Length)                              //ensure there is text after the brace
+        {
+          //Re-format for Artist/Title fields
+          asName[0] = sRaw.Substring(iA + 1, iB - iA - 2).Trim();
+          if (!string.IsNullOrWhiteSpace(sCircle)) {
+            asName[1] = sRaw.Substring(iB).Trim() + " " + sCircle;
+          }
+          else {
+            asName[1] = sRaw.Substring(iB).Trim();
+          }
+        }
+        else {
+          asName[1] = sRaw;
+        }
       }
       return asName;
     }

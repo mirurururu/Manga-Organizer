@@ -84,6 +84,7 @@
       this.maintenanceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.MnTs_CleanTags = new System.Windows.Forms.ToolStripMenuItem();
       this.MnTs_CleanArtists = new System.Windows.Forms.ToolStripMenuItem();
+      this.MnTS_DBMaintenance = new System.Windows.Forms.ToolStripMenuItem();
       this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
       this.MnTS_Stats = new System.Windows.Forms.ToolStripMenuItem();
       this.MnTS_Settings = new System.Windows.Forms.ToolStripMenuItem();
@@ -529,7 +530,7 @@
       this.Dt_Date.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.Dt_Date.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
       this.Dt_Date.Location = new System.Drawing.Point(52, 181);
-      this.Dt_Date.MinDate = new System.DateTime(1972, 4, 12, 0, 0, 0, 0);
+      this.Dt_Date.MinDate = new System.DateTime(1970, 1, 1, 0, 0, 0, 0);
       this.Dt_Date.Name = "Dt_Date";
       this.Dt_Date.Size = new System.Drawing.Size(169, 21);
       this.Dt_Date.TabIndex = 4;
@@ -725,7 +726,8 @@
       // 
       this.maintenanceToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.MnTs_CleanTags,
-            this.MnTs_CleanArtists});
+            this.MnTs_CleanArtists,
+            this.MnTS_DBMaintenance});
       this.maintenanceToolStripMenuItem.Name = "maintenanceToolStripMenuItem";
       this.maintenanceToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
       this.maintenanceToolStripMenuItem.Text = "Maintenance";
@@ -743,6 +745,13 @@
       this.MnTs_CleanArtists.Size = new System.Drawing.Size(193, 22);
       this.MnTs_CleanArtists.Text = "Remove unused artists";
       this.MnTs_CleanArtists.Click += new System.EventHandler(this.MnTS_CleanArtists_Click);
+      // 
+      // MnTS_DBMaintenance
+      // 
+      this.MnTS_DBMaintenance.Name = "MnTS_DBMaintenance";
+      this.MnTS_DBMaintenance.Size = new System.Drawing.Size(193, 22);
+      this.MnTS_DBMaintenance.Text = "DB Maintenance";
+      this.MnTS_DBMaintenance.Click += new System.EventHandler(this.MnTS_DBMaintenance_Click);
       // 
       // toolStripSeparator4
       // 
@@ -1076,6 +1085,7 @@
         private System.Windows.Forms.ToolStripMenuItem MnTs_CleanTags;
         private System.Windows.Forms.ToolStripMenuItem MnTs_CleanArtists;
         private System.Windows.Forms.ToolStripMenuItem MnTS_ZipSource;
+				private System.Windows.Forms.ToolStripMenuItem MnTS_DBMaintenance;
     }
 }
 

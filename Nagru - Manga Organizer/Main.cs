@@ -698,7 +698,7 @@ namespace Nagru___Manga_Organizer
       Text = "Sending request...";
 
       manga = csEHSearch.LoadMetadata(sURL);
-      if (manga != null) {
+      if (manga != null && !manga.APIError) {
         Text = "Parsing metadata...";
         Tb_View.SuspendLayout();
 
@@ -1401,6 +1401,16 @@ namespace Nagru___Manga_Organizer
     }
 
     /// <summary>
+    /// Performs DB cleanup tasks that don't fall into a user-friendly category
+    /// </summary>
+    private void MnTS_DBMaintenance_Click(object sender, EventArgs e)
+    {
+      int iAltered = SQL.CleanUpReferences();
+      MessageBox.Show("Refreshed tag references; " + iAltered + " records affected."
+        , Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+    }
+
+    /// <summary>
     /// Show the tag statistics
     /// </summary>
     private void MnTS_Stats_Click(object sender, EventArgs e)
@@ -1948,11 +1958,13 @@ namespace Nagru___Manga_Organizer
 
         //Get filecount
         string[] sFiles = new string[0];
-        if (File.Exists(_Path))
+        if (File.Exists(_Path)){
           sFiles = new string[1] { _Path };
-        else
+        }
+        else {
           sFiles = Ext.GetFiles(_Path,
             SearchOption.TopDirectoryOnly, "*.zip|*.cbz|*.cbr|*.rar|*.7z");
+        }
 
         if (sFiles.Length > 0) {
           if (Main.IsArchive(sFiles[0])) {
@@ -1962,9 +1974,10 @@ namespace Nagru___Manga_Organizer
             scArchive.Dispose();
           }
         }
-        else
+        else {
           pages = (ushort)Ext.GetFiles(
             _Path, SearchOption.TopDirectoryOnly).Length;
+        }
       }
 
       /* custom serialization to save datatypes manually */

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿#region Assemblies
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
+#endregion
 
 namespace Nagru___Manga_Organizer
 {
@@ -184,6 +186,7 @@ namespace Nagru___Manga_Organizer
       public float rating;
       public int torrentcount;
       public string[] tags;
+      private bool error = false;
 
 			/// <summary>
 			/// The constructor which parses out the JSON object
@@ -191,7 +194,7 @@ namespace Nagru___Manga_Organizer
 			/// <param name="JSON">The JSON object literal</param>
       public gmetadata(string JSON)
       {
-        DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        posted = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         try {
           dynamic JsonObject = JObject.Parse(JSON);
@@ -203,7 +206,7 @@ namespace Nagru___Manga_Organizer
           category			= JsonObject.gmetadata[0].category.Value;
           thumb					= JsonObject.gmetadata[0].thumb.Value;
           uploader			= JsonObject.gmetadata[0].uploader.Value;
-          posted				= dt.AddSeconds(long.Parse(JsonObject.gmetadata[0].posted.Value.ToString()));
+          posted				= posted.AddSeconds(long.Parse(JsonObject.gmetadata[0].posted.Value.ToString()));
           filecount			= Int32.Parse(JsonObject.gmetadata[0].filecount.Value.ToString());
           filesize			= Int32.Parse(JsonObject.gmetadata[0].filesize.Value.ToString());
           expunged			= bool.Parse(JsonObject.gmetadata[0].expunged.Value.ToString());
@@ -212,8 +215,10 @@ namespace Nagru___Manga_Organizer
           tags					= (JsonObject.gmetadata[0].tags as JArray).Select(x => (string)x).ToArray();
         } catch (JsonReaderException exc) {
           Console.WriteLine(exc.Message);
+          error = true;
         } catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException exc) {
           Console.WriteLine(exc.Message);
+          error = true;
         }
       }
 
@@ -224,6 +229,10 @@ namespace Nagru___Manga_Organizer
 			/// <returns></returns>
       public string GetTags(string sCurrentTags = null)
       {
+        if (tags == null) {
+          return string.Empty;
+        }
+
         List<string> lRaw = new List<string>(tags.Length * 2);
         lRaw.AddRange(tags);
 
@@ -236,6 +245,14 @@ namespace Nagru___Manga_Organizer
 					lRaw.Select(
 						x => x.Trim()).Distinct().ToArray<string>()
 				);
+      }
+
+      public bool APIError
+      {
+        get
+        {
+          return error;
+        }
       }
     }
     #endregion
