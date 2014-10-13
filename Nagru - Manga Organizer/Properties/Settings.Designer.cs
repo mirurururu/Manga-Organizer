@@ -212,17 +212,5 @@ namespace Nagru___Manga_Organizer.Properties {
                 return ((int)(this["RowColorAlt"]));
             }
         }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool SendReports {
-            get {
-                return ((bool)(this["SendReports"]));
-            }
-            set {
-                this["SendReports"] = value;
-            }
-        }
     }
 }

@@ -1,3 +1,7 @@
+#### v. 4.6.50 (October 12, 2014)
+  - Improved the pie chart on the tag statistics screen
+  - Updated the scrollbar handling
+
 #### v. 4.6.48 (October 03, 2014)
   - Chose a new compromise with tagging (small speed improvement)
   - Added better error handling for querying the EH API

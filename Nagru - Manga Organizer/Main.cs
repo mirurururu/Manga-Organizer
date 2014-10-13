@@ -706,7 +706,9 @@ namespace Nagru___Manga_Organizer
         CmbBx_Type.Text = manga.category;												//set entry type
         Dt_Date.Value = manga.posted;													  //set upload date
         Nud_Pages.Value = manga.filecount;											//set page count
-        srRating.SelectedStar = Convert.ToInt32(manga.rating);	//set star rating
+        if (srRating.SelectedStar == 0) {                       //set star rating
+          srRating.SelectedStar = Convert.ToInt32(manga.rating);
+        }
         acTxBx_Tags.Text = manga.GetTags(                       //set tags
           !string.IsNullOrWhiteSpace(acTxBx_Tags.Text)
             ? acTxBx_Tags.Text : null
@@ -854,8 +856,8 @@ namespace Nagru___Manga_Organizer
       using (DataTable dt = SQL.GetManga(mangaID)) {
         if (dt.Rows.Count > 0) {
           Text = "Selected: " + Ext.GetFormattedTitle(
-                                    dt.Rows[0]["Artist"].ToString(),
-                                    dt.Rows[0]["Title"].ToString()
+            dt.Rows[0]["Artist"].ToString(),
+            dt.Rows[0]["Title"].ToString()
           );
           acTxBx_Title.Text = dt.Rows[0]["Title"].ToString();
           CmbBx_Artist.Text = dt.Rows[0]["Artist"].ToString();
@@ -1294,7 +1296,7 @@ namespace Nagru___Manga_Organizer
       if (File.Exists(sBaseLoc.Trim() + ".cbz")) {
         SharpCompress.Common.CompressionInfo cmp = new SharpCompress.Common.CompressionInfo();
         this.Cursor = Cursors.WaitCursor;
-        
+
         //zip the folder contents into a .cbz
         using (var archive = SCA.Zip.ZipArchive.Create()) {
           string[] asFiles = Directory.GetFiles(sBaseLoc);
@@ -1329,7 +1331,7 @@ namespace Nagru___Manga_Organizer
         this.Cursor = Cursors.Default;
       }
       else {
-        MessageBox.Show("The file \"" + sBaseLoc.Trim() + ".cbz\" already exists.", 
+        MessageBox.Show("The file \"" + sBaseLoc.Trim() + ".cbz\" already exists.",
           Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
       }
     }
@@ -1388,6 +1390,7 @@ namespace Nagru___Manga_Organizer
       int iUnused = SQL.CleanUpTags();
       MessageBox.Show(iUnused > 0 ? iUnused + " unused tags have been removed." : "No unused tags exist."
         , Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+      acTxBx_Tags.KeyWords = SQL.GetTags();
     }
 
     /// <summary>
@@ -1398,6 +1401,8 @@ namespace Nagru___Manga_Organizer
       int iUnused = SQL.CleanUpArtists();
       MessageBox.Show(iUnused > 0 ? iUnused + " unused artists have been removed." : "No unused artists exist."
         , Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+      CmbBx_Artist.Items.Clear();
+      CmbBx_Artist.Items.AddRange(SQL.GetArtists());
     }
 
     /// <summary>
@@ -1958,7 +1963,7 @@ namespace Nagru___Manga_Organizer
 
         //Get filecount
         string[] sFiles = new string[0];
-        if (File.Exists(_Path)){
+        if (File.Exists(_Path)) {
           sFiles = new string[1] { _Path };
         }
         else {
@@ -1978,20 +1983,6 @@ namespace Nagru___Manga_Organizer
           pages = (ushort)Ext.GetFiles(
             _Path, SearchOption.TopDirectoryOnly).Length;
         }
-      }
-
-      /* custom serialization to save datatypes manually */
-      protected csEntry(SerializationInfo info, StreamingContext ctxt)
-      {
-        sTitle = info.GetString("TI");
-        sArtist = info.GetString("AR");
-        sLoc = info.GetString("LO");
-        sDesc = info.GetString("DS");
-        dtDate = info.GetDateTime("DT");
-        sType = info.GetString("TY");
-        byRat = info.GetByte("RT");
-        sTags = info.GetString("TG");
-        pages = (ushort)info.GetInt32("PG");
       }
 
       /* custom serialization to read datatypes manually */

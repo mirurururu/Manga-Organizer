@@ -119,14 +119,13 @@ Feel free to contact me at nagru@live.ca";
     {
       byPanel = (byte)progBar.Step;
 
-      if (btnPrev.Enabled && byPanel == 0)
-        btnPrev.Enabled = false;
-      else
-        btnPrev.Enabled = true;
-      if (byPanel == 4 && btnNxt.Text != "Finish")
+      btnPrev.Enabled = (byPanel != 0);
+      if (byPanel == 4 && btnNxt.Text != "Finish") {
         btnNxt.Text = "Finish";
-      else
+      }
+      else {
         btnNxt.Text = "Next >>";
+      }
 
       SwitchPanel();
     }

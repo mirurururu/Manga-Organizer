@@ -570,7 +570,6 @@ namespace Nagru___Manga_Organizer
               ,member_id						= @memberID
               ,pass_hash						= @passHash
               ,NewUser							= 0
-              ,SendReports					= @sendReports
               ,ShowGrid							= @showGrid
               ,ShowDate							= @showDate
               ,ReadInterval					= @interval
@@ -579,14 +578,13 @@ namespace Nagru___Manga_Organizer
               ,BackgroundColour			= @background
               ,GallerySettings			= @galleries";
 
-            sqParam.AddRange(new SQLiteParameter[14]{
+            sqParam.AddRange(new SQLiteParameter[13]{
               NewParameter("@rootPath", DbType.String, Properties.Settings.Default.DefLoc),
               NewParameter("@savePath", DbType.String, Properties.Settings.Default.SavLoc),
               NewParameter("@ignore", DbType.String, Properties.Settings.Default.Ignore),
               NewParameter("@browser", DbType.String, Properties.Settings.Default.DefProg),
               NewParameter("@notes", DbType.String, Properties.Settings.Default.Notes),
               NewParameter("@passHash", DbType.String, Properties.Settings.Default.pass_hash),
-              NewParameter("@sendReports", DbType.Int32, Properties.Settings.Default.SendReports ? 1 : 0),
               NewParameter("@showGrid", DbType.Int32, Properties.Settings.Default.DefGrid ? 1 : 0),
               NewParameter("@showDate", DbType.Int32, Properties.Settings.Default.HideDate ? 0 : 1),
               NewParameter("@interval", DbType.Int32, Properties.Settings.Default.Interval),

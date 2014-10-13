@@ -161,9 +161,6 @@ namespace Nagru___Manga_Organizer
       if (indx > -1)
         sb.Remove(0, indx + 1);
 
-			if (!File.Exists(sName))
-				return sb.ToString();
-
       indx = sb.ToString().LastIndexOf('.');
       if (indx > -1)
 				sb.Remove(indx, sb.Length - indx);

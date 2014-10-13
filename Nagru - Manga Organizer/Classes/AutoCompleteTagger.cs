@@ -16,6 +16,7 @@ namespace Nagru___Manga_Organizer
     protected ListBox lbSuggest;
     protected string[] asKeyWords;
     protected char cSep = ',';
+    protected readonly int ScrollModifier = 7;
 
     [Description("Sets the terms to be predicted.")]
     public string[] KeyWords
@@ -100,13 +101,14 @@ namespace Nagru___Manga_Organizer
 
 		public AutoCompleteTagger()
     {
+      asKeyWords = new string[0];
+
       sbHorz = new HScrollBar();
       sbHorz.Scroll += sbHorz_Scroll;
       sbHorz.Height = 14;
       sbHorz.Hide();
 
       lbSuggest = new ListBox();
-      asKeyWords = new string[0];
       lbSuggest.MouseUp += lbSuggest_MouseUp;
       lbSuggest.MouseMove += lbSuggest_MouseMove;
       lbSuggest.VisibleChanged += lbSuggest_VisibleChanged;
@@ -125,6 +127,17 @@ namespace Nagru___Manga_Organizer
       Parent.Controls.Add(lbSuggest);
       Parent.Controls.Add(sbHorz);
       base.InitLayout();
+    }
+
+    /// <summary>
+    /// Align the scrollbar relative to the textbox
+    /// </summary>
+    protected override void OnLayout(LayoutEventArgs levent)
+    {
+      sbHorz.Width = Width;
+      sbHorz.Left = Left;
+      sbHorz.Top = Bottom;
+      base.OnLayout(levent);
     }
 
 		/// <summary>
@@ -285,7 +298,7 @@ namespace Nagru___Manga_Organizer
     /// </summary>
     protected void sbHorz_Scroll(object sender, ScrollEventArgs e)
     {
-      base.Select(sbHorz.Value, 0);
+      base.Select(sbHorz.Value * (ScrollModifier * 2), 0);
       base.ScrollToCaret();
     }
 		
@@ -294,21 +307,13 @@ namespace Nagru___Manga_Organizer
     /// </summary>
     public void SetScroll()
     {
-      int iWidth = TextRenderer.MeasureText(this.Text, this.Font).Width;
-      if (iWidth > this.Width) {
-        sbHorz.Maximum = this.Text.Length + 10;
-        sbHorz.Value = this.SelectionStart;
-
-        //set sbHorz location
-        sbHorz.Width = Width;
-        sbHorz.Left = Left;
-        sbHorz.Top = Bottom;
+      if (TextRenderer.MeasureText(this.Text, this.Font).Width > this.Width) {
+        int iValue = this.SelectionStart / ScrollModifier;
+        sbHorz.Maximum = (this.Text.Length + (ScrollModifier * 2)) / ScrollModifier;
+        sbHorz.Value = (iValue <= sbHorz.Value) ? iValue : sbHorz.Value;
         sbHorz.Show();
       }
       else if (sbHorz.Visible) {
-        int iStart = this.SelectionStart;
-        this.SelectionStart = 0;
-        this.SelectionStart = iStart;
         sbHorz.Hide();
       }
     }
