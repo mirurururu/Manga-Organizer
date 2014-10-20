@@ -1,3 +1,6 @@
+#### v. 4.6.51 (October 19, 2014)
+  - Prevented an exception when trying to open encrypted archives
+
 #### v. 4.6.50 (October 12, 2014)
   - Improved the pie chart on the tag statistics screen
   - Updated the scrollbar handling

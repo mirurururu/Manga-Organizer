@@ -686,6 +686,27 @@ namespace Nagru___Manga_Organizer
       return bArchive;
     }
 
+
+    /// <summary>
+    /// Ensures the archive can be accessed.
+    /// Since SharpCompress cannot check for encryption, we simply check for an access exception.
+    /// </summary>
+    /// <param name="Archive">A SharpCompress Archive object to validate</param>
+    /// <returns>Whether the file can be accessed</returns>
+    public static bool IsArchiveAccessible(SCA.IArchive scArch)
+    {
+      bool bAccessible = false;
+
+      try {
+        if (scArch.TotalSize > 0) {
+          bAccessible = true;
+        }
+      } catch (NullReferenceException) {
+      } catch (NotImplementedException) {
+      }
+      return bAccessible;
+    }
+
     /// <summary>
     /// Parse EH metadata into local fields
     /// </summary>
@@ -918,48 +939,54 @@ namespace Nagru___Manga_Organizer
     private void SetPicBxImage(string sPath)
     {
       if (IsArchive(sPath)) {
-        SCA.IArchive scArch = SCA.ArchiveFactory.Open(sPath);
-        int iCount = scArch.Entries.Count();
-        BeginInvoke(new DelInt(SetNudCount), iCount);
+        using(SCA.IArchive scArch = SCA.ArchiveFactory.Open(sPath)){
 
-        if (iCount > 0) {
-          //account for terrible default zip-sorting
-          int iFirst = 0;
-          SCA.IArchiveEntry[] scEntries = scArch.Entries.ToArray();
-
-          List<string> lEntries = new List<string>(iCount);
-          for (int i = 0; i < iCount; i++) {
-            if (scEntries[i].FilePath.EndsWith("jpg", StringComparison.OrdinalIgnoreCase)
-                || scEntries[i].FilePath.EndsWith("jpeg", StringComparison.OrdinalIgnoreCase)
-                || scEntries[i].FilePath.EndsWith("png", StringComparison.OrdinalIgnoreCase)
-                || scEntries[i].FilePath.EndsWith("bmp", StringComparison.OrdinalIgnoreCase))
-              lEntries.Add(scEntries[i].FilePath);
+          if (!IsArchiveAccessible(scArch)) {
+            Console.WriteLine("The archive is password-protected and cannot be opened here.");
+            return;
           }
-          if (lEntries.Count > 0) {
-            lEntries.Sort(new TrueCompare());
-            for (; iFirst < iCount; iFirst++) {
-              if (scEntries[iFirst].FilePath.Length == lEntries[0].Length) {
-                if (scEntries[iFirst].FilePath.Equals(lEntries[0])) {
-                  break;
-                }
-              }
-            }
 
-            //load image
-            try {
-              using (MemoryStream ms = new MemoryStream()) {
-                scEntries[iFirst].WriteTo(ms);
-                using (Bitmap bmpTmp = new Bitmap(ms)) {
-                  PicBx_Cover.Image = Ext.ScaleImage(bmpTmp,
-                    PicBx_Cover.Width, PicBx_Cover.Height);
+          int iCount = scArch.Entries.Count();
+          BeginInvoke(new DelInt(SetNudCount), iCount);
+
+          if (iCount > 0) {
+            //account for terrible default zip-sorting
+            int iFirst = 0;
+            SCA.IArchiveEntry[] scEntries = scArch.Entries.ToArray();
+
+            List<string> lEntries = new List<string>(iCount);
+            for (int i = 0; i < iCount; i++) {
+              if (scEntries[i].FilePath.EndsWith("jpg", StringComparison.OrdinalIgnoreCase)
+                  || scEntries[i].FilePath.EndsWith("jpeg", StringComparison.OrdinalIgnoreCase)
+                  || scEntries[i].FilePath.EndsWith("png", StringComparison.OrdinalIgnoreCase)
+                  || scEntries[i].FilePath.EndsWith("bmp", StringComparison.OrdinalIgnoreCase))
+                lEntries.Add(scEntries[i].FilePath);
+            }
+            if (lEntries.Count > 0) {
+              lEntries.Sort(new TrueCompare());
+              for (; iFirst < iCount; iFirst++) {
+                if (scEntries[iFirst].FilePath.Length == lEntries[0].Length) {
+                  if (scEntries[iFirst].FilePath.Equals(lEntries[0])) {
+                    break;
+                  }
                 }
               }
-            } catch (Exception Exc) {
-              Console.WriteLine(Exc.Message);
+
+              //load image
+              try {
+                using (MemoryStream ms = new MemoryStream()) {
+                  scEntries[iFirst].WriteTo(ms);
+                  using (Bitmap bmpTmp = new Bitmap(ms)) {
+                    PicBx_Cover.Image = Ext.ScaleImage(bmpTmp,
+                      PicBx_Cover.Width, PicBx_Cover.Height);
+                  }
+                }
+              } catch (Exception Exc) {
+                Console.WriteLine(Exc.Message);
+              }
             }
           }
         }
-        scArch.Dispose();
       }
       else {
         TrySet(sPath);
@@ -1973,10 +2000,12 @@ namespace Nagru___Manga_Organizer
 
         if (sFiles.Length > 0) {
           if (Main.IsArchive(sFiles[0])) {
-            SCA.IArchive scArchive = SCA.ArchiveFactory.Open(sFiles[0]);
-            pages = (scArchive.Entries.Count() > ushort.MaxValue) ?
-                ushort.MaxValue : (ushort)Math.Abs(scArchive.Entries.Count());
-            scArchive.Dispose();
+            using (SCA.IArchive scArchive = SCA.ArchiveFactory.Open(sFiles[0])) {
+              if (Main.IsArchiveAccessible(scArchive)) {
+                pages = (scArchive.Entries.Count() > ushort.MaxValue) ?
+                  ushort.MaxValue : (ushort)Math.Abs(scArchive.Entries.Count());
+              }
+            }
           }
         }
         else {
