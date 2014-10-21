@@ -698,7 +698,7 @@ namespace Nagru___Manga_Organizer
       bool bAccessible = false;
 
       try {
-        if (scArch.TotalSize > 0) {
+        if (scArch.Entries.Count() >= 0) {
           bAccessible = true;
         }
       } catch (NullReferenceException) {
