@@ -114,9 +114,11 @@ namespace Nagru___Manga_Organizer
       switch (e.KeyCode) {
         #region Traversal
         case Keys.Left:
+        case Keys.A:
           Next();
           break;
         case Keys.Right:
+        case Keys.D:
           Prev();
           break;
         case Keys.Up:
