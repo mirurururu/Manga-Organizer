@@ -70,6 +70,9 @@ namespace Nagru___Manga_Organizer
       lvManga.staticColumns.Add(ColTags.Index);
       lvManga.RatingColumn = ColRating.Index;
       lvManga.Select();
+
+      //set WindowState to what it was the last time
+      this.WindowState = Properties.Settings.Default.LastWindowState;
     }
 
     /// <summary>
@@ -102,6 +105,10 @@ namespace Nagru___Manga_Organizer
       );
 
       SQL.Disconnect();
+
+      //save form's last WindowState
+      Properties.Settings.Default.LastWindowState = this.WindowState;
+      Properties.Settings.Default.Save();
     }
 
     /// <summary>
