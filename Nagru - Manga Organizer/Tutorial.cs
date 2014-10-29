@@ -52,7 +52,7 @@ title:celeb_wife date:>01/01/12 -vanilla";
 Click on the cover-image to use this browser
 
 Keyboard Shortcuts:
-'Left/Right Arrows' - Next/previous page
+'Left/Right Arrows or A/D' - Next/previous page
 'Up/Down Arrow' - Skip 4 pages ahead/behind
 'Home' - Skip to beginning\r\n'End' - Skip to end
 'F' - Find new pages
