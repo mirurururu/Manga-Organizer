@@ -1,3 +1,7 @@
+#### v. 4.6.53 (November 03, 2014)
+   - bem13: Can now traverse images with A/D
+   - bem13: Maintain window state between sessions
+
 #### v. 4.6.51 (October 19, 2014)
   - Prevented an exception when trying to open encrypted archives
 
