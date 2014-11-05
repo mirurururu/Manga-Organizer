@@ -188,6 +188,7 @@ namespace Nagru___Manga_Organizer
       public int torrentcount;
       public string[] tags;
       private bool error = false;
+      CultureInfo ci = (CultureInfo)CultureInfo.CurrentCulture.Clone();
 
 			/// <summary>
 			/// The constructor which parses out the JSON object
@@ -196,8 +197,6 @@ namespace Nagru___Manga_Organizer
       public gmetadata(string JSON)
       {
         posted = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        //Clone the culture and set the decimal separator to "."
-        CultureInfo ci = (CultureInfo)CultureInfo.CurrentCulture.Clone();
         ci.NumberFormat.CurrencyDecimalSeparator = ".";
 
         try {
