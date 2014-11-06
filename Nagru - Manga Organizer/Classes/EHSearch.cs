@@ -188,7 +188,7 @@ namespace Nagru___Manga_Organizer
       public int torrentcount;
       public string[] tags;
       private bool error = false;
-      CultureInfo ci = (CultureInfo)CultureInfo.CurrentCulture.Clone();
+      CultureInfo ci = new CultureInfo("en-US");
 
 			/// <summary>
 			/// The constructor which parses out the JSON object
@@ -197,7 +197,7 @@ namespace Nagru___Manga_Organizer
       public gmetadata(string JSON)
       {
         posted = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        ci.NumberFormat.CurrencyDecimalSeparator = ".";
+        ci.NumberFormat.NumberDecimalSeparator = ".";
 
         try {
           dynamic JsonObject = JObject.Parse(JSON);
