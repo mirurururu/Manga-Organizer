@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -187,6 +188,7 @@ namespace Nagru___Manga_Organizer
       public int torrentcount;
       public string[] tags;
       private bool error = false;
+      CultureInfo ci = new CultureInfo("en-US");
 
 			/// <summary>
 			/// The constructor which parses out the JSON object
@@ -195,6 +197,7 @@ namespace Nagru___Manga_Organizer
       public gmetadata(string JSON)
       {
         posted = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        ci.NumberFormat.NumberDecimalSeparator = ".";
 
         try {
           dynamic JsonObject = JObject.Parse(JSON);
@@ -210,7 +213,7 @@ namespace Nagru___Manga_Organizer
           filecount			= Int32.Parse(JsonObject.gmetadata[0].filecount.Value.ToString());
           filesize			= Int32.Parse(JsonObject.gmetadata[0].filesize.Value.ToString());
           expunged			= bool.Parse(JsonObject.gmetadata[0].expunged.Value.ToString());
-          rating				= float.Parse(JsonObject.gmetadata[0].rating.Value.ToString());
+          rating				= float.Parse(JsonObject.gmetadata[0].rating.Value.ToString(), NumberStyles.Any, ci);
           torrentcount	= Int32.Parse(JsonObject.gmetadata[0].torrentcount.Value.ToString());
           tags					= (JsonObject.gmetadata[0].tags as JArray).Select(x => (string)x).ToArray();
         } catch (JsonReaderException exc) {
