@@ -1,3 +1,6 @@
+### v. 4.6.54 (November 06, 2014)
+  - bem13: Fixed parsing gallery details when in a culture that uses commas instead of periods for numbers
+
 #### v. 4.6.53 (November 03, 2014)
    - bem13: Can now traverse images with A/D
    - bem13: Maintain window state between sessions

@@ -30,8 +30,10 @@ namespace Nagru___Manga_Organizer
     /// <summary>
     /// The URL that was searched
     /// </summary>
-    public string SearchURL {
-      get {
+    public string SearchURL
+    {
+      get
+      {
         return sSearchURL;
       }
     }
@@ -39,8 +41,10 @@ namespace Nagru___Manga_Organizer
     /// <summary>
     /// The current result page
     /// </summary>
-    public int CurrentPage {
-      get {
+    public int CurrentPage
+    {
+      get
+      {
         return iCurrentPage + 1;
       }
     }
@@ -48,8 +52,10 @@ namespace Nagru___Manga_Organizer
     /// <summary>
     /// total number of result pages
     /// </summary>
-    public int Pages {
-      get {
+    public int Pages
+    {
+      get
+      {
         return iPages + 1;
       }
     }
@@ -57,8 +63,10 @@ namespace Nagru___Manga_Organizer
     /// <summary>
     /// The number of matching manga returned
     /// </summary>
-    public int Count {
-      get {
+    public int Count
+    {
+      get
+      {
         return hsURL.Count;
       }
     }
@@ -68,7 +76,8 @@ namespace Nagru___Manga_Organizer
     /// </summary>
     /// <param name="index"></param>
     /// <returns></returns>
-    public string URL(int index) {
+    public string URL(int index)
+    {
       return hsURL.ElementAt(index);
     }
 
@@ -77,15 +86,18 @@ namespace Nagru___Manga_Organizer
     /// </summary>
     /// <param name="index"></param>
     /// <returns></returns>
-    public string Title(int index) {
+    public string Title(int index)
+    {
       return hsTitle.ElementAt(index);
     }
 
     /// <summary>
     /// set gallery type search options
     /// </summary>
-    public bool[] Options {
-      get {
+    public bool[] Options
+    {
+      get
+      {
         return new bool[10] {
           (bOpt[0] == 1), (bOpt[1] == 1),
           (bOpt[2] == 1), (bOpt[3] == 1),
@@ -94,7 +106,8 @@ namespace Nagru___Manga_Organizer
           (bOpt[8] == 1), (bOpt[9] == 1),
         };
       }
-      set {
+      set
+      {
         if (value.Length != 10) {
           throw new ArgumentOutOfRangeException();
         }
@@ -109,30 +122,30 @@ namespace Nagru___Manga_Organizer
       }
     }
 
-		/// <summary>
-		/// Save the gallery type settings
-		/// </summary>
-		public void SaveOptions()
-		{
-			SQL.UpdateSetting(SQL.Setting.SearchIgnore,
-				string.Join(",", bOpt.Select(x => x.ToString()))
-			);
-		}
-		
-		/// <summary>
-		/// Adds a possible match from EH
-		/// </summary>
-		/// <param name="sURL"></param>
-		/// <param name="sTitle"></param>
-		public void Add(string sURL, string sTitle)
+    /// <summary>
+    /// Save the gallery type settings
+    /// </summary>
+    public void SaveOptions()
     {
-      hsURL.Add(sURL);
-			hsTitle.Add(HttpUtility.HtmlDecode(sTitle));
+      SQL.UpdateSetting(SQL.Setting.SearchIgnore,
+        string.Join(",", bOpt.Select(x => x.ToString()))
+      );
     }
 
-		/// <summary>
-		/// Clears the result set
-		/// </summary>
+    /// <summary>
+    /// Adds a possible match from EH
+    /// </summary>
+    /// <param name="sURL"></param>
+    /// <param name="sTitle"></param>
+    public void Add(string sURL, string sTitle)
+    {
+      hsURL.Add(sURL);
+      hsTitle.Add(HttpUtility.HtmlDecode(sTitle));
+    }
+
+    /// <summary>
+    /// Clears the result set
+    /// </summary>
     public void Clear()
     {
       hsURL.Clear();
@@ -143,10 +156,10 @@ namespace Nagru___Manga_Organizer
 
     #endregion
 
-		#region Inner Classes
+    #region Inner Classes
 
-		#region EH API JSON Class
-		/// <summary>
+    #region EH API JSON Class
+    /// <summary>
     /// Used to simulate JS Object Literal for JSON 
     /// </summary>
     /// <remarks>Based on Hupotronics' ExLinks</remarks>
@@ -155,7 +168,8 @@ namespace Nagru___Manga_Organizer
       public string method = "gdata";
       public object[][] gidlist;
 
-      public csEHAPI(string URL) {
+      public csEHAPI(string URL)
+      {
         string[] asChunk = Ext.Split(URL, "/");
 
         if (asChunk.Length == 5) {
@@ -167,9 +181,9 @@ namespace Nagru___Manga_Organizer
     #endregion
 
     #region EH Metadata
-		/// <summary>
-		/// Parses the JSON object returned from EH into a C# class
-		/// </summary>
+    /// <summary>
+    /// Parses the JSON object returned from EH into a C# class
+    /// </summary>
     public class gmetadata
     {
       public int gid;
@@ -188,34 +202,33 @@ namespace Nagru___Manga_Organizer
       public int torrentcount;
       public string[] tags;
       private bool error = false;
-      CultureInfo ci = new CultureInfo("en-US");
 
-			/// <summary>
-			/// The constructor which parses out the JSON object
-			/// </summary>
-			/// <param name="JSON">The JSON object literal</param>
+      /// <summary>
+      /// The constructor which parses out the JSON object
+      /// </summary>
+      /// <param name="JSON">The JSON object literal</param>
       public gmetadata(string JSON)
       {
+        CultureInfo ci = new CultureInfo("en-US");
         posted = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        ci.NumberFormat.NumberDecimalSeparator = ".";
 
         try {
           dynamic JsonObject = JObject.Parse(JSON);
-          gid						= Int32.Parse(JsonObject.gmetadata[0].gid.Value.ToString());
-          token					= JsonObject.gmetadata[0].token.Value;
-          archiver_key	= JsonObject.gmetadata[0].archiver_key.Value;
-          title					= HttpUtility.HtmlDecode(JsonObject.gmetadata[0].title.Value);
-          title_jpn			= JsonObject.gmetadata[0].title_jpn.Value;
-          category			= JsonObject.gmetadata[0].category.Value;
-          thumb					= JsonObject.gmetadata[0].thumb.Value;
-          uploader			= JsonObject.gmetadata[0].uploader.Value;
-          posted				= posted.AddSeconds(long.Parse(JsonObject.gmetadata[0].posted.Value.ToString()));
-          filecount			= Int32.Parse(JsonObject.gmetadata[0].filecount.Value.ToString());
-          filesize			= Int32.Parse(JsonObject.gmetadata[0].filesize.Value.ToString());
-          expunged			= bool.Parse(JsonObject.gmetadata[0].expunged.Value.ToString());
-          rating				= float.Parse(JsonObject.gmetadata[0].rating.Value.ToString(), NumberStyles.Any, ci);
-          torrentcount	= Int32.Parse(JsonObject.gmetadata[0].torrentcount.Value.ToString());
-          tags					= (JsonObject.gmetadata[0].tags as JArray).Select(x => (string)x).ToArray();
+          gid = int.Parse(JsonObject.gmetadata[0].gid.Value.ToString(), ci);
+          token = JsonObject.gmetadata[0].token.Value;
+          archiver_key = JsonObject.gmetadata[0].archiver_key.Value;
+          title = HttpUtility.HtmlDecode(JsonObject.gmetadata[0].title.Value);
+          title_jpn = JsonObject.gmetadata[0].title_jpn.Value;
+          category = JsonObject.gmetadata[0].category.Value;
+          thumb = JsonObject.gmetadata[0].thumb.Value;
+          uploader = JsonObject.gmetadata[0].uploader.Value;
+          posted = posted.AddSeconds(long.Parse(JsonObject.gmetadata[0].posted.Value.ToString()));
+          filecount = int.Parse(JsonObject.gmetadata[0].filecount.Value.ToString(), ci);
+          filesize = int.Parse(JsonObject.gmetadata[0].filesize.Value.ToString(), ci);
+          expunged = bool.Parse(JsonObject.gmetadata[0].expunged.Value.ToString());
+          rating = float.Parse(JsonObject.gmetadata[0].rating.Value.ToString(), ci);
+          torrentcount = int.Parse(JsonObject.gmetadata[0].torrentcount.Value.ToString(), ci);
+          tags = (JsonObject.gmetadata[0].tags as JArray).Select(x => (string)x).ToArray();
         } catch (JsonReaderException exc) {
           Console.WriteLine(exc.Message);
           error = true;
@@ -225,11 +238,11 @@ namespace Nagru___Manga_Organizer
         }
       }
 
-			/// <summary>
-			/// Returns all the tags in the object, organized by name
-			/// </summary>
-			/// <param name="sCurrentTags">Adds in any passed in tags to the returned array</param>
-			/// <returns></returns>
+      /// <summary>
+      /// Returns all the tags in the object, organized by name
+      /// </summary>
+      /// <param name="sCurrentTags">Adds in any passed in tags to the returned array</param>
+      /// <returns></returns>
       public string GetTags(string sCurrentTags = null)
       {
         if (tags == null) {
@@ -243,11 +256,11 @@ namespace Nagru___Manga_Organizer
           lRaw.AddRange(sCurrentTags.Split(','));
         }
         lRaw.Sort(new TrueCompare());
-        
+
         return String.Join(", ",
-					lRaw.Select(
-						x => x.Trim()).Distinct().ToArray<string>()
-				);
+          lRaw.Select(
+            x => x.Trim()).Distinct().ToArray<string>()
+        );
       }
 
       public bool APIError
@@ -260,14 +273,14 @@ namespace Nagru___Manga_Organizer
     }
     #endregion
 
-		#endregion
+    #endregion
 
-		#region Constructor
+    #region Constructor
 
-		/// <summary>
-		/// Sets the initial values of the object
-		/// </summary>
-		public csEHSearch()
+    /// <summary>
+    /// Sets the initial values of the object
+    /// </summary>
+    public csEHSearch()
     {
       hsURL = new List<string>();
       hsTitle = new List<string>();
@@ -278,30 +291,30 @@ namespace Nagru___Manga_Organizer
       #endregion
     }
 
-		#endregion
+    #endregion
 
-		#region Search EH
-		
-		/// <summary>
-		/// Creates the search string
-		/// </summary>
-		/// <param name="SearchTerms">The search terms from the user</param>
-		/// <param name="useEXH">Whether to use regular EH or EXH</param>
-		/// <param name="Options">The gallery types to search for</param>
-		/// <returns></returns>
-		private static string FormatSearch(string SearchTerms, bool useEXH, byte[] Options)
+    #region Search EH
+
+    /// <summary>
+    /// Creates the search string
+    /// </summary>
+    /// <param name="SearchTerms">The search terms from the user</param>
+    /// <param name="useEXH">Whether to use regular EH or EXH</param>
+    /// <param name="Options">The gallery types to search for</param>
+    /// <returns></returns>
+    private static string FormatSearch(string SearchTerms, bool useEXH, byte[] Options)
     {
       return string.Format("http://{0}.org/?f_doujinshi={1}&f_manga={2}&f_artistcg={3}"
         + "&f_gamecg={4}&f_western={5}&f_non-h={6}&f_imageset={7}&f_cosplay={8}"
         + "&f_asianporn={9}&f_misc={10}&f_search={11}&f_apply=Apply+Filter",
-				useEXH ? "exhentai" : "g.e-hentai", Options[0], Options[1], Options[2], Options[3], Options[4], Options[5],
-				Options[6], Options[7], Options[8], Options[9], Uri.EscapeDataString(SearchTerms).Replace("%20", "+"));
+        useEXH ? "exhentai" : "g.e-hentai", Options[0], Options[1], Options[2], Options[3], Options[4], Options[5],
+        Options[6], Options[7], Options[8], Options[9], Uri.EscapeDataString(SearchTerms).Replace("%20", "+"));
     }
-		
-		/// <summary>
-		/// Searches EH and returns a list of gallery titles and addresses
-		/// </summary>
-		/// <param name="SearchTerms">The terms to search for</param>
+
+    /// <summary>
+    /// Searches EH and returns a list of gallery titles and addresses
+    /// </summary>
+    /// <param name="SearchTerms">The terms to search for</param>
     public void Search(string SearchTerms)
     {
       this.Clear();
@@ -318,8 +331,8 @@ namespace Nagru___Manga_Organizer
         SQL.GetSetting(SQL.Setting.pass_hash) + SQL.GetSetting(SQL.Setting.member_id));
 
       //convert raw search terms into web form
-			sSearchURL = FormatSearch(SearchTerms, bXH, bOpt);
-      
+      sSearchURL = FormatSearch(SearchTerms, bXH, bOpt);
+
       //set up connection
       ServicePointManager.DefaultConnectionLimit = 64;
       HttpWebRequest rq = (HttpWebRequest)
@@ -369,15 +382,15 @@ namespace Nagru___Manga_Organizer
       }
     }
 
-		#endregion
+    #endregion
 
-		#region Get Metadata
-		
-		/// <summary>
-		/// Loads and parses a response from an EH URL
-		/// </summary>
-		/// <param name="sAddress"></param>
-		public static gmetadata LoadMetadata(string sAddress)
+    #region Get Metadata
+
+    /// <summary>
+    /// Loads and parses a response from an EH URL
+    /// </summary>
+    /// <param name="sAddress"></param>
+    public static gmetadata LoadMetadata(string sAddress)
     {
       string sEHResponse = string.Empty;
       gmetadata gmManga = null;
@@ -422,6 +435,6 @@ namespace Nagru___Manga_Organizer
       return gmManga;
     }
 
-		#endregion
+    #endregion
   }
 }
