@@ -1,3 +1,6 @@
+### v. 4.6.55 (November 18, 2014)
+  - Added new function to return all manga with missing sources
+
 ### v. 4.6.54 (November 06, 2014)
   - bem13: Fixed parsing gallery details when in a culture that uses commas instead of periods for numbers
 

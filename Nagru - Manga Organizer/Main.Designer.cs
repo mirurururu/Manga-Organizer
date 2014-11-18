@@ -105,6 +105,7 @@
       this.Tb_Notes = new System.Windows.Forms.TabPage();
       this.frTxBx_Notes = new Nagru___Manga_Organizer.FixedRichTextBox();
       this.Delay = new System.Windows.Forms.Timer(this.components);
+      this.MnTS_missingSource = new System.Windows.Forms.ToolStripMenuItem();
       this.TabControl.SuspendLayout();
       this.Tb_Browse.SuspendLayout();
       this.Mn_TxBx.SuspendLayout();
@@ -633,7 +634,7 @@
       this.Mn_EntryOps.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
       this.Mn_EntryOps.Location = new System.Drawing.Point(3, 3);
       this.Mn_EntryOps.Name = "Mn_EntryOps";
-      this.Mn_EntryOps.Size = new System.Drawing.Size(107, 27);
+      this.Mn_EntryOps.Size = new System.Drawing.Size(388, 27);
       this.Mn_EntryOps.TabIndex = 21;
       this.Mn_EntryOps.Text = "menuStrip";
       // 
@@ -727,7 +728,8 @@
       this.maintenanceToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.MnTs_CleanTags,
             this.MnTs_CleanArtists,
-            this.MnTS_DBMaintenance});
+            this.MnTS_DBMaintenance,
+            this.MnTS_missingSource});
       this.maintenanceToolStripMenuItem.Name = "maintenanceToolStripMenuItem";
       this.maintenanceToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
       this.maintenanceToolStripMenuItem.Text = "Maintenance";
@@ -973,6 +975,13 @@
       this.Delay.Interval = 400;
       this.Delay.Tick += new System.EventHandler(this.Delay_Tick);
       // 
+      // MnTS_missingSource
+      // 
+      this.MnTS_missingSource.Name = "MnTS_missingSource";
+      this.MnTS_missingSource.Size = new System.Drawing.Size(193, 22);
+      this.MnTS_missingSource.Text = "Missing Source";
+      this.MnTS_missingSource.Click += new System.EventHandler(this.MnTS_missingSource_Click);
+      // 
       // Main
       // 
       this.AcceptButton = this.Btn_Clear;
@@ -1086,6 +1095,7 @@
         private System.Windows.Forms.ToolStripMenuItem MnTs_CleanArtists;
         private System.Windows.Forms.ToolStripMenuItem MnTS_ZipSource;
 				private System.Windows.Forms.ToolStripMenuItem MnTS_DBMaintenance;
+        private System.Windows.Forms.ToolStripMenuItem MnTS_missingSource;
     }
 }
 

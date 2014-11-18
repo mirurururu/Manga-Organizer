@@ -1450,6 +1450,66 @@ namespace Nagru___Manga_Organizer
     }
 
     /// <summary>
+    /// Displays all entries whose source file cannot be found
+    /// </summary>
+    private void MnTS_missingSource_Click(object sender, EventArgs e)
+    {
+      //add missing entries
+      using (DataTable dt = SQL.GetAllManga()) {
+        Cursor = Cursors.WaitCursor;
+        List<ListViewItem> lItems = new List<ListViewItem>(dt.Rows.Count);
+
+        Color cRowColorHighlight = Color.FromArgb(Int32.Parse(SQL.GetSetting(SQL.Setting.RowColourHighlight)));
+        for (int i = 0; i < dt.Rows.Count; i++) {
+          string sPath = dt.Rows[i]["Location"].ToString();
+          if (!(File.Exists(sPath) || Directory.Exists(sPath))) {
+            int iRating = Int32.Parse(dt.Rows[i]["Rating"].ToString());
+
+            #region Set the row properties
+            ListViewItem lvi = new ListViewItem(new string[8] {
+              dt.Rows[i]["Artist"].ToString()
+              ,dt.Rows[i]["Title"].ToString()
+              ,dt.Rows[i]["Pages"].ToString()
+              ,dt.Rows[i]["Tags"].ToString()
+              ,DateTime.Parse(dt.Rows[i]["PublishedDate"].ToString()).ToString("MM/dd/yy")
+              ,dt.Rows[i]["Type"].ToString()
+              ,Ext.RatingFormat(iRating)
+              ,dt.Rows[i]["mangaID"].ToString()
+            });
+
+            if (iRating == 5) {
+              lvi.BackColor = cRowColorHighlight;
+            }
+            #endregion
+
+            lItems.Add(lvi);
+          }
+        }
+
+        string sMsg = lItems.Count + " entries were found missing their source file or directory.";
+        if(lItems.Count > 0) {
+
+          //remove search parameters
+          ChkBx_ShowFav.Checked = false;
+          TxBx_Search.Text = "MISSING_SOURCE";
+          aiShuffle = null;
+
+          lvManga.SuspendLayout();
+          lvManga.Items.Clear();
+          lvManga.Items.AddRange(lItems.ToArray());
+          lvManga.SortRows();
+          lvManga.ResumeLayout();
+
+          Text = string.Format("Returned: {0:n0} entries", lvManga.Items.Count);
+          sMsg += "\nPlease go back to the 'Browse' tab to view them.";
+        }
+        
+        MessageBox.Show(sMsg, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        Cursor = Cursors.Default;
+      }
+    }
+
+    /// <summary>
     /// Show the tag statistics
     /// </summary>
     private void MnTS_Stats_Click(object sender, EventArgs e)
@@ -2021,7 +2081,29 @@ namespace Nagru___Manga_Organizer
         }
       }
 
-      /* custom serialization to read datatypes manually */
+      /// <summary>
+      /// custom serialization to save datatypes manually
+      /// </summary>
+      /// <param name="info"></param>
+      /// <param name="ctxt"></param>
+      protected csEntry(SerializationInfo info, StreamingContext ctxt)
+      {
+        sTitle = info.GetString("TI");
+        sArtist = info.GetString("AR");
+        sLoc = info.GetString("LO");
+        sDesc = info.GetString("DS");
+        dtDate = info.GetDateTime("DT");
+        sType = info.GetString("TY");
+        byRat = info.GetByte("RT");
+        sTags = info.GetString("TG");
+        pages = (ushort)info.GetInt32("PG");
+      }
+
+      /// <summary>
+      /// custom serialization to read datatypes manually
+      /// </summary>
+      /// <param name="info"></param>
+      /// <param name="ctxt"></param>
       [System.Security.Permissions.SecurityPermission(System.Security.Permissions.
           SecurityAction.LinkDemand, Flags = System.Security.Permissions.
           SecurityPermissionFlag.SerializationFormatter)]
