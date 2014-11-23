@@ -95,14 +95,15 @@ namespace Nagru___Manga_Organizer
     private void ScanDir(Object obj)
     {
       List<string> lEns = new List<string>();
-      lEns.AddRange(Ext.GetFiles(obj as string,
-          SearchOption.AllDirectories, "*.zip|*.cbz|*.rar|*.cbr|*.7z"));
 
       try {
+        lEns.AddRange(Ext.GetFiles(obj as string,
+          SearchOption.TopDirectoryOnly, "*.zip|*.cbz|*.rar|*.cbr|*.7z"));
         lEns.AddRange(Directory.EnumerateDirectories(
-          obj as string, "*", SearchOption.AllDirectories));
+          obj as string, "*", SearchOption.TopDirectoryOnly));
       } catch (ArgumentException) {
-        Console.WriteLine("An invalid object got passed through!");
+        MessageBox.Show("An invalid object got passed through!",
+          Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
       } catch (UnauthorizedAccessException) {
         MessageBox.Show("User does not have access to one of the folders/files scanned!",
           Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -113,9 +114,18 @@ namespace Nagru___Manga_Organizer
 
       int i = 0;
       while (i < lEns.Count && !bIsClosing) {
-        if (!hsPaths.Contains(lEns[i]))
-          BeginInvoke(new DelVoidEntry(AddItem),
-            new Main.csEntry(lEns[i]));
+        if (!hsPaths.Contains(lEns[i])) {
+          try {
+            Main.csEntry en = new Main.csEntry(lEns[i]);
+            BeginInvoke(new DelVoidEntry(AddItem), en);
+          } catch (Exception) {
+            MessageBox.Show(string.Format("{0}:\n{1}\n\n{2}"
+              , "An unexpected error occurred while trying to parse the entry at"
+              , lEns[i]
+              , "Please contact the developer at nagru@live.ca with the details."),
+              Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+          }
+        }
         i++;
       }
       if (!bIsClosing) {
@@ -174,14 +184,15 @@ namespace Nagru___Manga_Organizer
           i.ToString()
         });
 
-        if (hsIgnore.Contains(lvi.SubItems[0].Text + lvi.SubItems[1].Text)) {
+        if (hsIgnore.Contains(lFound[i].sArtist + lFound[i].sTitle)) {
           if (ChkBx_All.Checked) {
             lvi.BackColor = Color.MistyRose;
             lItems.Add(lvi);
           }
         }
-        else
+        else {
           lItems.Add(lvi);
+        }
       }
 
       LV_Found.BeginUpdate();
@@ -230,7 +241,7 @@ namespace Nagru___Manga_Organizer
     /*Open folder of double-clicked item */
     private void LV_Found_DoubleClick(object sender, EventArgs e)
     {
-      int iPos = Convert.ToInt32(LV_Found.FocusedItem.SubItems[3].Text);
+      int iPos = int.Parse(LV_Found.FocusedItem.SubItems[3].Text);
       Process.Start(lFound[iPos].sLoc);
     }
 

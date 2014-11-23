@@ -1,3 +1,6 @@
+### v. 4.6.56 (November 23, 2014)
+  - Added temporary 'fix' for cases of scanning breaking until I can get some details on why
+
 ### v. 4.6.55 (November 18, 2014)
   - Added new function to return all manga with missing sources
 
