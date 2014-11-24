@@ -1102,33 +1102,33 @@ namespace Nagru___Manga_Organizer
             switch (asType[i]) {
               case "artist":
               case "a":
-                sbCmd.AppendFormat("and at.Name {0} like '%{1}%' "
+                sbCmd.AppendFormat("and ifnull(at.Name, '') {0} like '%{1}%' "
                   , abNot[i][x] ? "not" : ""
                   , asTerms[i][x]);
                 break;
               case "title":
               case "t":
-                sbCmd.AppendFormat("and mgx.Title {0} like '%{1}%' "
+                sbCmd.AppendFormat("and ifnull(mgx.Title, '') {0} like '%{1}%' "
                   , abNot[i][x] ? "not" : ""
                   , asTerms[i][x]);
                 break;
               case "tag":
               case "tags":
               case "g":
-                sbCmd.AppendFormat("and tg.Tags {0} like '%{1}%' "
+                sbCmd.AppendFormat("and ifnull(tg.Tags, '') {0} like '%{1}%' "
                   , abNot[i][x] ? "not" : ""
                   , asTerms[i][x]);
                 break;
               case "description":
               case "desc":
               case "s":
-                sbCmd.AppendFormat("and mgx.Description {0} like '%{1}%' "
+                sbCmd.AppendFormat("and ifnull(mgx.Description, '') {0} like '%{1}%' "
                   , abNot[i][x] ? "not" : ""
                   , asTerms[i][x]);
                 break;
               case "type":
               case "y":
-                sbCmd.AppendFormat("and tp.Type {0} like '%{1}%' "
+                sbCmd.AppendFormat("and ifnull(tp.Type, '') {0} like '%{1}%' "
                   , abNot[i][x] ? "not" : ""
                   , asTerms[i][x]);
                 break;
@@ -1165,11 +1165,11 @@ namespace Nagru___Manga_Organizer
                 break;
               default:
                 if (abNot[i][x]) {
-                  sbCmd.AppendFormat("and (tg.Tags not like '%{0}%' and mgx.Title not like '%{0}%' and at.Name not like '%{0}%' and mgx.Description not like '%{0}%' and tp.Type not like '%{0}%' and date(mgx.PublishedDate) not like '%{0}%') "
+                  sbCmd.AppendFormat("and (ifnull(tg.Tags, '') not like '%{0}%' and ifnull(mgx.Title, '') not like '%{0}%' and ifnull(at.Name, '') not like '%{0}%' and ifnull(mgx.Description, '') not like '%{0}%' and ifnull(tp.Type, '') not like '%{0}%' and date(mgx.PublishedDate) not like '%{0}%') "
                   , asTerms[i][x]);
                 }
                 else {
-                  sbCmd.AppendFormat("and (tg.Tags like '%{0}%' or mgx.Title like '%{0}%' or at.Name like '%{0}%' or mgx.Description like '%{0}%' or tp.Type like '%{0}%' or date(mgx.PublishedDate) like '%{0}%') "
+                  sbCmd.AppendFormat("and (ifnull(tg.Tags, '') like '%{0}%' or ifnull(mgx.Title, '') like '%{0}%' or ifnull(at.Name, '') like '%{0}%' or ifnull(mgx.Description, '') like '%{0}%' or ifnull(tp.Type, '') like '%{0}%' or date(mgx.PublishedDate) like '%{0}%') "
                   , asTerms[i][x]);
                 }
 
