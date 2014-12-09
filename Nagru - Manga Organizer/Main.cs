@@ -708,8 +708,8 @@ namespace Nagru___Manga_Organizer
         if (scArch.Entries.Count() >= 0) {
           bAccessible = true;
         }
-      } catch (NullReferenceException) {
-      } catch (NotImplementedException) {
+      } catch {
+        Console.WriteLine("Archive was inaccessible");
       }
       return bAccessible;
     }

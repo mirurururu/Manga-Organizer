@@ -1,3 +1,6 @@
+### v. 4.6.58 (December 7, 2014)
+  - Made sure to catch all unsupported compression types
+
 ### v. 4.6.57 (November 23, 2014)
   - Added temporary 'fix' for cases of scanning breaking until I can get some details on why
   - Fixed issue when searching through a manga entry with null values
