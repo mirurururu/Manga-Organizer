@@ -1327,7 +1327,7 @@ namespace Nagru___Manga_Organizer
     {
       string sBaseLoc = TxBx_Loc.Text;
 
-      if (File.Exists(sBaseLoc.Trim() + ".cbz")) {
+      if (!File.Exists(sBaseLoc.Trim() + ".cbz")) {
         SharpCompress.Common.CompressionInfo cmp = new SharpCompress.Common.CompressionInfo();
         this.Cursor = Cursors.WaitCursor;
 
