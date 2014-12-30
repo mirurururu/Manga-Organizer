@@ -1,3 +1,8 @@
+### v. 4.6.60 (December 29, 2014)
+  - Updated the image file browser to better display multi-folder archives
+  - Updated the search textbox to overwrite highlighted text during a paste
+  - Changed how the down button works so that after deleting an entry it still maintains your position
+
 ### v. 4.6.58 (December 7, 2014)
   - Made sure to catch all unsupported compression types
 

@@ -47,14 +47,14 @@ namespace Nagru___Manga_Organizer
       ListViewItem[] lvi = new ListViewItem[fmSource.Files.Count];
       for (int i = 0; i < fmSource.Files.Count; i++) {
         lvi[i] = new ListViewItem(
-          Path.GetFileName(fmSource.Files[i]));
+          BetterFilename(fmSource.Files[i])
+        );
       }
       LV_Pages.BeginUpdate();
       LV_Pages.Items.AddRange(lvi);
       LV_Pages.EndUpdate();
 
-      if (iPage < 0)
-        iPage = 0;
+      if (iPage < 0) iPage = 0;
       Col_Page.Width = LV_Pages.DisplayRectangle.Width;
       LV_SelectPages();
 
@@ -127,6 +127,22 @@ namespace Nagru___Manga_Organizer
 		#endregion
 
 		#region Custom Methods
+
+    /// <summary>
+    /// Returns path names as {Parent Directory}\{File}
+    /// </summary>
+    /// <param name="Raw">The path to parse</param>
+    /// <returns>The formatted version of the path</returns>
+    private static string BetterFilename(string Raw)
+    {
+      string[] aSplit = Raw.Split('\\');
+      if (aSplit.Length >= 2) {
+        return string.Format("{0}\\{1}", aSplit[aSplit.Length - 2], aSplit[aSplit.Length - 1]);
+      }
+      else {
+        return Raw;
+      }
+    }
 
 		/// <summary>
 		/// Get the next pair of images for the preview screen

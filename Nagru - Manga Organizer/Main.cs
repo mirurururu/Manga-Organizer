@@ -121,7 +121,7 @@ namespace Nagru___Manga_Organizer
         case 0:
           if (mangaID == -1) {
             Text = string.Format("{0}: {1:n0} entries",
-                (TxBx_Search.Text == "" && !ChkBx_ShowFav.Checked ?
+                (string.IsNullOrWhiteSpace(TxBx_Search.Text) && !ChkBx_ShowFav.Checked ?
                 "Manga Organizer" : "Returned"), lvManga.Items.Count);
           }
           this.AcceptButton = Btn_Clear;
@@ -200,7 +200,7 @@ namespace Nagru___Manga_Organizer
       Reset();
       Delay.Stop();
 
-      if (TxBx_Search.Text == "") {
+      if (string.IsNullOrWhiteSpace(TxBx_Search.Text)) {
         TxBx_Search.Width += offsetWidth;
         Btn_Clear.Visible = false;
         UpdateLV();
@@ -313,7 +313,7 @@ namespace Nagru___Manga_Organizer
         TxBx_Loc.Text = xfbd.SelectedPath;
         ThreadPool.QueueUserWorkItem(GetImage);
 
-        if (CmbBx_Artist.Text == "" && acTxBx_Title.Text == "")
+        if (string.IsNullOrWhiteSpace(CmbBx_Artist.Text) && string.IsNullOrWhiteSpace(acTxBx_Title.Text))
           SetTitle(Ext.GetNameSansExtension(xfbd.SelectedPath));
       }
       xfbd.Dispose();
@@ -435,7 +435,7 @@ namespace Nagru___Manga_Organizer
       if (lvManga.Items.Count == 0
           || (lvManga.Items.Count == 1 && mangaID != -1))
         return;
-      int iPos = 0;
+      int iPos = lvManga.TopItem.Index;
 
       if (lvManga.SelectedItems.Count == 1) {
         iPos = lvManga.SelectedItems[0].Index;
@@ -770,7 +770,7 @@ namespace Nagru___Manga_Organizer
       }
 
       string sProg = SQL.GetSetting(SQL.Setting.ImageBrowser);
-      if (sProg == "")
+      if (string.IsNullOrWhiteSpace(sProg))
         System.Diagnostics.Process.Start("\"" + sPath + "\"");
       else
         System.Diagnostics.Process.Start(sProg, "\"" + sPath + "\"");
@@ -796,7 +796,7 @@ namespace Nagru___Manga_Organizer
       //reset Form title
       Tb_View.SuspendLayout();
       Text = string.Format("{0}: {1:n0} entries",
-          (TxBx_Search.Text == "" && !ChkBx_ShowFav.Checked ?
+          (string.IsNullOrWhiteSpace(TxBx_Search.Text) && !ChkBx_ShowFav.Checked ?
           "Manga Organizer" : "Returned"), lvManga.Items.Count);
 
       //Tb_Browse
@@ -1122,7 +1122,7 @@ namespace Nagru___Manga_Organizer
     private void MnTS_New_Click(object sender, EventArgs e)
     {
       //reject when title is unfilled
-      if (acTxBx_Title.Text == "") {
+      if (string.IsNullOrWhiteSpace(acTxBx_Title.Text)) {
         MessageBox.Show("Title cannot be empty.", Application.ProductName,
             MessageBoxButtons.OK, MessageBoxIcon.Warning);
         return;
@@ -1295,7 +1295,7 @@ namespace Nagru___Manga_Organizer
     /// </summary>
     private void MnTS_CopyTitle_Click(object sender, EventArgs e)
     {
-      if (acTxBx_Title.Text == "") {
+      if (string.IsNullOrWhiteSpace(acTxBx_Title.Text)) {
         MessageBox.Show("The title field cannot be empty.",
             Application.ProductName, MessageBoxButtons.OK,
             MessageBoxIcon.Exclamation);
@@ -1325,9 +1325,9 @@ namespace Nagru___Manga_Organizer
     /// </summary>
     private void MnTS_ZipSource_Click(object sender, EventArgs e)
     {
-      string sBaseLoc = TxBx_Loc.Text;
+      string sBaseLoc = TxBx_Loc.Text.Trim();
 
-      if (!File.Exists(sBaseLoc.Trim() + ".cbz")) {
+      if (!File.Exists(sBaseLoc + ".cbz")) {
         SharpCompress.Common.CompressionInfo cmp = new SharpCompress.Common.CompressionInfo();
         this.Cursor = Cursors.WaitCursor;
 
@@ -1339,7 +1339,7 @@ namespace Nagru___Manga_Organizer
             archive.AddEntry(fi.Name, fi);
           }
 
-          using (FileStream fs = new FileStream(sBaseLoc.Trim() + ".cbz", FileMode.CreateNew)) {
+          using (FileStream fs = new FileStream(sBaseLoc + ".cbz", FileMode.CreateNew)) {
             archive.SaveTo(fs, cmp);
           }
         }
@@ -1353,7 +1353,7 @@ namespace Nagru___Manga_Organizer
 
           if (iNumDir > 0) {
             dResult = MessageBox.Show(
-                string.Format("This directory contains {0} subfolder(s),\n" +
+              string.Format("This directory contains {0} subfolder(s),\n" +
                 "are you sure you want to delete them?", iNumDir),
                 Application.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
           }
@@ -1365,7 +1365,7 @@ namespace Nagru___Manga_Organizer
         this.Cursor = Cursors.Default;
       }
       else {
-        MessageBox.Show("The file \"" + sBaseLoc.Trim() + ".cbz\" already exists.",
+        MessageBox.Show("The file \"" + sBaseLoc + ".cbz\" already exists.",
           Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
       }
     }
@@ -1714,39 +1714,40 @@ namespace Nagru___Manga_Organizer
         case "FixedRichTextBox":
           FixedRichTextBox fr = ((FixedRichTextBox)ActiveControl);
           fr.SelectedText = sAdd;
-          if (TabControl.SelectedIndex == 2)
+          if (TabControl.SelectedIndex == 2) {
             bSavNotes = false;
+          }
           break;
         case "TextBox":
         case "AutoCompleteTagger":
           if (ActiveControl.Name == "TxBx_Search") {
             string[] asTitle = Ext.ParseGalleryTitle(sAdd);
-            sAdd = (asTitle[0] == "") ? sAdd :
-                string.Format("artist:{0} title:{1}",
-                asTitle[0].Replace(' ', '_'), asTitle[1].Replace(' ', '_'));
-            TxBx_Search.SelectionStart = Ext.InsertText(
-                TxBx_Search, sAdd, TxBx_Search.SelectionStart);
+            TxBx_Search.SelectedText = (string.IsNullOrWhiteSpace(asTitle[0])) ? sAdd :
+              string.Format("artist:{0} title:{1}"
+                ,asTitle[0].Replace(' ', '_')
+                ,asTitle[1].Replace(' ', '_')
+              );
             UpdateLV();
             break;
           }
-
-          TextBox txt = (TextBox)ActiveControl;
-          if (txt.Name == "acTxBx_Tags" && sAdd.Contains("\r")) {
-            IEnumerable<string> ie = sAdd.Split('(', '\n');
-            ie = ie.Where(s => !s.EndsWith("\r")
-                && !s.EndsWith(")") && !s.Equals(""));
-            ie = ie.Select(s => s.TrimEnd());
-            sAdd = string.Join(", ", ie.ToArray());
+          else {
+            TextBox txt = (TextBox)ActiveControl;
+            if (txt.Name == "acTxBx_Tags" && sAdd.Contains("\r")) {
+              IEnumerable<string> ie = sAdd.Split('(', '\n');
+              ie = ie.Where(s => !s.EndsWith("\r") && !s.EndsWith(")") 
+                && !string.IsNullOrWhiteSpace(s)).Select(s => s.Trim());
+              sAdd = string.Join(", ", ie.ToArray());
+            }
+            txt.SelectedText = sAdd;
           }
-          txt.SelectedText = sAdd;
           break;
         case "ComboBox":
-          ComboBox cb = (ComboBox)ActiveControl;
-
-          if (sAdd.Contains('['))
+          if (sAdd.Contains('[')){
             SetTitle(sAdd);
-          else
-            cb.SelectedText = sAdd;
+          }
+          else {
+            ((ComboBox)ActiveControl).SelectedText = sAdd;
+          }
           break;
       }
     }
@@ -1877,7 +1878,7 @@ namespace Nagru___Manga_Organizer
           break;
         case "TxBx_Search":
           string[] asTitle = Ext.ParseGalleryTitle(sAdd);
-          sAdd = (asTitle[0] == "") ? sAdd :
+          sAdd = (string.IsNullOrWhiteSpace(asTitle[0])) ? sAdd :
               string.Format("artist:{0} title:{1}",
               asTitle[0].Replace(' ', '_'), asTitle[1].Replace(' ', '_'));
           TxBx_Search.SelectionStart = Ext.InsertText(
@@ -1896,13 +1897,13 @@ namespace Nagru___Manga_Organizer
       TxBx_Loc.Text = asDir[0];
 
       if (Directory.Exists(asDir[0])) {
-        if (CmbBx_Artist.Text == "" && acTxBx_Title.Text == "") {
+        if (string.IsNullOrWhiteSpace(CmbBx_Artist.Text) && string.IsNullOrWhiteSpace(acTxBx_Title.Text)) {
           SetTitle(Path.GetDirectoryName(asDir[0]));
           ThreadPool.QueueUserWorkItem(GetImage);
         }
       }
       else if (File.Exists(asDir[0]) && IsArchive(asDir[0])) {
-        if (CmbBx_Artist.Text == "" && acTxBx_Title.Text == "") {
+        if (string.IsNullOrWhiteSpace(CmbBx_Artist.Text) && string.IsNullOrWhiteSpace(acTxBx_Title.Text)) {
           SetTitle(Ext.GetNameSansExtension(asDir[0]));
           ThreadPool.QueueUserWorkItem(GetImage);
         }
@@ -1974,7 +1975,7 @@ namespace Nagru___Manga_Organizer
 
       //add all remaining folders
       for (int i = 0; i < asDir.Length; i++) {
-        if (asDir[i] == ""
+        if (string.IsNullOrWhiteSpace(asDir[i])
             || (!Directory.Exists(asDir[i])
                 && !IsArchive(asDir[i])))
           continue;

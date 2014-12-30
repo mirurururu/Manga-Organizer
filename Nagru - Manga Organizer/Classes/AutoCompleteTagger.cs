@@ -284,7 +284,7 @@ namespace Nagru___Manga_Organizer
     protected override void OnTextChanged(EventArgs e)
     {
       SetScroll();
-      if (this.Text == "")
+      if (string.IsNullOrWhiteSpace(this.Text))
         lbSuggest.Hide();
       base.OnTextChanged(e);
     }

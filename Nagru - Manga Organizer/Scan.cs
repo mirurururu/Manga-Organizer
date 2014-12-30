@@ -57,7 +57,7 @@ namespace Nagru___Manga_Organizer
       fbd.RootFolder = Environment.SpecialFolder.Desktop;
       fbd.Description = "Select the directory you want to scan.";
 
-      if (TxBx_Loc.Text == "" || !Directory.Exists(TxBx_Loc.Text))
+      if (string.IsNullOrWhiteSpace(TxBx_Loc.Text) || !Directory.Exists(TxBx_Loc.Text))
         fbd.SelectedPath = Environment.CurrentDirectory;
       else
         fbd.SelectedPath = TxBx_Loc.Text;
