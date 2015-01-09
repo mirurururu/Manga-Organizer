@@ -1,3 +1,6 @@
+### v. 4.6.61 (January 8, 2014)
+  - Changed font so that Japanese characters are displayed properly
+
 ### v. 4.6.60 (December 29, 2014)
   - Updated the image file browser to better display multi-folder archives
   - Updated the search textbox to overwrite highlighted text during a paste

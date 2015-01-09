@@ -85,6 +85,7 @@
       this.MnTs_CleanTags = new System.Windows.Forms.ToolStripMenuItem();
       this.MnTs_CleanArtists = new System.Windows.Forms.ToolStripMenuItem();
       this.MnTS_DBMaintenance = new System.Windows.Forms.ToolStripMenuItem();
+      this.MnTS_missingSource = new System.Windows.Forms.ToolStripMenuItem();
       this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
       this.MnTS_Stats = new System.Windows.Forms.ToolStripMenuItem();
       this.MnTS_Settings = new System.Windows.Forms.ToolStripMenuItem();
@@ -105,7 +106,6 @@
       this.Tb_Notes = new System.Windows.Forms.TabPage();
       this.frTxBx_Notes = new Nagru___Manga_Organizer.FixedRichTextBox();
       this.Delay = new System.Windows.Forms.Timer(this.components);
-      this.MnTS_missingSource = new System.Windows.Forms.ToolStripMenuItem();
       this.TabControl.SuspendLayout();
       this.Tb_Browse.SuspendLayout();
       this.Mn_TxBx.SuspendLayout();
@@ -181,7 +181,7 @@
             this.ColType,
             this.ColRating,
             this.colID});
-      this.lvManga.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lvManga.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.lvManga.FullRowSelect = true;
       this.lvManga.HideSelection = false;
       this.lvManga.IsMain = true;
@@ -289,10 +289,10 @@
             | System.Windows.Forms.AnchorStyles.Right)));
       this.TxBx_Search.CharacterCasing = System.Windows.Forms.CharacterCasing.Lower;
       this.TxBx_Search.ContextMenuStrip = this.Mn_TxBx;
-      this.TxBx_Search.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.TxBx_Search.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.TxBx_Search.Location = new System.Drawing.Point(59, 6);
       this.TxBx_Search.Name = "TxBx_Search";
-      this.TxBx_Search.Size = new System.Drawing.Size(728, 21);
+      this.TxBx_Search.Size = new System.Drawing.Size(728, 23);
       this.TxBx_Search.TabIndex = 1;
       this.TxBx_Search.TextChanged += new System.EventHandler(this.TxBx_Search_TextChanged);
       this.TxBx_Search.DragDrop += new System.Windows.Forms.DragEventHandler(this.DragDropTxBx);
@@ -434,12 +434,12 @@
       this.CmbBx_Artist.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
       this.CmbBx_Artist.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
       this.CmbBx_Artist.ContextMenuStrip = this.Mn_TxBx;
-      this.CmbBx_Artist.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.CmbBx_Artist.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.CmbBx_Artist.FormattingEnabled = true;
       this.CmbBx_Artist.Location = new System.Drawing.Point(52, 39);
       this.CmbBx_Artist.MaxLength = 1000000;
       this.CmbBx_Artist.Name = "CmbBx_Artist";
-      this.CmbBx_Artist.Size = new System.Drawing.Size(440, 21);
+      this.CmbBx_Artist.Size = new System.Drawing.Size(440, 23);
       this.CmbBx_Artist.Sorted = true;
       this.CmbBx_Artist.TabIndex = 0;
       this.CmbBx_Artist.TextChanged += new System.EventHandler(this.EntryAlt_Text);
@@ -488,11 +488,11 @@
       // 
       this.TxBx_Loc.AllowDrop = true;
       this.TxBx_Loc.ContextMenuStrip = this.Mn_TxBx;
-      this.TxBx_Loc.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.TxBx_Loc.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.TxBx_Loc.Location = new System.Drawing.Point(52, 146);
       this.TxBx_Loc.MaxLength = 1000000;
       this.TxBx_Loc.Name = "TxBx_Loc";
-      this.TxBx_Loc.Size = new System.Drawing.Size(440, 21);
+      this.TxBx_Loc.Size = new System.Drawing.Size(440, 23);
       this.TxBx_Loc.TabIndex = 3;
       this.TxBx_Loc.TextChanged += new System.EventHandler(this.TxBx_Loc_TextChanged);
       this.TxBx_Loc.DragDrop += new System.Windows.Forms.DragEventHandler(this.TxBx_Loc_DragDrop);
@@ -513,12 +513,12 @@
       this.CmbBx_Type.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
       this.CmbBx_Type.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
       this.CmbBx_Type.ContextMenuStrip = this.Mn_TxBx;
-      this.CmbBx_Type.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.CmbBx_Type.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.CmbBx_Type.FormattingEnabled = true;
       this.CmbBx_Type.Location = new System.Drawing.Point(52, 216);
       this.CmbBx_Type.MaxLength = 1000000;
       this.CmbBx_Type.Name = "CmbBx_Type";
-      this.CmbBx_Type.Size = new System.Drawing.Size(142, 21);
+      this.CmbBx_Type.Size = new System.Drawing.Size(142, 23);
       this.CmbBx_Type.Sorted = true;
       this.CmbBx_Type.TabIndex = 7;
       this.CmbBx_Type.Text = "Manga";
@@ -634,7 +634,7 @@
       this.Mn_EntryOps.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
       this.Mn_EntryOps.Location = new System.Drawing.Point(3, 3);
       this.Mn_EntryOps.Name = "Mn_EntryOps";
-      this.Mn_EntryOps.Size = new System.Drawing.Size(388, 27);
+      this.Mn_EntryOps.Size = new System.Drawing.Size(107, 27);
       this.Mn_EntryOps.TabIndex = 21;
       this.Mn_EntryOps.Text = "menuStrip";
       // 
@@ -754,6 +754,13 @@
       this.MnTS_DBMaintenance.Size = new System.Drawing.Size(193, 22);
       this.MnTS_DBMaintenance.Text = "DB Maintenance";
       this.MnTS_DBMaintenance.Click += new System.EventHandler(this.MnTS_DBMaintenance_Click);
+      // 
+      // MnTS_missingSource
+      // 
+      this.MnTS_missingSource.Name = "MnTS_missingSource";
+      this.MnTS_missingSource.Size = new System.Drawing.Size(193, 22);
+      this.MnTS_missingSource.Text = "Missing Source";
+      this.MnTS_missingSource.Click += new System.EventHandler(this.MnTS_missingSource_Click);
       // 
       // toolStripSeparator4
       // 
@@ -888,13 +895,13 @@
       // 
       this.acTxBx_Title.AllowDrop = true;
       this.acTxBx_Title.ContextMenuStrip = this.Mn_TxBx;
-      this.acTxBx_Title.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.acTxBx_Title.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.acTxBx_Title.KeyWords = new string[0];
       this.acTxBx_Title.Location = new System.Drawing.Point(52, 75);
       this.acTxBx_Title.MaxLength = 1000000;
       this.acTxBx_Title.Name = "acTxBx_Title";
       this.acTxBx_Title.Seperator = '\0';
-      this.acTxBx_Title.Size = new System.Drawing.Size(440, 21);
+      this.acTxBx_Title.Size = new System.Drawing.Size(440, 23);
       this.acTxBx_Title.TabIndex = 1;
       this.acTxBx_Title.TextChanged += new System.EventHandler(this.EntryAlt_Text);
       this.acTxBx_Title.DragDrop += new System.Windows.Forms.DragEventHandler(this.DragDropTxBx);
@@ -905,13 +912,13 @@
       this.acTxBx_Tags.AllowDrop = true;
       this.acTxBx_Tags.CharacterCasing = System.Windows.Forms.CharacterCasing.Lower;
       this.acTxBx_Tags.ContextMenuStrip = this.Mn_TxBx;
-      this.acTxBx_Tags.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.acTxBx_Tags.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.acTxBx_Tags.KeyWords = new string[0];
       this.acTxBx_Tags.Location = new System.Drawing.Point(52, 111);
       this.acTxBx_Tags.MaxLength = 1000000;
       this.acTxBx_Tags.Name = "acTxBx_Tags";
       this.acTxBx_Tags.Seperator = ',';
-      this.acTxBx_Tags.Size = new System.Drawing.Size(440, 21);
+      this.acTxBx_Tags.Size = new System.Drawing.Size(440, 23);
       this.acTxBx_Tags.TabIndex = 2;
       this.acTxBx_Tags.TextChanged += new System.EventHandler(this.EntryAlt_Text);
       this.acTxBx_Tags.DragDrop += new System.Windows.Forms.DragEventHandler(this.DragDropTxBx);
@@ -931,7 +938,7 @@
       this.frTxBx_Desc.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
       this.frTxBx_Desc.ContextMenuStrip = this.Mn_TxBx;
-      this.frTxBx_Desc.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.frTxBx_Desc.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.frTxBx_Desc.Location = new System.Drawing.Point(8, 278);
       this.frTxBx_Desc.MaxLength = 1000000;
       this.frTxBx_Desc.Name = "frTxBx_Desc";
@@ -974,13 +981,6 @@
       // 
       this.Delay.Interval = 400;
       this.Delay.Tick += new System.EventHandler(this.Delay_Tick);
-      // 
-      // MnTS_missingSource
-      // 
-      this.MnTS_missingSource.Name = "MnTS_missingSource";
-      this.MnTS_missingSource.Size = new System.Drawing.Size(193, 22);
-      this.MnTS_missingSource.Text = "Missing Source";
-      this.MnTS_missingSource.Click += new System.EventHandler(this.MnTS_missingSource_Click);
       // 
       // Main
       // 

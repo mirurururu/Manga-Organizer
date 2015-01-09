@@ -137,6 +137,7 @@
             this.colTag,
             this.colCount,
             this.colPer});
+      this.lvStats.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.lvStats.FullRowSelect = true;
       this.lvStats.IsMain = false;
       this.lvStats.Location = new System.Drawing.Point(12, 41);
