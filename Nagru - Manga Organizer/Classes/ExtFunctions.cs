@@ -168,6 +168,23 @@ namespace Nagru___Manga_Organizer
       return sb.ToString();
     }
 
+    /// <summary>
+    /// Ensures the SQL class is initialized
+    /// </summary>
+    /// <returns>Whether the SQL class is accessible. Safety check.</returns>
+    public static bool IsInitialized()
+    {
+      bool bInitialized = true;
+
+      try {
+        SQL.IsConnected();
+      } catch (System.TypeInitializationException) {
+        bInitialized = false;
+      }
+
+      return bInitialized;
+    }
+
 		/// <summary>
 		/// Adds text to a control
 		/// </summary>

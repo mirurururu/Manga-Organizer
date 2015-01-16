@@ -1,4 +1,8 @@
-### v. 4.6.61 (January 8, 2014)
+### v. 4.6.71 (January 15, 2015)
+  - Fixed changing the DB connection after the program has started
+  - Added error checking to handle no DB loaded at runtime
+
+### v. 4.6.61 (January 8, 2015)
   - Changed font so that Japanese characters are displayed properly
 
 ### v. 4.6.60 (December 29, 2014)

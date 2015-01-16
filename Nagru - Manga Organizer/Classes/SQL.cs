@@ -142,6 +142,9 @@ namespace Nagru___Manga_Organizer
           || File.Exists(_filePath = Ext.RelativePath(_filePath))) {
         sqlBase.Import(_filePath);
       }
+      else if (!IsConnected()) {
+        sqlBase.Connect();
+      }
 
       return IsConnected();
     }
@@ -158,10 +161,10 @@ namespace Nagru___Manga_Organizer
     /// <summary>
     /// Vacuum's the DB and closes the connection
     /// </summary>
-    public static void Disconnect()
+    public static void Disconnect(bool Recycle = false)
     {
       sqlBase.Close();
-      sqlBase.Dispose();
+      if(!Recycle) sqlBase.Dispose();
     }
 
     #endregion

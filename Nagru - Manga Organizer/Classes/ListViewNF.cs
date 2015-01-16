@@ -102,7 +102,7 @@ namespace Nagru___Manga_Organizer
     /// </summary>
     static ListViewNF()
     {
-      if (!InDesignMode()) {
+      if (!InDesignMode() && Ext.IsInitialized() && SQL.IsConnected()) {
         cRowColorAlt = Color.FromArgb(Int32.Parse(SQL.GetSetting(SQL.Setting.RowColourAlt)));
       }
       else {

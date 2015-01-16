@@ -90,25 +90,27 @@ namespace Nagru___Manga_Organizer
     /// </summary>
     private void Main_FormClosing(object sender, FormClosingEventArgs e)
     {
-      //save changes to text automatically
-      if (!bSavNotes) {
-        SQL.UpdateSetting(SQL.Setting.Notes, frTxBx_Notes.Text);
-        bSavNotes = true;
+      if (Ext.IsInitialized() && SQL.IsConnected()) {
+        //save changes to text automatically
+        if (!bSavNotes) {
+          SQL.UpdateSetting(SQL.Setting.Notes, frTxBx_Notes.Text);
+          bSavNotes = true;
+        }
+
+        //save Form's last position
+        SQL.UpdateSetting(SQL.Setting.FormPosition, string.Format("{0},{1},{2},{3}"
+          , this.Location.X
+          , this.Location.Y
+          , this.Size.Width
+          , this.Size.Height)
+        );
+
+        SQL.Disconnect();
+
+        //save form's last WindowState
+        Properties.Settings.Default.LastWindowState = this.WindowState;
+        Properties.Settings.Default.Save();
       }
-
-      //save Form's last position
-      SQL.UpdateSetting(SQL.Setting.FormPosition, string.Format("{0},{1},{2},{3}"
-        , this.Location.X
-        , this.Location.Y
-        , this.Size.Width
-        , this.Size.Height)
-      );
-
-      SQL.Disconnect();
-
-      //save form's last WindowState
-      Properties.Settings.Default.LastWindowState = this.WindowState;
-      Properties.Settings.Default.Save();
     }
 
     /// <summary>
@@ -541,14 +543,19 @@ namespace Nagru___Manga_Organizer
     #region Custom Methods
 
     #region Databse Conversion Progress
+
     /// <summary>
     /// Solely for converting old db's in a threaded manner
     /// </summary>
     private void Database_Load(object obj)
     {
-      SQL.delProgress = Database_Converting;
-      SQL.Connect();
-      BeginInvoke(new DelVoid(Database_Display));
+      if(Ext.IsInitialized() && SQL.Connect()){
+        SQL.delProgress = Database_Converting;
+        BeginInvoke(new DelVoid(Database_Display));
+      } else {
+        MessageBox.Show("Could not establish a connection with the database.",
+          Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
     }
 
     /// <summary>
@@ -612,6 +619,7 @@ namespace Nagru___Manga_Organizer
       CmbBx_Type.Items.AddRange(SQL.GetTypes());
 
       UpdateLV();
+      ResizeLV();
       Cursor = Cursors.Default;
     }
     #endregion
@@ -1539,28 +1547,35 @@ namespace Nagru___Manga_Organizer
         if (sOld != SQL.GetSetting(SQL.Setting.SavePath)) {
           string sNew = SQL.GetSetting(SQL.Setting.SavePath) + "\\MangaDB.sqlite";
           sOld += "\\MangaDB.sqlite";
-
-          //move old save to new location
-          if (File.Exists(sNew)
-              && MessageBox.Show("Open existing database at:\n" + sNew,
-              Application.ProductName, MessageBoxButtons.YesNo,
-              MessageBoxIcon.Question) == DialogResult.Yes) {
-            SQL.Disconnect();
-            SQL.Connect(sNew);
-
-            if (SQL.IsConnected()) {
-              UpdateLV();
-
-              //set up CmbBx autocomplete
-              CmbBx_Artist.Items.Clear();
-              CmbBx_Artist.Items.AddRange(SQL.GetArtists());
-            }
-          }
-          else if (File.Exists(sOld)) {
+          
+          //move current DB
+          if (!File.Exists(sNew) && File.Exists(sNew)) {
             File.Move(sOld, sNew);
           }
+          else if (File.Exists(sNew) && lvManga.Items.Count > 0) {
+            MessageBox.Show("A database already exists at this location. We'll load it and leave your old DB in place.", 
+              Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+          }
 
-          Text = "Default save location changed";
+          //reconnect & repopulate
+          SQL.Disconnect(Recycle:true);
+          if (SQL.Connect()) {
+            SQL.UpdateSetting(SQL.Setting.SavePath, sNew);
+            UpdateLV();
+
+            //set up CmbBx autocomplete
+            CmbBx_Type.Items.Clear();
+            CmbBx_Artist.Items.Clear();
+            CmbBx_Artist.Items.AddRange(SQL.GetArtists());
+            CmbBx_Type.Items.AddRange(SQL.GetTypes());
+            acTxBx_Tags.KeyWords = SQL.GetTags();
+            
+            Text = "Default save location changed";
+          }
+          else {
+            MessageBox.Show("Could not establish a connection with the database.",
+              Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+          }
         }
       }
       fmSet.Dispose();
