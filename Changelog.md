@@ -1,3 +1,6 @@
+### v. 4.6.72 (January 16, 2015)
+  - Fixed a situation where the program could start off-screen
+
 ### v. 4.6.71 (January 15, 2015)
   - Fixed changing the DB connection after the program has started
   - Added error checking to handle no DB loaded at runtime

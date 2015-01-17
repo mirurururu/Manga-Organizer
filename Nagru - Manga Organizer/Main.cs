@@ -99,8 +99,8 @@ namespace Nagru___Manga_Organizer
 
         //save Form's last position
         SQL.UpdateSetting(SQL.Setting.FormPosition, string.Format("{0},{1},{2},{3}"
-          , this.Location.X
-          , this.Location.Y
+          , this.Location.X > -1 ? this.Location.X : 0
+          , this.Location.Y > -1 ? this.Location.Y : 0
           , this.Size.Width
           , this.Size.Height)
         );
@@ -549,10 +549,15 @@ namespace Nagru___Manga_Organizer
     /// </summary>
     private void Database_Load(object obj)
     {
-      if(Ext.IsInitialized() && SQL.Connect()){
+      bool bConnected = false;
+      if(Ext.IsInitialized()) {
         SQL.delProgress = Database_Converting;
-        BeginInvoke(new DelVoid(Database_Display));
-      } else {
+        if(SQL.Connect()) {
+          BeginInvoke(new DelVoid(Database_Display));
+          bConnected = true;
+        }
+      }
+      if (!bConnected) {
         MessageBox.Show("Could not establish a connection with the database.",
           Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
@@ -598,7 +603,10 @@ namespace Nagru___Manga_Organizer
       string sPos = SQL.GetSetting(SQL.Setting.FormPosition);
       if (!string.IsNullOrWhiteSpace(sPos)) {
         int[] aiForm = sPos.Split(',').Select(x => Int32.Parse(x)).ToArray();
-        this.Location = new Point(aiForm[0], aiForm[1]);
+        this.Location = new Point(
+          aiForm[0] > -1 ? aiForm[0] : 0
+          ,aiForm[1] > -1 ? aiForm[1] : 0
+        );
         this.Width = aiForm[2];
         this.Height = aiForm[3];
       }
@@ -609,15 +617,12 @@ namespace Nagru___Manga_Organizer
       PicBx_Cover.BackColor = Color.FromArgb(Int32.Parse(SQL.GetSetting(SQL.Setting.BackgroundColour)));
       lvManga.Columns[4].Width = SQL.GetSetting(SQL.Setting.ShowDate) == "1" ? 70 : 0;
 
-      //set up tags
+      //set up tags, types, and artists
       acTxBx_Tags.KeyWords = SQL.GetTags();
-
-      //set up artists
+      CmbBx_Type.Items.AddRange(SQL.GetTypes());
       CmbBx_Artist.Items.AddRange(SQL.GetArtists());
 
-      //set up types
-      CmbBx_Type.Items.AddRange(SQL.GetTypes());
-
+      Reset();
       UpdateLV();
       ResizeLV();
       Cursor = Cursors.Default;
