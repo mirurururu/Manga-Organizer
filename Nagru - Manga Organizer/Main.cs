@@ -610,13 +610,28 @@ namespace Nagru___Manga_Organizer
         this.Width = aiForm[2];
         this.Height = aiForm[3];
       }
+
+      //ensure it's displayed
+      bool bDisplayed = false;
+      foreach (Screen sc in Screen.AllScreens) {
+        if (sc.WorkingArea.Contains(this.Location)) {
+          bDisplayed = true;
+          break;
+        }
+      }
+      if (!bDisplayed) {
+        this.Location = new Point(
+          (Screen.PrimaryScreen.WorkingArea.Width / 2) - (this.Width / 2)
+          , (Screen.PrimaryScreen.WorkingArea.Height / 2) - (this.Height / 2)
+        );
+      }
       #endregion
 
       frTxBx_Notes.Text = SQL.GetSetting(SQL.Setting.Notes);
       lvManga.GridLines = SQL.GetSetting(SQL.Setting.ShowGrid) == "1";
       PicBx_Cover.BackColor = Color.FromArgb(Int32.Parse(SQL.GetSetting(SQL.Setting.BackgroundColour)));
-      lvManga.Columns[4].Width = SQL.GetSetting(SQL.Setting.ShowDate) == "1" ? 70 : 0;
-
+      if(SQL.GetSetting(SQL.Setting.ShowDate) == "0") lvManga.Columns[4].Width = 0;
+      
       //set up tags, types, and artists
       acTxBx_Tags.KeyWords = SQL.GetTags();
       CmbBx_Type.Items.AddRange(SQL.GetTypes());

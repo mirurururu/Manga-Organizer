@@ -1,3 +1,6 @@
+### v. 4.6.73 (January 17, 2015)
+  - Improved method of ensuring the program starts on screen
+
 ### v. 4.6.72 (January 16, 2015)
   - Fixed a situation where the program could start off-screen
 
