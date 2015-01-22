@@ -1,3 +1,6 @@
+### v. 4.6.74 (January 21, 2015)
+  - Bugfix to prevent users from trying to enter non-digits as their EH memberID
+
 ### v. 4.6.73 (January 17, 2015)
   - Improved method of ensuring the program starts on screen
 

@@ -70,6 +70,7 @@ namespace Nagru___Manga_Organizer
 
     private void tsbtn_Help_Clicked(object sender, EventArgs e)
     {
+      tsbtnHelp.BackColor = SystemColors.ControlLightLight;
       MessageBox.Show("These credentials are the 'content' parameters of the exhentai cookies. "
         + "If not provided, this program will use g.e-hentai instead.",
         Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -213,9 +214,16 @@ namespace Nagru___Manga_Organizer
       SQL.UpdateSetting(SQL.Setting.pass_hash, txbxPass.Text);
     }
 
-    private void txbxID_TextChanged(object sender, EventArgs e)
+    private void txbxID_KeyPress(object sender, KeyPressEventArgs e)
     {
-      SQL.UpdateSetting(SQL.Setting.member_id, txbxID.Text);
+      if (!char.IsDigit(e.KeyChar)) {
+        tsbtnHelp.BackColor = Color.PaleVioletRed;
+        e.Handled = true;
+      }
+      else {
+        tsbtnHelp.BackColor = SystemColors.ControlLightLight;
+        SQL.UpdateSetting(SQL.Setting.member_id, txbxID.Text + e.KeyChar);
+      }
     }
     #endregion
 
@@ -256,5 +264,6 @@ namespace Nagru___Manga_Organizer
       txbxSearch.SelectAll();
     }
     #endregion
+
   }
 }
