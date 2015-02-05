@@ -98,6 +98,7 @@
       this.txbxID.Name = "txbxID";
       this.txbxID.Size = new System.Drawing.Size(100, 25);
       this.txbxID.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txbxID_KeyPress);
+      this.txbxID.TextChanged += new System.EventHandler(this.txbxID_TextChanged);
       // 
       // tslblPass
       // 
@@ -109,7 +110,6 @@
       // 
       this.txbxPass.Name = "txbxPass";
       this.txbxPass.Size = new System.Drawing.Size(200, 25);
-      this.txbxPass.TextChanged += new System.EventHandler(this.txbxPass_TextChanged);
       // 
       // toolStripSeparator2
       // 

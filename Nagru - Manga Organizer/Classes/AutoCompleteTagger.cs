@@ -307,11 +307,11 @@ namespace Nagru___Manga_Organizer
     /// </summary>
     public void SetScroll()
     {
-      if (TextRenderer.MeasureText(this.Text, this.Font).Width > this.Width) {
+      if (CreateGraphics().MeasureString(this.Text, this.Font).Width > this.Width) {
         int iValue = this.SelectionStart / ScrollModifier;
         sbHorz.Maximum = (this.Text.Length + (ScrollModifier * 2)) / ScrollModifier;
         sbHorz.Value = (iValue <= sbHorz.Value) ? iValue : sbHorz.Value;
-        sbHorz.Show();
+        if(!sbHorz.Visible) sbHorz.Show();
       }
       else if (sbHorz.Visible) {
         sbHorz.Hide();

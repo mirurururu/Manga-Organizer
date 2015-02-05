@@ -127,7 +127,7 @@ namespace Nagru___Manga_Organizer
     /// </summary>
     public void SaveOptions()
     {
-      SQL.UpdateSetting(SQL.Setting.SearchIgnore,
+      SQL.UpdateSetting(SQL.Setting.GallerySettings,
         string.Join(",", bOpt.Select(x => x.ToString()))
       );
     }

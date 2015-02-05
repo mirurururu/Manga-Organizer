@@ -1,3 +1,9 @@
+### v. 4.6.76 (February 04, 2015)
+  - Bugfix: proper saving of gallery type search preferences
+  - Improved code handling gallery suggestions
+  - Improved calculation of when to show scrollbar
+  - Program icon now displays in task manager
+
 ### v. 4.6.74 (January 21, 2015)
   - Bugfix to prevent users from trying to enter non-digits as their EH memberID
 

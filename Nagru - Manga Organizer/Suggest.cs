@@ -8,24 +8,38 @@ namespace Nagru___Manga_Organizer
 {
   public partial class Suggest : Form
   {
-    delegate void DelClassVoid(csEHSearch csPass);
-    public string sChoice = "";
-
-    DelClassVoid delResults = null;
-    csEHSearch csSearch = new csEHSearch();
-    string sTrySearch = string.Empty;
-
-    public Suggest(string sRaw)
+    #region Properties
+    public string SearchText
     {
-      InitializeComponent();
-      if (!string.IsNullOrWhiteSpace(sRaw)) {
-        sTrySearch = sRaw;
+      set
+      {
+        sTrySearch = value;
       }
-      else {
-        sTrySearch = Clipboard.GetText();
+    }
+    public string SearchResult
+    {
+      get
+      {
+        return sChoice;
       }
     }
 
+    delegate void DelClassVoid(csEHSearch csPass);
+    DelClassVoid delResults = null;
+    csEHSearch csSearch = new csEHSearch();
+    string sTrySearch, sChoice;
+    #endregion
+
+    #region Form
+
+    public Suggest()
+    {
+      InitializeComponent();
+    }
+
+    /// <summary>
+    /// Set up form page according to saved settings
+    /// </summary>
     private void Suggest_Load(object sender, EventArgs e)
     {
       delResults = DisplayResults;
@@ -47,7 +61,7 @@ namespace Nagru___Manga_Organizer
       string memberID = SQL.GetSetting(SQL.Setting.member_id);
       txbxPass.Text = SQL.GetSetting(SQL.Setting.pass_hash);
       if(memberID != "-1") {
-        txbxID.Text = SQL.GetSetting(SQL.Setting.member_id);
+        txbxID.Text = memberID;
       }
 
       //auto-format search terms where applicable
@@ -68,6 +82,60 @@ namespace Nagru___Manga_Organizer
       txbxSearch.SelectionStart = txbxSearch.Text.Length;
     }
 
+    /// <summary>
+    /// Save current settings
+    /// </summary>
+    private void Suggest_FormClosing(object sender, FormClosingEventArgs e)
+    {
+      if (!string.IsNullOrWhiteSpace(txbxID.Text)) {
+        SQL.UpdateSetting(SQL.Setting.member_id, txbxID.Text);
+        SQL.UpdateSetting(SQL.Setting.pass_hash, txbxPass.Text);
+      }
+
+      csSearch.SaveOptions();
+    }
+
+    #endregion
+
+    #region Events
+
+    #region listview methods
+
+    private void lvDetails_SelectedIndexChanged(object sender, EventArgs e)
+    {
+      //en/disable button depending on whether an item is selected
+      ToggleButtonEnabled(ref btnOK, lvDetails.SelectedItems.Count > 0);
+    }
+
+    private void lvDetails_Resize(object sender, EventArgs e)
+    {
+      ResizeLV();
+    }
+
+    private void ResizeLV()
+    {
+      lvDetails.BeginUpdate();
+      colTitle.Width = lvDetails.DisplayRectangle.Width - colURL.Width;
+      lvDetails.EndUpdate();
+    }
+
+    private void lvDetails_ColumnWidthChanging(object sender, ColumnWidthChangingEventArgs e)
+    {
+      e.Cancel = true;
+      e.NewWidth = lvDetails.Columns[e.ColumnIndex].Width;
+    }
+
+    private void lvDetails_DoubleClick(object sender, EventArgs e)
+    {
+      if (lvDetails.SelectedItems.Count > 0) {
+        System.Diagnostics.Process.Start(
+            lvDetails.SelectedItems[0].SubItems[0].Text);
+      }
+    }
+    #endregion
+
+    #region credential handling
+
     private void tsbtn_Help_Clicked(object sender, EventArgs e)
     {
       tsbtnHelp.BackColor = SystemColors.ControlLightLight;
@@ -76,7 +144,53 @@ namespace Nagru___Manga_Organizer
         Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
 
-    //update searched gallery types
+    private void txbxID_KeyPress(object sender, KeyPressEventArgs e)
+    {
+      if (!char.IsDigit(e.KeyChar) && !char.IsControl(e.KeyChar)) {
+        tsbtnHelp.BackColor = Color.PaleVioletRed;
+        e.Handled = true;
+      }
+      else {
+        tsbtnHelp.BackColor = SystemColors.ControlLightLight;
+      }
+    }
+
+    private void txbxID_TextChanged(object sender, EventArgs e)
+    {
+      if (!string.IsNullOrWhiteSpace(txbxID.Text)) {
+        int val;
+        if (!int.TryParse(txbxID.Text, out val)) {
+          txbxID.Text = string.Empty;
+          MessageBox.Show("This value must be an integer. Please see the help button.", Application.ProductName,
+            MessageBoxButtons.OK, MessageBoxIcon.Question);
+        }
+      }
+    }
+
+    #endregion
+
+    private void btnOK_Click(object sender, EventArgs e)
+    {
+      if (lvDetails.SelectedItems.Count > 0) {
+        sChoice = lvDetails.SelectedItems[0].SubItems[0].Text;
+        this.DialogResult = DialogResult.OK;
+      }
+
+      this.Close();
+    }
+
+    private void btnSearch_Click(object sender, EventArgs e)
+    {
+      if (!string.IsNullOrWhiteSpace(txbxID.Text)) {
+        SQL.UpdateSetting(SQL.Setting.member_id, txbxID.Text);
+        SQL.UpdateSetting(SQL.Setting.pass_hash, txbxPass.Text);
+      }
+
+      ToggleButtonEnabled(ref btnSearch);
+      ThreadPool.QueueUserWorkItem(Search, txbxSearch.Text);
+      this.Cursor = Cursors.WaitCursor;
+    }
+
     private void GalleryCheckedChanged(object sender, EventArgs e)
     {
       csSearch.Options = new bool[10] {
@@ -89,13 +203,40 @@ namespace Nagru___Manga_Organizer
       ddmGallery.ShowDropDown();
     }
 
-    private void btnSearch_Click(object sender, EventArgs e)
+    #endregion
+
+    #region Methods
+
+    /// <summary>
+    /// Display the results of the search
+    /// </summary>
+    /// <param name="csResults">Object that holds the search details</param>
+    private void DisplayResults(csEHSearch csResults)
     {
+      if (csResults.Count > 0) {
+        lvDetails.SuspendLayout();
+        lvDetails.Items.Clear();
+
+        for (int i = 0; i < csResults.Count; i++) {
+          lvDetails.Items.Add(new ListViewItem(new string[2] {
+            csResults.URL(i),
+            csResults.Title(i)
+          }));
+        }
+
+        lvDetails.Alternate();
+        lvDetails.ResumeLayout();
+      }
+
+      this.Cursor = Cursors.Default;
       ToggleButtonEnabled(ref btnSearch);
-      ThreadPool.QueueUserWorkItem(Search, txbxSearch.Text);
-      this.Cursor = Cursors.WaitCursor;
+      this.Text = "Search found " + csResults.Count + " possible matchess";
     }
 
+    /// <summary>
+    /// Starts a search using the text passed in
+    /// </summary>
+    /// <param name="obj">The string to search EH for</param>
     private void Search(object obj)
     {
       if (!(obj is string))
@@ -112,34 +253,12 @@ namespace Nagru___Manga_Organizer
       }
     }
 
-    private void DisplayResults(csEHSearch csResults)
-    {
-      if (csResults.Count > 0) {
-        lvDetails.SuspendLayout();
-        lvDetails.Items.Clear();
-
-        for (int i = 0; i < csResults.Count; i++) {
-          lvDetails.Items.Add(new ListViewItem(new string[2] {
-            csResults.URL(i),
-            csResults.Title(i)
-          }));
-        }
-
-        Alternate();
-        lvDetails.ResumeLayout();
-      }
-
-      this.Cursor = Cursors.Default;
-      ToggleButtonEnabled(ref btnSearch);
-      this.Text = "Search found " + csResults.Count + " possible matchess";
-    }
-
-    private void lvDetails_SelectedIndexChanged(object sender, EventArgs e)
-    {
-      //en/disable button depending on whether an item is selected
-      ToggleButtonEnabled(ref btnOK, lvDetails.SelectedItems.Count > 0);
-    }
-
+    /// <summary>
+    /// Toggles whether the passed in button is enabled. 
+    /// Used to prevent returning an empty selection.
+    /// </summary>
+    /// <param name="btn">A reference to the desired button</param>
+    /// <param name="bEnabled">An optional override to control button state</param>
     private void ToggleButtonEnabled(ref Button btn, bool? bEnabled = null)
     {
       btn.Enabled = (bEnabled == null) ?
@@ -148,83 +267,6 @@ namespace Nagru___Manga_Organizer
         SystemColors.ButtonFace : SystemColors.ScrollBar;
     }
 
-    private void btnOK_Click(object sender, EventArgs e)
-    {
-      if (lvDetails.SelectedItems.Count > 0) {
-        sChoice = lvDetails.SelectedItems[0].SubItems[0].Text;
-        this.DialogResult = DialogResult.OK;
-      }
-
-      this.Close();
-    }
-
-    private void Suggest_FormClosing(object sender, FormClosingEventArgs e)
-    {
-      csSearch.SaveOptions();
-    }
-
-    #region listview methods
-    private void lvDetails_Resize(object sender, EventArgs e)
-    {
-      ResizeLV();
-    }
-
-    private void ResizeLV()
-    {
-      lvDetails.BeginUpdate();
-      colTitle.Width = lvDetails.DisplayRectangle.Width - colURL.Width;
-      lvDetails.EndUpdate();
-    }
-
-    /* Prevent user changing column sizes */
-    private void lvDetails_ColumnWidthChanging(object sender, ColumnWidthChangingEventArgs e)
-    {
-      e.Cancel = true;
-      e.NewWidth = lvDetails.Columns[e.ColumnIndex].Width;
-    }
-
-    //open selected url in browser
-    private void lvDetails_DoubleClick(object sender, EventArgs e)
-    {
-      if (lvDetails.SelectedItems.Count > 0) {
-        System.Diagnostics.Process.Start(
-            lvDetails.SelectedItems[0].SubItems[0].Text);
-      }
-    }
-
-    private void Alternate(int iStart = 0)
-    {
-      if (SQL.GetSetting(SQL.Setting.ShowGrid) == "1")
-        return;
-      for (int i = iStart; i < lvDetails.Items.Count; i++) {
-        lvDetails.Items[i].BackColor = (i % 2 != 0) ?
-          Color.FromArgb(245, 245, 245) : SystemColors.Window;
-      }
-    }
-    #endregion
-
-    #region credential handling
-    private void tsbtnHelp_Click(object sender, EventArgs e)
-    {
-      MessageBox.Show("", Application.ProductName,
-          MessageBoxButtons.OK, MessageBoxIcon.Question);
-    }
-    private void txbxPass_TextChanged(object sender, EventArgs e)
-    {
-      SQL.UpdateSetting(SQL.Setting.pass_hash, txbxPass.Text);
-    }
-
-    private void txbxID_KeyPress(object sender, KeyPressEventArgs e)
-    {
-      if (!char.IsDigit(e.KeyChar)) {
-        tsbtnHelp.BackColor = Color.PaleVioletRed;
-        e.Handled = true;
-      }
-      else {
-        tsbtnHelp.BackColor = SystemColors.ControlLightLight;
-        SQL.UpdateSetting(SQL.Setting.member_id, txbxID.Text + e.KeyChar);
-      }
-    }
     #endregion
 
     #region Menu_Text
@@ -264,6 +306,5 @@ namespace Nagru___Manga_Organizer
       txbxSearch.SelectAll();
     }
     #endregion
-
   }
 }

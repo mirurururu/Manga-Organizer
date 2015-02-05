@@ -47,7 +47,6 @@ namespace Nagru___Manga_Organizer
     public Main(string[] sFile)
     {
       InitializeComponent();
-      this.Icon = Properties.Resources.dbIcon;
     }
 
     /// <summary>
@@ -1419,14 +1418,16 @@ namespace Nagru___Manga_Organizer
     /// </summary>
     private void MnTs_SearchEH_Click(object sender, EventArgs e)
     {
-      Suggest fmSuggest = new Suggest(
-        Ext.GetFormattedTitle(CmbBx_Artist.Text, acTxBx_Title.Text));
-      fmSuggest.ShowDialog();
+      string sAutosearch = Ext.GetFormattedTitle(CmbBx_Artist.Text, acTxBx_Title.Text);
 
-      if (fmSuggest.DialogResult == DialogResult.OK) {
-        LoadEH(fmSuggest.sChoice);
+      using (Suggest fmSuggest = new Suggest()) {
+        fmSuggest.SearchText = string.IsNullOrWhiteSpace(sAutosearch) ? Clipboard.GetText() : sAutosearch;
+        fmSuggest.ShowDialog();
+
+        if (fmSuggest.DialogResult == DialogResult.OK) {
+          LoadEH(fmSuggest.SearchResult);
+        }
       }
-      fmSuggest.Dispose();
     }
 
     /// <summary>

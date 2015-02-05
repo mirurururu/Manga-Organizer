@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
       this.components = new System.ComponentModel.Container();
+      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
       this.TabControl = new System.Windows.Forms.TabControl();
       this.Tb_Browse = new System.Windows.Forms.TabPage();
       this.ChkBx_ShowFav = new System.Windows.Forms.CheckBox();
@@ -991,6 +992,7 @@
       this.ClientSize = new System.Drawing.Size(934, 575);
       this.Controls.Add(this.TabControl);
       this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
       this.KeyPreview = true;
       this.MainMenuStrip = this.Mn_EntryOps;
       this.MinimumSize = new System.Drawing.Size(350, 150);
