@@ -122,7 +122,7 @@ namespace Nagru___Manga_Organizer
             MessageBox.Show(string.Format("{0}:\n{1}\n\n{2}"
               , "An unexpected error occurred while trying to parse the entry at"
               , lEns[i]
-              , "Please contact the developer at nagru@live.ca with the details."),
+              , "Please contact the developer at nagru@airmail.cc with the details."),
               Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
           }
         }

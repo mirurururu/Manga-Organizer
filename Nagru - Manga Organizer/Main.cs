@@ -632,9 +632,7 @@ namespace Nagru___Manga_Organizer
       if(SQL.GetSetting(SQL.Setting.ShowDate) == "0") lvManga.Columns[4].Width = 0;
       
       //set up tags, types, and artists
-      acTxBx_Tags.KeyWords = SQL.GetTags();
-      CmbBx_Type.Items.AddRange(SQL.GetTypes());
-      CmbBx_Artist.Items.AddRange(SQL.GetArtists());
+      RefreshAutocomplete();
 
       Reset();
       UpdateLV();
@@ -816,6 +814,18 @@ namespace Nagru___Manga_Organizer
     }
 
     /// <summary>
+    /// Re-set the values in the auto-complete controls
+    /// </summary>
+    private void RefreshAutocomplete()
+    {
+      CmbBx_Artist.Items.Clear();
+      CmbBx_Artist.Items.AddRange(SQL.GetArtists());
+      CmbBx_Type.Items.Clear();
+      CmbBx_Type.Items.AddRange(SQL.GetTypes());
+      acTxBx_Tags.KeyWords = SQL.GetTags();
+    }
+
+    /// <summary>
     /// Change inputs and variables back to their default state
     /// </summary>
     private void Reset()
@@ -890,7 +900,9 @@ namespace Nagru___Manga_Organizer
     {
       lvManga.FocusedItem = lvManga.Items[iPos];
       lvManga.Items[iPos].Selected = true;
-      lvManga.TopItem = lvManga.Items[iPos];
+      if (iPos > -1 && iPos < lvManga.Items.Count) {
+        lvManga.TopItem = lvManga.Items[iPos];
+      }
     }
 
     /// <summary>
@@ -1165,12 +1177,8 @@ namespace Nagru___Manga_Organizer
             acTxBx_Tags.Text, TxBx_Loc.Text, Nud_Pages.Value, CmbBx_Type.Text,
             srRating.SelectedStar, frTxBx_Desc.Text, lblURL.Text);
 
-          //add artist to autocomplete
-          CmbBx_Artist.Items.Clear();
-          CmbBx_Artist.Items.AddRange(SQL.GetArtists());
-          acTxBx_Tags.KeyWords = SQL.GetTags();
-
-          //update LV_Entries
+          //refresh
+          RefreshAutocomplete();
           AddEntries();
         }
       }
@@ -1194,9 +1202,7 @@ namespace Nagru___Manga_Organizer
       acTxBx_Tags.KeyWords = SQL.GetTags();
 
       //update auto-complete controls
-      CmbBx_Artist.Items.Clear();
-      CmbBx_Artist.Items.AddRange(SQL.GetArtists());
-      acTxBx_Tags.KeyWords = SQL.GetTags();
+      RefreshAutocomplete();
 
       //check if entry should still be displayed
       if (SQL.GetAllManga(ChkBx_ShowFav.Checked, TxBx_Search.Text, mangaID).Rows.Count > 0) {
@@ -1205,13 +1211,7 @@ namespace Nagru___Manga_Organizer
           lvi.BackColor = Color.FromArgb(Int32.Parse(SQL.GetSetting(SQL.Setting.RowColourHighlight)));
         }
         else {
-          if (lvManga.FocusedItem.Index % 2 == 0) {
-            lvManga.FocusedItem.BackColor = Color.FromArgb(
-              Int32.Parse(SQL.GetSetting(SQL.Setting.RowColourAlt)));
-          }
-          else {
-            lvManga.FocusedItem.BackColor = SystemColors.Window;
-          }
+          lvManga.Alternate();
         }
         acTxBx_Tags.Text = SQL.GetMangaDetail(mangaID, SQL.Manga.Tags);
         lvi.SubItems[ColRating.Index].Text = Ext.RatingFormat(srRating.SelectedStar);
@@ -1298,12 +1298,7 @@ namespace Nagru___Manga_Organizer
         //remove from listview
         lvManga.Items.RemoveAt(lvManga.SelectedItems[0].Index);
         Reset();
-
-        if (iPos < lvManga.Items.Count) {
-          lvManga.TopItem = lvManga.Items[iPos];
-          lvManga.TopItem = lvManga.Items[iPos];
-          lvManga.TopItem = lvManga.Items[iPos];
-        }
+        ScrollTo(iPos);
       }
     }
 
@@ -2039,8 +2034,6 @@ namespace Nagru___Manga_Organizer
     }
     #endregion
 
-    #region Cruft
-
     #region Classes
 
     /* Holds manga metadata */
@@ -2118,6 +2111,8 @@ namespace Nagru___Manga_Organizer
         }
       }
 
+      #region Cruft
+
       /// <summary>
       /// custom serialization to save datatypes manually
       /// </summary>
@@ -2156,9 +2151,9 @@ namespace Nagru___Manga_Organizer
         info.AddValue("RT", byRat);
         info.AddValue("TG", sTags);
       }
-    }
 
-    #endregion
+      #endregion
+    }
 
     #endregion
   }

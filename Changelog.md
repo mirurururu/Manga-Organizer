@@ -1,3 +1,7 @@
+### v. 4.6.77 (February 13, 2015)
+  - Reload the Type combobox after edits and saves
+  - Updated email address
+
 ### v. 4.6.76 (February 04, 2015)
   - Bugfix: proper saving of gallery type search preferences
   - Improved code handling gallery suggestions

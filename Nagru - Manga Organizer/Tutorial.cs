@@ -66,7 +66,7 @@ All other keys close the browser";
 
 Thank you for reading this, I hope it was helpful and that this program proves useful for you.
 
-Feel free to contact me at nagru@live.ca";
+Feel free to contact me at nagru@airmail.cc";
     }
     #endregion
 
