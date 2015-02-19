@@ -265,7 +265,7 @@
       this.Btn_Clear.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.Btn_Clear.Location = new System.Drawing.Point(757, 6);
       this.Btn_Clear.Name = "Btn_Clear";
-      this.Btn_Clear.Size = new System.Drawing.Size(30, 20);
+      this.Btn_Clear.Size = new System.Drawing.Size(30, 23);
       this.Btn_Clear.TabIndex = 4;
       this.Btn_Clear.Text = "X";
       this.Btn_Clear.UseVisualStyleBackColor = false;

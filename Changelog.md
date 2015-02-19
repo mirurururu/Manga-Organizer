@@ -1,3 +1,7 @@
+### v. 4.6.78 (February 19, 2015)
+  - Centralized handling of tags pasted/dropped/loaded into the textbox
+  - Updated width of search box clearing button
+
 ### v. 4.6.77 (February 13, 2015)
   - Reload the Type combobox after edits and saves
   - Updated email address

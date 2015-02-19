@@ -762,10 +762,7 @@ namespace Nagru___Manga_Organizer
         if (srRating.SelectedStar == 0) {                       //set star rating
           srRating.SelectedStar = Convert.ToInt32(manga.rating);
         }
-        acTxBx_Tags.Text = manga.GetTags(                       //set tags
-          !string.IsNullOrWhiteSpace(acTxBx_Tags.Text)
-            ? acTxBx_Tags.Text : null
-        );
+				UpdateTags(manga.GetTags());														//set tags
 
         Tb_View.ResumeLayout();
         Text = "Finished";
@@ -778,6 +775,23 @@ namespace Nagru___Manga_Organizer
       }
       this.Cursor = Cursors.Default;
     }
+
+		/// <summary>
+		/// Inserts new tags and re-sorts them alphabetically
+		/// </summary>
+		/// <param name="NewTags">The new tags to be inserted</param>
+		private void UpdateTags(string NewTags)
+		{
+			List<string> lTags = new List<string>(20);
+			lTags.AddRange(Ext.Split(NewTags, "\r\n", ","));
+			lTags.AddRange(Ext.Split(acTxBx_Tags.Text, ","));
+			lTags = lTags.Select(s => s.Trim())
+				.Where(s => !(s[s.Length - 1] == ':'))
+				.Distinct<string>()
+				.OrderBy(s => s)
+				.ToList<string>();
+			acTxBx_Tags.Text = string.Join(", ", lTags);
+		}
 
     /// <summary>
     /// Open image\zip with default program
@@ -1763,13 +1777,12 @@ namespace Nagru___Manga_Organizer
           }
           else {
             TextBox txt = (TextBox)ActiveControl;
-            if (txt.Name == "acTxBx_Tags" && sAdd.Contains("\r")) {
-              IEnumerable<string> ie = sAdd.Split('(', '\n');
-              ie = ie.Where(s => !s.EndsWith("\r") && !s.EndsWith(")") 
-                && !string.IsNullOrWhiteSpace(s)).Select(s => s.Trim());
-              sAdd = string.Join(", ", ie.ToArray());
+						if (txt.Name == "acTxBx_Tags" && sAdd.Contains("\r\n")) {
+							UpdateTags(sAdd);
             }
-            txt.SelectedText = sAdd;
+            else {
+              txt.SelectedText = sAdd;
+            }
           }
           break;
         case "ComboBox":
@@ -1892,15 +1905,7 @@ namespace Nagru___Manga_Organizer
           break;
         case "acTxBx_Tags":
           if (sAdd.Contains("\r\n")) {
-            List<string> lTags = new List<string>(20);
-            lTags.AddRange(Ext.Split(sAdd, "\r\n"));
-            lTags.AddRange(Ext.Split(acTxBx_Tags.Text, ","));
-            lTags = lTags.Select(s => s.Trim())
-              .Where(s => !(s[s.Length - 1] == ':'))
-              .Distinct<string>()
-              .OrderBy(s => s)
-              .ToList<string>();
-            acTxBx_Tags.Text = string.Join(", ", lTags);
+						UpdateTags(sAdd);
           }
           else {
             acTxBx_Tags.SelectionStart = Ext.InsertText(
