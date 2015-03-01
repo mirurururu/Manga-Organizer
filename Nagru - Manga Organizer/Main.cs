@@ -1348,11 +1348,13 @@ namespace Nagru___Manga_Organizer
     /// </summary>
     private void MnTS_OpenSource_Click(object sender, EventArgs e)
     {
-      if (Directory.Exists(TxBx_Loc.Text)) {
-        System.Diagnostics.Process.Start("explorer.exe", "\"" + TxBx_Loc.Text + "\"");
-      }
-      else if (File.Exists(TxBx_Loc.Text)) {
-        System.Diagnostics.Process.Start("\"" + TxBx_Loc.Text + "\"");
+      if (!string.IsNullOrWhiteSpace(TxBx_Loc.Text)) {
+        if (Directory.Exists(TxBx_Loc.Text)) {
+          System.Diagnostics.Process.Start("explorer.exe", "\"" + TxBx_Loc.Text + "\"");
+        }
+        else if (File.Exists(TxBx_Loc.Text)) {
+          System.Diagnostics.Process.Start("explorer.exe", "/select,\"" + TxBx_Loc.Text + "\"");
+        }
       }
     }
 

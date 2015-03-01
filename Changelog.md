@@ -1,3 +1,7 @@
+### v. 4.6.80 (March 1, 2015)
+  - Show shortcut keys as tooltips on menu buttons
+  - Fixed "Open Entry's Folder" button
+
 ### v. 4.6.78 (February 19, 2015)
   - Centralized handling of tags pasted/dropped/loaded into the textbox
   - Updated width of search box clearing button
