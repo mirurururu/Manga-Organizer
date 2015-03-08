@@ -558,7 +558,7 @@
       this.Mn_EntryOps.Location = new System.Drawing.Point(3, 3);
       this.Mn_EntryOps.Name = "Mn_EntryOps";
       this.Mn_EntryOps.ShowItemToolTips = true;
-      this.Mn_EntryOps.Size = new System.Drawing.Size(388, 27);
+      this.Mn_EntryOps.Size = new System.Drawing.Size(107, 27);
       this.Mn_EntryOps.TabIndex = 21;
       this.Mn_EntryOps.Text = "menuStrip";
       // 
@@ -889,14 +889,15 @@
       // 
       // colDate
       // 
+      this.colDate.Tag = "75";
       this.colDate.Text = "Date";
       this.colDate.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-      this.colDate.Width = 70;
+      this.colDate.Width = 75;
       // 
       // ColType
       // 
       this.ColType.Text = "Type";
-      this.ColType.Width = 80;
+      this.ColType.Width = 75;
       // 
       // ColRating
       // 

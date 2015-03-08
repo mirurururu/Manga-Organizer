@@ -11,6 +11,8 @@ namespace Nagru___Manga_Organizer
   public partial class Browse_Img : Form, IDisposable
 	{
 		#region Properties
+    const int MAX_ERROR = 10;
+
 		public Dictionary<int, int> Sort = new Dictionary<int, int>();
     bool bWideL, bWideR, bNext;
     float fWidth;
@@ -233,30 +235,31 @@ namespace Nagru___Manga_Organizer
     private void Next()
     {
       Image imgL = null, imgR = null;		//holds the loaded image files
-      byte byError = 0;									//holds the number of tries attempted to load an image
-      Reset(true);											//reset the page values to their default
+      byte byAttempt = 0;								//holds the number of attempts to load an image
+      Reset(Next:true);									//reset the page values to their default
 
 			//get the next valid, right-hand image file in the sequence
       do {
-				byError++;
-        if (++Page >= Files.Count)
+        if (++Page >= Files.Count) {
           Page = 0;
-        imgR = TrySet(Page);
-			} while (imgR == null && byError < 10);
+        }
+        imgR = TryLoad(Page);
+      } while (imgR == null && ++byAttempt < MAX_ERROR);
 
 			//if the image is not multi-page, then load the next valid, left-hand image in the sequence
       if (imgR == null || !(bWideR = imgR.Height < imgR.Width)) {
-				byError = 0;
+        byAttempt = 0;
         do {
-					byError++;
-          if (++Page >= Files.Count)
+          if (++Page >= Files.Count) {
             Page = 0;
-          imgL = TrySet(Page);
-				} while (imgL == null && byError < 10);
+          }
+          imgL = TryLoad(Page);
+        } while (imgL == null && ++byAttempt < MAX_ERROR);
 
 				//if this image is multi-page, decrement the page value so the next page turn will catch it
-        if (imgL != null && (bWideL = imgL.Height < imgL.Width))
+        if (imgL != null && (bWideL = imgL.Height < imgL.Width)) {
           Page--;
+        }
       }
 
       Refresh(imgL, imgR);
@@ -272,28 +275,29 @@ namespace Nagru___Manga_Organizer
         Page--;
 
 			Image imgL = null, imgR = null;		//holds the loaded image files
-			byte byError = 0;									//holds the number of tries attempted to load an image
-			Reset(false);											//reset the page values to their default
+      byte byAttempt = 0;								//holds the number of attempts to load an image
+			Reset(Next:false);								//reset the page values to their default
 
 			//get the next valid, left-hand image file in the sequence
       do {
-				byError++;
-        if (--Page < 0)
+        if (--Page < 0){
           Page = Files.Count - 1;
-        else if (Page >= Files.Count)
+        }
+        else if (Page >= Files.Count) {
           Page = 0;
-        imgL = TrySet(Page);
-			} while (imgL == null && byError < 10);
+        }
+        imgL = TryLoad(Page);
+      } while (imgL == null && ++byAttempt < MAX_ERROR);
 
 			//if the image is not multi-page, then load the next valid, right-hand image in the sequence
       if (imgL == null || !(bWideL = imgL.Height < imgL.Width)) {
-				byError = 0;
+        byAttempt = 0;
         do {
-					byError++;
-          if (--Page < 0)
+          if (--Page < 0) {
             Page = Files.Count - 1;
-          imgR = TrySet(Page);
-				} while (imgR == null && byError < 10);
+          }
+          imgR = TryLoad(Page);
+        } while (imgR == null && ++byAttempt < MAX_ERROR);
 
 				//sets if the right-hand image is multi-page or not
         bWideR = (imgR != null) ? imgR.Height < imgR.Width : false;
@@ -307,29 +311,28 @@ namespace Nagru___Manga_Organizer
 		/// Try to load the image at the indicated index
 		/// </summary>
 		/// <param name="iPos">The file index</param>
-    private Bitmap TrySet(int iPos)
+    private Bitmap TryLoad(int iPos)
     {
       Bitmap bmpTmp = null;
-      MemoryStream ms = new MemoryStream();
 
-      try {
-        if (Archive != null) {
-					Archive[Sort[iPos]].WriteTo(ms);
-        }
-        else {
-					FileStream fs = new FileStream(Files[iPos], FileMode.Open);
-          fs.CopyTo(ms);
-          fs.Dispose();
-        }
+      using (MemoryStream ms = new MemoryStream()) {
+        try {
+          if (Archive != null) {
+					  Archive[Sort[iPos]].WriteTo(ms);
+          }
+          else {
+            using (FileStream fs = new FileStream(Files[iPos], FileMode.Open)) {
+              fs.CopyTo(ms);
+            }
+          }
 
-        bmpTmp = new Bitmap(ms);
-        bmpTmp = Ext.ScaleImage(bmpTmp,
-					(bmpTmp.Width > bmpTmp.Height) ? picBx.Width : fWidth
-					, picBx.Height);
-      } catch (Exception ex) {
-        Console.WriteLine(ex.Message);
-      } finally {
-        ms.Dispose();
+          bmpTmp = new Bitmap(ms);
+          bmpTmp = Ext.ScaleImage(bmpTmp
+					  , (bmpTmp.Width > bmpTmp.Height) ? picBx.Width : fWidth
+					  , picBx.Height);
+        } catch (Exception ex) {
+          Console.WriteLine(ex.Message);
+        }
       }
 
       return bmpTmp;

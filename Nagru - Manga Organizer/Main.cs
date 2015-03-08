@@ -912,9 +912,9 @@ namespace Nagru___Manga_Organizer
     /// <param name="iPos">The listview index to scroll to</param>
     private void ScrollTo(int iPos)
     {
-      lvManga.FocusedItem = lvManga.Items[iPos];
-      lvManga.Items[iPos].Selected = true;
       if (iPos > -1 && iPos < lvManga.Items.Count) {
+        lvManga.FocusedItem = lvManga.Items[iPos];
+        lvManga.Items[iPos].Selected = true;
         lvManga.TopItem = lvManga.Items[iPos];
       }
     }
@@ -1139,7 +1139,7 @@ namespace Nagru___Manga_Organizer
             ,dt.Rows[i]["Title"].ToString()
             ,dt.Rows[i]["Pages"].ToString()
             ,dt.Rows[i]["Tags"].ToString()
-            ,DateTime.Parse(dt.Rows[i]["PublishedDate"].ToString()).ToString("MM/dd/yy")
+            ,DateTime.Parse(dt.Rows[i]["PublishedDate"].ToString()).ToString("MM/dd/yyyy")
             ,dt.Rows[i]["Type"].ToString()
             ,Ext.RatingFormat(iRating)
             ,dt.Rows[i]["mangaID"].ToString()
@@ -1370,17 +1370,21 @@ namespace Nagru___Manga_Organizer
         this.Cursor = Cursors.WaitCursor;
 
         //zip the folder contents into a .cbz
+        this.Text = "Compressing...";
         using (var archive = SCA.Zip.ZipArchive.Create()) {
           string[] asFiles = Directory.GetFiles(sBaseLoc);
           for (int x = 0; x < asFiles.Length; x++) {
+            this.Text = string.Format("Compressing...{0}/{1}", x + 1, asFiles.Length);
             FileInfo fi = new FileInfo(asFiles[x]);
             archive.AddEntry(fi.Name, fi);
           }
 
+          this.Text = "Saving to disk...";
           using (FileStream fs = new FileStream(sBaseLoc + ".cbz", FileMode.CreateNew)) {
             archive.SaveTo(fs, cmp);
           }
         }
+        this.Text = "Compression complete";
 
         //Update the manga location and delete the old folder
         TxBx_Loc.Text = sBaseLoc + ".cbz";
@@ -1572,7 +1576,7 @@ namespace Nagru___Manga_Organizer
         PicBx_Cover.BackColor = Color.FromArgb(
           Int32.Parse(SQL.GetSetting(SQL.Setting.BackgroundColour)));
         lvManga.Columns[4].Width =
-          SQL.GetSetting(SQL.Setting.ShowDate) == "1" ? 70 : 0;
+          SQL.GetSetting(SQL.Setting.ShowDate) == "1" ? Convert.ToInt32(colDate.Tag) : 0;
         ResizeLV();
 
         //Update new DB save location

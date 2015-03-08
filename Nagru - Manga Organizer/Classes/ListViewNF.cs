@@ -314,14 +314,9 @@ namespace Nagru___Manga_Organizer
                 .CompareTo
                 (Int32.Parse(lviY.SubItems[2].Text));
               break;
-            case 4: //date: re-order MM/DD/YY into YYMMDD for search
-              Result = (lviX.SubItems[4].Text.Substring(6, 2)
-                  + lviX.SubItems[4].Text.Substring(0, 2)
-                  + lviX.SubItems[4].Text.Substring(3, 2))
-                .CompareTo
-                (lviY.SubItems[4].Text.Substring(6, 2)
-                  + lviY.SubItems[4].Text.Substring(0, 2)
-                  + lviY.SubItems[4].Text.Substring(3, 2));
+            case 4: //date
+              Result = DateTime.Parse(lviX.SubItems[4].Text)
+                .CompareTo(DateTime.Parse(lviY.SubItems[4].Text));
               break;
             case 5: //type
               Result = tc.Compare(

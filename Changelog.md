@@ -1,3 +1,7 @@
+### v. 4.6.81 (March 7, 2015)
+  - Updated the date column to include the full year
+  - Small code improvements
+
 ### v. 4.6.80 (March 1, 2015)
   - Show shortcut keys as tooltips on menu buttons
   - Fixed "Open Entry's Folder" button
