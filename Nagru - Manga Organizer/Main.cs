@@ -30,6 +30,8 @@ namespace Nagru___Manga_Organizer
   public partial class Main : Form
   {
     #region Properties
+    const string DateFormat = "MM/dd/yyyy";
+
     delegate void DelVoid();
     delegate void DelInt(int iNum);
     delegate void DelString(string sMsg);
@@ -1139,7 +1141,7 @@ namespace Nagru___Manga_Organizer
             ,dt.Rows[i]["Title"].ToString()
             ,dt.Rows[i]["Pages"].ToString()
             ,dt.Rows[i]["Tags"].ToString()
-            ,DateTime.Parse(dt.Rows[i]["PublishedDate"].ToString()).ToString("MM/dd/yyyy")
+            ,DateTime.Parse(dt.Rows[i]["PublishedDate"].ToString()).ToString(DateFormat)
             ,dt.Rows[i]["Type"].ToString()
             ,Ext.RatingFormat(iRating)
             ,dt.Rows[i]["mangaID"].ToString()
@@ -1233,7 +1235,7 @@ namespace Nagru___Manga_Organizer
         lvi.SubItems[ColTitle.Index].Text = acTxBx_Title.Text;
         lvi.SubItems[ColPages.Index].Text = Nud_Pages.Value.ToString();
         lvi.SubItems[ColTags.Index].Text = acTxBx_Tags.Text;
-        lvi.SubItems[colDate.Index].Text = Dt_Date.Value.ToString("MM/dd/yy");
+        lvi.SubItems[colDate.Index].Text = Dt_Date.Value.ToString(DateFormat);
         lvi.SubItems[ColType.Index].Text = CmbBx_Type.Text;
         ReFocus();
       }
@@ -1515,7 +1517,7 @@ namespace Nagru___Manga_Organizer
               ,dt.Rows[i]["Title"].ToString()
               ,dt.Rows[i]["Pages"].ToString()
               ,dt.Rows[i]["Tags"].ToString()
-              ,DateTime.Parse(dt.Rows[i]["PublishedDate"].ToString()).ToString("MM/dd/yy")
+              ,DateTime.Parse(dt.Rows[i]["PublishedDate"].ToString()).ToString(DateFormat)
               ,dt.Rows[i]["Type"].ToString()
               ,Ext.RatingFormat(iRating)
               ,dt.Rows[i]["mangaID"].ToString()

@@ -1,3 +1,6 @@
+### v. 4.6.82 (March 8, 2015)
+  - Updated date column setting in save/edit. Moved format to const value.
+
 ### v. 4.6.81 (March 7, 2015)
   - Updated the date column to include the full year
   - Small code improvements
