@@ -10,10 +10,10 @@
  * MIT\Expat License (MIT)
  * 
  * SQLite is in the public domain
- * Ergo, it does not require any license
  * 
  */
 
+#region Assemblies
 using System;
 using System.IO;
 using System.Linq;
@@ -24,6 +24,7 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using SCA = SharpCompress.Archive;
+#endregion
 
 namespace Nagru___Manga_Organizer
 {
@@ -335,46 +336,7 @@ namespace Nagru___Manga_Organizer
     /// </summary>
     private void PicBx_Cover_Click(object sender, EventArgs e)
     {
-      if (PicBx_Cover.Image == null)
-        return;
-
-      Browse_Img fmBrowse = new Browse_Img();
-      fmBrowse.Page = page;
-
-      if (Directory.Exists(TxBx_Loc.Text)) {
-        //process 'loose' images
-        string[] sFiles = new string[0];
-        if ((sFiles = Ext.GetFiles(TxBx_Loc.Text,
-                SearchOption.TopDirectoryOnly)).Length > 0) {
-          fmBrowse.Files = new List<string>(sFiles.Length);
-          fmBrowse.Files.AddRange(sFiles);
-          fmBrowse.ShowDialog();
-          page = Math.Abs(fmBrowse.Page);
-        }
-      }
-      else if (IsArchive(TxBx_Loc.Text)) {
-        //process compressed images
-        SCA.IArchive scArchive = SCA.ArchiveFactory.Open(@TxBx_Loc.Text);
-        if (scArchive.Entries.Count() > 0) {
-          SCA.IArchiveEntry[] scEntries = scArchive.Entries.ToArray();
-          fmBrowse.Files = new List<string>(scEntries.Length);
-          for (int i = 0; i < scEntries.Length; i++) {
-            fmBrowse.Files.Add(scEntries[i].FilePath);
-          }
-          fmBrowse.Archive = scEntries;
-
-          fmBrowse.ShowDialog();
-          page = Math.Abs(fmBrowse.Page);
-        }
-        scArchive.Dispose();
-      }
-      else {
-        MessageBox.Show("The following path is no longer valid:\n" + TxBx_Loc.Text,
-          Application.ProductName, MessageBoxButtons.OK,
-          MessageBoxIcon.Error);
-      }
-      fmBrowse.Dispose();
-      GC.Collect(0);
+      OpenImageBrowser();
     }
 
     /// <summary>
@@ -811,10 +773,62 @@ namespace Nagru___Manga_Organizer
       }
 
       string sProg = SQL.GetSetting(SQL.Setting.ImageBrowser);
-      if (string.IsNullOrWhiteSpace(sProg))
+      if (string.IsNullOrWhiteSpace(sProg) || sProg == "System Default"){
         System.Diagnostics.Process.Start("\"" + sPath + "\"");
-      else
+      }
+      else if (sProg == "Built-In Viewer") {
+        OpenImageBrowser();
+      }
+      else {
         System.Diagnostics.Process.Start(sProg, "\"" + sPath + "\"");
+      }
+    }
+
+    /// <summary>
+    /// Open the internal image browser
+    /// </summary>
+    private void OpenImageBrowser()
+    {
+      if (PicBx_Cover.Image == null)
+        return;
+
+      Browse_Img fmBrowse = new Browse_Img();
+      fmBrowse.Page = page;
+
+      if (Directory.Exists(TxBx_Loc.Text)) {
+        //process 'loose' images
+        string[] sFiles = new string[0];
+        if ((sFiles = Ext.GetFiles(TxBx_Loc.Text,
+                SearchOption.TopDirectoryOnly)).Length > 0) {
+          fmBrowse.Files = new List<string>(sFiles.Length);
+          fmBrowse.Files.AddRange(sFiles);
+          fmBrowse.ShowDialog();
+          page = Math.Abs(fmBrowse.Page);
+        }
+      }
+      else if (IsArchive(TxBx_Loc.Text)) {
+        //process compressed images
+        SCA.IArchive scArchive = SCA.ArchiveFactory.Open(@TxBx_Loc.Text);
+        if (scArchive.Entries.Count() > 0) {
+          SCA.IArchiveEntry[] scEntries = scArchive.Entries.ToArray();
+          fmBrowse.Files = new List<string>(scEntries.Length);
+          for (int i = 0; i < scEntries.Length; i++) {
+            fmBrowse.Files.Add(scEntries[i].FilePath);
+          }
+          fmBrowse.Archive = scEntries;
+
+          fmBrowse.ShowDialog();
+          page = Math.Abs(fmBrowse.Page);
+        }
+        scArchive.Dispose();
+      }
+      else {
+        MessageBox.Show("The following path is no longer valid:\n" + TxBx_Loc.Text,
+          Application.ProductName, MessageBoxButtons.OK,
+          MessageBoxIcon.Error);
+      }
+      fmBrowse.Dispose();
+      GC.Collect(0);
     }
 
     /// <summary>

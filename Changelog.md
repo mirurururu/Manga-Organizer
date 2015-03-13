@@ -1,3 +1,7 @@
+### v. 4.6.92 (March 12, 2015)
+  - Added ability to set built-in image browser as default
+  - Updated display style of ratings
+
 ### v. 4.6.82 (March 8, 2015)
   - Updated date column setting in save/edit. Moved format to const value.
 

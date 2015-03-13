@@ -248,7 +248,10 @@ namespace Nagru___Manga_Organizer
 		/// <param name="iRating"></param>
 		public static string RatingFormat(int iRating)
 		{
-			return new string('☆', iRating);
+			return string.Format("{0}{1}"
+				, new string('★', iRating)
+				, iRating != 5 ? new string('☆', 5 - iRating) : ""
+			);
 		}
 
     /// <summary>

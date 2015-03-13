@@ -165,7 +165,7 @@ namespace Nagru___Manga_Organizer
       this.BeginUpdate();
       for (int i = 0; i < this.Items.Count; i++) {
         if (IsMain) {
-          if (this.Items[i].SubItems[ColRating].Text.Length == 5)
+					if (this.Items[i].SubItems[ColRating].Text[this.Items[i].SubItems[ColRating].Text.Length - 1] == '★')
             continue;
         }
         else if (this.Items[i].BackColor == Color.MistyRose) {

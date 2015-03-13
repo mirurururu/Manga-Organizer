@@ -20,7 +20,7 @@ namespace Nagru___Manga_Organizer
       public int ReadInterval;
       public string[] SearchIgnore;
       public string SearchIgnoreRaw;
-      public string DefaultProgram;
+      public string CustomProgram;
       public string SaveLoc;
       public string RootLoc;
       public bool ShowGrid;
@@ -46,9 +46,9 @@ namespace Nagru___Manga_Organizer
         SaveLoc = Properties.Settings.Default.SavLoc != string.Empty ?
           Properties.Settings.Default.SavLoc : Environment.CurrentDirectory;
         RootLoc = SQL.GetSetting(SQL.Setting.RootPath);
-        DefaultProgram = SQL.GetSetting(SQL.Setting.ImageBrowser);
-        if (string.IsNullOrWhiteSpace(DefaultProgram)) {
-          DefaultProgram = sDefProgram;
+        CustomProgram = SQL.GetSetting(SQL.Setting.ImageBrowser);
+        if (string.IsNullOrWhiteSpace(CustomProgram)) {
+          CustomProgram = sDefProgram;
         }
         ReadInterval = Int32.Parse(SQL.GetSetting(SQL.Setting.ReadInterval));
         BackColour = Color.FromArgb(Int32.Parse(SQL.GetSetting(SQL.Setting.BackgroundColour)));
@@ -97,8 +97,7 @@ namespace Nagru___Manga_Organizer
       public bool DefaultProgramChanged(string sNew)
       {
         return bDefaultProgramChanged
-          = (DefaultProgram.Length != sNew.Length
-              || DefaultProgram != sNew);
+          = (CustomProgram != sNew);
       }
 
       public bool SaveLocChanged(string sNew)
@@ -148,7 +147,7 @@ namespace Nagru___Manga_Organizer
       //initialize components
       aTxBx_Save.Text = stCurrent.SaveLoc;
       aTxBx_Root.Text = stCurrent.RootLoc;
-      aTxBx_Prog.Text = stCurrent.DefaultProgram;
+      CmbBx_ImageViewer.Text = stCurrent.CustomProgram;
       Nud_Intv.Value = stCurrent.ReadInterval;
       picBx_Colour.BackColor = stCurrent.BackColour;
       ChkBx_Gridlines.Checked = stCurrent.ShowGrid;
@@ -181,20 +180,26 @@ namespace Nagru___Manga_Organizer
 
     #region Changed Property
 
-    private void aTxBx_Prog_Click(object sender, EventArgs e)
+    private void btnImageViewer_Click(object sender, EventArgs e)
     {
-       using (OpenFileDialog ofd = new OpenFileDialog()) {
-        string sPath = aTxBx_Prog.Text != sDefProgram ?
-          aTxBx_Prog.Text : Environment.CurrentDirectory;
+      using (OpenFileDialog ofd = new OpenFileDialog()) {
+        string sPath = CmbBx_ImageViewer.SelectedIndex == -1 ?
+          CmbBx_ImageViewer.Text : Environment.CurrentDirectory;
         ofd.Filter = "Executables (*.exe)|*.exe";
         ofd.InitialDirectory = sPath;
 
         if (ofd.ShowDialog() == DialogResult.OK) {
-          aTxBx_Prog.Text = ofd.FileName;
+          CmbBx_ImageViewer.Text = ofd.FileName;
           stCurrent.DefaultProgramChanged(ofd.FileName);
           SettingsChanged();
         }
       }
+    }
+
+    private void CmbBx_ImageViewer_SelectedIndexChanged(object sender, EventArgs e)
+    {
+      stCurrent.DefaultProgramChanged(CmbBx_ImageViewer.Text);
+      SettingsChanged();
     }
 
     private void aTxBx_Root_Click(object sender, EventArgs e)
@@ -285,7 +290,7 @@ namespace Nagru___Manga_Organizer
         stCurrent.bSaveLocChanged = false;
       }
       if (stCurrent.bDefaultProgramChanged) {
-        SQL.UpdateSetting(SQL.Setting.ImageBrowser, aTxBx_Prog.Text);
+        SQL.UpdateSetting(SQL.Setting.ImageBrowser, CmbBx_ImageViewer.Text);
         stCurrent.bDefaultProgramChanged = false;
       }
       if (stCurrent.bRootLocChanged) {
@@ -327,7 +332,7 @@ namespace Nagru___Manga_Organizer
           stCurrent.bRootLocChanged = false;
           break;
         case "aTxBx_Prog":
-          aTxBx_Prog.Text = stCurrent.DefaultProgram;
+          CmbBx_ImageViewer.Text = stCurrent.CustomProgram;
           stCurrent.bDefaultProgramChanged = false;
           break;
         case "Nud_Intv":

@@ -44,9 +44,10 @@
       this.ckLbx_Ign = new System.Windows.Forms.CheckedListBox();
       this.Btn_Save = new System.Windows.Forms.Button();
       this.lblProg = new System.Windows.Forms.Label();
-      this.aTxBx_Save = new Nagru___Manga_Organizer.AutoCompleteTagger();
-      this.aTxBx_Prog = new Nagru___Manga_Organizer.AutoCompleteTagger();
+      this.CmbBx_ImageViewer = new System.Windows.Forms.ComboBox();
+      this.btnImageViewer = new System.Windows.Forms.Button();
       this.aTxBx_Root = new Nagru___Manga_Organizer.AutoCompleteTagger();
+      this.aTxBx_Save = new Nagru___Manga_Organizer.AutoCompleteTagger();
       ((System.ComponentModel.ISupportInitialize)(this.Nud_Intv)).BeginInit();
       this.MnAct.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.picBx_Colour)).BeginInit();
@@ -221,29 +222,35 @@
       this.lblProg.TabIndex = 20;
       this.lblProg.Text = "Image viewer:";
       // 
-      // aTxBx_Save
+      // CmbBx_ImageViewer
       // 
-      this.aTxBx_Save.ContextMenuStrip = this.MnAct;
-      this.aTxBx_Save.KeyWords = new string[0];
-      this.aTxBx_Save.Location = new System.Drawing.Point(88, 6);
-      this.aTxBx_Save.Name = "aTxBx_Save";
-      this.aTxBx_Save.Seperator = '\0';
-      this.aTxBx_Save.Size = new System.Drawing.Size(230, 20);
-      this.aTxBx_Save.TabIndex = 24;
-      this.aTxBx_Save.Click += new System.EventHandler(this.aTxBx_Save_Click);
-      this.aTxBx_Save.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TxBx_KeyPress);
+      this.CmbBx_ImageViewer.AutoCompleteCustomSource.AddRange(new string[] {
+            "System Default",
+            "Built-In Viewer"});
+      this.CmbBx_ImageViewer.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
+      this.CmbBx_ImageViewer.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
+      this.CmbBx_ImageViewer.ContextMenuStrip = this.MnAct;
+      this.CmbBx_ImageViewer.FormattingEnabled = true;
+      this.CmbBx_ImageViewer.Items.AddRange(new object[] {
+            "System Default",
+            "Built-In Viewer"});
+      this.CmbBx_ImageViewer.Location = new System.Drawing.Point(115, 85);
+      this.CmbBx_ImageViewer.Name = "CmbBx_ImageViewer";
+      this.CmbBx_ImageViewer.Size = new System.Drawing.Size(203, 21);
+      this.CmbBx_ImageViewer.TabIndex = 39;
+      this.CmbBx_ImageViewer.SelectedIndexChanged += new System.EventHandler(this.CmbBx_ImageViewer_SelectedIndexChanged);
+      this.CmbBx_ImageViewer.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TxBx_KeyPress);
       // 
-      // aTxBx_Prog
+      // btnImageViewer
       // 
-      this.aTxBx_Prog.ContextMenuStrip = this.MnAct;
-      this.aTxBx_Prog.KeyWords = new string[0];
-      this.aTxBx_Prog.Location = new System.Drawing.Point(88, 85);
-      this.aTxBx_Prog.Name = "aTxBx_Prog";
-      this.aTxBx_Prog.Seperator = '\0';
-      this.aTxBx_Prog.Size = new System.Drawing.Size(230, 20);
-      this.aTxBx_Prog.TabIndex = 29;
-      this.aTxBx_Prog.Click += new System.EventHandler(this.aTxBx_Prog_Click);
-      this.aTxBx_Prog.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TxBx_KeyPress);
+      this.btnImageViewer.BackgroundImage = global::Nagru___Manga_Organizer.Properties.Resources.Browse;
+      this.btnImageViewer.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+      this.btnImageViewer.Location = new System.Drawing.Point(88, 85);
+      this.btnImageViewer.Name = "btnImageViewer";
+      this.btnImageViewer.Size = new System.Drawing.Size(21, 21);
+      this.btnImageViewer.TabIndex = 44;
+      this.btnImageViewer.UseVisualStyleBackColor = true;
+      this.btnImageViewer.Click += new System.EventHandler(this.btnImageViewer_Click);
       // 
       // aTxBx_Root
       // 
@@ -257,14 +264,27 @@
       this.aTxBx_Root.Click += new System.EventHandler(this.aTxBx_Root_Click);
       this.aTxBx_Root.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TxBx_KeyPress);
       // 
+      // aTxBx_Save
+      // 
+      this.aTxBx_Save.ContextMenuStrip = this.MnAct;
+      this.aTxBx_Save.KeyWords = new string[0];
+      this.aTxBx_Save.Location = new System.Drawing.Point(88, 6);
+      this.aTxBx_Save.Name = "aTxBx_Save";
+      this.aTxBx_Save.Seperator = '\0';
+      this.aTxBx_Save.Size = new System.Drawing.Size(230, 20);
+      this.aTxBx_Save.TabIndex = 24;
+      this.aTxBx_Save.Click += new System.EventHandler(this.aTxBx_Save_Click);
+      this.aTxBx_Save.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TxBx_KeyPress);
+      // 
       // Settings
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.BackColor = System.Drawing.SystemColors.ControlLightLight;
       this.ClientSize = new System.Drawing.Size(331, 362);
+      this.Controls.Add(this.btnImageViewer);
+      this.Controls.Add(this.CmbBx_ImageViewer);
       this.Controls.Add(this.aTxBx_Root);
-      this.Controls.Add(this.aTxBx_Prog);
       this.Controls.Add(this.aTxBx_Save);
       this.Controls.Add(this.lblProg);
       this.Controls.Add(this.Btn_Save);
@@ -309,9 +329,10 @@
         private System.Windows.Forms.CheckBox ChkBx_Date;
         private System.Windows.Forms.Label lblProg;
         private AutoCompleteTagger aTxBx_Save;
-        private AutoCompleteTagger aTxBx_Prog;
         private AutoCompleteTagger aTxBx_Root;
         private System.Windows.Forms.ContextMenuStrip MnAct;
         private System.Windows.Forms.ToolStripMenuItem MnAct_Reset;
+        private System.Windows.Forms.ComboBox CmbBx_ImageViewer;
+        private System.Windows.Forms.Button btnImageViewer;
     }
 }
