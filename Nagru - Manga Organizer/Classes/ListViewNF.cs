@@ -325,9 +325,9 @@ namespace Nagru___Manga_Organizer
               break;
             case 6: //rating
               Result =
-                (lviX.SubItems[6].Text.Length)
+                (lviX.SubItems[6].Text.LastIndexOf('★'))
                 .CompareTo
-                (lviY.SubItems[6].Text.Length);
+                (lviY.SubItems[6].Text.LastIndexOf('★'));
               break;
           }
         }
