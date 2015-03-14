@@ -46,6 +46,7 @@ namespace Nagru___Manga_Organizer
 
 		private void Browse_Load(object sender, EventArgs e)
     {
+      this.LostFocus += Browse_Img_LostFocus;
       this.Location = Main.ActiveForm.Location;
 
       //Compensate for zip files being improperly sorted
@@ -78,14 +79,21 @@ namespace Nagru___Manga_Organizer
 
     }
 
+    private void Browse_Img_LostFocus(object sender, EventArgs e)
+    {
+      this.Close();
+    }
+
     private void Browse_Shown(object sender, EventArgs e)
     {
 			//if the browser is being opened to the last viewed page,
 			//use the Prev() function to display those pages
-      if (Page == -1)
+      if (Page == -1) {
         Next();
-      else
+      }
+      else {
         Prev();
+      }
     }
 
 		#endregion

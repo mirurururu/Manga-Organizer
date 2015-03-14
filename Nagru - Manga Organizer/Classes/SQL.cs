@@ -322,16 +322,15 @@ namespace Nagru___Manga_Organizer
     /// <summary>
     /// Returns the details of every manga in the database
     /// </summary>
-    /// <param name="OnlyFavourites">Only return entries with a rating of 5.0?</param>
     /// <param name="SearchText">The user search parameters to compare against</param>
     /// <param name="mangaID">Can search for only a specific manga</param>
-    public static DataTable GetAllManga(bool OnlyFavourites = false, string SearchText = null, int MangaID = -1)
+    public static DataTable GetAllManga(string SearchText = null, int MangaID = -1)
     {
       if (!string.IsNullOrWhiteSpace(SearchText)) {
-        return SQLAccess.DB_Search(SearchText, OnlyFavourites, MangaID);
+        return SQLAccess.DB_Search(SearchText, MangaID);
       }
       else {
-        return SQLAccess.GetEntries(OnlyFavourites);
+        return SQLAccess.GetEntries();
       }
     }
 
@@ -1045,10 +1044,9 @@ namespace Nagru___Manga_Organizer
       /// Parses search terms based on an EH-like scheme and returns all results in the DB that match
       /// </summary>
       /// <param name="sTerms">The raw search string from the user</param>
-      /// <param name="bOnlyFav">Whether to only return results with a rating of 5.0</param>
       /// <param name="iMangaID">Optional ability to only check a single manga</param>
       /// <returns></returns>
-      internal static DataTable DB_Search(string sTerms, bool bOnlyFav = false, int iMangaID = -1)
+      internal static DataTable DB_Search(string sTerms, int iMangaID = -1)
       {
         if (string.IsNullOrWhiteSpace(sTerms)) {
           return GetEntries();
@@ -1095,10 +1093,6 @@ namespace Nagru___Manga_Organizer
         #region Where-clause setup
         sbCmd.AppendFormat(" where ({0} in (mgx.MangaID, -1)) "
           , iMangaID);
-
-        if (bOnlyFav) {
-          sbCmd.Append("and mgx.Rating = 5 ");
-        }
 
         for (int i = 0; i < asTerms.Length; i++) {
           for (int x = 0; x < asTerms[i].Length; x++) {
@@ -1259,15 +1253,9 @@ namespace Nagru___Manga_Organizer
       /// <summary>
       /// Returns all manga entries
       /// </summary>
-      /// <param name="bOnlyFav">Whether to only return manga with a rating of 5.0</param>
-      internal static DataTable GetEntries(bool bOnlyFav = false)
+      internal static DataTable GetEntries()
       {
-        string sCommandText =
-          vsManga
-          + (bOnlyFav ? "where mgx.Rating = 5" : "")
-          + vsMangaEnd;
-
-        return sqlBase.ExecuteQuery(sCommandText);
+        return sqlBase.ExecuteQuery(vsManga + vsMangaEnd);
       }
 
       /// <summary>

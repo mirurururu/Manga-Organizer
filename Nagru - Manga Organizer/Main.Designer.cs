@@ -32,7 +32,6 @@
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
       this.TabControl = new System.Windows.Forms.TabControl();
       this.Tb_Browse = new System.Windows.Forms.TabPage();
-      this.ChkBx_ShowFav = new System.Windows.Forms.CheckBox();
       this.lvManga = new Nagru___Manga_Organizer.ListViewNF();
       this.ColArtist = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
       this.ColTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -107,6 +106,9 @@
       this.Tb_Notes = new System.Windows.Forms.TabPage();
       this.frTxBx_Notes = new Nagru___Manga_Organizer.FixedRichTextBox();
       this.Delay = new System.Windows.Forms.Timer(this.components);
+      this.Mn_ListItem = new System.Windows.Forms.ContextMenuStrip(this.components);
+      this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.TabControl.SuspendLayout();
       this.Tb_Browse.SuspendLayout();
       this.Mn_TxBx.SuspendLayout();
@@ -115,6 +117,7 @@
       this.Mn_EntryOps.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.PicBx_Cover)).BeginInit();
       this.Tb_Notes.SuspendLayout();
+      this.Mn_ListItem.SuspendLayout();
       this.SuspendLayout();
       // 
       // TabControl
@@ -136,7 +139,6 @@
       // Tb_Browse
       // 
       this.Tb_Browse.BackColor = System.Drawing.SystemColors.ControlLightLight;
-      this.Tb_Browse.Controls.Add(this.ChkBx_ShowFav);
       this.Tb_Browse.Controls.Add(this.lvManga);
       this.Tb_Browse.Controls.Add(this.Btn_Scan);
       this.Tb_Browse.Controls.Add(this.Btn_Clear);
@@ -149,22 +151,6 @@
       this.Tb_Browse.TabIndex = 0;
       this.Tb_Browse.Text = "Browse";
       this.Tb_Browse.Click += new System.EventHandler(this.ClearSelection);
-      // 
-      // ChkBx_ShowFav
-      // 
-      this.ChkBx_ShowFav.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.ChkBx_ShowFav.Appearance = System.Windows.Forms.Appearance.Button;
-      this.ChkBx_ShowFav.AutoSize = true;
-      this.ChkBx_ShowFav.BackColor = System.Drawing.SystemColors.ButtonFace;
-      this.ChkBx_ShowFav.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-      this.ChkBx_ShowFav.Location = new System.Drawing.Point(802, 5);
-      this.ChkBx_ShowFav.Name = "ChkBx_ShowFav";
-      this.ChkBx_ShowFav.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-      this.ChkBx_ShowFav.Size = new System.Drawing.Size(66, 23);
-      this.ChkBx_ShowFav.TabIndex = 6;
-      this.ChkBx_ShowFav.Text = "Favs Only";
-      this.ChkBx_ShowFav.UseVisualStyleBackColor = false;
-      this.ChkBx_ShowFav.CheckedChanged += new System.EventHandler(this.ChkBx_ShowFav_CheckedChanged);
       // 
       // lvManga
       // 
@@ -199,6 +185,7 @@
       this.lvManga.DragDrop += new System.Windows.Forms.DragEventHandler(this.LV_Entries_DragDrop);
       this.lvManga.DragEnter += new System.Windows.Forms.DragEventHandler(this.LV_Entries_DragEnter);
       this.lvManga.DoubleClick += new System.EventHandler(this.LV_Entries_DoubleClick);
+      this.lvManga.MouseClick += new System.Windows.Forms.MouseEventHandler(this.lvManga_MouseClick);
       this.lvManga.MouseHover += new System.EventHandler(this.LV_Entries_MouseHover);
       this.lvManga.Resize += new System.EventHandler(this.LV_Entries_Resize);
       // 
@@ -263,7 +250,7 @@
       this.Btn_Clear.BackColor = System.Drawing.Color.Red;
       this.Btn_Clear.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
       this.Btn_Clear.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.Btn_Clear.Location = new System.Drawing.Point(757, 6);
+      this.Btn_Clear.Location = new System.Drawing.Point(838, 6);
       this.Btn_Clear.Name = "Btn_Clear";
       this.Btn_Clear.Size = new System.Drawing.Size(30, 23);
       this.Btn_Clear.TabIndex = 4;
@@ -293,7 +280,7 @@
       this.TxBx_Search.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.TxBx_Search.Location = new System.Drawing.Point(59, 6);
       this.TxBx_Search.Name = "TxBx_Search";
-      this.TxBx_Search.Size = new System.Drawing.Size(728, 23);
+      this.TxBx_Search.Size = new System.Drawing.Size(809, 23);
       this.TxBx_Search.TabIndex = 1;
       this.TxBx_Search.TextChanged += new System.EventHandler(this.TxBx_Search_TextChanged);
       this.TxBx_Search.DragDrop += new System.Windows.Forms.DragEventHandler(this.DragDropTxBx);
@@ -984,6 +971,29 @@
       this.Delay.Interval = 400;
       this.Delay.Tick += new System.EventHandler(this.Delay_Tick);
       // 
+      // Mn_ListItem
+      // 
+      this.Mn_ListItem.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.openToolStripMenuItem,
+            this.deleteToolStripMenuItem});
+      this.Mn_ListItem.Name = "Mn_Context";
+      this.Mn_ListItem.ShowImageMargin = false;
+      this.Mn_ListItem.Size = new System.Drawing.Size(83, 48);
+      // 
+      // openToolStripMenuItem
+      // 
+      this.openToolStripMenuItem.Name = "openToolStripMenuItem";
+      this.openToolStripMenuItem.Size = new System.Drawing.Size(82, 22);
+      this.openToolStripMenuItem.Text = "Open";
+      this.openToolStripMenuItem.Click += new System.EventHandler(this.MnTS_Open_Click);
+      // 
+      // deleteToolStripMenuItem
+      // 
+      this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
+      this.deleteToolStripMenuItem.Size = new System.Drawing.Size(82, 22);
+      this.deleteToolStripMenuItem.Text = "Delete";
+      this.deleteToolStripMenuItem.Click += new System.EventHandler(this.MnTS_Delete_Click);
+      // 
       // Main
       // 
       this.AcceptButton = this.Btn_Clear;
@@ -1016,6 +1026,7 @@
       this.Mn_EntryOps.PerformLayout();
       ((System.ComponentModel.ISupportInitialize)(this.PicBx_Cover)).EndInit();
       this.Tb_Notes.ResumeLayout(false);
+      this.Mn_ListItem.ResumeLayout(false);
       this.ResumeLayout(false);
 
         }
@@ -1072,7 +1083,6 @@
         private System.Windows.Forms.Button Btn_Loc;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripMenuItem MnTS_About;
-        private System.Windows.Forms.CheckBox ChkBx_ShowFav;
         private System.Windows.Forms.ToolStripMenuItem MnTS_LoadUrl;
         private System.Windows.Forms.ToolStripMenuItem MnTs_Quit;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
@@ -1099,6 +1109,9 @@
         private System.Windows.Forms.ToolStripMenuItem MnTS_ZipSource;
 				private System.Windows.Forms.ToolStripMenuItem MnTS_DBMaintenance;
         private System.Windows.Forms.ToolStripMenuItem MnTS_missingSource;
+        private System.Windows.Forms.ContextMenuStrip Mn_ListItem;
+        private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
     }
 }
 

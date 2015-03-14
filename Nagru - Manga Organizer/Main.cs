@@ -125,7 +125,7 @@ namespace Nagru___Manga_Organizer
         case 0:
           if (mangaID == -1) {
             Text = string.Format("{0}: {1:n0} entries",
-                (string.IsNullOrWhiteSpace(TxBx_Search.Text) && !ChkBx_ShowFav.Checked ?
+                (string.IsNullOrWhiteSpace(TxBx_Search.Text) ?
                 "Manga Organizer" : "Returned"), lvManga.Items.Count);
           }
           this.AcceptButton = Btn_Clear;
@@ -263,6 +263,20 @@ namespace Nagru___Manga_Organizer
     }
 
     /// <summary>
+    /// Display basic manga options when right-clicking on an item
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+    private void lvManga_MouseClick(object sender, MouseEventArgs e)
+    {
+      if (e.Button == MouseButtons.Right) {
+        if (lvManga.FocusedItem.Bounds.Contains(e.Location)) {
+          Mn_ListItem.Show(Cursor.Position);
+        }
+      }
+    }
+
+    /// <summary>
     /// Opens the selected manga in the default image browser
     /// </summary>
     private void LV_Entries_DoubleClick(object sender, EventArgs e)
@@ -277,24 +291,6 @@ namespace Nagru___Manga_Organizer
     {
       if (!lvManga.Focused && !Delay.Enabled)
         lvManga.Focus();
-    }
-
-    /// <summary>
-    /// Limit manga results to only favorites
-    /// </summary>
-    private void ChkBx_ShowFav_CheckedChanged(object sender, EventArgs e)
-    {
-      UpdateLV();
-
-      if (mangaID != -1
-          && Convert.ToInt32(SQL.GetMangaDetail(mangaID, SQL.Manga.Rating)) == 5) {
-        ReFocus();
-      }
-      else {
-        Reset();
-      }
-
-      lvManga.Select();
     }
     #endregion
 
@@ -615,7 +611,7 @@ namespace Nagru___Manga_Organizer
 
       if (mangaID != -1
           && (string.IsNullOrWhiteSpace(TxBx_Search.Text)
-          || SQL.GetAllManga(ChkBx_ShowFav.Checked, TxBx_Search.Text, mangaID).Rows.Count > 0)) {
+          || SQL.GetAllManga(TxBx_Search.Text, mangaID).Rows.Count > 0)) {
         ReFocus();
       }
       else {
@@ -762,8 +758,12 @@ namespace Nagru___Manga_Organizer
     /// </summary>
     private void OpenFile()
     {
-      if (PicBx_Cover.Image == null)
+      if (PicBx_Cover.Image == null) {
+        MessageBox.Show("The manga location could not be opened:\n" + TxBx_Loc.Text,
+          Application.ProductName, MessageBoxButtons.OK,
+          MessageBoxIcon.Error);
         return;
+      }
 
       string sPath = TxBx_Loc.Text;
       if (Directory.Exists(sPath)) {
@@ -773,7 +773,7 @@ namespace Nagru___Manga_Organizer
       }
 
       string sProg = SQL.GetSetting(SQL.Setting.ImageBrowser);
-      if (string.IsNullOrWhiteSpace(sProg) || sProg == "System Default"){
+      if (string.IsNullOrWhiteSpace(sProg) || sProg == "System Default") {
         System.Diagnostics.Process.Start("\"" + sPath + "\"");
       }
       else if (sProg == "Built-In Viewer") {
@@ -863,7 +863,7 @@ namespace Nagru___Manga_Organizer
       //reset Form title
       Tb_View.SuspendLayout();
       Text = string.Format("{0}: {1:n0} entries",
-          (string.IsNullOrWhiteSpace(TxBx_Search.Text) && !ChkBx_ShowFav.Checked ?
+          (string.IsNullOrWhiteSpace(TxBx_Search.Text) ?
           "Manga Organizer" : "Returned"), lvManga.Items.Count);
 
       //Tb_Browse
@@ -1140,7 +1140,7 @@ namespace Nagru___Manga_Organizer
     /// </summary>
     private void UpdateLV()
     {
-      using (DataTable dt = SQL.GetAllManga(ChkBx_ShowFav.Checked, TxBx_Search.Text)) {
+      using (DataTable dt = SQL.GetAllManga(TxBx_Search.Text)) {
 
         Cursor = Cursors.WaitCursor;
         ListViewItem[] aItems = new ListViewItem[dt.Rows.Count];
@@ -1177,7 +1177,7 @@ namespace Nagru___Manga_Organizer
 
         aiShuffle = null;
         Text = string.Format("{0}: {1:n0} entries",
-          (ChkBx_ShowFav.Checked || !string.IsNullOrWhiteSpace(TxBx_Search.Text) ? "Returned" : "Manga Organizer")
+          (!string.IsNullOrWhiteSpace(TxBx_Search.Text) ? "Returned" : "Manga Organizer")
           , dt.Rows.Count);
         Cursor = Cursors.Default;
       }
@@ -1235,7 +1235,7 @@ namespace Nagru___Manga_Organizer
       RefreshAutocomplete();
 
       //check if entry should still be displayed
-      if (SQL.GetAllManga(ChkBx_ShowFav.Checked, TxBx_Search.Text, mangaID).Rows.Count > 0) {
+      if (SQL.GetAllManga(TxBx_Search.Text, mangaID).Rows.Count > 0) {
         ListViewItem lvi = lvManga.FocusedItem;
         if (srRating.SelectedStar == 5) {
           lvi.BackColor = Color.FromArgb(Int32.Parse(SQL.GetSetting(SQL.Setting.RowColourHighlight)));
@@ -1266,12 +1266,7 @@ namespace Nagru___Manga_Organizer
     /// </summary>
     private void MnTS_Open_Click(object sender, EventArgs e)
     {
-      if (PicBx_Cover.Image != null) {
-        if (Directory.Exists(TxBx_Loc.Text)
-            || File.Exists(TxBx_Loc.Text)) {
-          OpenFile();
-        }
-      }
+      OpenFile();
     }
 
     /// <summary>
@@ -1283,20 +1278,23 @@ namespace Nagru___Manga_Organizer
         return;
 
       //ensure deletion is intentional
-      string msg = "";
+      string msg;
       string sLoc = SQL.GetMangaDetail(mangaID, SQL.Manga.Location);
       bool bFile = false, bFolder = true;
-      if ((bFolder = Ext.Accessible(sLoc)))
+      if ((bFolder = Ext.Accessible(sLoc))) {
         msg = "Do you want to delete the source directory as well?";
-      else if (bFile = File.Exists(sLoc))
+      }
+      else if (bFile = File.Exists(sLoc)) {
         msg = "Do you want to delete the source file as well?";
-      else
+      }
+      else {
         msg = "Are you sure you wish to delete this entry?";
-      DialogResult dResult = MessageBox.Show(msg, Application.ProductName,
-          MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+      }
+      DialogResult dResult = MessageBox.Show("\"" + SQL.GetMangaTitle(mangaID) + "\"\n" + msg, 
+        Application.ProductName, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
       if ((!bFolder && !bFile) && dResult == DialogResult.No)
         dResult = DialogResult.Cancel;
-
+      
       //delete source file\directory
       if (dResult == DialogResult.Yes) {
         if (bFolder) {
@@ -1304,8 +1302,8 @@ namespace Nagru___Manga_Organizer
           int iNumDir = Directory.GetDirectories(sLoc).Length;
           if (iNumDir > 0) {
             dResult = MessageBox.Show(string.Format("This directory contains {0} subfolder(s),\n" +
-                "are you sure you want to delete them?", iNumDir),
-                Application.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+              "are you sure you want to delete them?", iNumDir)
+              , Application.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
           }
           if (dResult == DialogResult.Yes) {
             this.Cursor = Cursors.WaitCursor;
@@ -1550,7 +1548,6 @@ namespace Nagru___Manga_Organizer
         if(lItems.Count > 0) {
 
           //remove search parameters
-          ChkBx_ShowFav.Checked = false;
           TxBx_Search.Text = "MISSING_SOURCE";
           aiShuffle = null;
 

@@ -1,3 +1,8 @@
+### v. 4.7.00 (March 13, 2015)
+  - Added ability to right-click on listview items for basic actions
+  - Built-in imageviewer now auto-closes when focus is lost
+  - Removed unnecessary FavsOnly button
+
 ### v. 4.6.92 (March 12, 2015)
   - Added ability to set built-in image browser as default
   - Updated display style of ratings
