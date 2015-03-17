@@ -1,3 +1,6 @@
+### v. 4.7.01 (March 16, 2015)
+  - Fixed the title parser ignoring text after the last period in a folder name
+
 ### v. 4.7.00 (March 13, 2015)
   - Added ability to right-click on listview items for basic actions
   - Built-in imageviewer now auto-closes when focus is lost

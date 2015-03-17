@@ -155,15 +155,23 @@ namespace Nagru___Manga_Organizer
     /// <returns></returns>
     public static string GetNameSansExtension(string sName)
     {
-      StringBuilder sb = new StringBuilder(sName);
-      int indx = sName.LastIndexOf('\\');
+      StringBuilder sb;
+			if (Directory.Exists(sName)) {
+				sb = new StringBuilder(Path.GetFileName(sName));
+			}
+			else {
+				sb = new StringBuilder(sName);
+				int indx = sName.LastIndexOf('\\');
 
-      if (indx > -1)
-        sb.Remove(0, indx + 1);
+				if (indx > -1) {
+					sb.Remove(0, indx + 1);
+				}
 
-      indx = sb.ToString().LastIndexOf('.');
-      if (indx > -1)
-				sb.Remove(indx, sb.Length - indx);
+				indx = sb.ToString().LastIndexOf('.');
+				if (indx > -1) {
+					sb.Remove(indx, sb.Length - indx);
+				}
+			}
 
       return sb.ToString();
     }

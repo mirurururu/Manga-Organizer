@@ -304,19 +304,19 @@ namespace Nagru___Manga_Organizer
       string sPath = Ext.FindPath(TxBx_Loc.Text, CmbBx_Artist.Text, acTxBx_Title.Text)
         ?? SQL.GetSetting(SQL.Setting.RootPath);
 
-      ExtFolderBrowserDialog xfbd = new ExtFolderBrowserDialog();
-      xfbd.ShowBothFilesAndFolders = true;
-      xfbd.RootFolder = Environment.SpecialFolder.MyComputer;
-      xfbd.SelectedPath = sPath;
+			using (ExtFolderBrowserDialog xfbd = new ExtFolderBrowserDialog()) {
+				xfbd.ShowBothFilesAndFolders = true;
+				xfbd.RootFolder = Environment.SpecialFolder.MyComputer;
+				xfbd.SelectedPath = sPath;
 
-      if (xfbd.ShowDialog() == DialogResult.OK) {
-        TxBx_Loc.Text = xfbd.SelectedPath;
-        ThreadPool.QueueUserWorkItem(GetImage);
+				if (xfbd.ShowDialog() == DialogResult.OK) {
+					TxBx_Loc.Text = xfbd.SelectedPath;
+					ThreadPool.QueueUserWorkItem(GetImage);
 
-        if (string.IsNullOrWhiteSpace(CmbBx_Artist.Text) && string.IsNullOrWhiteSpace(acTxBx_Title.Text))
-          SetTitle(Ext.GetNameSansExtension(xfbd.SelectedPath));
-      }
-      xfbd.Dispose();
+					if (string.IsNullOrWhiteSpace(CmbBx_Artist.Text) && string.IsNullOrWhiteSpace(acTxBx_Title.Text))
+						SetTitle(Ext.GetNameSansExtension(xfbd.SelectedPath));
+				}
+			}
     }
 
     /// <summary>
@@ -1951,13 +1951,8 @@ namespace Nagru___Manga_Organizer
       string[] asDir = ((string[])e.Data.GetData(DataFormats.FileDrop, false));
       TxBx_Loc.Text = asDir[0];
 
-      if (Directory.Exists(asDir[0])) {
-        if (string.IsNullOrWhiteSpace(CmbBx_Artist.Text) && string.IsNullOrWhiteSpace(acTxBx_Title.Text)) {
-          SetTitle(Path.GetDirectoryName(asDir[0]));
-          ThreadPool.QueueUserWorkItem(GetImage);
-        }
-      }
-      else if (File.Exists(asDir[0]) && IsArchive(asDir[0])) {
+      if (Directory.Exists(asDir[0])
+					|| (File.Exists(asDir[0]) && IsArchive(asDir[0]))) {
         if (string.IsNullOrWhiteSpace(CmbBx_Artist.Text) && string.IsNullOrWhiteSpace(acTxBx_Title.Text)) {
           SetTitle(Ext.GetNameSansExtension(asDir[0]));
           ThreadPool.QueueUserWorkItem(GetImage);
