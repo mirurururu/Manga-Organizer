@@ -1,19 +1,4 @@
-﻿/*
- * Author: Taylor Napier
- * Date: Aug15, 2012
- * Desc: Handles organization of manga library
- * 
- * This program is distributed under the
- * GNU General Public License v3 (GPLv3)
- * 
- * SharpCompress is distributed under the 
- * MIT\Expat License (MIT)
- * 
- * SQLite is in the public domain
- * 
- */
-
-#region Assemblies
+﻿#region Assemblies
 using System;
 using System.IO;
 using System.Linq;
