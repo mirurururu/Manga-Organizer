@@ -71,10 +71,12 @@ namespace Nagru___Manga_Organizer
 
         //check for artist/title fields and set formatting
         if (!string.IsNullOrWhiteSpace(asSplit[0])) {
-          sb.AppendFormat("{0}{1}", (asSplit[0].Contains("("))
-            ? "" : "artist:", asSplit[0]);
+          sb.AppendFormat("{0}\"{1}\" \"{2}\""
+            , (asSplit[0].Contains("(")) ? "" : "artist:"
+            , asSplit[0]
+            , asSplit[1]
+          );
 
-          sb.AppendFormat(" {0}", asSplit[1]);
           txbxSearch.Text = sb.ToString();
         }
       }

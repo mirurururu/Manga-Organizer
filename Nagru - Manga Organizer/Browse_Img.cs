@@ -14,7 +14,7 @@ namespace Nagru___Manga_Organizer
     const int MAX_ERROR = 10;
 
 		public Dictionary<int, int> Sort = new Dictionary<int, int>();
-    bool bWideL, bWideR, bNext;
+    bool bWideL, bWideR, bNext, bValidFocusLost = false;
     float fWidth;
 
     Timer trFlip;
@@ -81,7 +81,12 @@ namespace Nagru___Manga_Organizer
 
     private void Browse_Img_LostFocus(object sender, EventArgs e)
     {
-      this.Close();
+      if (!bValidFocusLost) {
+        this.Close();
+      }
+      else {
+        bValidFocusLost = false;
+      }
     }
 
     private void Browse_Shown(object sender, EventArgs e)
@@ -156,12 +161,12 @@ namespace Nagru___Manga_Organizer
             trFlip.Stop();
           Cursor.Show();
           BrowseTo fmGoTo = new BrowseTo(this);
-          fmGoTo.iPage = (bWideR || bWideL) ?
-              Page : Page - 1;
+          fmGoTo.iPage = (bWideR || bWideL) ? Page : Page - 1;
+          bValidFocusLost = true;
 
           if (fmGoTo.ShowDialog() == DialogResult.OK) {
-            bNext = true;
             Page = fmGoTo.iPage - 1;
+            bNext = true;
             Next();
           }
 

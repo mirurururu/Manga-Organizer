@@ -78,6 +78,18 @@ namespace Nagru___Manga_Organizer
         case Keys.Enter:
           UpdatePage();
           break;
+        case Keys.Up:
+          iPage--;
+          if (iPage < 0)
+            iPage = LV_Pages.Items.Count - 1;
+          LV_SelectPages();
+          break;
+        case Keys.Down:
+          iPage++;
+          if (iPage > LV_Pages.Items.Count)
+            iPage = 0;
+          LV_SelectPages();
+          break;
         default:
           this.Close();
           break;

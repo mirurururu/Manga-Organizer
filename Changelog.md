@@ -1,3 +1,7 @@
+### v. 4.7.02 (March 22, 2015)
+  - Fixed and improved 'gallery' browsing of images 
+  - Small tweaks
+
 ### v. 4.7.01 (March 16, 2015)
   - Fixed the title parser ignoring text after the last period in a folder name
 
