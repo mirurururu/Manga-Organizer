@@ -6,7 +6,6 @@ using System.Linq;
 using System.Security.Permissions;
 using System.Text;
 
-
 namespace Nagru___Manga_Organizer
 {
   public static class Ext
@@ -90,27 +89,32 @@ namespace Nagru___Manga_Organizer
     public static string CorrectPath(string Source, string RootPath = null)
     {
       if (!File.Exists(Source) && !Directory.Exists(Source)) {
-        const double MinSimilarity = 0.7;
+        const double MinSimilarity = 0.8;
         List<string> lRootDirs = new List<string>(500);
         if (string.IsNullOrWhiteSpace(RootPath)) {
           string SQLSetting = Convert.ToString(SQL.GetSetting(SQL.Setting.RootPath));
           RootPath = !string.IsNullOrWhiteSpace(SQLSetting) ? SQLSetting : Environment.CurrentDirectory;
         }
 
-        foreach (string path in Directory.EnumerateDirectories(RootPath)) {
-          if (SoerensonDiceCoef(Source, path) > MinSimilarity) {
-            Source = path;
-            break;
+        if (Directory.Exists(RootPath)) {
+          string[] validTypes = new string[5] { ".cbz", ".cbr", ".zip", ".rar", ".7z" };
+          foreach (string path in Directory.EnumerateDirectories(RootPath)) {
+            if (SoerensonDiceCoef(Source, path) > MinSimilarity) {
+              Source = path;
+              break;
+            }
           }
-        }
-        foreach (string path in Directory.EnumerateFiles(RootPath)) {
-          if (SoerensonDiceCoef(Source, path) > MinSimilarity) {
-            Source = path;
-            break;
+          foreach (string path in Directory.EnumerateFiles(RootPath)) {
+            if (validTypes.Contains(Path.GetExtension(path))) {
+              if (SoerensonDiceCoef(Source, path) > MinSimilarity) {
+                Source = path;
+                break;
+              }
+            }
           }
         }
       }
-
+      
       return Source;
     }
 

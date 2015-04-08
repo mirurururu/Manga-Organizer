@@ -138,8 +138,7 @@ namespace Nagru___Manga_Organizer
         _filePath += "\\MangaDatabase.bin";
       }
 
-      if (File.Exists(_filePath)
-          || File.Exists(_filePath = Ext.CorrectPath(_filePath))) {
+      if (File.Exists(_filePath)) {
         sqlBase.Import(_filePath);
       }
       else if (!IsConnected()) {

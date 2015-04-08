@@ -1,3 +1,6 @@
+### v. 4.7.13
+  - Updated pathing to only consider a subset of filetypes
+
 ### v. 4.7.12 (April 7, 2015)
   - Improved path prediction by using the Soerenson index
 
