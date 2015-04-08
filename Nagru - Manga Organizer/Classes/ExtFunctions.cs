@@ -58,48 +58,61 @@ namespace Nagru___Manga_Organizer
 		/// <summary>
 		/// Predict the filepath of a manga
 		/// </summary>
-		/// <param name="sPath">The base filepath</param>
 		/// <param name="sArtist">The name of the Artist</param>
 		/// <param name="sTitle">The title of the manga</param>
+    /// <param name="sMangaLocation">The base filepath</param>
 		/// <returns></returns>
-		public static string FindPath(string sPath, string sArtist, string sTitle)
-		{
-			if (!File.Exists(sPath) && !Directory.Exists(sPath))
-			{
-				//find base relative
-				sPath = RelativePath(sPath);
+    public static string FindPath(string sArtist, string sTitle, string sMangaLocation = null)
+    {
+      if (!File.Exists(sMangaLocation) && !Directory.Exists(sMangaLocation)) {
+        string SQLSetting = SQL.GetSetting(SQL.Setting.RootPath);
+        string RootPath = !string.IsNullOrWhiteSpace(SQLSetting) ? SQLSetting : Environment.CurrentDirectory;
 
-				if (!Directory.Exists(sPath) && !File.Exists(sPath))
-				{
-					sPath = string.Format("{0}\\{1}"
-            , !string.IsNullOrWhiteSpace(SQL.GetSetting(SQL.Setting.RootPath)) ?
-              SQL.GetSetting(SQL.Setting.RootPath) : Environment.CurrentDirectory
-              , string.Format(!string.IsNullOrWhiteSpace(sArtist) ?
-								"[{0}] {1}" : "{1}", sArtist, sTitle)
-					);
+        sMangaLocation = Ext.CorrectPath(
+          string.Format("{0}\\{1}", RootPath, Ext.GetFormattedTitle(sArtist, sTitle))
+          , RootPath
+        );
 
-					if (!Directory.Exists(sPath))
-					{
-            if (File.Exists(sPath + ".cbz"))
-							sPath += ".cbz";
-            else if (File.Exists(sPath + ".cbr"))
-							sPath += ".cbr";
-						else if (File.Exists(sPath + ".zip"))
-							sPath += ".zip";
-						else if (File.Exists(sPath + ".rar"))
-							sPath += ".rar";
-						else if (File.Exists(sPath + ".7z"))
-							sPath += ".7z";
-						else
-							sPath = RelativePath(sPath);
+        if (!Directory.Exists(sMangaLocation) && !File.Exists(sMangaLocation)) {
+          sMangaLocation = null;
+        }
+      }
 
-						if (!Directory.Exists(sPath) && !File.Exists(sPath))
-							sPath = null;
-					}
-				}
-			}
-			return sPath;
-		}
+      return sMangaLocation;
+    }
+
+    /// <summary>
+    /// Find if an existing file/directory matches the passed in path
+    /// </summary>
+    /// <param name="Source">The base filepath</param>
+    /// <param name="RootPath">Override for where to find possible matches</param>
+    /// <returns></returns>
+    public static string CorrectPath(string Source, string RootPath = null)
+    {
+      if (!File.Exists(Source) && !Directory.Exists(Source)) {
+        const double MinSimilarity = 0.7;
+        List<string> lRootDirs = new List<string>(500);
+        if (string.IsNullOrWhiteSpace(RootPath)) {
+          string SQLSetting = Convert.ToString(SQL.GetSetting(SQL.Setting.RootPath));
+          RootPath = !string.IsNullOrWhiteSpace(SQLSetting) ? SQLSetting : Environment.CurrentDirectory;
+        }
+
+        foreach (string path in Directory.EnumerateDirectories(RootPath)) {
+          if (SoerensonDiceCoef(Source, path) > MinSimilarity) {
+            Source = path;
+            break;
+          }
+        }
+        foreach (string path in Directory.EnumerateFiles(RootPath)) {
+          if (SoerensonDiceCoef(Source, path) > MinSimilarity) {
+            Source = path;
+            break;
+          }
+        }
+      }
+
+      return Source;
+    }
 
 		/// <summary>
 		/// Extends Directory.GetFiles to support multiple filters
@@ -111,7 +124,7 @@ namespace Nagru___Manga_Organizer
 		/// <returns></returns>
 		public static string[] GetFiles(string SourceFolder,
 				SearchOption SearchOption = SearchOption.AllDirectories,
-				string Filter = "*.jpg|*.png|*.jpeg|*.gif")
+				string Filter = "*.jp?g|*.png|*.gif")
 		{
 			if (!Directory.Exists(SourceFolder))
 				return new string[0];
@@ -261,36 +274,6 @@ namespace Nagru___Manga_Organizer
 				, iRating != 5 ? new string('☆', 5 - iRating) : ""
 			);
 		}
-
-    /// <summary>
-    /// Tries to find an incorrect filepath relative to the executable
-    /// </summary>
-    /// <param name="sRaw"></param>
-    /// <returns></returns>
-    public static string RelativePath(string sRaw)
-    {
-      bool bDiverged = false;
-      string sPath = "";
-      string[] sOldNodes = Split(sRaw, "\\");
-      string[] sCurrNodes = Split(Environment.CurrentDirectory, "\\");
-
-      //swap out point of divergence
-      for (int i = 0; i < sOldNodes.Length; i++) {
-        if (i < sCurrNodes.Length
-              && !(sOldNodes[i].Equals(sCurrNodes[i],
-              StringComparison.OrdinalIgnoreCase))) {
-          sPath += sCurrNodes[i] + "\\";
-        }
-        else {
-          sPath += sOldNodes[i] + "\\";
-          bDiverged = true;
-        }
-      }
-      sPath = (sPath.Length > 0) ? sPath.Substring(0, sPath.Length - 1) : null;
-
-      return (bDiverged && (Directory.Exists(sPath) || File.Exists(sPath)))
-          ? sPath : null;
-    }
 
 		/// <summary>
 		/// Proper image scaling

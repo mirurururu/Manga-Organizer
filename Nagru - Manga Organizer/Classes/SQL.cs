@@ -139,7 +139,7 @@ namespace Nagru___Manga_Organizer
       }
 
       if (File.Exists(_filePath)
-          || File.Exists(_filePath = Ext.RelativePath(_filePath))) {
+          || File.Exists(_filePath = Ext.CorrectPath(_filePath))) {
         sqlBase.Import(_filePath);
       }
       else if (!IsConnected()) {

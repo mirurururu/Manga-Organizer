@@ -1,3 +1,6 @@
+### v. 4.7.12 (April 7, 2015)
+  - Improved path prediction by using the Soerenson index
+
 ### v. 4.7.02 (March 22, 2015)
   - Fixed and improved 'gallery' browsing of images 
   - Small tweaks

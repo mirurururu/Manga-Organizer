@@ -289,7 +289,7 @@ namespace Nagru___Manga_Organizer
     private void Btn_Loc_Click(object sender, EventArgs e)
     {
       //try to auto-magically grab folder\file path
-      string sPath = Ext.FindPath(TxBx_Loc.Text, CmbBx_Artist.Text, acTxBx_Title.Text)
+      string sPath = Ext.FindPath(CmbBx_Artist.Text, acTxBx_Title.Text, TxBx_Loc.Text)
         ?? SQL.GetSetting(SQL.Setting.RootPath);
 
       using (ExtFolderBrowserDialog xfbd = new ExtFolderBrowserDialog()) {
@@ -1041,7 +1041,7 @@ namespace Nagru___Manga_Organizer
 
           //check for relativity
           if (!string.IsNullOrWhiteSpace(TxBx_Loc.Text)) {
-            string sResult = Ext.FindPath(TxBx_Loc.Text, CmbBx_Artist.Text, acTxBx_Title.Text);
+            string sResult = Ext.FindPath(CmbBx_Artist.Text, acTxBx_Title.Text, TxBx_Loc.Text);
             if (sResult != null)
               TxBx_Loc.Text = sResult;
           }
