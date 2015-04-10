@@ -10,38 +10,34 @@ namespace Nagru___Manga_Organizer
 {
   public static class Ext
   {
-		/// <summary>
-		/// Ensure chosen folder is not protected before operating
-		/// </summary>
-		/// <param name="Path"></param>
-		/// <returns></returns>
-		public static bool Accessible(string Path)
-		{
-			if (!Directory.Exists(Path))
-				return false;
+    /// <summary>
+    /// Ensure chosen folder is not protected before operating
+    /// </summary>
+    /// <param name="Path"></param>
+    /// <returns></returns>
+    public static bool Accessible(string Path)
+    {
+      if (!Directory.Exists(Path))
+        return false;
 
-			try
-			{
-				string[] asDirs = Directory.GetDirectories(Path, "*",
-						SearchOption.TopDirectoryOnly);
-				FileIOPermission fp;
+      try {
+        string[] asDirs = Directory.GetDirectories(Path, "*",
+            SearchOption.TopDirectoryOnly);
+        FileIOPermission fp;
 
-				for (int i = 0; i < asDirs.Length; i++)
-				{
-					fp = new FileIOPermission(FileIOPermissionAccess.Read |
-							FileIOPermissionAccess.Write, asDirs[i]);
-					fp.Demand();
-				}
-			}
-			catch
-			{
-				return false;
-			}
+        for (int i = 0; i < asDirs.Length; i++) {
+          fp = new FileIOPermission(FileIOPermissionAccess.Read |
+              FileIOPermissionAccess.Write, asDirs[i]);
+          fp.Demand();
+        }
+      } catch {
+        return false;
+      }
 
-			return true;
-		}
-		
-		/// <summary>
+      return true;
+    }
+
+    /// <summary>
     /// Simple string comparison
     /// </summary>
     /// <param name="sRaw">The base string</param>
@@ -49,18 +45,18 @@ namespace Nagru___Manga_Organizer
     /// <param name="cComp">Overrideable comparison type</param>
     /// <returns>Returns true if sRaw contains sFind</returns>
     public static bool Contains(this string sRaw, string sFind,
-			StringComparison cComp = StringComparison.OrdinalIgnoreCase)
+      StringComparison cComp = StringComparison.OrdinalIgnoreCase)
     {
       return sRaw.IndexOf(sFind, cComp) > -1;
     }
-		
-		/// <summary>
-		/// Predict the filepath of a manga
-		/// </summary>
-		/// <param name="sArtist">The name of the Artist</param>
-		/// <param name="sTitle">The title of the manga</param>
+
+    /// <summary>
+    /// Predict the filepath of a manga
+    /// </summary>
+    /// <param name="sArtist">The name of the Artist</param>
+    /// <param name="sTitle">The title of the manga</param>
     /// <param name="sMangaLocation">The base filepath</param>
-		/// <returns></returns>
+    /// <returns></returns>
     public static string FindPath(string sArtist, string sTitle, string sMangaLocation = null)
     {
       if (!File.Exists(sMangaLocation) && !Directory.Exists(sMangaLocation)) {
@@ -114,30 +110,30 @@ namespace Nagru___Manga_Organizer
           }
         }
       }
-      
+
       return Source;
     }
 
-		/// <summary>
-		/// Extends Directory.GetFiles to support multiple filters
-		/// </summary>
-		/// <remarks>Inspiration: Bean Software (2002-2008)</remarks>
-		/// <param name="SourceFolder"></param>
-		/// <param name="SearchOption"></param>
-		/// <param name="Filter"></param>
-		/// <returns></returns>
-		public static string[] GetFiles(string SourceFolder,
-				SearchOption SearchOption = SearchOption.AllDirectories,
-				string Filter = "*.jp?g|*.png|*.gif")
-		{
-			if (!Directory.Exists(SourceFolder))
-				return new string[0];
-			List<string> lFiles = new List<string>(10000);
-			string[] sFilters = Filter.Split('|');
+    /// <summary>
+    /// Extends Directory.GetFiles to support multiple filters
+    /// </summary>
+    /// <remarks>Inspiration: Bean Software (2002-2008)</remarks>
+    /// <param name="SourceFolder"></param>
+    /// <param name="SearchOption"></param>
+    /// <param name="Filter"></param>
+    /// <returns></returns>
+    public static string[] GetFiles(string SourceFolder,
+        SearchOption SearchOption = SearchOption.AllDirectories,
+        string Filter = "*.jpg|*.jpeg|*.png|*.gif")
+    {
+      if (!Directory.Exists(SourceFolder))
+        return new string[0];
+      List<string> lFiles = new List<string>(10000);
+      string[] sFilters = Filter.Split('|');
 
       try {
         for (int i = 0; i < sFilters.Length; i++) {
-          lFiles.AddRange(Directory.EnumerateFiles(SourceFolder,
+          lFiles.AddRange(Directory.GetFiles(SourceFolder,
           sFilters[i], SearchOption));
         }
       } catch (ArgumentException) {
@@ -148,11 +144,11 @@ namespace Nagru___Manga_Organizer
         Console.WriteLine(ex.Message);
       }
 
-			lFiles.Sort(new TrueCompare());
-			return lFiles.ToArray();
-		}
-		
-		/// <summary>
+      lFiles.Sort(new TrueCompare());
+      return lFiles.ToArray();
+    }
+
+    /// <summary>
     /// Turns Artist and Title fields into their EH format
     /// </summary>
     /// <param name="Artist"></param>
@@ -163,8 +159,8 @@ namespace Nagru___Manga_Organizer
       return string.Format((!string.IsNullOrWhiteSpace(Artist))
           ? "[{0}] {1}" : "{1}", Artist, Title);
     }
-		
-		/// <summary>
+
+    /// <summary>
     /// Return a filename without its extension
     /// Overcomes Microsoft not handling periods in filenames
     /// </summary>
@@ -173,22 +169,22 @@ namespace Nagru___Manga_Organizer
     public static string GetNameSansExtension(string sName)
     {
       StringBuilder sb;
-			if (Directory.Exists(sName)) {
-				sb = new StringBuilder(Path.GetFileName(sName));
-			}
-			else {
-				sb = new StringBuilder(sName);
-				int indx = sName.LastIndexOf('\\');
+      if (Directory.Exists(sName)) {
+        sb = new StringBuilder(Path.GetFileName(sName));
+      }
+      else {
+        sb = new StringBuilder(sName);
+        int indx = sName.LastIndexOf('\\');
 
-				if (indx > -1) {
-					sb.Remove(0, indx + 1);
-				}
+        if (indx > -1) {
+          sb.Remove(0, indx + 1);
+        }
 
-				indx = sb.ToString().LastIndexOf('.');
-				if (indx > -1) {
-					sb.Remove(indx, sb.Length - indx);
-				}
-			}
+        indx = sb.ToString().LastIndexOf('.');
+        if (indx > -1) {
+          sb.Remove(indx, sb.Length - indx);
+        }
+      }
 
       return sb.ToString();
     }
@@ -210,18 +206,18 @@ namespace Nagru___Manga_Organizer
       return bInitialized;
     }
 
-		/// <summary>
-		/// Adds text to a control
-		/// </summary>
-		/// <param name="c">The control to alter</param>
-		/// <param name="sAdd">The text to add</param>
-		/// <param name="iStart">The start point to insert from</param>
-		/// <returns></returns>
-		public static int InsertText(System.Windows.Forms.Control c, string sAdd, int iStart)
-		{
-			c.Text = c.Text.Insert(iStart, sAdd);
-			return iStart + sAdd.Length;
-		}
+    /// <summary>
+    /// Adds text to a control
+    /// </summary>
+    /// <param name="c">The control to alter</param>
+    /// <param name="sAdd">The text to add</param>
+    /// <param name="iStart">The start point to insert from</param>
+    /// <returns></returns>
+    public static int InsertText(System.Windows.Forms.Control c, string sAdd, int iStart)
+    {
+      c.Text = c.Text.Insert(iStart, sAdd);
+      return iStart + sAdd.Length;
+    }
 
     /// <summary>
     /// Parses the input string into Artist and Title variables
@@ -267,45 +263,44 @@ namespace Nagru___Manga_Organizer
       return asName;
     }
 
-		/// <summary>
-		/// Convert number to string of stars
-		/// </summary>
-		/// <param name="iRating"></param>
-		public static string RatingFormat(int iRating)
-		{
-			return string.Format("{0}{1}"
-				, new string('★', iRating)
-				, iRating != 5 ? new string('☆', 5 - iRating) : ""
-			);
-		}
+    /// <summary>
+    /// Convert number to string of stars
+    /// </summary>
+    /// <param name="iRating"></param>
+    public static string RatingFormat(int iRating)
+    {
+      return string.Format("{0}{1}"
+        , new string('★', iRating)
+        , iRating != 5 ? new string('☆', 5 - iRating) : ""
+      );
+    }
 
-		/// <summary>
-		/// Proper image scaling
-		/// </summary>
-		/// <remarks>based on: Alex Aza (Jun 28, 2011)</remarks>
-		/// <param name="img"></param>
-		/// <param name="fMaxWidth"></param>
-		/// <param name="fMaxHeight"></param>
-		/// <returns></returns>
-		public static Bitmap ScaleImage(Image img, float fMaxWidth, float fMaxHeight)
-		{
-			int iWidth = img.Width;
-			int iHeight = img.Height;
+    /// <summary>
+    /// Proper image scaling
+    /// </summary>
+    /// <remarks>based on: Alex Aza (Jun 28, 2011)</remarks>
+    /// <param name="img"></param>
+    /// <param name="fMaxWidth"></param>
+    /// <param name="fMaxHeight"></param>
+    /// <returns></returns>
+    public static Bitmap ScaleImage(Image img, float fMaxWidth, float fMaxHeight)
+    {
+      int iWidth = img.Width;
+      int iHeight = img.Height;
 
-			if (img.Width > fMaxWidth || img.Height > fMaxHeight)
-			{
-				float fRatio = Math.Min(
-					fMaxWidth / img.Width,
-					fMaxHeight / img.Height);
+      if (img.Width > fMaxWidth || img.Height > fMaxHeight) {
+        float fRatio = Math.Min(
+          fMaxWidth / img.Width,
+          fMaxHeight / img.Height);
 
-				iWidth = (int)(img.Width * fRatio);
-				iHeight = (int)(img.Height * fRatio);
-			}
+        iWidth = (int)(img.Width * fRatio);
+        iHeight = (int)(img.Height * fRatio);
+      }
 
-			Bitmap bmpNew = new Bitmap(iWidth, iHeight);
-			Graphics.FromImage(bmpNew).DrawImage(img, 0, 0, iWidth, iHeight);
-			return bmpNew;
-		}
+      Bitmap bmpNew = new Bitmap(iWidth, iHeight);
+      Graphics.FromImage(bmpNew).DrawImage(img, 0, 0, iWidth, iHeight);
+      return bmpNew;
+    }
 
     /// <summary>
     /// Finds the value of divergence between two strings

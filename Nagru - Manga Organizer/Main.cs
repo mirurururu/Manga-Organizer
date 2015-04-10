@@ -649,7 +649,7 @@ namespace Nagru___Manga_Organizer
                 , Application.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             }
             else {
-              MessageBox.Show(string.Format("This directory contains more than {0} subdirectories or more than {1} files. In the interest of safety," 
+              MessageBox.Show(string.Format("This directory contains more than {0} subdirectories or more than {1} files. In the interest of safety,"
                 + " please delete this folder manually. Press {2} to open this location in Windows Explorer.", iMaxFolder, iMaxFile, MnTS_OpenSource.ShortcutKeyDisplayString)
                 , Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Warning);
               dResult = DialogResult.Cancel;
@@ -685,12 +685,11 @@ namespace Nagru___Manga_Organizer
         if ((sFiles = Ext.GetFiles(TxBx_Loc.Text,
             SearchOption.TopDirectoryOnly)).Length > 0) {
           SetPicBxImage(sFiles[0]);
-          Invoke(new DelInt(SetNudCount), sFiles.Length);
-          Invoke(new DelVoid(SetZipSourceStatus));
-          MnTS_ZipSource.Enabled = true;
+          BeginInvoke(new DelInt(SetNudCount), sFiles.Length);
+          BeginInvoke(new DelVoid(SetZipSourceStatus));
         }
         else {
-          Invoke(new DelInt(SetOpenStatus), 0);
+          BeginInvoke(new DelInt(SetOpenStatus), 0);
         }
       }
     }
