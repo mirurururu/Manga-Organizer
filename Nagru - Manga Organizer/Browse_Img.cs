@@ -14,8 +14,8 @@ namespace Nagru___Manga_Organizer
     const int MAX_ERROR = 10;
 
 		public Dictionary<int, int> Sort = new Dictionary<int, int>();
-    bool bWideL, bWideR, bNext, bValidFocusLost = false;
-    float fWidth;
+    bool bWideL, bWideR, bValidFocusLost = false;
+    readonly float fWidth;
 
     Timer trFlip;
     bool bAuto = false;
@@ -42,25 +42,10 @@ namespace Nagru___Manga_Organizer
 		public Browse_Img()
     {
       InitializeComponent();
-    }
-
-		private void Browse_Load(object sender, EventArgs e)
-    {
       this.LostFocus += Browse_Img_LostFocus;
       this.Location = Main.ActiveForm.Location;
 
-      //Compensate for zip files being improperly sorted
-      Files.Sort(new TrueCompare());
-      if (Archive != null) {
-        for (int x = 0; x < Archive.Length; x++) {
-          for (int y = 0; y < Archive.Length; y++) {
-            if (Archive[x].FilePath.Equals(Files[y])) {
-              Sort.Add(y, x);
-              break;
-            }
-          }
-        }
-      }
+      picBx.BackColor = Color.FromArgb(Int32.Parse(SQL.GetSetting(SQL.Setting.BackgroundColour)));
 
       //set up timer
       trFlip = new Timer();
@@ -74,18 +59,22 @@ namespace Nagru___Manga_Organizer
       WindowState = FormWindowState.Maximized;
       #endif
 
-      picBx.BackColor = Color.FromArgb(Int32.Parse(SQL.GetSetting(SQL.Setting.BackgroundColour)));
       fWidth = (float)(Bounds.Width / 2.0);
-
     }
 
-    private void Browse_Img_LostFocus(object sender, EventArgs e)
+		private void Browse_Load(object sender, EventArgs e)
     {
-      if (!bValidFocusLost) {
-        this.Close();
-      }
-      else {
-        bValidFocusLost = false;
+      //Compensate for zip files being improperly sorted
+      Files.Sort(new TrueCompare());
+      if (Archive != null) {
+        for (int x = 0; x < Archive.Length; x++) {
+          for (int y = 0; y < Archive.Length; y++) {
+            if (Archive[x].FilePath.Equals(Files[y])) {
+              Sort.Add(y, x);
+              break;
+            }
+          }
+        }
       }
     }
 
@@ -101,12 +90,24 @@ namespace Nagru___Manga_Organizer
       }
     }
 
+    private void Browse_Img_LostFocus(object sender, EventArgs e)
+    {
+      if (!bValidFocusLost) {
+        this.Close();
+      }
+      else {
+        bValidFocusLost = false;
+      }
+    }
+
 		#endregion
 
 		#region Events
 
     private void Browse_KeyDown(object sender, KeyEventArgs e)
     {
+      const int PAGE_JUMP = 7;
+
 			//handle changing timer interval settings
       if (bAuto && e.Modifiers == Keys.Shift) {
         if (e.KeyCode == Keys.Oemplus) {
@@ -137,12 +138,12 @@ namespace Nagru___Manga_Organizer
           Prev();
           break;
         case Keys.Up:
-          if ((Page += 7) > Files.Count)
+          if ((Page += PAGE_JUMP) > Files.Count)
             Page = Page - Files.Count;
           Next();
           break;
         case Keys.Down:
-          if ((Page -= 7) < 0)
+          if ((Page -= PAGE_JUMP) < 0)
             Page = Files.Count + Page;
           Prev();
           break;
@@ -166,7 +167,6 @@ namespace Nagru___Manga_Organizer
 
           if (fmGoTo.ShowDialog() == DialogResult.OK) {
             Page = fmGoTo.iPage - 1;
-            bNext = true;
             Next();
           }
 
@@ -235,7 +235,7 @@ namespace Nagru___Manga_Organizer
       }
 
       Cursor.Show();
-      Page += 2;
+      Page++;
     }
 
 		#endregion
@@ -249,7 +249,7 @@ namespace Nagru___Manga_Organizer
     {
       Image imgL = null, imgR = null;		//holds the loaded image files
       byte byAttempt = 0;								//holds the number of attempts to load an image
-      Reset(Next:true);									//reset the page values to their default
+      Reset();									        //reset the page values to their default
 
 			//get the next valid, right-hand image file in the sequence
       do {
@@ -275,7 +275,7 @@ namespace Nagru___Manga_Organizer
         }
       }
 
-      Refresh(imgL, imgR);
+      Refresh(ref imgL, ref imgR, Next: true);
     }
 
 		/// <summary>
@@ -284,12 +284,13 @@ namespace Nagru___Manga_Organizer
     private void Prev()
     {
 			//If neither of the previous images were multi-page, decrement the page value to not overshoot pages
-      if (Page != 0 && !(bWideR || bWideL))
+      if (Page != 0 && !(bWideR || bWideL)) {
         Page--;
+      }
 
 			Image imgL = null, imgR = null;		//holds the loaded image files
       byte byAttempt = 0;								//holds the number of attempts to load an image
-			Reset(Next:false);								//reset the page values to their default
+			Reset();								          //reset the page values to their default
 
 			//get the next valid, left-hand image file in the sequence
       do {
@@ -317,7 +318,7 @@ namespace Nagru___Manga_Organizer
         Page++;
       }
 
-      Refresh(imgL, imgR);
+      Refresh(ref imgL, ref imgR, Next: false);
     }
 
 		/// <summary>
@@ -341,8 +342,8 @@ namespace Nagru___Manga_Organizer
 
           bmpTmp = new Bitmap(ms);
           bmpTmp = Ext.ScaleImage(bmpTmp
-					  , (bmpTmp.Width > bmpTmp.Height) ? picBx.Width : fWidth
-					  , picBx.Height);
+            , (bmpTmp.Width > bmpTmp.Height) ? picBx.Width : fWidth
+            , picBx.Height);
         } catch (Exception ex) {
           Console.WriteLine(ex.Message);
         }
@@ -354,67 +355,63 @@ namespace Nagru___Manga_Organizer
 		/// <summary>
 		/// Reset the image parameters to default
 		/// </summary>
-		/// <param name="Next">Whether it was called from Next()</param>
-    private void Reset(bool Next)
+    private void Reset()
     {
-      if (bAuto)
+      if (bAuto) {
         Tmr_Reset();
+      }
       bWideL = false;
       bWideR = false;
-      bNext = Next;
       GC.Collect(0);
     }
 
 		/// <summary>
 		/// Process which images to draw & how
 		/// </summary>
-		/// <param name="imgL"></param>
-		/// <param name="imgR"></param>
-    private void Refresh(Image imgL, Image imgR)
+		/// <param name="imgL">The image to draw on the left-side</param>
+    /// <param name="imgR">The image to draw on the right-side</param>
+    /// <param name="Next">Whether it was called from Next()</param>
+    private void Refresh(ref Image imgL, ref Image imgR, bool Next)
     {
       picBx.Refresh();
-
       picBx.SuspendLayout();
-      using(Graphics g = picBx.CreateGraphics())
-			{
+      using(Graphics g = picBx.CreateGraphics()) {
 				g.InterpolationMode = InterpolationMode.HighQualityBicubic;
 
 				if (!bWideL && !bWideR) {
-					DrawImage(g, imgL, true);
-					DrawImage(g, imgR, false);
+          DrawImage(g, ref imgL, bLeft: true);
+          DrawImage(g, ref imgR, bLeft: false);
 				}
-				else if (bNext)
-					DrawImage(g, imgR, false);
-				else
-					DrawImage(g, imgL, true);
+				else if (Next) {
+          DrawImage(g, ref imgR, bLeft: false);
+        }
+				else {
+          DrawImage(g, ref imgL, bLeft: true);
+        }
 			}
       picBx.ResumeLayout();
-
-			if (imgL != null)
-				imgL.Dispose();
-			if (imgR != null)
-				imgR.Dispose();
     }
 
 		/// <summary>
 		/// Draw the image to the screen
 		/// </summary>
 		/// <param name="g">A graphics reference to the picturebox</param>
-		/// <param name="imgL">The image to draw</param>
-		private void DrawImage(Graphics g, Image img, bool bLeft)
+		/// <param name="img">The image to draw</param>
+		private void DrawImage(Graphics g, ref Image img, bool bLeft)
 		{
-			if (img != null)
-			{
+      const int MARGIN = 5;
+
+			if (img != null) {
 				g.DrawImage(
 					img
 					, (bLeft ? bWideL : bWideR)
-							? (int)(fWidth - img.Width / 2.0) 
-							: fWidth + (bLeft ? -(img.Width + 5) : 5)
-					, (int)(picBx.Height / 2.0 - img.Height / 2.0)
+							? (int)(fWidth - img.Width / 2.0)
+              : fWidth + (bLeft ? -(img.Width + MARGIN) : MARGIN)           //determine x-pos from aspect ratio
+					, (int)(picBx.Height / 2.0 - img.Height / 2.0)                    //offset y-pos to center small images
 					, img.Width
 					, img.Height
 				);
-			}
+      }
 		}
 
 		#endregion

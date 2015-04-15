@@ -365,8 +365,7 @@ namespace Nagru___Manga_Organizer
 
       //find all gallery results
       if (!bException && !string.IsNullOrWhiteSpace(sPage)) {
-        string sRegexGallery = ".*http://(ex|g.e-)hentai.org/g/[0-9]{6}/[a-zA-z0-9]{10}/.*"
-          + "onmouseover=.* onmouseout=.*";
+        const string sRegexGallery = ".*http://(ex|g.e-)hentai.org/g/[0-9]{6}/[a-zA-z0-9]{10}/.*onmouseover=.* onmouseout=.*";
         const int iMinGallery = 125;
 
         string[] asplit = sPage.Split('<');

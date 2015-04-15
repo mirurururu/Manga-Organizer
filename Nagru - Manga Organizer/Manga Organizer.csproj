@@ -9,7 +9,7 @@
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Nagru___Manga_Organizer</RootNamespace>
-    <AssemblyName>Nagru - Manga Organizer</AssemblyName>
+    <AssemblyName>Manga Organizer</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>

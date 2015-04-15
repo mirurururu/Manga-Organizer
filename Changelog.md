@@ -1,4 +1,8 @@
-### v. 4.7.13
+### v. 4.7.15 (April 15, 2015)
+  - Fixed bug when accessing images in directories
+  - Maintenance of code-behind image handling
+
+### v. 4.7.13 (April 8, 2015)
   - Updated pathing to only consider a subset of filetypes
 
 ### v. 4.7.12 (April 7, 2015)

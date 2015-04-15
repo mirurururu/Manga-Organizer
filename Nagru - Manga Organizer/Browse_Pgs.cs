@@ -171,7 +171,7 @@ namespace Nagru___Manga_Organizer
 				byError++;
         if (++Page >= fmSource.Files.Count)
           Page = 0;
-        imgR = TrySet(Page);
+        imgR = TryLoad(Page);
 			} while (imgR == null && byError < 10);
 
 			//if the image is not multi-page, then load the next valid, left-hand image in the sequence
@@ -181,7 +181,7 @@ namespace Nagru___Manga_Organizer
 					byError++;
 					if (++Page >= fmSource.Files.Count)
             Page = 0;
-          imgL = TrySet(Page);
+          imgL = TryLoad(Page);
 				} while (imgL == null && byError < 10);
 
 				//if this image is multi-page, decrement the page value so the next page turn will catch it
@@ -190,17 +190,19 @@ namespace Nagru___Manga_Organizer
       }
       Refresh(imgL, imgR);
 
-      if (imgL != null)
+      if (imgL != null) {
         imgL.Dispose();
-      if (imgR != null)
+      }
+      if (imgR != null) {
         imgR.Dispose();
+      }
     }
 
 		/// <summary>
 		/// Try to load the image at the indicated index
 		/// </summary>
 		/// <param name="iPos">The file index</param>
-    private Bitmap TrySet(int i)
+    private Bitmap TryLoad(int i)
     {
       Bitmap bmpTmp = null;
       MemoryStream ms = new MemoryStream();

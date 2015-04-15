@@ -674,8 +674,6 @@ namespace Nagru___Manga_Organizer
     /// <param name="obj">Unused</param>
     private void GetImage(Object obj)
     {
-      BeginInvoke(new DelVoid(SetPicBxNull));
-
       //Get cover and filecount
       if (File.Exists(TxBx_Loc.Text)) {
         SetPicBxImage(TxBx_Loc.Text);
@@ -795,7 +793,7 @@ namespace Nagru___Manga_Organizer
           System.Diagnostics.Process.Start("explorer.exe", "\"" + sLoc + "\"");
         }
         else if (File.Exists(sLoc)) {
-          System.Diagnostics.Process.Start("explorer.exe", "/select,\"" + sLoc + "\"");
+          System.Diagnostics.Process.Start("explorer.exe", "/select, \"" + sLoc + "\"");
         }
       }
     }
@@ -947,7 +945,6 @@ namespace Nagru___Manga_Organizer
       CmbBx_Type.Text = "Manga";
       Dt_Date.Value = DateTime.Now;
       srRating.SelectedStar = 0;
-      SetPicBxNull();
 
       //Mn_EntryOps
       acTxBx_Tags.SetScroll();
@@ -1067,8 +1064,7 @@ namespace Nagru___Manga_Organizer
     {
       try {
         MnTS_Open.Visible = (iExists == 1);
-      } catch (Exception exc) {
-        Console.WriteLine(exc.Message);
+      } catch {
       }
     }
 
@@ -1093,14 +1089,13 @@ namespace Nagru___Manga_Organizer
             //account for terrible default zip-sorting
             int iFirst = 0;
             SCA.IArchiveEntry[] scEntries = scArch.Entries.ToArray();
+            string[] asFileTypes = new string[4] { ".jpg", ".jpeg", ".png", ".bmp" };
 
             List<string> lEntries = new List<string>(iCount);
             for (int i = 0; i < iCount; i++) {
-              if (scEntries[i].FilePath.EndsWith("jpg", StringComparison.OrdinalIgnoreCase)
-                  || scEntries[i].FilePath.EndsWith("jpeg", StringComparison.OrdinalIgnoreCase)
-                  || scEntries[i].FilePath.EndsWith("png", StringComparison.OrdinalIgnoreCase)
-                  || scEntries[i].FilePath.EndsWith("bmp", StringComparison.OrdinalIgnoreCase))
+              if (asFileTypes.Contains(Path.GetExtension(scEntries[i].FilePath).ToLower())) {
                 lEntries.Add(scEntries[i].FilePath);
+              }
             }
             if (lEntries.Count > 0) {
               lEntries.Sort(new TrueCompare());
@@ -1121,8 +1116,11 @@ namespace Nagru___Manga_Organizer
                       PicBx_Cover.Width, PicBx_Cover.Height);
                   }
                 }
-              } catch (Exception Exc) {
-                Console.WriteLine(Exc.Message);
+                BeginInvoke(new DelInt(SetOpenStatus), 1);
+              } catch {
+                MessageBox.Show("The following file could not be loaded:\n" + scEntries[iFirst].FilePath,
+                  Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                BeginInvoke(new DelInt(SetOpenStatus), 0);
               }
             }
           }
@@ -1144,19 +1142,19 @@ namespace Nagru___Manga_Organizer
     /// <summary>
     /// Ensure the picture being set is a valid image
     /// </summary>
-    /// <param name="s"></param>
-    private void TrySet(string s)
+    /// <param name="sPath"></param>
+    private void TrySet(string sPath)
     {
       try {
-        using (Bitmap bmpTmp = new Bitmap(s)) {
+        using (Bitmap bmpTmp = new Bitmap(sPath)) {
           PicBx_Cover.Image = Ext.ScaleImage(bmpTmp,
             PicBx_Cover.Width, PicBx_Cover.Height);
         }
-        MnTS_Open.Visible = (PicBx_Cover.Image == null);
-      } catch (Exception Exc) {
-        MessageBox.Show("The following file could not be loaded:\n" + s,
+        BeginInvoke(new DelInt(SetOpenStatus), 1);
+      } catch {
+        MessageBox.Show("The following file could not be loaded:\n" + sPath,
           Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-        Console.WriteLine(Exc.Message);
+        BeginInvoke(new DelInt(SetOpenStatus), 0);
       } finally {
         GC.Collect(0);
       }
@@ -1193,7 +1191,7 @@ namespace Nagru___Manga_Organizer
       }
       else {
         acTxBx_Title.Text = acTxBx_Title.Text.Insert(
-            acTxBx_Title.SelectionStart, asProc[1]);
+          acTxBx_Title.SelectionStart, asProc[1]);
         acTxBx_Title.SelectionStart += asProc[1].Length;
       }
       Tb_View.ResumeLayout();
