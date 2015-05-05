@@ -49,7 +49,7 @@ namespace Nagru___Manga_Organizer
       this.AcceptButton.NotifyDefault(false);
 
       //set-up user choices
-      lvDetails.GridLines = SQL.GetSetting(SQL.Setting.ShowGrid) == "1";
+      lvDetails.GridLines = ((bool)SQL.GetSetting(SQL.Setting.ShowGrid));
       for (int i = 0; i < csSearch.Options.Length; i++) {
         (ddmGallery.DropDownItems[i] as ToolStripMenuItem).Checked = csSearch.Options[i];
       }
@@ -58,8 +58,8 @@ namespace Nagru___Manga_Organizer
       tsbtnHelp.Image = SystemIcons.Information.ToBitmap();
 
       //input user credentials
-      string memberID = SQL.GetSetting(SQL.Setting.member_id);
-      txbxPass.Text = SQL.GetSetting(SQL.Setting.pass_hash);
+      string memberID = ((string)SQL.GetSetting(SQL.Setting.member_id));
+      txbxPass.Text = ((string)SQL.GetSetting(SQL.Setting.pass_hash));
       if(memberID != "-1") {
         txbxID.Text = memberID;
       }

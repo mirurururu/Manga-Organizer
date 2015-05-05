@@ -41,7 +41,7 @@ namespace Nagru___Manga_Organizer
 		private void Browse_GoTo_Load(object sender, EventArgs e)
     {
       //set grid on/off
-      LV_Pages.GridLines = SQL.GetSetting(SQL.Setting.ShowGrid) == "1";
+      LV_Pages.GridLines = ((bool)SQL.GetSetting(SQL.Setting.ShowGrid));
 
       //add pages to listview
       ListViewItem[] lvi = new ListViewItem[fmSource.Files.Count];

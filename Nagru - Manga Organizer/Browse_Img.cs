@@ -45,12 +45,12 @@ namespace Nagru___Manga_Organizer
       this.LostFocus += Browse_Img_LostFocus;
       this.Location = Main.ActiveForm.Location;
 
-      picBx.BackColor = Color.FromArgb(Int32.Parse(SQL.GetSetting(SQL.Setting.BackgroundColour)));
+      picBx.BackColor = ((Color)SQL.GetSetting(SQL.Setting.BackgroundColour));
 
       //set up timer
       trFlip = new Timer();
       trFlip.Tick += trFlip_Tick;
-      trFlip.Interval = Int32.Parse(SQL.GetSetting(SQL.Setting.ReadInterval));
+      trFlip.Interval = ((int)SQL.GetSetting(SQL.Setting.ReadInterval));
 
       #if !DEBUG
       Cursor.Hide();

@@ -41,6 +41,7 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
     <GenerateSerializationAssemblies>On</GenerateSerializationAssemblies>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -115,7 +116,6 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Classes\ExtFunctions.cs" />
-    <Compile Include="Classes\FileSerializer.cs" />
     <Compile Include="Classes\FixedRichTextBox.cs">
       <SubType>Component</SubType>
     </Compile>

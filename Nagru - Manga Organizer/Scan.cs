@@ -29,10 +29,10 @@ namespace Nagru___Manga_Organizer
 
     private void Scan_Load(object sender, EventArgs e)
     {
-      LV_Found.GridLines = SQL.GetSetting(SQL.Setting.ShowGrid) == "1";
+      LV_Found.GridLines = ((bool)SQL.GetSetting(SQL.Setting.ShowGrid));
       LV_Found_Resize(sender, e);
 
-      string[] sRaw = SQL.GetSetting(SQL.Setting.SearchIgnore).Split('|');
+      string[] sRaw = ((string)SQL.GetSetting(SQL.Setting.SearchIgnore)).Split('|');
       for (int i = 0; i < sRaw.Length - 1; i++)
         hsIgnore.Add(sRaw[i]);
 
@@ -42,7 +42,7 @@ namespace Nagru___Manga_Organizer
       }
 
       //auto-scan at load
-      string sPath = SQL.GetSetting(SQL.Setting.RootPath);
+      string sPath = ((string)SQL.GetSetting(SQL.Setting.RootPath));
       if (sPath == string.Empty || !Directory.Exists(sPath))
         sPath = Environment.CurrentDirectory;
       TxBx_Loc.Text = sPath;
@@ -74,7 +74,7 @@ namespace Nagru___Manga_Organizer
     /* Start scan op in new thread */
     private void TryScan()
     {
-      if (Ext.Accessible(TxBx_Loc.Text)) {
+      if (Ext.Accessible(TxBx_Loc.Text) != Ext.PathType.Invalid) {
         Cursor = Cursors.WaitCursor;
 
         lFound.Clear();
@@ -82,9 +82,7 @@ namespace Nagru___Manga_Organizer
         LV_Found.ListViewItemSorter = null;
         this.Text = "Scan";
 
-        Thread trdScan = new Thread(ScanDir);
-        trdScan.IsBackground = true;
-        trdScan.Start(TxBx_Loc.Text);
+        ThreadPool.QueueUserWorkItem(ScanDir, TxBx_Loc.Text);
       }
       else
         MessageBox.Show("Cannot read from the selected folder path.",
@@ -259,7 +257,7 @@ namespace Nagru___Manga_Organizer
         //save entry and remove from list
         int iPos = Int32.Parse(LV_Found.SelectedItems[i].SubItems[3].Text);
         SQL.SaveManga(lFound[iPos].sArtist, lFound[iPos].sTitle, lFound[iPos].dtDate,
-          lFound[iPos].sTags, lFound[iPos].sLoc, lFound[iPos].pages,
+          lFound[iPos].sTags, lFound[iPos].sLoc, lFound[iPos].pages, 0,
           lFound[iPos].sType, lFound[iPos].byRat, lFound[iPos].sDesc);
         irmView[i] = LV_Found.SelectedItems[i].Index;
         irmList[i] = iPos;

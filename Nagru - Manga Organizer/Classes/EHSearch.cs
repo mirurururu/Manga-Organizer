@@ -210,7 +210,7 @@ namespace Nagru___Manga_Organizer
       public gmetadata(string JSON)
       {
         CultureInfo ci = new CultureInfo("en-US");
-        posted = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+				posted = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         try {
           dynamic JsonObject = JObject.Parse(JSON);
@@ -246,23 +246,26 @@ namespace Nagru___Manga_Organizer
       public string GetTags(string sCurrentTags = null)
       {
         if (tags == null) {
-          return string.Empty;
+          return sCurrentTags;
         }
 
-        List<string> lRaw = new List<string>(tags.Length * 2);
-        lRaw.AddRange(tags);
-
+				List<string> lRaw = tags.ToList();
         if (!string.IsNullOrWhiteSpace(sCurrentTags)) {
           lRaw.AddRange(sCurrentTags.Split(','));
         }
-        lRaw.Sort(new TrueCompare());
 
         return String.Join(", ",
-          lRaw.Select(
-            x => x.Trim()).Distinct().ToArray<string>()
+          lRaw
+						.Select(x => x.Trim())
+						.OrderBy(s => s)
+						.Distinct()
+						.ToArray<string>()
         );
       }
 
+			/// <summary>
+			/// Returns whether an error was encountered while parsing the metadata
+			/// </summary>
       public bool APIError
       {
         get
@@ -286,7 +289,7 @@ namespace Nagru___Manga_Organizer
       hsTitle = new List<string>();
 
       #region Gallery Options
-      bOpt = SQL.GetSetting(SQL.Setting.GallerySettings)
+      bOpt = ((string)SQL.GetSetting(SQL.Setting.GallerySettings))
           .Split(',').Select(x => byte.Parse(x)).ToArray();
       #endregion
     }
@@ -328,7 +331,7 @@ namespace Nagru___Manga_Organizer
 
       //determine if exhentai can be called
       bool bXH = !string.IsNullOrWhiteSpace(
-        SQL.GetSetting(SQL.Setting.pass_hash) + SQL.GetSetting(SQL.Setting.member_id));
+        ((string)SQL.GetSetting(SQL.Setting.pass_hash)) + ((string)SQL.GetSetting(SQL.Setting.member_id)));
 
       //convert raw search terms into web form
       sSearchURL = FormatSearch(SearchTerms, bXH, bOpt);
@@ -346,8 +349,8 @@ namespace Nagru___Manga_Organizer
       if (bXH) {
         rq.CookieContainer = new CookieContainer(2);
         rq.CookieContainer.Add(new CookieCollection() {
-          new Cookie("ipb_member_id", SQL.GetSetting(SQL.Setting.member_id)) { Domain = "exhentai.org" },
-          new Cookie("ipb_pass_hash", SQL.GetSetting(SQL.Setting.pass_hash)) { Domain = "exhentai.org" }
+          new Cookie("ipb_member_id", ((string)SQL.GetSetting(SQL.Setting.member_id))) { Domain = "exhentai.org" },
+          new Cookie("ipb_pass_hash", ((string)SQL.GetSetting(SQL.Setting.pass_hash))) { Domain = "exhentai.org" }
 				});
       }
 

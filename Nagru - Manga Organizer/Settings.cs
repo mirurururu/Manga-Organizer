@@ -45,16 +45,16 @@ namespace Nagru___Manga_Organizer
       {
         SaveLoc = Properties.Settings.Default.SavLoc != string.Empty ?
           Properties.Settings.Default.SavLoc : Environment.CurrentDirectory;
-        RootLoc = SQL.GetSetting(SQL.Setting.RootPath);
-        CustomProgram = SQL.GetSetting(SQL.Setting.ImageBrowser);
+        RootLoc = ((string)SQL.GetSetting(SQL.Setting.RootPath));
+        CustomProgram = ((string)SQL.GetSetting(SQL.Setting.ImageBrowser));
         if (string.IsNullOrWhiteSpace(CustomProgram)) {
           CustomProgram = sDefProgram;
         }
-        ReadInterval = Int32.Parse(SQL.GetSetting(SQL.Setting.ReadInterval));
-        BackColour = Color.FromArgb(Int32.Parse(SQL.GetSetting(SQL.Setting.BackgroundColour)));
-        ShowGrid = SQL.GetSetting(SQL.Setting.ShowGrid) == "1";
-        ShowDate = SQL.GetSetting(SQL.Setting.ShowDate) == "1";
-        SearchIgnoreRaw = SQL.GetSetting(SQL.Setting.SearchIgnore);
+        ReadInterval = ((int)SQL.GetSetting(SQL.Setting.ReadInterval));
+        BackColour = ((Color)SQL.GetSetting(SQL.Setting.BackgroundColour));
+        ShowGrid = ((bool)SQL.GetSetting(SQL.Setting.ShowGrid));
+        ShowDate = ((bool)SQL.GetSetting(SQL.Setting.ShowDate));
+        SearchIgnoreRaw = ((string)SQL.GetSetting(SQL.Setting.SearchIgnore));
         SearchIgnore = Ext.Split(SearchIgnoreRaw, "|");
       }
 
@@ -210,7 +210,7 @@ namespace Nagru___Manga_Organizer
         fbd.SelectedPath = sPath;
 
         if (fbd.ShowDialog() == DialogResult.OK
-            && Ext.Accessible(fbd.SelectedPath)) {
+            && Ext.Accessible(fbd.SelectedPath) != Ext.PathType.Invalid) {
           aTxBx_Root.Text = fbd.SelectedPath;
           if (aTxBx_Save.Text == string.Empty) {
             aTxBx_Save.Text = fbd.SelectedPath;
@@ -229,7 +229,7 @@ namespace Nagru___Manga_Organizer
         fbd.SelectedPath = sPath;
 
         if (fbd.ShowDialog() == DialogResult.OK
-            && Ext.Accessible(fbd.SelectedPath)) {
+            && Ext.Accessible(fbd.SelectedPath) != Ext.PathType.Invalid) {
           aTxBx_Save.Text = fbd.SelectedPath;
           if (string.IsNullOrWhiteSpace(aTxBx_Root.Text)) {
             aTxBx_Root.Text = fbd.SelectedPath;
@@ -284,7 +284,6 @@ namespace Nagru___Manga_Organizer
     {
       //only finalize settings when `Btn_Save_Click' triggered
       if (stCurrent.bSaveLocChanged) {
-        SQL.UpdateSetting(SQL.Setting.SavePath, aTxBx_Save.Text);
         Properties.Settings.Default.SavLoc = aTxBx_Save.Text;
         Properties.Settings.Default.Save();
         stCurrent.bSaveLocChanged = false;

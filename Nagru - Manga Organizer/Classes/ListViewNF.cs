@@ -12,11 +12,16 @@ namespace Nagru___Manga_Organizer
   /// <summary>
   /// Fixes default's broken Update (it no longer acts as a refresh)
   /// </summary>
-  /// <remarks>Author: geekswithblogs.net (Feb 27, 2006)</remarks>
+  /// <remarks>Flicker fix: geekswithblogs.net (Feb 27, 2006)</remarks>
+  /// <remarks>Spacing fix: Jared Updike (Jul 09, 2009)</remarks>
   class ListViewNF : System.Windows.Forms.ListView
   {
     #region Properties
 
+    [DllImport("user32.dll")]
+    public static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+
+    public const int ICON_SIZE = 128;
     public HashSet<int> staticColumns;
     private int ColRating = 0;
     private LVsorter lvSortObj;
@@ -91,6 +96,9 @@ namespace Nagru___Manga_Organizer
       this.SetStyle(ControlStyles.OptimizedDoubleBuffer
           | ControlStyles.AllPaintingInWmPaint, true);
 
+      //Set a more compact listview image style
+      this.SetSpacing(ICON_SIZE + 12, ICON_SIZE + 4 + 20);
+
       /* Enable the OnNotifyMessage event so we get a chance to filter out 
          Windows messages before they get to the form's WndProc   */
       this.SetStyle(ControlStyles.EnableNotifyMessage, true);
@@ -102,11 +110,11 @@ namespace Nagru___Manga_Organizer
     /// </summary>
     static ListViewNF()
     {
-      if (!InDesignMode() && Ext.IsInitialized() && SQL.IsConnected()) {
-        cRowColorAlt = Color.FromArgb(Int32.Parse(SQL.GetSetting(SQL.Setting.RowColourAlt)));
+      if (!InDesignMode() && SQL.IsConnected) {
+        cRowColorAlt = ((Color)SQL.GetSetting(SQL.Setting.RowColourAlt));
       }
       else {
-        cRowColorAlt = Color.LightGray;
+        cRowColorAlt = Color.FromArgb(-657931);
       }
     }
 
@@ -162,10 +170,14 @@ namespace Nagru___Manga_Organizer
     /// </summary>
     public void Alternate()
     {
+      if (this.View != View.Details) {
+        return;
+      }
+
       this.BeginUpdate();
       for (int i = 0; i < this.Items.Count; i++) {
         if (IsMain) {
-					if (this.Items[i].SubItems[ColRating].Text[this.Items[i].SubItems[ColRating].Text.Length - 1] == '★')
+          if (this.Items[i].SubItems[ColRating].Text[this.Items[i].SubItems[ColRating].Text.Length - 1] == '★')
             continue;
         }
         else if (this.Items[i].BackColor == Color.MistyRose) {
@@ -185,6 +197,31 @@ namespace Nagru___Manga_Organizer
     {
       this.Sort();
       this.Alternate();
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="lowPart"></param>
+    /// <param name="highPart"></param>
+    /// <returns></returns>
+    private int MakeLong(short lowPart, short highPart)
+    {
+      return (int)(((ushort)lowPart) | (uint)(highPart << 16));
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="cx">Distance, in pixels, to set between icons on the x-axis.</param>
+    /// <param name="cy">Distance, in pixels, to set between icons on the y-axis</param>
+    /// <remarks>http://msdn.microsoft.com/en-us/library/bb761176(VS.85).aspx</remarks>
+    private void SetSpacing(short cx, short cy)
+    {
+      const int LVM_FIRST = 0x1000;
+      const int LVM_SETICONSPACING = LVM_FIRST + 53;
+      SendMessage(this.Handle, LVM_SETICONSPACING,
+      IntPtr.Zero, (IntPtr)MakeLong(cx, cy));
     }
 
     #endregion

@@ -10,31 +10,66 @@ namespace Nagru___Manga_Organizer
 {
   public static class Ext
   {
-    /// <summary>
-    /// Ensure chosen folder is not protected before operating
-    /// </summary>
-    /// <param name="Path"></param>
-    /// <returns></returns>
-    public static bool Accessible(string Path)
+    public enum PathType
     {
-      if (!Directory.Exists(Path))
-        return false;
+      ValidFile,
+      ValidDirectory,
+      Invalid
+    }
+
+    /// <summary>
+    /// Ensure chosen path is accessible by the current user
+    /// </summary>
+    /// <param name="Path">The filepath to check for accessibility</param>
+    /// <param name="searchOption">Whether to search the TopDirectory or AllDirectories</param>
+    /// <param name="ShowDialog">Whether to display error messages</param>
+    /// <returns>Returns the type & validity of the path</returns>
+    public static PathType Accessible(string Path, SearchOption searchOption = SearchOption.TopDirectoryOnly, bool ShowDialog = true)
+    {
+      PathType pathType = PathType.Invalid;
+      List<string> lPaths = new List<string>(10);
+      Exception exception = null;
 
       try {
-        string[] asDirs = Directory.GetDirectories(Path, "*",
-            SearchOption.TopDirectoryOnly);
-        FileIOPermission fp;
-
-        for (int i = 0; i < asDirs.Length; i++) {
-          fp = new FileIOPermission(FileIOPermissionAccess.Read |
-              FileIOPermissionAccess.Write, asDirs[i]);
-          fp.Demand();
+        if (Directory.Exists(Path)) {
+          pathType = PathType.ValidDirectory;
+          lPaths.AddRange(Directory.GetDirectories(Path, "*", searchOption));
+          lPaths.Add(Path);
         }
-      } catch {
-        return false;
+        else if (File.Exists(Path)) {
+          pathType = PathType.ValidFile;
+          lPaths.Add(Path);
+        }
+
+        if (lPaths.Count > 0) {
+          for (int i = 0; i < lPaths.Count; i++) {
+            FileIOPermission fp = new FileIOPermission(FileIOPermissionAccess.Read |
+              FileIOPermissionAccess.Write, lPaths[i]);
+            fp.Demand();
+          }
+        }
+        else {
+          if (ShowDialog) {
+            //xDialog.DisplayError(msg.NO_ACCESS, "Path does not correspond to a file or directory.",
+             // SQL.EventType.CustomException, Path, LogSystemEvent: false);
+          }
+        }
+      } catch (UnauthorizedAccessException exc) {
+        exception = exc;
+      } catch (ArgumentException exc) {
+        exception = exc;
+      } catch (Exception exc) {
+        exception = exc;
       }
 
-      return true;
+      if (exception != null) {
+        pathType = PathType.Invalid;
+        if (ShowDialog) {
+          //xDialog.DisplayError(msg.NO_ACCESS, exception, SQL.EventType.HandledException, Path, LogSystemEvent: false);
+        }
+      }
+
+      return pathType;
     }
 
     /// <summary>
@@ -60,7 +95,7 @@ namespace Nagru___Manga_Organizer
     public static string FindPath(string sArtist, string sTitle, string sMangaLocation = null)
     {
       if (!File.Exists(sMangaLocation) && !Directory.Exists(sMangaLocation)) {
-        string SQLSetting = SQL.GetSetting(SQL.Setting.RootPath);
+        string SQLSetting = ((string)SQL.GetSetting(SQL.Setting.RootPath));
         string RootPath = !string.IsNullOrWhiteSpace(SQLSetting) ? SQLSetting : Environment.CurrentDirectory;
 
         sMangaLocation = Ext.CorrectPath(
@@ -187,23 +222,6 @@ namespace Nagru___Manga_Organizer
       }
 
       return sb.ToString();
-    }
-
-    /// <summary>
-    /// Ensures the SQL class is initialized
-    /// </summary>
-    /// <returns>Whether the SQL class is accessible. Safety check.</returns>
-    public static bool IsInitialized()
-    {
-      bool bInitialized = true;
-
-      try {
-        SQL.IsConnected();
-      } catch (System.TypeInitializationException) {
-        bInitialized = false;
-      }
-
-      return bInitialized;
     }
 
     /// <summary>
@@ -341,7 +359,7 @@ namespace Nagru___Manga_Organizer
     /// <returns></returns>
     public static string[] Split(string sRaw, params string[] sFilter)
     {
-      return sRaw.Split(sFilter, StringSplitOptions.RemoveEmptyEntries)
+      return (sRaw ?? "").Split(sFilter, StringSplitOptions.RemoveEmptyEntries)
         .Select(x => x.Trim()).ToArray<string>();
     }
   }
