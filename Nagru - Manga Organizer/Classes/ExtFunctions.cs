@@ -271,7 +271,7 @@ namespace Nagru___Manga_Organizer
     {
       return string.Format("{0}{1}"
         , new string('★', iRating)
-        , iRating != 5 ? new string('☆', 5 - iRating) : ""
+        , iRating != 5 ? new string('☆', Math.Abs(5 - iRating)) : ""
       );
     }
 

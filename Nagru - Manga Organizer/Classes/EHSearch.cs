@@ -210,7 +210,7 @@ namespace Nagru___Manga_Organizer
       public gmetadata(string JSON)
       {
         CultureInfo ci = new CultureInfo("en-US");
-        posted = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+				posted = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         try {
           dynamic JsonObject = JObject.Parse(JSON);
@@ -246,23 +246,26 @@ namespace Nagru___Manga_Organizer
       public string GetTags(string sCurrentTags = null)
       {
         if (tags == null) {
-          return string.Empty;
+          return sCurrentTags;
         }
 
-        List<string> lRaw = new List<string>(tags.Length * 2);
-        lRaw.AddRange(tags);
-
+				List<string> lRaw = tags.ToList();
         if (!string.IsNullOrWhiteSpace(sCurrentTags)) {
           lRaw.AddRange(sCurrentTags.Split(','));
         }
-        lRaw.Sort(new TrueCompare());
 
         return String.Join(", ",
-          lRaw.Select(
-            x => x.Trim()).Distinct().ToArray<string>()
+          lRaw
+						.Select(x => x.Trim())
+						.OrderBy(s => s)
+						.Distinct()
+						.ToArray<string>()
         );
       }
 
+			/// <summary>
+			/// Returns whether an error was encountered while parsing the metadata
+			/// </summary>
       public bool APIError
       {
         get
@@ -308,7 +311,8 @@ namespace Nagru___Manga_Organizer
         + "&f_gamecg={4}&f_western={5}&f_non-h={6}&f_imageset={7}&f_cosplay={8}"
         + "&f_asianporn={9}&f_misc={10}&f_search={11}&f_apply=Apply+Filter",
         useEXH ? "exhentai" : "g.e-hentai", Options[0], Options[1], Options[2], Options[3], Options[4], Options[5],
-        Options[6], Options[7], Options[8], Options[9], Uri.EscapeDataString(SearchTerms).Replace("%20", "+"));
+        Options[6], Options[7], Options[8], Options[9],
+        Uri.EscapeDataString(SearchTerms).Replace("%20", "+"));
     }
 
     /// <summary>

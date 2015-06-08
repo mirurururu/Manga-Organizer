@@ -1,3 +1,6 @@
+### v. 4.7.16 (June 08, 2015)
+  - Fixed situation where a manga could be rated 6+ stars and cause a crash when displaying that
+
 ### v. 4.7.15 (April 15, 2015)
   - Fixed bug when accessing images in directories
   - Maintenance of code-behind image handling

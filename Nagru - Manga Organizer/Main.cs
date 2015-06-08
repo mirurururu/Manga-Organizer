@@ -52,7 +52,7 @@ namespace Nagru___Manga_Organizer
       frTxBx_Desc.DragDrop += new DragEventHandler(DragDropTxBx);
       frTxBx_Desc.DragEnter += new DragEventHandler(DragEnterTxBx);
       frTxBx_Notes.DragEnter += new DragEventHandler(DragEnterTxBx);
-
+			
       //set-up listview sorting & sizing
       lvManga.staticColumns.Add(ColTags.Index);
       lvManga.RatingColumn = ColRating.Index;
@@ -299,7 +299,7 @@ namespace Nagru___Manga_Organizer
 
         if (xfbd.ShowDialog() == DialogResult.OK) {
           TxBx_Loc.Text = xfbd.SelectedPath;
-          ThreadPool.QueueUserWorkItem(GetImage);
+					ThreadPool.QueueUserWorkItem(GetImage, TxBx_Loc.Text);
 
           if (string.IsNullOrWhiteSpace(CmbBx_Artist.Text) && string.IsNullOrWhiteSpace(acTxBx_Title.Text))
             SetTitle(Ext.GetNameSansExtension(xfbd.SelectedPath));
@@ -343,7 +343,7 @@ namespace Nagru___Manga_Organizer
     private void Main_ResizeEnd(object sender, EventArgs e)
     {
       if (bResize) {
-        ThreadPool.QueueUserWorkItem(GetImage);
+        ThreadPool.QueueUserWorkItem(GetImage, TxBx_Loc.Text);
         bResize = false;
       }
     }
@@ -351,7 +351,7 @@ namespace Nagru___Manga_Organizer
     {
       if (this.WindowState == FormWindowState.Maximized
           && PicBx_Cover.Image != null) {
-        ThreadPool.QueueUserWorkItem(GetImage);
+						ThreadPool.QueueUserWorkItem(GetImage, TxBx_Loc.Text);
       }
     }
 
@@ -368,7 +368,7 @@ namespace Nagru___Manga_Organizer
       if (Directory.Exists(TxBx_Loc.Text)
           || File.Exists(TxBx_Loc.Text)) {
         page = -1;
-        ThreadPool.QueueUserWorkItem(GetImage);
+				ThreadPool.QueueUserWorkItem(GetImage, TxBx_Loc.Text);
       }
       else {
         SetPicBxNull();
@@ -675,12 +675,12 @@ namespace Nagru___Manga_Organizer
     private void GetImage(Object obj)
     {
       //Get cover and filecount
-      if (File.Exists(TxBx_Loc.Text)) {
-        SetPicBxImage(TxBx_Loc.Text);
+      if (File.Exists(obj.ToString())) {
+        SetPicBxImage(obj.ToString());
       }
       else {
         string[] sFiles = new string[0];
-        if ((sFiles = Ext.GetFiles(TxBx_Loc.Text,
+        if ((sFiles = Ext.GetFiles(obj.ToString(),
             SearchOption.TopDirectoryOnly)).Length > 0) {
           SetPicBxImage(sFiles[0]);
           BeginInvoke(new DelInt(SetNudCount), sFiles.Length);
@@ -768,7 +768,7 @@ namespace Nagru___Manga_Organizer
         if (srRating.SelectedStar == 0) {                       //set star rating
           srRating.SelectedStar = Convert.ToInt32(manga.rating);
         }
-        UpdateTags(manga.GetTags());														//set tags
+				acTxBx_Tags.Text = manga.GetTags(acTxBx_Tags.Text);			//set tags
 
         Tb_View.ResumeLayout();
         Text = "Finished";
@@ -1958,7 +1958,7 @@ namespace Nagru___Manga_Organizer
           || (File.Exists(asDir[0]) && IsArchive(asDir[0]))) {
         if (string.IsNullOrWhiteSpace(CmbBx_Artist.Text) && string.IsNullOrWhiteSpace(acTxBx_Title.Text)) {
           SetTitle(Ext.GetNameSansExtension(asDir[0]));
-          ThreadPool.QueueUserWorkItem(GetImage);
+					ThreadPool.QueueUserWorkItem(GetImage, TxBx_Loc.Text);
         }
       }
     }

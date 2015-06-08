@@ -47,7 +47,7 @@ namespace Nagru___Manga_Organizer
     [Description("Gets or sets the top currently selected star.")]
     public int SelectedStar {
       get {
-        return iSelStar;
+        return iSelStar > 5 ? 5 : iSelStar;
       }
       set {
         if (value >= 0) {
