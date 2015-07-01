@@ -111,6 +111,7 @@
       this.cmsDeleteSource = new System.Windows.Forms.ToolStripMenuItem();
       this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
       this.cmsOpenSource = new System.Windows.Forms.ToolStripMenuItem();
+      this.MnTS_ExportToXML = new System.Windows.Forms.ToolStripMenuItem();
       this.TabControl.SuspendLayout();
       this.Tb_Browse.SuspendLayout();
       this.Mn_TxBx.SuspendLayout();
@@ -625,7 +626,7 @@
       this.Mn_EntryOps.Location = new System.Drawing.Point(3, 3);
       this.Mn_EntryOps.Name = "Mn_EntryOps";
       this.Mn_EntryOps.ShowItemToolTips = true;
-      this.Mn_EntryOps.Size = new System.Drawing.Size(107, 27);
+      this.Mn_EntryOps.Size = new System.Drawing.Size(388, 27);
       this.Mn_EntryOps.TabIndex = 21;
       this.Mn_EntryOps.Text = "menuStrip";
       // 
@@ -721,7 +722,8 @@
             this.MnTs_CleanTags,
             this.MnTs_CleanArtists,
             this.MnTS_DBMaintenance,
-            this.MnTS_missingSource});
+            this.MnTS_missingSource,
+            this.MnTS_ExportToXML});
       this.maintenanceToolStripMenuItem.Name = "maintenanceToolStripMenuItem";
       this.maintenanceToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
       this.maintenanceToolStripMenuItem.Text = "Maintenance";
@@ -1013,6 +1015,13 @@
       this.cmsOpenSource.Text = "Open Source";
       this.cmsOpenSource.Click += new System.EventHandler(this.MnTS_OpenSource_Click);
       // 
+      // MnTS_ExportToXML
+      // 
+      this.MnTS_ExportToXML.Name = "MnTS_ExportToXML";
+      this.MnTS_ExportToXML.Size = new System.Drawing.Size(193, 22);
+      this.MnTS_ExportToXML.Text = "Export to XML";
+      this.MnTS_ExportToXML.Click += new System.EventHandler(this.MnTS_ExportToXML_Click);
+      // 
       // Main
       // 
       this.AcceptButton = this.Btn_Clear;
@@ -1133,6 +1142,7 @@
         private System.Windows.Forms.ToolStripMenuItem cmsDeleteSource;
 				private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 				private System.Windows.Forms.ToolStripMenuItem cmsOpenSource;
+        private System.Windows.Forms.ToolStripMenuItem MnTS_ExportToXML;
     }
 }
 

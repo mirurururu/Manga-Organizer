@@ -1,3 +1,7 @@
+### v. 4.7.36 (July 1, 2015)
+  - Added ability to export database to XML
+  - Improved searching. Can now surround terms in quotation marks and use more wild cards
+
 ### v. 4.7.16 (June 08, 2015)
   - Fixed situation where a manga could be rated 6+ stars and cause a crash when displaying that
 

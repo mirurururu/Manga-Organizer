@@ -75,6 +75,7 @@ namespace Nagru___Manga_Organizer
           ,tg.Tags
           ,mgx.Description
           ,mgx.PublishedDate
+          ,mgx.CreatedDBTime
           ,mgx.Location
           ,mgx.GalleryURL
           ,mgx.Thumbnail
@@ -1042,131 +1043,163 @@ namespace Nagru___Manga_Organizer
       /// <summary>
       /// Parses search terms based on an EH-like scheme and returns all results in the DB that match
       /// </summary>
-      /// <param name="sTerms">The raw search string from the user</param>
-      /// <param name="iMangaID">Optional ability to only check a single manga</param>
-      /// <returns></returns>
-      internal static DataTable DB_Search(string sTerms, int iMangaID = -1)
+      /// <param name="SearchTerms">The raw search string from the user</param>
+      /// <param name="OnlyFav">Whether to only return results with a rating of 5.0</param>
+      /// <param name="MangaID">Optional ability to only check a single manga</param>
+      /// <returns>Returns a list of manga that match the criteria</returns>
+      internal static DataTable DB_Search(string SearchTerms, int MangaID = -1)
       {
-        if (string.IsNullOrWhiteSpace(sTerms)) {
-          return GetEntries();
+        //validate and sanitize input
+        SearchTerms = SQLBase.Cleanse(SearchTerms);
+        if (string.IsNullOrWhiteSpace(SearchTerms)) {
+          return GetManga(MangaID);
         }
 
-        //Set up variables
-        StringBuilder sbCmd = new StringBuilder(5000);
-        string[] asItems = Ext.Split(SQLBase.Cleanse(sTerms), " ");
-        string[] asType = new string[asItems.Length];
-        bool[][] abNot = new bool[asItems.Length][];
-        string[][] asTerms = new string[asItems.Length][];
+        //set up variables
+        Dictionary<string, Dictionary<string, bool>> dcTerms =
+          new Dictionary<string, Dictionary<string, bool>>();
 
-        #region Parse Terms
-        for (int i = 0; i < asItems.Length; i++) {
-          //check for type limiter
-          string[] sSplit = asItems[i].Trim().Split(':');
-          if (sSplit.Length > 1) {
-            asType[i] = sSplit[0];
+        #region split string into categories and entries
+        if ((SearchTerms.Count(x => x == '"') % 2) != 0) {
+          //xDialog.DisplayInfo(msg.SYNTAX_ERROR_APOSTROPHE);
+        }
+        else {
+          bool bIsVerbatim = false;
+          StringBuilder sb = new StringBuilder(SearchTerms);
+
+          for (int i = 0; i < SearchTerms.Length; i++) {
+            if (SearchTerms[i] == '"') {
+              bIsVerbatim = !bIsVerbatim;
+            }
+            else if (bIsVerbatim) {
+              sb[i] = Obfuscate(sb[i]);
+            }
           }
 
-          string[] asSubSplit = Ext.Split(sSplit[sSplit.Length > 1 ? 1 : 0], "&", ",");
-          asTerms[i] = new string[asSubSplit.Length];
+          SearchTerms = sb.Replace("\"", "").ToString();
+        }
+        string[] asElements = Ext.Split(SearchTerms, " ");
+        #endregion
+
+        #region format sub entries
+        for (int i = 0; i < asElements.Length; i++) {
+          string[] asSubElements = Ext.Split(asElements[i], ":");
+          string sKey = asSubElements.Length > 1 ? asSubElements[0] : "";
+
+          if (!dcTerms.ContainsKey(sKey)) {
+            dcTerms.Add(
+              sKey
+              , new Dictionary<string, bool>()
+            );
+          }
+
+          string[] asSubSplit = Ext.Split(asSubElements[asSubElements.Length > 1 ? 1 : 0], ",");
           for (int x = 0; x < asSubSplit.Length; x++) {
-            asTerms[i][x] = asSubSplit[x];
-          }
-
-          //check for chained terms
-          abNot[i] = new bool[asTerms[i].Length];
-          for (int x = 0; x < asTerms[i].Length; x++) {
-            asTerms[i][x] = asTerms[i][x].Replace('_', ' ');
-            abNot[i][x] = asTerms[i][x].StartsWith("-");
-            if (abNot[i][x])
-              asTerms[i][x] = asTerms[i][x].Substring(1);
+            Unobfuscate(ref asSubSplit[x]);
+            if (!dcTerms[sKey].ContainsKey(asSubSplit[x])) {
+              if (asSubSplit[x].StartsWith("-")) {
+                dcTerms[sKey].Add(asSubSplit[x].Remove(0, 1), true);
+              }
+              else {
+                dcTerms[sKey].Add(asSubSplit[x], false);
+              }
+            }
           }
         }
         #endregion
 
-        #region Convert to SQL
+        #region turn values into a SQL statement
 
-        #region Data setup
+        StringBuilder sbCmd = new StringBuilder(20000);
         sbCmd.Append(vsManga);
-        #endregion
-
-        #region Where-clause setup
         sbCmd.AppendFormat(" where ({0} in (mgx.MangaID, -1)) "
-          , iMangaID);
+          , MangaID
+        );
 
-        for (int i = 0; i < asTerms.Length; i++) {
-          for (int x = 0; x < asTerms[i].Length; x++) {
-            switch (asType[i]) {
+        foreach (KeyValuePair<string, Dictionary<string, bool>> kvp in dcTerms) {
+          foreach (KeyValuePair<string, bool> skvp in kvp.Value) {
+            switch (kvp.Key) {
               case "artist":
               case "a":
-                sbCmd.AppendFormat("and ifnull(at.Name, '') {0} like '%{1}%' "
-                  , abNot[i][x] ? "not" : ""
-                  , asTerms[i][x]);
+                sbCmd.AppendFormat("and ifnull(at.Name, '') {0} like '%{1}%' ESCAPE '\\' "
+                  , skvp.Value ? "not" : ""
+                  , skvp.Key);
                 break;
               case "title":
               case "t":
-                sbCmd.AppendFormat("and ifnull(mgx.Title, '') {0} like '%{1}%' "
-                  , abNot[i][x] ? "not" : ""
-                  , asTerms[i][x]);
+                sbCmd.AppendFormat("and ifnull(mgx.Title, '') {0} like '%{1}%' ESCAPE '\\' "
+                  , skvp.Value ? "not" : ""
+                  , skvp.Key);
                 break;
               case "tag":
               case "tags":
               case "g":
-                sbCmd.AppendFormat("and ifnull(tg.Tags, '') {0} like '%{1}%' "
-                  , abNot[i][x] ? "not" : ""
-                  , asTerms[i][x]);
+                sbCmd.AppendFormat("and ifnull(tg.Tags, '') {0} like '%{1}%' ESCAPE '\\' "
+                  , skvp.Value ? "not" : ""
+                  , skvp.Key);
                 break;
               case "description":
               case "desc":
               case "s":
-                sbCmd.AppendFormat("and ifnull(mgx.Description, '') {0} like '%{1}%' "
-                  , abNot[i][x] ? "not" : ""
-                  , asTerms[i][x]);
+                sbCmd.AppendFormat("and ifnull(mgx.Description, '') {0} like '%{1}%' ESCAPE '\\' "
+                  , skvp.Value ? "not" : ""
+                  , skvp.Key);
                 break;
               case "type":
               case "y":
-                sbCmd.AppendFormat("and ifnull(tp.Type, '') {0} like '%{1}%' "
-                  , abNot[i][x] ? "not" : ""
-                  , asTerms[i][x]);
+                sbCmd.AppendFormat("and ifnull(tp.Type, '') {0} like '%{1}%' ESCAPE '\\' "
+                  , skvp.Value ? "not" : ""
+                  , skvp.Key);
                 break;
               case "date":
               case "d":
                 DateTime date = new DateTime();
-                char c = !string.IsNullOrWhiteSpace(asTerms[i][x]) ? asTerms[i][x][0] : ' ';
+                char c = !string.IsNullOrWhiteSpace(skvp.Key) ? skvp.Key[0] : ' ';
 
-                if (DateTime.TryParse(asTerms[i][x].Substring(c != '<' && c != '>' ? 0 : 1), out date))
+                if (DateTime.TryParse(skvp.Key.Substring(c != '<' && c != '>' ? 0 : 1), out date))
                   sbCmd.AppendFormat("and date(mgx.PublishedDate) {0} date('{1}') "
-                    , abNot[i][x] ? '!' : (c == '<' || c == '>') ? c : '='
+                    , skvp.Value ? "!=" : ((c == '<' || c == '>') ? c : '=').ToString()
+                    , date.ToString("yyyy-MM-dd"));
+                break;
+              case "created":
+              case "c":
+                date = new DateTime();
+                c = !string.IsNullOrWhiteSpace(skvp.Key) ? skvp.Key[0] : ' ';
+
+                if (DateTime.TryParse(skvp.Key.Substring(c != '<' && c != '>' ? 0 : 1), out date))
+                  sbCmd.AppendFormat("and date(mgx.CreatedDBTime) {0} date('{1}') "
+                    , skvp.Value ? "!=" : ((c == '<' || c == '>') ? c : '=').ToString()
                     , date.ToString("yyyy-MM-dd"));
                 break;
               case "rating":
               case "r":
-                c = !string.IsNullOrWhiteSpace(asTerms[i][x]) ? asTerms[i][x][0] : ' ';
+                c = !string.IsNullOrWhiteSpace(skvp.Key) ? skvp.Key[0] : ' ';
                 int rat;
 
-                if (int.TryParse(asTerms[i][x].Substring(c != '<' && c != '>' ? 0 : 1), out rat))
+                if (int.TryParse(skvp.Key.Substring(c != '<' && c != '>' ? 0 : 1), out rat))
                   sbCmd.AppendFormat("and mgx.Rating {0} {1} "
-                    , abNot[i][x] ? '!' : (c == '<' || c == '>') ? c : '='
+                    , skvp.Value ? "!=" : ((c == '<' || c == '>') ? c : '=').ToString()
                     , rat);
                 break;
               case "pages":
               case "page":
               case "p":
-                c = !string.IsNullOrWhiteSpace(asTerms[i][x]) ? asTerms[i][x][0] : ' ';
+                c = !string.IsNullOrWhiteSpace(skvp.Key) ? skvp.Key[0] : ' ';
                 int pg;
 
-                if (int.TryParse(asTerms[i][x].Substring(c != '<' && c != '>' ? 0 : 1), out pg))
+                if (int.TryParse(skvp.Key.Substring(c != '<' && c != '>' ? 0 : 1), out pg))
                   sbCmd.AppendFormat("and mgx.Pages {0} {1} "
-                    , abNot[i][x] ? '!' : (c == '<' || c == '>') ? c : '='
+                    , skvp.Value ? "!=" : ((c == '<' || c == '>') ? c : '=').ToString()
                     , pg);
                 break;
               default:
-                if (abNot[i][x]) {
-                  sbCmd.AppendFormat("and (ifnull(tg.Tags, '') not like '%{0}%' and ifnull(mgx.Title, '') not like '%{0}%' and ifnull(at.Name, '') not like '%{0}%' and ifnull(mgx.Description, '') not like '%{0}%' and ifnull(tp.Type, '') not like '%{0}%' and date(mgx.PublishedDate) not like '%{0}%') "
-                  , asTerms[i][x]);
+                if (skvp.Value) {
+                  sbCmd.AppendFormat("and (ifnull(tg.Tags, '') not like '%{0}%' ESCAPE '\\' and ifnull(mgx.Title, '') not like '%{0}%' ESCAPE '\\' and ifnull(at.Name, '') not like '%{0}%' ESCAPE '\\' and ifnull(mgx.Description, '') not like '%{0}%' ESCAPE '\\' and ifnull(tp.Type, '') not like '%{0}%' ESCAPE '\\' and date(mgx.PublishedDate) not like '%{0}%' ESCAPE '\\') "
+                  , skvp.Key);
                 }
                 else {
-                  sbCmd.AppendFormat("and (ifnull(tg.Tags, '') like '%{0}%' or ifnull(mgx.Title, '') like '%{0}%' or ifnull(at.Name, '') like '%{0}%' or ifnull(mgx.Description, '') like '%{0}%' or ifnull(tp.Type, '') like '%{0}%' or date(mgx.PublishedDate) like '%{0}%') "
-                  , asTerms[i][x]);
+                  sbCmd.AppendFormat("and (ifnull(tg.Tags, '') like '%{0}%' ESCAPE '\\' or ifnull(mgx.Title, '') like '%{0}%' ESCAPE '\\' or ifnull(at.Name, '') like '%{0}%' ESCAPE '\\' or ifnull(mgx.Description, '') like '%{0}%' ESCAPE '\\' or ifnull(tp.Type, '') like '%{0}%' ESCAPE '\\' or date(mgx.PublishedDate) like '%{0}%' ESCAPE '\\') "
+                  , skvp.Key);
                 }
 
                 break;
@@ -1174,15 +1207,69 @@ namespace Nagru___Manga_Organizer
           }
         }
 
-        //append final syntax
         sbCmd.Append(vsMangaEnd);
-
         #endregion
 
-        #endregion
-
-        return sqlBase.ExecuteQuery(sbCmd.ToString(), CommandBehavior.Default);
+        //execute statement
+        return sqlBase.ExecuteQuery(sbCmd.ToString());
       }
+
+      /// <summary>
+      /// Preserve special characters by converting them into a 
+      /// different char type before parsing the string
+      /// </summary>
+      /// <param name="RawChar">The char to obfuscate</param>
+      /// <returns>Returns the obfuscated version of the char</returns>
+      private static char Obfuscate(char RawChar)
+      {
+        switch (RawChar) {
+          case ' ':
+            RawChar = '╛';	//alt + 190 descending
+            break;					//ugly but should be safe
+          case ',':
+            RawChar = '┐';
+            break;
+          case ':':
+            RawChar = '└';
+            break;
+          case '_':
+            RawChar = '┴';
+            break;
+          case '%':
+            RawChar = '┬';
+            break;
+          case '?':
+            RawChar = '├';
+            break;
+          case '*':
+            RawChar = '─';
+            break;
+          default:
+            break;
+        }
+        return RawChar;
+      }
+
+      /// <summary>
+      /// Removes obfuscation and prepares a string for use in the SQL command
+      /// </summary>
+      /// <param name="RawString">The string to unobfuscate</param>
+      private static void Unobfuscate(ref string RawString)
+      {
+        StringBuilder sb = new StringBuilder(RawString);
+        RawString = sb
+          .Replace('?', '_')
+          .Replace('*', '%')
+          .Replace('_', ' ')
+          .Replace('╛', ' ')
+          .Replace('┐', ',')
+          .Replace('└', ':')
+          .Replace("┴", "\\_")
+          .Replace("┬", "\\%")
+          .Replace('├', '?')
+          .ToString();
+      }
+
       #endregion
 
       #region Query Database

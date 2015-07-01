@@ -1570,6 +1570,27 @@ namespace Nagru___Manga_Organizer
     }
 
     /// <summary>
+    /// Exports the database, as XML, to a specific location
+    /// </summary>
+    private void MnTS_ExportToXML_Click(object sender, EventArgs e)
+    {
+      using (FolderBrowserDialog fbd = new FolderBrowserDialog()) {
+        fbd.Description = "Choose a folder to export the file to.";
+        fbd.SelectedPath = Environment.CurrentDirectory;
+        fbd.RootFolder = Environment.SpecialFolder.MyComputer;
+
+        if (fbd.ShowDialog() == DialogResult.OK
+            && Ext.Accessible(fbd.SelectedPath)) {
+          try {
+            SQL.GetAllManga().WriteXml(fbd.SelectedPath + "\\Manga Organizer Entries.xml", true);
+          } catch (Exception exc) {
+            MessageBox.Show(exc.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+          }
+        }
+      }
+    }
+
+    /// <summary>
     /// Show the tag statistics
     /// </summary>
     private void MnTS_Stats_Click(object sender, EventArgs e)

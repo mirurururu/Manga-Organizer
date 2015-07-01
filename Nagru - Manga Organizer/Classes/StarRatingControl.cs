@@ -18,10 +18,11 @@ namespace Nagru___Manga_Organizer
     protected readonly GraphicsPath gpStar;
     protected readonly Rectangle[] rcArea;
     protected readonly Pen pnOutln;
+    protected const int iStarCount = 5;
     protected const int iPadding = 8;
     protected const int iHeight = 14;
     protected const int iWidth = 16;
-    protected int iOutThick = 1;
+    protected byte iOutThick = 1;
 		protected int iHvrStar;
 		protected int iSelStar;
 
@@ -47,19 +48,24 @@ namespace Nagru___Manga_Organizer
     [Description("Gets or sets the top currently selected star.")]
     public int SelectedStar {
       get {
-        return iSelStar > 5 ? 5 : iSelStar;
+        return iSelStar;
       }
       set {
-        if (value >= 0) {
-          iSelStar = value;
-          Invalidate();
+        if (value > iStarCount) {
+          value = iStarCount;
         }
+        else if (value < 0) {
+          value = 0;
+        }
+
+        iSelStar = value;
+        Invalidate();
       }
     }
 
     [DefaultValue(1)]
     [Description("Gets or sets the stars outline thickness.")]
-    public int OutlineThickness {
+    public byte OutlineThickness {
       get {
         return iOutThick;
       }
@@ -120,8 +126,8 @@ namespace Nagru___Manga_Organizer
       SetStyle(ControlStyles.ResizeRedraw, true);
 
       pnOutln = new Pen(cOutln, iOutThick);
-      rcArea = new Rectangle[5];
-      for (int i = 0; i < 5; ++i) {
+      rcArea = new Rectangle[iStarCount];
+      for (int i = 0; i < iStarCount; ++i) {
         rcArea[i].X = i * (iWidth + iPadding);
         rcArea[i].Width = iWidth + iPadding;
         rcArea[i].Height = iHeight;
@@ -131,17 +137,24 @@ namespace Nagru___Manga_Organizer
       gpStar = new GraphicsPath();
       PointF[] pfStar = new PointF[10];
       pfStar[0] = new PointF(iWidth / 2, 0);											//12:00
-      pfStar[1] = new PointF(2 * iWidth / 3, iHeight / 3);        //1:00
-      pfStar[2] = new PointF(iWidth, iHeight / 3);                //2:00
-      pfStar[3] = new PointF(4 * iWidth / 5, 4 * iHeight / 7);    //3:00
-      pfStar[4] = new PointF(5 * iWidth / 6, iHeight);            //4:00
-      pfStar[5] = new PointF(iWidth / 2, 4 * iHeight / 5);        //6:00
-      pfStar[6] = new PointF(iWidth - pfStar[4].X, pfStar[4].Y);	//8:00
-      pfStar[7] = new PointF(iWidth - pfStar[3].X, pfStar[3].Y);	//9:00
+      pfStar[1] = new PointF(2 * iWidth / 3, iHeight / 3);        //01:00
+      pfStar[2] = new PointF(iWidth, iHeight / 3);                //02:00
+      pfStar[3] = new PointF(4 * iWidth / 5, 4 * iHeight / 7);    //03:00
+      pfStar[4] = new PointF(5 * iWidth / 6, iHeight);            //04:00
+      pfStar[5] = new PointF(iWidth / 2, 4 * iHeight / 5);        //06:00
+      pfStar[6] = new PointF(iWidth - pfStar[4].X, pfStar[4].Y);	//08:00
+      pfStar[7] = new PointF(iWidth - pfStar[3].X, pfStar[3].Y);	//09:00
       pfStar[8] = new PointF(iWidth - pfStar[2].X, pfStar[2].Y);	//10:00
       pfStar[9] = new PointF(iWidth - pfStar[1].X, pfStar[1].Y);	//11:00
       gpStar.AddLines(pfStar);
       gpStar.CloseFigure();
+    }
+
+    ~StarRatingControl()
+    {
+      if (gpStar != null) {
+        gpStar.Dispose();
+      }
     }
 
 		#endregion
@@ -158,21 +171,24 @@ namespace Nagru___Manga_Organizer
 
       Brush brFill;
       Rectangle rcDraw = new Rectangle(0, 0, iWidth, iHeight);
-      for (int i = 0; i < 5; ++i) {
-        if (IsHovering && iHvrStar > i)
+      for (int i = 0; i < iStarCount; ++i) {
+        if (IsHovering && iHvrStar > i) {
           brFill = new LinearGradientBrush(rcDraw, cHover, BackColor,
-              LinearGradientMode.ForwardDiagonal);
-        else if (!IsHovering && iSelStar > i)
+            LinearGradientMode.ForwardDiagonal);
+        }
+        else if (!IsHovering && iSelStar > i) {
           brFill = new LinearGradientBrush(rcDraw, cFill, BackColor,
-              LinearGradientMode.ForwardDiagonal);
-        else
+            LinearGradientMode.ForwardDiagonal);
+        }
+        else {
           brFill = new SolidBrush(BackColor);
+        }
 
-        GraphicsPath gpTmp = GetPath(rcDraw.X, 0);
-        rcDraw.X += rcDraw.Width + iPadding;
-        pe.Graphics.FillPath(brFill, gpTmp);
-        pe.Graphics.DrawPath(pnOutln, gpTmp);
-        gpTmp.Dispose();
+        using(GraphicsPath gpTmp = GetPath(rcDraw.X, 0)) {
+          rcDraw.X += rcDraw.Width + iPadding;
+          pe.Graphics.FillPath(brFill, gpTmp);
+          pe.Graphics.DrawPath(pnOutln, gpTmp);
+        }
       }
       base.OnPaint(pe);
     }
@@ -204,7 +220,7 @@ namespace Nagru___Manga_Organizer
     {
       Point p = PointToClient(MousePosition);
 
-      for (int i = 0; i < 5; ++i) {
+      for (int i = 0; i < iStarCount; ++i) {
         if (rcArea[i].Contains(p)) {
           if (iHvrStar != i + 1) {
             iHvrStar = i + 1;
@@ -224,7 +240,7 @@ namespace Nagru___Manga_Organizer
     {
       Point p = PointToClient(MousePosition);
 
-      for (int i = 0; i < 5; ++i) {
+      for (int i = 0; i < iStarCount; ++i) {
         if (rcArea[i].Contains(p)) {
           iHvrStar = i + 1;
           iSelStar = (i == 0 && iSelStar == 1) ? 0 : i + 1;
