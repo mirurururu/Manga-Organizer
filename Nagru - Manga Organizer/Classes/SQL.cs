@@ -1002,7 +1002,12 @@ namespace Nagru___Manga_Organizer
         using (SQLiteCommand sqCmd = sqConn.CreateCommand()) {
           sqCmd.Parameters.AddRange(sqParam);
           sqCmd.CommandText = CommandText;
-          altered = sqCmd.ExecuteNonQuery(cmd);
+
+          try {
+            altered = sqCmd.ExecuteNonQuery(cmd);
+          } catch (Exception exc) {
+            Console.WriteLine(exc.Message);
+          }
         }
 
         return altered;
@@ -1023,8 +1028,12 @@ namespace Nagru___Manga_Organizer
           sqCmd.Parameters.AddRange(sqParam);
           sqCmd.CommandText = CommandText;
 
-          using (SQLiteDataReader dr = sqCmd.ExecuteReader(cmd)) {
-            dt.Load(dr);
+          try {
+            using (SQLiteDataReader dr = sqCmd.ExecuteReader(cmd)) {
+              dt.Load(dr);
+            }
+          } catch (Exception exc) {
+            Console.WriteLine(exc.Message);
           }
         }
 
@@ -1060,12 +1069,9 @@ namespace Nagru___Manga_Organizer
           new Dictionary<string, Dictionary<string, bool>>();
 
         #region split string into categories and entries
-        if ((SearchTerms.Count(x => x == '"') % 2) != 0) {
-          //xDialog.DisplayInfo(msg.SYNTAX_ERROR_APOSTROPHE);
-        }
-        else {
-          bool bIsVerbatim = false;
+        if ((SearchTerms.Count(x => x == '"') % 2) == 0) {
           StringBuilder sb = new StringBuilder(SearchTerms);
+          bool bIsVerbatim = false;
 
           for (int i = 0; i < SearchTerms.Length; i++) {
             if (SearchTerms[i] == '"') {
@@ -1156,30 +1162,33 @@ namespace Nagru___Manga_Organizer
                 DateTime date = new DateTime();
                 char c = !string.IsNullOrWhiteSpace(skvp.Key) ? skvp.Key[0] : ' ';
 
-                if (DateTime.TryParse(skvp.Key.Substring(c != '<' && c != '>' ? 0 : 1), out date))
+                if (DateTime.TryParse(skvp.Key.Substring(c != '<' && c != '>' ? 0 : 1), out date)) {
                   sbCmd.AppendFormat("and date(mgx.PublishedDate) {0} date('{1}') "
                     , skvp.Value ? "!=" : ((c == '<' || c == '>') ? c : '=').ToString()
                     , date.ToString("yyyy-MM-dd"));
+                }
                 break;
               case "created":
               case "c":
                 date = new DateTime();
                 c = !string.IsNullOrWhiteSpace(skvp.Key) ? skvp.Key[0] : ' ';
 
-                if (DateTime.TryParse(skvp.Key.Substring(c != '<' && c != '>' ? 0 : 1), out date))
+                if (DateTime.TryParse(skvp.Key.Substring(c != '<' && c != '>' ? 0 : 1), out date)) {
                   sbCmd.AppendFormat("and date(mgx.CreatedDBTime) {0} date('{1}') "
                     , skvp.Value ? "!=" : ((c == '<' || c == '>') ? c : '=').ToString()
                     , date.ToString("yyyy-MM-dd"));
+                }
                 break;
               case "rating":
               case "r":
                 c = !string.IsNullOrWhiteSpace(skvp.Key) ? skvp.Key[0] : ' ';
                 int rat;
 
-                if (int.TryParse(skvp.Key.Substring(c != '<' && c != '>' ? 0 : 1), out rat))
+                if (int.TryParse(skvp.Key.Substring(c != '<' && c != '>' ? 0 : 1), out rat)) {
                   sbCmd.AppendFormat("and mgx.Rating {0} {1} "
                     , skvp.Value ? "!=" : ((c == '<' || c == '>') ? c : '=').ToString()
                     , rat);
+                }
                 break;
               case "pages":
               case "page":
@@ -1187,10 +1196,11 @@ namespace Nagru___Manga_Organizer
                 c = !string.IsNullOrWhiteSpace(skvp.Key) ? skvp.Key[0] : ' ';
                 int pg;
 
-                if (int.TryParse(skvp.Key.Substring(c != '<' && c != '>' ? 0 : 1), out pg))
+                if (int.TryParse(skvp.Key.Substring(c != '<' && c != '>' ? 0 : 1), out pg)) {
                   sbCmd.AppendFormat("and mgx.Pages {0} {1} "
                     , skvp.Value ? "!=" : ((c == '<' || c == '>') ? c : '=').ToString()
                     , pg);
+                }
                 break;
               default:
                 if (skvp.Value) {
@@ -1201,7 +1211,6 @@ namespace Nagru___Manga_Organizer
                   sbCmd.AppendFormat("and (ifnull(tg.Tags, '') like '%{0}%' ESCAPE '\\' or ifnull(mgx.Title, '') like '%{0}%' ESCAPE '\\' or ifnull(at.Name, '') like '%{0}%' ESCAPE '\\' or ifnull(mgx.Description, '') like '%{0}%' ESCAPE '\\' or ifnull(tp.Type, '') like '%{0}%' ESCAPE '\\' or date(mgx.PublishedDate) like '%{0}%' ESCAPE '\\') "
                   , skvp.Key);
                 }
-
                 break;
             }
           }
