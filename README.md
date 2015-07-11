@@ -12,7 +12,7 @@ For examples of it running see: <a href="https://raw.github.com/Nagru/Manga-Orga
 <h3>Notes:</h3>
 - no install required
 - searches function similarly to EH's<br />
-  (eg. title:celeb_wife date:>01/01/12 -vanilla)
+  (eg. title:"celeb wife" date:>01/01/12 -vanilla)
 - entry data can be automatically loaded from an EH gallery URL
 - 'auto-magic' also applies to copy/pasted tags, gallery titles, and folders or archives dropped onto the listview
 - browse images with your default image viewer (Menu -> Open) or with the built in one (click on the cover image)

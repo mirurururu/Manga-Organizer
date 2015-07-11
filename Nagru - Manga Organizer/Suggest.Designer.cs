@@ -363,6 +363,7 @@
       this.lvDetails.Location = new System.Drawing.Point(12, 40);
       this.lvDetails.MultiSelect = false;
       this.lvDetails.Name = "lvDetails";
+      this.lvDetails.ShowItemToolTips = true;
       this.lvDetails.Size = new System.Drawing.Size(560, 322);
       this.lvDetails.TabIndex = 10;
       this.lvDetails.UseCompatibleStateImageBehavior = false;

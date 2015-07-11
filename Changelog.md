@@ -1,4 +1,8 @@
-### v. 4.7.36 (July 1, 2015)
+﻿### v. 4.7.38 (July 11, 2015)
+  - Default EH searches to english and show title in tooltip
+  - Fixed a situation where the ▼ button could fail to find the top item
+
+### v. 4.7.36 (July 01, 2015)
   - Added ability to export database to XML
   - Improved searching. Can now surround terms in quotation marks and use more wild cards
 

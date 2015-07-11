@@ -384,8 +384,8 @@ namespace Nagru___Manga_Organizer
       if (lvManga.Items.Count == 0
           || (lvManga.Items.Count == 1 && mangaID != -1))
         return;
-      int iPos = lvManga.TopItem.Index;
-
+      int iPos = lvManga.TopItem != null ? lvManga.TopItem.Index : 0;
+      
       if (lvManga.SelectedItems.Count == 1) {
         iPos = lvManga.SelectedItems[0].Index;
         if (++iPos >= lvManga.Items.Count)
@@ -1348,7 +1348,6 @@ namespace Nagru___Manga_Organizer
         //remove from listview
         lvManga.Items.RemoveAt(lvManga.SelectedItems[0].Index);
         Reset();
-        ScrollTo(iPos);
       }
     }
 
@@ -1516,6 +1515,7 @@ namespace Nagru___Manga_Organizer
     private void MnTS_missingSource_Click(object sender, EventArgs e)
     {
       //add missing entries
+      Text = "This may take a few seconds...";
       using (DataTable dt = SQL.GetAllManga()) {
         Cursor = Cursors.WaitCursor;
         List<ListViewItem> lItems = new List<ListViewItem>(dt.Rows.Count);
@@ -1549,7 +1549,6 @@ namespace Nagru___Manga_Organizer
 
         string sMsg = lItems.Count + " entries were found missing their source file or directory.";
         if (lItems.Count > 0) {
-
           //remove search parameters
           TxBx_Search.Text = "MISSING_SOURCE";
           aiShuffle = null;
@@ -1562,6 +1561,9 @@ namespace Nagru___Manga_Organizer
 
           Text = string.Format("Returned: {0:n0} entries", lvManga.Items.Count);
           sMsg += "\nPlease go back to the 'Browse' tab to view them.";
+        }
+        else {
+          Text = "Process complete.";
         }
 
         MessageBox.Show(sMsg, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);

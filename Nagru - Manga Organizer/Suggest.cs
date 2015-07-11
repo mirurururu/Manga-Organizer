@@ -45,7 +45,7 @@ namespace Nagru___Manga_Organizer
       delResults = DisplayResults;
       ResizeLV();
 
-      //remove active border on form acceptbutton
+      //remove active border on form AcceptButton
       this.AcceptButton.NotifyDefault(false);
 
       //set-up user choices
@@ -77,7 +77,7 @@ namespace Nagru___Manga_Organizer
             , asSplit[1]
           );
 
-          txbxSearch.Text = sb.ToString();
+          txbxSearch.Text = sb.ToString() + " language:english";
         }
       }
       txbxSearch.Select();
@@ -220,10 +220,12 @@ namespace Nagru___Manga_Organizer
         lvDetails.Items.Clear();
 
         for (int i = 0; i < csResults.Count; i++) {
-          lvDetails.Items.Add(new ListViewItem(new string[2] {
+          ListViewItem lvi = new ListViewItem(new string[2] {
             csResults.URL(i),
             csResults.Title(i)
-          }));
+          });
+          lvi.ToolTipText = csResults.Title(i);
+          lvDetails.Items.Add(lvi);
         }
 
         lvDetails.Alternate();
@@ -232,7 +234,7 @@ namespace Nagru___Manga_Organizer
 
       this.Cursor = Cursors.Default;
       ToggleButtonEnabled(ref btnSearch);
-      this.Text = "Search found " + csResults.Count + " possible matchess";
+      this.Text = "Search found " + csResults.Count + " possible matches";
     }
 
     /// <summary>
