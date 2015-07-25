@@ -5,11 +5,11 @@ using System.Windows.Forms;
 
 namespace Nagru___Manga_Organizer
 {
-  public partial class BrowseTo : Form
+  public partial class PageBrowser : Form
 	{
 		#region Properties
 
-    Browse_Img fmSource = null;
+		ImageBrowser fmSource = null;
     bool bWideR, bWideL;
     float fWidth;
 
@@ -27,7 +27,7 @@ namespace Nagru___Manga_Organizer
 
 		#region Constructor
 
-		public BrowseTo(Browse_Img fm)
+		public PageBrowser(ImageBrowser fm)
     {
       InitializeComponent();
       this.DialogResult = DialogResult.Abort;

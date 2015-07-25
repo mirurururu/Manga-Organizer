@@ -31,15 +31,15 @@ namespace Nagru___Manga_Organizer
       lbl_Exp1.Text = @"The most important thing is the metadata
 
 Tagging can be done more conveniently by:
-- An EH Gallery Address: Open 'Menu -> Get from URL', which will auto-check your clipboard
+- An EH Gallery Address: Open 'Menu -> Get from URL', which will auto-check your clipboard. In the same menu you can also use the 'Search EH' action which calls EH's search bar for you
 - Dragging text from the EH gallery page into the relevant local field
 - Setting the location will also set the Artist and Title";
 
       lbl_Exp2.Text = @"Searches work similarly to EH's:
 - Separate terms with spaces
-- Combine multiple terms with '_'
+- Combine multiple terms with '_' or with quotations
 - Prepend a term with '-' to filter
-- Limit search scale by setting a tag type
+- Limit search scale by setting a tag type:
 artist, title, tag, desc, type, date, or pages
 - Use '<' or '>'  with 'date' or 'pages' for range
 - Chain terms by placing '&' between them
@@ -53,12 +53,10 @@ Click on the cover-image to use this browser
 
 Keyboard Shortcuts:
 'Left/Right Arrows or A/D' - Next/previous page
-'Up/Down Arrow' - Skip 4 pages ahead/behind
+'Up/Down Arrows' - Skip 4 pages ahead/behind
 'Home' - Skip to beginning\r\n'End' - Skip to end
 'F' - Find new pages
-'S' - Start/stop auto-browse
-'Shift + Plus' - Increase auto-browse speed
-'Shift + Minus' - Decrease auto-browse speed
+
 All other keys close the browser";
 
       lbl_Exp4.Text = @"Updated versions of this program can be automatically checked for by visiting:

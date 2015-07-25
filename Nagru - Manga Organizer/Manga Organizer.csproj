@@ -88,23 +88,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="About.cs">
+    <Compile Include="Windows\About.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="About.Designer.cs">
+    <Compile Include="Windows\About.Designer.cs">
       <DependentUpon>About.cs</DependentUpon>
     </Compile>
-    <Compile Include="Browse_Img.cs">
+    <Compile Include="Windows\ImageBrowser.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Browse_Img.Designer.cs">
-      <DependentUpon>Browse_Img.cs</DependentUpon>
+    <Compile Include="Windows\ImageBrowser.Designer.cs">
+      <DependentUpon>ImageBrowser.cs</DependentUpon>
     </Compile>
-    <Compile Include="Browse_Pgs.cs">
+    <Compile Include="Windows\PageBrowser.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Browse_Pgs.Designer.cs">
-      <DependentUpon>Browse_Pgs.cs</DependentUpon>
+    <Compile Include="Windows\PageBrowser.Designer.cs">
+      <DependentUpon>PageBrowser.cs</DependentUpon>
     </Compile>
     <Compile Include="Classes\AutoCompleteTagger.cs">
       <SubType>Component</SubType>
@@ -130,10 +130,10 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Classes\TrueCompare.cs" />
-    <Compile Include="GetUrl.cs">
+    <Compile Include="Windows\GetUrl.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GetUrl.Designer.cs">
+    <Compile Include="Windows\GetUrl.Designer.cs">
       <DependentUpon>GetUrl.cs</DependentUpon>
     </Compile>
     <Compile Include="Main.cs">
@@ -144,46 +144,46 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Scan.cs">
+    <Compile Include="Windows\ScanFolder.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Scan.Designer.cs">
-      <DependentUpon>Scan.cs</DependentUpon>
+    <Compile Include="Windows\ScanFolder.Designer.cs">
+      <DependentUpon>ScanFolder.cs</DependentUpon>
     </Compile>
-    <Compile Include="Settings.cs">
+    <Compile Include="Windows\Settings.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Settings.Designer.cs">
+    <Compile Include="Windows\Settings.Designer.cs">
       <DependentUpon>Settings.cs</DependentUpon>
     </Compile>
-    <Compile Include="Stats.cs">
+    <Compile Include="Windows\Stats.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Stats.Designer.cs">
+    <Compile Include="Windows\Stats.Designer.cs">
       <DependentUpon>Stats.cs</DependentUpon>
     </Compile>
-    <Compile Include="Suggest.cs">
+    <Compile Include="Windows\Suggest.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Suggest.Designer.cs">
+    <Compile Include="Windows\Suggest.Designer.cs">
       <DependentUpon>Suggest.cs</DependentUpon>
     </Compile>
-    <Compile Include="Tutorial.cs">
+    <Compile Include="Windows\Tutorial.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Tutorial.Designer.cs">
+    <Compile Include="Windows\Tutorial.Designer.cs">
       <DependentUpon>Tutorial.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="About.resx">
+    <EmbeddedResource Include="Windows\About.resx">
       <DependentUpon>About.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Browse_Img.resx">
-      <DependentUpon>Browse_Img.cs</DependentUpon>
+    <EmbeddedResource Include="Windows\ImageBrowser.resx">
+      <DependentUpon>ImageBrowser.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Browse_Pgs.resx">
-      <DependentUpon>Browse_Pgs.cs</DependentUpon>
+    <EmbeddedResource Include="Windows\PageBrowser.resx">
+      <DependentUpon>PageBrowser.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GetUrl.resx">
+    <EmbeddedResource Include="Windows\GetUrl.resx">
       <DependentUpon>GetUrl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Main.resx">
@@ -199,19 +199,19 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="Scan.resx">
-      <DependentUpon>Scan.cs</DependentUpon>
+    <EmbeddedResource Include="Windows\ScanFolder.resx">
+      <DependentUpon>ScanFolder.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Settings.resx">
+    <EmbeddedResource Include="Windows\Settings.resx">
       <DependentUpon>Settings.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Stats.resx">
+    <EmbeddedResource Include="Windows\Stats.resx">
       <DependentUpon>Stats.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Suggest.resx">
+    <EmbeddedResource Include="Windows\Suggest.resx">
       <DependentUpon>Suggest.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tutorial.resx">
+    <EmbeddedResource Include="Windows\Tutorial.resx">
       <DependentUpon>Tutorial.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="app.config">

@@ -60,7 +60,7 @@ namespace Nagru___Manga_Organizer
 
       //set WindowState to what it was the last time
       this.WindowState = Properties.Settings.Default.LastWindowState;
-    }
+		}
 
     /// <summary>
     /// Start loading the DB asynchronously
@@ -170,7 +170,7 @@ namespace Nagru___Manga_Organizer
     /// </summary>
     private void Btn_Scan_Click(object sender, EventArgs e)
     {
-      Scan fmScan = new Scan();
+			ScanFolder fmScan = new ScanFolder();
       fmScan.delNewEntry = AddEntries;
       fmScan.delDone = fmScanDone;
       Btn_Scan.Enabled = false;
@@ -854,7 +854,7 @@ namespace Nagru___Manga_Organizer
       if (PicBx_Cover.Image == null)
         return;
 
-      Browse_Img fmBrowse = new Browse_Img();
+			ImageBrowser fmBrowse = new ImageBrowser();
       fmBrowse.Page = page;
 
       if (Directory.Exists(TxBx_Loc.Text)) {
@@ -1259,24 +1259,19 @@ namespace Nagru___Manga_Organizer
         return;
       }
 
-      if (!SQL.ContainsEntry(CmbBx_Artist.Text, acTxBx_Title.Text)) {
-        if (MessageBox.Show("Are you sure you wish to add:\n\""
-            + Ext.GetFormattedTitle(CmbBx_Artist.Text, acTxBx_Title.Text) + "\"",
-            Application.ProductName, MessageBoxButtons.YesNo,
-            MessageBoxIcon.Question) == DialogResult.Yes) {
+			if (!SQL.ContainsEntry(CmbBx_Artist.Text, acTxBx_Title.Text)) {
+				mangaID = SQL.SaveManga(CmbBx_Artist.Text, acTxBx_Title.Text, Dt_Date.Value,
+					acTxBx_Tags.Text, TxBx_Loc.Text, Nud_Pages.Value, CmbBx_Type.Text,
+					srRating.SelectedStar, frTxBx_Desc.Text, lblURL.Text);
 
-          mangaID = SQL.SaveManga(CmbBx_Artist.Text, acTxBx_Title.Text, Dt_Date.Value,
-            acTxBx_Tags.Text, TxBx_Loc.Text, Nud_Pages.Value, CmbBx_Type.Text,
-            srRating.SelectedStar, frTxBx_Desc.Text, lblURL.Text);
-
-          //refresh
-          RefreshAutocomplete();
-          AddEntries();
-        }
-      }
-      else
+				//refresh
+				RefreshAutocomplete();
+				AddEntries();
+			}
+			else {
         MessageBox.Show("This item already exists in the database.",
           Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+			}
     }
 
     /// <summary>

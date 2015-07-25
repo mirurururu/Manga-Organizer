@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace Nagru___Manga_Organizer
 {
-  public partial class Scan : Form
+  public partial class ScanFolder : Form
   {
     private delegate void DelVoidEntry(Main.csEntry en);
     public delegate void DelVoid();
@@ -21,7 +21,7 @@ namespace Nagru___Manga_Organizer
     List<Main.csEntry> lFound = new List<Main.csEntry>();
 
     #region ScanOperation
-    public Scan()
+    public ScanFolder()
     {
       InitializeComponent();
       this.Icon = Properties.Resources.dbIcon;

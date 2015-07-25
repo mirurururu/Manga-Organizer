@@ -1,7 +1,7 @@
 ﻿namespace Nagru___Manga_Organizer
 {
-    partial class BrowseTo
-    {
+    partial class PageBrowser
+	{
         /// <summary>
         /// Required designer variable.
         /// </summary>

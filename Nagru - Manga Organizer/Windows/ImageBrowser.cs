@@ -8,7 +8,7 @@ using SCA = SharpCompress.Archive;
 
 namespace Nagru___Manga_Organizer
 {
-  public partial class Browse_Img : Form, IDisposable
+  public partial class ImageBrowser : Form, IDisposable
 	{
 		#region Properties
     const int MAX_ERROR = 10;
@@ -39,7 +39,7 @@ namespace Nagru___Manga_Organizer
 
 		#region Initialization
 
-		public Browse_Img()
+		public ImageBrowser()
     {
       InitializeComponent();
       this.LostFocus += Browse_Img_LostFocus;
@@ -161,7 +161,7 @@ namespace Nagru___Manga_Organizer
           if (bAuto)
             trFlip.Stop();
           Cursor.Show();
-          BrowseTo fmGoTo = new BrowseTo(this);
+					PageBrowser fmGoTo = new PageBrowser(this);
           fmGoTo.iPage = (bWideR || bWideL) ? Page : Page - 1;
           bValidFocusLost = true;
 

@@ -1,4 +1,7 @@
-﻿### v. 4.7.38 (July 11, 2015)
+﻿### v. 4.7.39 (July 16, 2015)
+  - Updated the tutorial text
+
+### v. 4.7.38 (July 11, 2015)
   - Default EH searches to english and show title in tooltip
   - Fixed a situation where the ▼ button could fail to find the top item
 

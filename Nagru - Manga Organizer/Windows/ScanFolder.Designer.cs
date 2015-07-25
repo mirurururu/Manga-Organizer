@@ -1,6 +1,6 @@
 ﻿namespace Nagru___Manga_Organizer
 {
-    partial class Scan
+    partial class ScanFolder
     {
         /// <summary>
         /// Required designer variable.
