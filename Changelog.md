@@ -1,4 +1,8 @@
-﻿### v. 4.7.39 (July 16, 2015)
+﻿### v. 4.7.40 (July 26, 2015)
+  - Fixed an issue with Sorting by Artist/Title where 
+    similar names could be sorted out of order
+
+### v. 4.7.39 (July 16, 2015)
   - Updated the tutorial text
 
 ### v. 4.7.38 (July 11, 2015)

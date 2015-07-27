@@ -301,13 +301,13 @@ namespace Nagru___Manga_Organizer
           switch (ColToSort) {
             case 0: //artist
               Result = tc.Compare(
-                lviX.SubItems[0].Text + lviX.SubItems[1].Text
-                , lviY.SubItems[0].Text + lviY.SubItems[1].Text);
+                lviX.SubItems[0].Text + " " + lviX.SubItems[1].Text
+                , lviY.SubItems[0].Text + " " + lviY.SubItems[1].Text);
               break;
             case 1: //title
               Result = tc.Compare(
-                lviX.SubItems[1].Text + lviX.SubItems[0].Text
-                , lviY.SubItems[1].Text + lviY.SubItems[0].Text);
+                lviX.SubItems[1].Text + " " + lviX.SubItems[0].Text
+                , lviY.SubItems[1].Text + " " + lviY.SubItems[0].Text);
               break;
             case 2: //pages
               Result = (Int32.Parse(lviX.SubItems[2].Text))
